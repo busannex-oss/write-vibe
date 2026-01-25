@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function CoverDesigner({ book, onUpdate, isUpdating }) {
   const [generating, setGenerating] = useState(false);
@@ -14,6 +16,23 @@ export default function CoverDesigner({ book, onUpdate, isUpdating }) {
   const [authorPhoto, setAuthorPhoto] = useState(book.author_photo_url || "");
   const [includeAuthorPhoto, setIncludeAuthorPhoto] = useState(!!book.author_photo_url);
   const [coverStyle, setCoverStyle] = useState("modern");
+  const [coverGenerations, setCoverGenerations] = useState(book.cover_generations || []);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  useEffect(() => {
+    setCoverGenerations(book.cover_generations || []);
+  }, [book.cover_generations]);
+
+  const loadUser = async () => {
+    try {
+      const userData = await base44.auth.me();
+      setCurrentUser(userData);
+    } catch (e) {}
+  };
 
   const styles = [
     { id: "modern", label: "Modern & Minimal" },
@@ -29,8 +48,7 @@ export default function CoverDesigner({ book, onUpdate, isUpdating }) {
     try {
       const mainCharacter = book.characters?.find(c => c.role?.toLowerCase().includes('protagonist')) || book.characters?.[0];
       
-      const response = await base44.integrations.Core.GenerateImage({
-        prompt: `Professional book cover design for "${book.title}" - a ${book.category} book.
+      const prompt = `Professional book cover design for "${book.title}" - a ${book.category} book.
         
 Style: ${coverStyle}
 Themes: ${book.subjects?.join(', ')}
@@ -43,15 +61,80 @@ The cover should:
 - Look professional and marketable
 - Match the ${coverStyle} aesthetic
 
-High quality, professional book cover design, 6x9 aspect ratio, publishing quality.`
-      });
+High quality, professional book cover design, 6x9 aspect ratio, publishing quality.`;
+
+      const response = await base44.integrations.Core.GenerateImage({ prompt });
       
       setFrontCover(response.url);
+
+      // Save generation
+      const newGeneration = {
+        id: Date.now().toString(),
+        type: "front",
+        image_url: response.url,
+        prompt,
+        style: coverStyle,
+        created_at: new Date().toISOString(),
+        votes: []
+      };
+
+      const updatedGenerations = [...(book.cover_generations || []), newGeneration];
+      setCoverGenerations(updatedGenerations);
+      await onUpdate({ cover_generations: updatedGenerations }, false);
     } catch (error) {
       console.error("Error generating cover:", error);
     }
     setGenerating(false);
   };
+
+  const rateGeneration = async (generationId, rating) => {
+    if (!currentUser) return;
+    
+    const updatedGenerations = coverGenerations.map(gen => {
+      if (gen.id === generationId) {
+        const existingVoteIndex = gen.votes.findIndex(v => v.user_email === currentUser.email);
+        const newVotes = [...gen.votes];
+        
+        if (existingVoteIndex >= 0) {
+          newVotes[existingVoteIndex] = { user_email: currentUser.email, rating };
+        } else {
+          newVotes.push({ user_email: currentUser.email, rating });
+        }
+        
+        return { ...gen, votes: newVotes };
+      }
+      return gen;
+    });
+
+    setCoverGenerations(updatedGenerations);
+    await onUpdate({ cover_generations: updatedGenerations }, false);
+  };
+
+  const selectAsFinal = async (generationId) => {
+    const generation = coverGenerations.find(g => g.id === generationId);
+    if (!generation) return;
+
+    if (generation.type === "front") {
+      setFrontCover(generation.image_url);
+      await onUpdate({ front_cover_url: generation.image_url }, false);
+    }
+  };
+
+  const getAverageRating = (votes) => {
+    if (!votes || votes.length === 0) return 0;
+    const sum = votes.reduce((acc, v) => acc + v.rating, 0);
+    return sum / votes.length;
+  };
+
+  const getUserRating = (votes) => {
+    if (!currentUser || !votes) return 0;
+    const vote = votes.find(v => v.user_email === currentUser.email);
+    return vote ? vote.rating : 0;
+  };
+
+  const sortedGenerations = [...coverGenerations]
+    .filter(g => g.type === "front")
+    .sort((a, b) => getAverageRating(b.votes) - getAverageRating(a.votes));
 
   const handleUploadAuthorPhoto = async (e) => {
     const file = e.target.files?.[0];
@@ -71,7 +154,7 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
       back_cover_url: backCover,
       author_photo_url: includeAuthorPhoto ? authorPhoto : null,
       status: "cover_design" 
-    });
+    }, true);
   };
 
   return (
@@ -238,6 +321,131 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
           </CardContent>
         </Card>
       </div>
+
+      {/* Previous Generations */}
+      {sortedGenerations.length > 0 && (
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-amber-400" />
+              Cover Versions
+              <Badge className="bg-white/10 text-white/60 border-0 ml-2">
+                {sortedGenerations.length} generated
+              </Badge>
+            </CardTitle>
+            <CardDescription className="text-white/50">
+              Rate covers and let your team vote on their favorites
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {sortedGenerations.map((gen, index) => {
+                const avgRating = getAverageRating(gen.votes);
+                const userRating = getUserRating(gen.votes);
+                const isSelected = gen.image_url === frontCover;
+
+                return (
+                  <motion.div
+                    key={gen.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`p-4 rounded-xl border transition-all ${
+                      isSelected 
+                        ? 'bg-amber-500/10 border-amber-500/30' 
+                        : 'bg-white/5 border-white/10'
+                    }`}
+                  >
+                    <div className="flex gap-4">
+                      {/* Thumbnail */}
+                      <div className="w-24 h-36 rounded-lg bg-slate-800 overflow-hidden flex-shrink-0 relative">
+                        <img src={gen.image_url} alt="" className="w-full h-full object-cover" />
+                        {isSelected && (
+                          <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge className="bg-white/10 text-white/70 border-0 text-xs">
+                                {gen.style}
+                              </Badge>
+                              {avgRating > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                  <span className="text-sm text-white/70">
+                                    {avgRating.toFixed(1)}
+                                  </span>
+                                  <span className="text-xs text-white/40">
+                                    ({gen.votes.length} {gen.votes.length === 1 ? 'vote' : 'votes'})
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-xs text-white/40 line-clamp-2">
+                              {gen.prompt}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Rating Stars */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-xs text-white/50">Your rating:</span>
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                onClick={() => rateGeneration(gen.id, star)}
+                                className="transition-transform hover:scale-110"
+                              >
+                                <Star
+                                  className={`w-4 h-4 ${
+                                    star <= userRating
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'text-white/20 hover:text-amber-400/50'
+                                  }`}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          {!isSelected && (
+                            <Button
+                              size="sm"
+                              onClick={() => selectAsFinal(gen.id)}
+                              className="bg-amber-500 hover:bg-amber-600 text-white border-0 text-xs h-7"
+                            >
+                              <Check className="w-3 h-3 mr-1" />
+                              Select This
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-white/20 text-white hover:bg-white/10 text-xs h-7"
+                            onClick={() => window.open(gen.image_url, '_blank')}
+                          >
+                            <Download className="w-3 h-3 mr-1" />
+                            Download
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Character Consistency Note */}
       <Card className="bg-amber-500/10 border-amber-500/30">

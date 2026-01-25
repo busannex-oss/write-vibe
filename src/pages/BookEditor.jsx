@@ -147,42 +147,42 @@ export default function BookEditor() {
         {activeTab === "title" && (
           <TitleGenerator 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
         {activeTab === "outline" && (
           <OutlineGenerator 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
         {activeTab === "summary" && (
           <SummaryGenerator 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
         {activeTab === "cover" && (
           <CoverDesigner 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
         {activeTab === "video" && (
           <VideoCommercial 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
         {activeTab === "website" && (
           <WebsiteBuilder 
             book={book} 
-            onUpdate={(data) => updateBookMutation.mutate(data)}
+            onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
