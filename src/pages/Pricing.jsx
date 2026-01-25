@@ -262,7 +262,7 @@ export default function Pricing() {
       {/* Footer */}
       <footer className="py-8 px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto text-center text-sm text-white/40">
-          © 2024 AuthorForge. All rights reserved.
+          © 2026 AuthorForge. All rights reserved.
         </div>
       </footer>
     </div>
