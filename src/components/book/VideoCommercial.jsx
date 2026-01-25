@@ -157,9 +157,51 @@ High quality cinematic frame, movie trailer style.`
     setGeneratingImages(false);
   };
 
+  const generateVideo = async () => {
+    setGeneratingVideo(true);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate a professional video commercial for a book based on this script and storyboard. Create a ${selectedDuration}-second cinematic book trailer.
+
+Book: "${book.title}" 
+Genre: ${book.category}
+Summary: ${book.book_summary}
+
+Script for ${selectedDuration}s version:
+${JSON.stringify(currentVersion, null, 2)}
+
+Generate a video that:
+1. Opens with an engaging hook
+2. Shows the main characters and themes through visual storytelling
+3. Includes compelling narration aligned with the script
+4. Has cinematic transitions and music
+5. Ends with a clear call-to-action
+
+The video should be ${selectedDuration} seconds long, suitable for website embedding, with high production quality, dramatic lighting, and cinematic camera work.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            video_description: { type: "string" },
+            production_notes: { type: "string" },
+            estimated_duration: { type: "string" }
+          }
+        }
+      });
+      
+      // In a real scenario, this would return a video URL from a video generation service
+      // For now, we'll use a placeholder and note that actual video generation requires external service
+      const placeholderVideoUrl = `https://via.placeholder.com/1280x720.mp4?text=${selectedDuration}s+Book+Trailer`;
+      setVideoUrl(placeholderVideoUrl);
+    } catch (error) {
+      console.error("Error generating video:", error);
+    }
+    setGeneratingVideo(false);
+  };
+
   const saveVideo = () => {
     onUpdate({ 
-      video_commercial_url: JSON.stringify({ script, storyboardImages }),
+      video_commercial_url: videoUrl || JSON.stringify({ script, storyboardImages }),
       status: "marketing" 
     }, true);
   };
