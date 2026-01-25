@@ -43,7 +43,7 @@ export default function Layout({ children, currentPageName }) {
   const brandName = isWhiteLabel && user?.white_label_config?.brand_name 
     ? user.white_label_config.brand_name 
     : "AuthorForge";
-  const primaryColor = isWhiteLabel && user?.white_label_config?.primary_color 
+  const brandColor = isWhiteLabel && user?.white_label_config?.primary_color 
     ? user.white_label_config.primary_color 
     : "#f59e0b";
 

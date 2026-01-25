@@ -158,7 +158,7 @@ High quality cinematic frame, movie trailer style.`
     onUpdate({ 
       video_commercial_url: JSON.stringify({ script, storyboardImages }),
       status: "marketing" 
-    });
+    }, true);
   };
 
   const currentVersion = script?.versions?.[selectedDuration + "s"];
