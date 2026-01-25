@@ -382,6 +382,30 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
                 </CardContent>
               </Card>
 
+              {/* Generated Video */}
+              {videoUrl && (
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white text-sm flex items-center gap-2">
+                      <Play className="w-4 h-4 text-amber-400" />
+                      Generated Video Preview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                      <video 
+                        controls 
+                        className="w-full h-full"
+                        poster="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+                      >
+                        <source src={videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Storyboard Images */}
               {storyboardImages.length > 0 && (
                 <Card className="bg-white/5 border-white/10">
