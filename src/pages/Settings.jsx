@@ -418,6 +418,11 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
           </Card>
         </TabsContent>
 
+        {/* Appearance Tab */}
+        <TabsContent value="appearance" className="space-y-6">
+          <HeroImageManager />
+        </TabsContent>
+
         {/* White Label Branding Tab */}
         {user?.subscription_tier === "white_label" && (
           <TabsContent value="branding" className="space-y-6">
