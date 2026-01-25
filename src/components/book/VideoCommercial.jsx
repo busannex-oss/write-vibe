@@ -26,6 +26,8 @@ export default function VideoCommercial({ book, onUpdate, isUpdating }) {
   const [selectedDuration, setSelectedDuration] = useState("60");
   const [generatingImages, setGeneratingImages] = useState(false);
   const [storyboardImages, setStoryboardImages] = useState([]);
+  const [generatingVideo, setGeneratingVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(null);
 
   const generateScript = async () => {
     setGenerating(true);
