@@ -183,6 +183,10 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
             <CreditCard className="w-4 h-4 mr-2" />
             Billing
           </TabsTrigger>
+          <TabsTrigger value="appearance" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Palette className="w-4 h-4 mr-2" />
+            Appearance
+          </TabsTrigger>
           {user?.subscription_tier === "white_label" && (
             <TabsTrigger value="branding" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
               <Palette className="w-4 h-4 mr-2" />
