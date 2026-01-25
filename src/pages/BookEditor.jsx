@@ -57,6 +57,10 @@ export default function BookEditor() {
     }
   });
 
+  const handleUpdate = async (data, showSuccess = true) => {
+    await updateBookMutation.mutateAsync(data);
+  };
+
   const stages = [
     { id: "title", label: "Title", icon: Edit3, status: book?.title && book.title !== "Untitled Book" ? "complete" : "pending" },
     { id: "outline", label: "Outline", icon: FileText, status: book?.outline?.length > 0 ? "complete" : "pending" },
