@@ -6,6 +6,8 @@ import BookEditor from './pages/BookEditor';
 import Documents from './pages/Documents';
 import Team from './pages/Team';
 import Settings from './pages/Settings';
+import Pricing from './pages/Pricing';
+import BookWebsite from './pages/BookWebsite';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +20,8 @@ export const PAGES = {
     "Documents": Documents,
     "Team": Team,
     "Settings": Settings,
+    "Pricing": Pricing,
+    "BookWebsite": BookWebsite,
 }
 
 export const pagesConfig = {
