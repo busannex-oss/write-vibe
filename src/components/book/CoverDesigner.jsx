@@ -88,24 +88,38 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
   };
 
   const generateBackCover = async () => {
+    if (!frontCover) {
+      alert("Please generate a front cover first to ensure visual consistency");
+      return;
+    }
+
     setGenerating(true);
     try {
-      const prompt = `Professional book back cover design for "${book.title}".
+      const prompt = `Professional book back cover design that perfectly matches and continues the visual style of the front cover.
 
-Style: Match the ${coverStyle} style from the front cover
-Book Summary: ${book.book_summary}
-Author Photo: ${includeAuthorPhoto ? 'Include space for author photo' : 'No author photo'}
+CRITICAL: Match ALL visual elements from the reference front cover:
+- Use the EXACT same color palette, gradients, and tones
+- Match the background texture, patterns, and artistic style
+- Continue the same lighting, atmosphere, and mood
+- Use consistent design elements and decorative motifs
+- Maintain the same level of detail and quality
 
-Create a clean, professional back cover layout with:
-- Background that complements the front cover
-- Clear space for text (summary and author bio)
-- Professional typography areas
-- Barcode area at bottom
-- ${includeAuthorPhoto ? 'Circular author photo area' : ''}
+Book: "${book.title}"
+Style: ${coverStyle}
 
-High quality, professional book back cover design, 6x9 aspect ratio, publishing quality.`;
+Layout requirements:
+- Clean readable area for book summary text
+- Space for author bio section
+- Barcode area at bottom right
+- ${includeAuthorPhoto ? 'Circular author photo placeholder' : ''}
+- Professional, cohesive design that looks like the back of the same book
 
-      const response = await base44.integrations.Core.GenerateImage({ prompt });
+High quality, professional book back cover, 6x9 aspect ratio, publishing quality.`;
+
+      const response = await base44.integrations.Core.GenerateImage({ 
+        prompt,
+        existing_image_urls: [frontCover]
+      });
       
       setBackCover(response.url);
 
