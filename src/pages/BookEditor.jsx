@@ -35,6 +35,7 @@ import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import CharacterCreator from "@/components/book/CharacterCreator.jsx";
+import ManuscriptFormatter from "@/components/book/ManuscriptFormatter.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ export default function BookEditor() {
     { id: "characters", label: "Characters", icon: Users, status: book?.characters?.length > 0 ? "complete" : "pending" },
     { id: "outline", label: "Outline", icon: FileText, status: book?.outline?.length > 0 ? "complete" : "pending" },
     { id: "summary", label: "Summary", icon: BookOpen, status: book?.book_summary ? "complete" : "pending" },
+    { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
     { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" }
@@ -173,6 +175,13 @@ export default function BookEditor() {
         )}
         {activeTab === "summary" && (
           <SummaryGenerator 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "format" && (
+          <ManuscriptFormatter 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
