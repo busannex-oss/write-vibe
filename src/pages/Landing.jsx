@@ -156,9 +156,9 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10">
               <img 
-                src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1400&h=800&fit=crop" 
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&h=800&fit=crop&q=80" 
                 alt="Diverse Authors Proudly Holding Their Published Books"
-                className="w-full object-cover"
+                className="w-full h-[500px] object-cover"
               />
             </div>
           </motion.div>
