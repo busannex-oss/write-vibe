@@ -28,12 +28,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import TitleGenerator from "@/components/book/TitleGenerator";
-import OutlineGenerator from "@/components/book/OutlineGenerator";
-import SummaryGenerator from "@/components/book/SummaryGenerator";
-import CoverDesigner from "@/components/book/CoverDesigner";
-import VideoCommercial from "@/components/book/VideoCommercial";
-import WebsiteBuilder from "@/components/book/WebsiteBuilder";
+import TitleGenerator from "@/components/book/TitleGenerator.jsx";
+import OutlineGenerator from "@/components/book/OutlineGenerator.jsx";
+import SummaryGenerator from "@/components/book/SummaryGenerator.jsx";
+import CoverDesigner from "@/components/book/CoverDesigner.jsx";
+import VideoCommercial from "@/components/book/VideoCommercial.jsx";
+import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
