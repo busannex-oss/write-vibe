@@ -15,7 +15,8 @@ import {
   Music,
   Clock,
   Image,
-  Download
+  Download,
+  Play
 } from "lucide-react";
 import { motion } from "framer-motion";
 
