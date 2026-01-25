@@ -156,8 +156,8 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10">
               <img 
-                src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1400&h=800&fit=crop" 
-                alt="AuthorForge Dashboard"
+                src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1400&h=800&fit=crop" 
+                alt="Successful Authors with Their Books"
                 className="w-full"
               />
             </div>
