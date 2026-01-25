@@ -30,6 +30,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AIGenerateButton from "@/components/AIGenerateButton";
+import HeroImageManager from "@/components/HeroImageManager";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
