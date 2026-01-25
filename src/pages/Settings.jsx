@@ -29,6 +29,7 @@ import {
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import AIGenerateButton from "@/components/AIGenerateButton";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
@@ -45,6 +46,7 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("profile");
   const [saving, setSaving] = useState(false);
+  const [generatingBio, setGeneratingBio] = useState(false);
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['user'],
@@ -97,6 +99,33 @@ export default function Settings() {
       ...prev,
       social_media: { ...prev.social_media, [id]: value }
     }));
+  };
+
+  const generateBio = async () => {
+    setGeneratingBio(true);
+    try {
+      const prompt = `Generate a professional author bio for:
+Name: ${user?.full_name || user?.email}
+Pen Name: ${profile.pen_name || "N/A"}
+Current Bio: ${profile.bio || "No bio yet"}
+
+Create a compelling 2-3 paragraph author biography that sounds professional and engaging.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            bio: { type: "string" }
+          }
+        }
+      });
+
+      setProfile(prev => ({ ...prev, bio: response.bio }));
+    } catch (error) {
+      console.error("Error generating bio:", error);
+    }
+    setGeneratingBio(false);
   };
 
   const tiers = [
@@ -222,7 +251,15 @@ export default function Settings() {
               </div>
 
               <div>
-                <Label className="text-white/70">Bio</Label>
+                <div className="flex justify-between items-center mb-2">
+                  <Label className="text-white/70">Bio</Label>
+                  <AIGenerateButton
+                    onClick={generateBio}
+                    loading={generatingBio}
+                    label="Generate Bio"
+                    size="sm"
+                  />
+                </div>
                 <Textarea
                   value={profile.bio}
                   onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}

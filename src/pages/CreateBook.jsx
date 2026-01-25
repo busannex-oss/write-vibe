@@ -22,6 +22,7 @@ import {
   Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import AIGenerateButton from "@/components/AIGenerateButton";
 
 const STEPS = [
   { id: 1, title: "Characters", icon: Users, description: "Create your book characters" },
@@ -73,6 +74,8 @@ export default function CreateBook() {
     traits: []
   });
   const [newTrait, setNewTrait] = useState("");
+  const [generatingChar, setGeneratingChar] = useState(false);
+  const [generatingPlot, setGeneratingPlot] = useState(false);
 
   const handleAddCharacter = () => {
     if (newCharacter.name && newCharacter.role) {
@@ -134,6 +137,65 @@ export default function CreateBook() {
       console.error("Error creating book:", error);
     }
     setLoading(false);
+  };
+
+  const generateCharacter = async () => {
+    setGeneratingChar(true);
+    try {
+      const prompt = `Generate a compelling book character based on:
+Category: ${bookData.category || "Fiction"}
+Target Audience: ${bookData.target_audience?.age_range || "General"}
+Subjects: ${bookData.subjects?.join(", ") || "General themes"}
+Existing Characters: ${bookData.characters.map(c => c.name + " (" + c.role + ")").join(", ") || "None yet"}
+
+Create a unique character that fits this book.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            role: { type: "string" },
+            description: { type: "string" },
+            traits: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+
+      setNewCharacter(response);
+    } catch (error) {
+      console.error("Error generating character:", error);
+    }
+    setGeneratingChar(false);
+  };
+
+  const generatePlot = async () => {
+    setGeneratingPlot(true);
+    try {
+      const prompt = `Write a compelling plot summary for a book with:
+Category: ${bookData.category}
+Target Audience: ${bookData.target_audience?.age_range}
+Subjects: ${bookData.subjects?.join(", ")}
+Characters: ${bookData.characters.map(c => `${c.name} (${c.role}): ${c.description}`).join("\n")}
+
+Create an engaging plot that brings these elements together with clear conflict, rising action, and resolution.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            plot: { type: "string" }
+          }
+        }
+      });
+
+      setBookData(prev => ({ ...prev, plot_summary: response.plot }));
+    } catch (error) {
+      console.error("Error generating plot:", error);
+    }
+    setGeneratingPlot(false);
   };
 
   const canProceed = () => {
@@ -241,6 +303,14 @@ export default function CreateBook() {
 
                   {/* Add Character Form */}
                   <div className="p-4 rounded-xl bg-white/5 border border-white/10 border-dashed space-y-4">
+                    <div className="flex justify-end">
+                      <AIGenerateButton
+                        onClick={generateCharacter}
+                        loading={generatingChar}
+                        label="Generate Character"
+                        size="sm"
+                      />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label className="text-white/70">Character Name</Label>
@@ -377,8 +447,16 @@ export default function CreateBook() {
               {/* Step 5: Plot */}
               {step === 5 && (
                 <div className="space-y-4">
-                  <div>
+                  <div className="flex justify-between items-center mb-2">
                     <Label className="text-white/70">Plot Summary</Label>
+                    <AIGenerateButton
+                      onClick={generatePlot}
+                      loading={generatingPlot}
+                      label="Generate Plot"
+                      size="sm"
+                    />
+                  </div>
+                  <div>
                     <Textarea
                       value={bookData.plot_summary}
                       onChange={(e) => setBookData(prev => ({ ...prev, plot_summary: e.target.value }))}

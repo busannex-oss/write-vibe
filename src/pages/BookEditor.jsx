@@ -34,6 +34,7 @@ import SummaryGenerator from "@/components/book/SummaryGenerator.jsx";
 import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
+import CharacterCreator from "@/components/book/CharacterCreator.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ export default function BookEditor() {
 
   const stages = [
     { id: "title", label: "Title", icon: Edit3, status: book?.title && book.title !== "Untitled Book" ? "complete" : "pending" },
+    { id: "characters", label: "Characters", icon: Users, status: book?.characters?.length > 0 ? "complete" : "pending" },
     { id: "outline", label: "Outline", icon: FileText, status: book?.outline?.length > 0 ? "complete" : "pending" },
     { id: "summary", label: "Summary", icon: BookOpen, status: book?.book_summary ? "complete" : "pending" },
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
@@ -150,6 +152,13 @@ export default function BookEditor() {
       >
         {activeTab === "title" && (
           <TitleGenerator 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "characters" && (
+          <CharacterCreator 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
