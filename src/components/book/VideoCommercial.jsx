@@ -261,6 +261,24 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
                   )}
                 </Button>
                 <Button
+                  onClick={generateVideo}
+                  disabled={generatingVideo}
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  {generatingVideo ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating Video...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Generate AI Video
+                    </>
+                  )}
+                </Button>
+                <Button
                   onClick={saveVideo}
                   disabled={isUpdating}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
@@ -270,7 +288,7 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
                   ) : (
                     <Check className="w-4 h-4 mr-2" />
                   )}
-                  Save Video Plan
+                  Save Video
                 </Button>
               </>
             )}
