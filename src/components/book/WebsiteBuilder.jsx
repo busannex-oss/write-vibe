@@ -277,38 +277,80 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
           <CardTitle className="text-white text-sm">Website Preview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 p-6 space-y-6">
-            {/* Header */}
-            <div className="text-center">
-              {book.front_cover_url && (
-                <img 
-                  src={book.front_cover_url} 
-                  alt="" 
-                  className="w-32 h-48 object-cover rounded-lg shadow-2xl mx-auto mb-4"
-                />
-              )}
-              <h2 className="text-2xl font-bold text-white">{book.title}</h2>
-              <p className="text-amber-400 mt-1">{book.category}</p>
+          <div className="rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 p-8 space-y-8">
+            {/* Hero Section with Book Display */}
+            <div className="relative">
+              {/* Coming Soon Badge */}
               {websiteStatus === "coming_soon" && (
-                <div className="mt-3 space-y-2">
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
-                    Coming Soon
-                  </Badge>
-                  {daysUntilRelease && (
-                    <div className="text-sm text-white/70">
-                      <p className="font-medium">Releases in</p>
-                      <p className="text-2xl font-bold text-amber-400 mt-1">{daysUntilRelease}</p>
-                      <p className="text-xs text-white/50">days</p>
-                    </div>
-                  )}
+                <div className="text-center mb-6">
+                  <div className="inline-flex flex-col items-center gap-2">
+                    <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-sm px-4 py-1.5">
+                      Coming Soon
+                    </Badge>
+                    {daysUntilRelease && (
+                      <div className="text-xs text-white/50">
+                        <span className="text-2xl font-bold text-amber-400">{daysUntilRelease}</span> days until release
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
+
+              {/* Book Display */}
+              <div className="flex items-center justify-center gap-8 mb-6">
+                {/* Main Book Cover */}
+                {book.front_cover_url ? (
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 blur-2xl group-hover:blur-3xl transition-all" />
+                    <img 
+                      src={book.front_cover_url} 
+                      alt="" 
+                      className="relative w-48 h-72 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform"
+                      style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))' }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-48 h-72 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                    <span className="text-white/30 text-sm">No Cover Yet</span>
+                  </div>
+                )}
+
+                {/* Book Stack */}
+                <div className="hidden md:flex flex-col gap-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div 
+                      key={i}
+                      className="w-32 h-8 rounded-sm bg-gradient-to-r from-slate-600 to-slate-700 shadow-lg relative overflow-hidden"
+                      style={{
+                        transform: `perspective(400px) rotateY(-15deg) translateX(${i * -2}px)`,
+                        opacity: 0.7 - i * 0.15
+                      }}
+                    >
+                      <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-amber-500/40 to-orange-500/40" />
+                      <div className="px-3 py-1 text-[8px] text-white/60 font-medium truncate">
+                        {book.title}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Book Info */}
+              <div className="text-center">
+                <h2 className="text-3xl font-bold text-white mb-2">{book.title}</h2>
+                {book.subtitle && (
+                  <p className="text-lg text-white/60 mb-2">{book.subtitle}</p>
+                )}
+                <p className="text-amber-400">{book.category}</p>
+              </div>
             </div>
 
             {/* Summary */}
-            <p className="text-white/60 text-sm text-center max-w-md mx-auto">
-              {book.book_summary?.slice(0, 150)}...
-            </p>
+            {book.book_summary && (
+              <p className="text-white/60 text-sm text-center max-w-2xl mx-auto leading-relaxed">
+                {book.book_summary?.slice(0, 200)}...
+              </p>
+            )}
 
             {/* Buy Buttons */}
             {selectedBookstores.length > 0 && websiteStatus === "live" && (
