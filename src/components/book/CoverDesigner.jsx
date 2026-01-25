@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users } from "lucide-react";
+import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users, Trash2, Save } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function CoverDesigner({ book, onUpdate, isUpdating }) {
@@ -80,11 +80,69 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
 
       const updatedGenerations = [...(book.cover_generations || []), newGeneration];
       setCoverGenerations(updatedGenerations);
-      await onUpdate({ cover_generations: updatedGenerations }, false);
+      await onUpdate({ cover_generations: updatedGenerations, front_cover_url: response.url }, false);
     } catch (error) {
       console.error("Error generating cover:", error);
     }
     setGenerating(false);
+  };
+
+  const generateBackCover = async () => {
+    setGenerating(true);
+    try {
+      const prompt = `Professional book back cover design for "${book.title}".
+
+Style: Match the ${coverStyle} style from the front cover
+Book Summary: ${book.book_summary}
+Author Photo: ${includeAuthorPhoto ? 'Include space for author photo' : 'No author photo'}
+
+Create a clean, professional back cover layout with:
+- Background that complements the front cover
+- Clear space for text (summary and author bio)
+- Professional typography areas
+- Barcode area at bottom
+- ${includeAuthorPhoto ? 'Circular author photo area' : ''}
+
+High quality, professional book back cover design, 6x9 aspect ratio, publishing quality.`;
+
+      const response = await base44.integrations.Core.GenerateImage({ prompt });
+      
+      setBackCover(response.url);
+
+      // Save generation
+      const newGeneration = {
+        id: Date.now().toString(),
+        type: "back",
+        image_url: response.url,
+        prompt,
+        style: coverStyle,
+        created_at: new Date().toISOString(),
+        votes: []
+      };
+
+      const updatedGenerations = [...(book.cover_generations || []), newGeneration];
+      setCoverGenerations(updatedGenerations);
+      await onUpdate({ cover_generations: updatedGenerations, back_cover_url: response.url }, false);
+    } catch (error) {
+      console.error("Error generating cover:", error);
+    }
+    setGenerating(false);
+  };
+
+  const deleteGeneration = async (generationId) => {
+    const updatedGenerations = coverGenerations.filter(g => g.id !== generationId);
+    setCoverGenerations(updatedGenerations);
+    await onUpdate({ cover_generations: updatedGenerations }, false);
+  };
+
+  const downloadCover = (url, filename) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const rateGeneration = async (generationId, rating) => {
@@ -110,13 +168,16 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
     await onUpdate({ cover_generations: updatedGenerations }, false);
   };
 
-  const selectAsFinal = async (generationId) => {
+  const selectAsFinal = async (generationId, type) => {
     const generation = coverGenerations.find(g => g.id === generationId);
     if (!generation) return;
 
-    if (generation.type === "front") {
+    if (type === "front" || generation.type === "front") {
       setFrontCover(generation.image_url);
       await onUpdate({ front_cover_url: generation.image_url }, false);
+    } else if (type === "back" || generation.type === "back") {
+      setBackCover(generation.image_url);
+      await onUpdate({ back_cover_url: generation.image_url }, false);
     }
   };
 
@@ -132,8 +193,12 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
     return vote ? vote.rating : 0;
   };
 
-  const sortedGenerations = [...coverGenerations]
+  const sortedFrontGenerations = [...coverGenerations]
     .filter(g => g.type === "front")
+    .sort((a, b) => getAverageRating(b.votes) - getAverageRating(a.votes));
+
+  const sortedBackGenerations = [...coverGenerations]
+    .filter(g => g.type === "back")
     .sort((a, b) => getAverageRating(b.votes) - getAverageRating(a.votes));
 
   const handleUploadAuthorPhoto = async (e) => {
@@ -200,7 +265,7 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
               {generating ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating Cover...
+                  Generating...
                 </>
               ) : (
                 <>
@@ -210,16 +275,33 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
               )}
             </Button>
             <Button
+              onClick={generateBackCover}
+              disabled={generating || !book.book_summary}
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0"
+            >
+              {generating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Back Cover
+                </>
+              )}
+            </Button>
+            <Button
               onClick={saveCover}
-              disabled={!frontCover || isUpdating}
+              disabled={(!frontCover && !backCover) || isUpdating}
               className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
             >
               {isUpdating ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
-                <Check className="w-4 h-4 mr-2" />
+                <Save className="w-4 h-4 mr-2" />
               )}
-              Save Cover Design
+              Save Covers
             </Button>
           </div>
         </CardContent>
@@ -250,6 +332,7 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
                 <Button
                   onClick={generateFrontCover}
                   variant="outline"
+                  size="sm"
                   className="flex-1 border-white/20 text-white hover:bg-white/10"
                   disabled={generating}
                 >
@@ -258,8 +341,9 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
                 </Button>
                 <Button
                   variant="outline"
+                  size="sm"
                   className="border-white/20 text-white hover:bg-white/10"
-                  onClick={() => window.open(frontCover, '_blank')}
+                  onClick={() => downloadCover(frontCover, `${book.title}-front-cover.jpg`)}
                 >
                   <Download className="w-4 h-4" />
                 </Button>
@@ -271,32 +355,44 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
         {/* Back Cover */}
         <Card className="bg-white/5 border-white/10">
           <CardHeader>
-            <CardTitle className="text-white text-sm">Back Cover Preview</CardTitle>
+            <CardTitle className="text-white text-sm">Back Cover</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col">
-              {/* Summary */}
-              <div className="flex-1">
-                <p className="text-sm text-white/70 leading-relaxed line-clamp-[12]">
-                  {book.book_summary || "Your book summary will appear here..."}
-                </p>
-              </div>
-              
-              {/* Author Section */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <div className="flex items-center gap-3">
-                  {includeAuthorPhoto && authorPhoto ? (
-                    <img src={authorPhoto} alt="" className="w-12 h-12 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-white/10" />
-                  )}
-                  <div>
-                    <p className="font-medium text-white text-sm">About the Author</p>
-                    <p className="text-xs text-white/50">Author bio will go here</p>
+            <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden relative">
+              {backCover ? (
+                <img src={backCover} alt="Back Cover" className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <Image className="w-12 h-12 text-white/20 mx-auto mb-2" />
+                    <p className="text-sm text-white/40">Generate a back cover</p>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
+
+            {backCover && (
+              <div className="flex gap-2 mt-4">
+                <Button
+                  onClick={generateBackCover}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-white/20 text-white hover:bg-white/10"
+                  disabled={generating}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${generating ? 'animate-spin' : ''}`} />
+                  Regenerate
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={() => downloadCover(backCover, `${book.title}-back-cover.jpg`)}
+                >
+                  <Download className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
 
             {/* Author Photo Upload */}
             <div className="mt-4 space-y-3">
@@ -322,15 +418,15 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
         </Card>
       </div>
 
-      {/* Previous Generations */}
-      {sortedGenerations.length > 0 && (
+      {/* Front Cover Versions */}
+      {sortedFrontGenerations.length > 0 && (
         <Card className="bg-white/5 border-white/10">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-amber-400" />
-              Cover Versions
+              Front Cover Versions
               <Badge className="bg-white/10 text-white/60 border-0 ml-2">
-                {sortedGenerations.length} generated
+                {sortedFrontGenerations.length} generated
               </Badge>
             </CardTitle>
             <CardDescription className="text-white/50">
@@ -339,7 +435,7 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {sortedGenerations.map((gen, index) => {
+              {sortedFrontGenerations.map((gen, index) => {
                 const avgRating = getAverageRating(gen.votes);
                 const userRating = getUserRating(gen.votes);
                 const isSelected = gen.image_url === frontCover;
@@ -420,21 +516,154 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
                           {!isSelected && (
                             <Button
                               size="sm"
-                              onClick={() => selectAsFinal(gen.id)}
+                              onClick={() => selectAsFinal(gen.id, gen.type)}
                               className="bg-amber-500 hover:bg-amber-600 text-white border-0 text-xs h-7"
                             >
                               <Check className="w-3 h-3 mr-1" />
-                              Select This
+                              Select
                             </Button>
                           )}
                           <Button
                             size="sm"
                             variant="outline"
                             className="border-white/20 text-white hover:bg-white/10 text-xs h-7"
-                            onClick={() => window.open(gen.image_url, '_blank')}
+                            onClick={() => downloadCover(gen.image_url, `${book.title}-${gen.type}-cover-${gen.id}.jpg`)}
                           >
-                            <Download className="w-3 h-3 mr-1" />
-                            Download
+                            <Download className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-white/20 text-red-400 hover:bg-red-500/10 text-xs h-7"
+                            onClick={() => deleteGeneration(gen.id)}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Back Cover Versions */}
+      {sortedBackGenerations.length > 0 && (
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-purple-400" />
+              Back Cover Versions
+              <Badge className="bg-white/10 text-white/60 border-0 ml-2">
+                {sortedBackGenerations.length} generated
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {sortedBackGenerations.map((gen, index) => {
+                const avgRating = getAverageRating(gen.votes);
+                const userRating = getUserRating(gen.votes);
+                const isSelected = gen.image_url === backCover;
+
+                return (
+                  <motion.div
+                    key={gen.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`p-4 rounded-xl border transition-all ${
+                      isSelected 
+                        ? 'bg-purple-500/10 border-purple-500/30' 
+                        : 'bg-white/5 border-white/10'
+                    }`}
+                  >
+                    <div className="flex gap-4">
+                      {/* Thumbnail */}
+                      <div className="w-24 h-36 rounded-lg bg-slate-800 overflow-hidden flex-shrink-0 relative">
+                        <img src={gen.image_url} alt="" className="w-full h-full object-cover" />
+                        {isSelected && (
+                          <div className="absolute top-2 right-2 bg-purple-500 rounded-full p-1">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge className="bg-white/10 text-white/70 border-0 text-xs">
+                                {gen.style}
+                              </Badge>
+                              {avgRating > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-3 h-3 fill-purple-400 text-purple-400" />
+                                  <span className="text-sm text-white/70">
+                                    {avgRating.toFixed(1)}
+                                  </span>
+                                  <span className="text-xs text-white/40">
+                                    ({gen.votes.length})
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Rating Stars */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-xs text-white/50">Your rating:</span>
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                onClick={() => rateGeneration(gen.id, star)}
+                                className="transition-transform hover:scale-110"
+                              >
+                                <Star
+                                  className={`w-4 h-4 ${
+                                    star <= userRating
+                                      ? 'fill-purple-400 text-purple-400'
+                                      : 'text-white/20 hover:text-purple-400/50'
+                                  }`}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          {!isSelected && (
+                            <Button
+                              size="sm"
+                              onClick={() => selectAsFinal(gen.id, gen.type)}
+                              className="bg-purple-500 hover:bg-purple-600 text-white border-0 text-xs h-7"
+                            >
+                              <Check className="w-3 h-3 mr-1" />
+                              Select
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-white/20 text-white hover:bg-white/10 text-xs h-7"
+                            onClick={() => downloadCover(gen.image_url, `${book.title}-${gen.type}-cover-${gen.id}.jpg`)}
+                          >
+                            <Download className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-white/20 text-red-400 hover:bg-red-500/10 text-xs h-7"
+                            onClick={() => deleteGeneration(gen.id)}
+                          >
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
