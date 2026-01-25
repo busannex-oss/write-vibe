@@ -18,7 +18,9 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  Youtube
+  Youtube,
+  Calendar,
+  Clock
 } from "lucide-react";
 
 const BOOKSTORES = [
@@ -48,10 +50,19 @@ const SOCIAL_PLATFORMS = [
 ];
 
 export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
-  const [websiteStatus, setWebsiteStatus] = useState(book.website_config?.status || "coming_soon");
+  // Auto-set to coming_soon if back cover exists, otherwise pending
+  const getDefaultStatus = () => {
+    if (book.back_cover_url) return book.website_config?.status || "coming_soon";
+    return "pending";
+  };
+
+  const [websiteStatus, setWebsiteStatus] = useState(getDefaultStatus());
+  const [releaseDate, setReleaseDate] = useState(book.website_config?.release_date || "");
   const [selectedBookstores, setSelectedBookstores] = useState(book.selected_bookstores || []);
   const [bookstoreLinks, setBookstoreLinks] = useState(book.website_config?.bookstore_links || {});
   const [socialLinks, setSocialLinks] = useState(book.social_media_links || {});
+
+  const hasBackCover = !!book.back_cover_url;
 
   const toggleBookstore = (id) => {
     setSelectedBookstores(prev => 
@@ -71,6 +82,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
     onUpdate({ 
       website_config: {
         status: websiteStatus,
+        release_date: releaseDate,
         bookstore_links: bookstoreLinks
       },
       selected_bookstores: selectedBookstores,
@@ -78,6 +90,17 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
       status: websiteStatus === "live" ? "published" : "marketing"
     }, true);
   };
+
+  const calculateDaysUntil = (date) => {
+    if (!date) return null;
+    const today = new Date();
+    const release = new Date(date);
+    const diffTime = release - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : null;
+  };
+
+  const daysUntilRelease = calculateDaysUntil(releaseDate);
 
   return (
     <div className="space-y-6">
@@ -93,45 +116,84 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Website Status */}
-          <div>
-            <Label className="text-white/70 mb-3 block">Website Status</Label>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setWebsiteStatus("coming_soon")}
-                className={`flex-1 px-4 py-3 rounded-xl transition-all ${
-                  websiteStatus === "coming_soon"
-                    ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-amber-300'
-                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                } border text-center`}
-              >
-                🚧 Coming Soon
-              </button>
-              <button
-                onClick={() => setWebsiteStatus("live")}
-                className={`flex-1 px-4 py-3 rounded-xl transition-all ${
-                  websiteStatus === "live"
-                    ? 'bg-gradient-to-r from-emerald-500/20 to-green-500/10 border-emerald-500/50 text-emerald-300'
-                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                } border text-center`}
-              >
-                🚀 Live & Available
-              </button>
+          {/* Back Cover Required Notice */}
+          {!hasBackCover && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
+              <div className="text-amber-400 mt-0.5">⚠️</div>
+              <div>
+                <p className="text-sm text-amber-300 font-medium">Back cover required</p>
+                <p className="text-xs text-amber-200/70 mt-1">
+                  Complete the book back cover to activate the website. It will automatically show as "Coming Soon" until you mark it live.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
-          <Button
-            onClick={saveWebsite}
-            disabled={isUpdating}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
-          >
-            {isUpdating ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Check className="w-4 h-4 mr-2" />
-            )}
-            Save Website Settings
-          </Button>
+          {/* Website Status */}
+          {hasBackCover && (
+            <div>
+              <Label className="text-white/70 mb-3 block">Website Status</Label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setWebsiteStatus("coming_soon")}
+                  className={`flex-1 px-4 py-3 rounded-xl transition-all ${
+                    websiteStatus === "coming_soon"
+                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-amber-300'
+                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                  } border text-center`}
+                >
+                  🚧 Coming Soon
+                </button>
+                <button
+                  onClick={() => setWebsiteStatus("live")}
+                  className={`flex-1 px-4 py-3 rounded-xl transition-all ${
+                    websiteStatus === "live"
+                      ? 'bg-gradient-to-r from-emerald-500/20 to-green-500/10 border-emerald-500/50 text-emerald-300'
+                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                  } border text-center`}
+                >
+                  🚀 Live & Available
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Release Date (only for coming_soon) */}
+          {hasBackCover && websiteStatus === "coming_soon" && (
+            <div>
+              <Label className="text-white/70 mb-2 block flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Release Date (Optional)
+              </Label>
+              <Input
+                type="date"
+                value={releaseDate}
+                onChange={(e) => setReleaseDate(e.target.value)}
+                className="bg-white/5 border-white/20 text-white"
+              />
+              {daysUntilRelease && (
+                <p className="text-xs text-amber-300 mt-2 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {daysUntilRelease} days until release
+                </p>
+              )}
+            </div>
+          )}
+
+          {hasBackCover && (
+            <Button
+              onClick={saveWebsite}
+              disabled={isUpdating}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
+            >
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Check className="w-4 h-4 mr-2" />
+              )}
+              Save Website Settings
+            </Button>
+          )}
         </CardContent>
       </Card>
 
@@ -228,9 +290,18 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
               <h2 className="text-2xl font-bold text-white">{book.title}</h2>
               <p className="text-amber-400 mt-1">{book.category}</p>
               {websiteStatus === "coming_soon" && (
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 mt-3">
-                  Coming Soon
-                </Badge>
+                <div className="mt-3 space-y-2">
+                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
+                    Coming Soon
+                  </Badge>
+                  {daysUntilRelease && (
+                    <div className="text-sm text-white/70">
+                      <p className="font-medium">Releases in</p>
+                      <p className="text-2xl font-bold text-amber-400 mt-1">{daysUntilRelease}</p>
+                      <p className="text-xs text-white/50">days</p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
