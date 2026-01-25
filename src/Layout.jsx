@@ -45,7 +45,7 @@ export default function Layout({ children, currentPageName }) {
     : "AuthorForge";
   const primaryColor = isWhiteLabel && user?.white_label_config?.primary_color 
     ? user.white_label_config.primary_color 
-    : "#1a1a2e";
+    : "#f59e0b";
 
   const navigation = [
     { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },

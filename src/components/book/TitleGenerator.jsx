@@ -61,7 +61,7 @@ Make titles memorable, marketable, and appropriate for the genre.`,
   };
 
   const saveTitle = () => {
-    onUpdate({ title: customTitle, subtitle: customSubtitle });
+    onUpdate({ title: customTitle, subtitle: customSubtitle }, true);
   };
 
   return (

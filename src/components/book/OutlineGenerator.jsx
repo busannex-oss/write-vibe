@@ -92,7 +92,7 @@ Follow proper story structure: Setup, Rising Action, Climax, Falling Action, Res
   };
 
   const saveOutline = () => {
-    onUpdate({ outline, status: "outline" });
+    onUpdate({ outline, status: "outline" }, true);
   };
 
   return (

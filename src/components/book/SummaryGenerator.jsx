@@ -62,7 +62,7 @@ Each should:
   };
 
   const saveSummary = () => {
-    onUpdate({ book_summary: summaries.backCover, status: "editing" });
+    onUpdate({ book_summary: summaries.backCover, status: "editing" }, true);
   };
 
   return (

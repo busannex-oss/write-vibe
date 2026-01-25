@@ -291,7 +291,7 @@ export default function Landing() {
               <a href="#" className="hover:text-white transition-colors">Support</a>
             </div>
             <div className="text-sm text-white/40">
-              © 2024 AuthorForge. All rights reserved.
+              © 2026 AuthorForge. All rights reserved.
             </div>
           </div>
         </div>
