@@ -55,13 +55,13 @@ export default function HeroImageManager() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="rounded-xl overflow-hidden border border-white/10 h-64"
-        >
+          className="rounded-xl overflow-hidden border border-white/10 h-64">
+
           <img
             src={heroImage}
             alt="Hero Preview"
-            className="w-full h-full object-cover"
-          />
+            className="w-full h-full object-cover" />
+
         </motion.div>
 
         {/* Action Buttons */}
@@ -70,17 +70,17 @@ export default function HeroImageManager() {
           <div>
             <Label htmlFor="hero-upload" className="cursor-pointer">
               <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors h-full">
-                {loading ? (
-                  <>
+                {loading ?
+                <>
                     <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
                     <span className="text-white text-sm">Uploading...</span>
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <Upload className="w-4 h-4 text-white" />
                     <span className="text-white text-sm font-medium">Upload Image</span>
                   </>
-                )}
+                }
               </div>
             </Label>
             <Input
@@ -89,47 +89,47 @@ export default function HeroImageManager() {
               accept="image/*"
               onChange={handleUpload}
               className="hidden"
-              disabled={loading || generating}
-            />
+              disabled={loading || generating} />
+
           </div>
 
           {/* Generate Button */}
           <Button
             onClick={generateHeroImage}
             disabled={generating || loading}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-          >
-            {generating ? (
-              <>
+            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+
+            {generating ?
+            <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Generating...
-              </>
-            ) : (
-              <>
+              </> :
+
+            <>
                 <Sparkles className="w-4 h-4 mr-2" />
                 Generate
               </>
-            )}
+            }
           </Button>
 
           {/* Regenerate Button */}
           <Button
             onClick={generateHeroImage}
             disabled={generating || loading}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/10"
-          >
-            {generating ? (
-              <>
+            variant="outline" className="bg-amber-500 text-white px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
+
+
+            {generating ?
+            <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Regenerating...
-              </>
-            ) : (
-              <>
+              </> :
+
+            <>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Regenerate
               </>
-            )}
+            }
           </Button>
         </div>
 
@@ -137,6 +137,6 @@ export default function HeroImageManager() {
           💡 Upload your own image (1400x800px recommended) or use AI to generate one automatically.
         </p>
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 }
