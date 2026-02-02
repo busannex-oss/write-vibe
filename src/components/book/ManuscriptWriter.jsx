@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIEditorPanel from "./AIEditorPanel";
+import ManuscriptAnalytics from "./ManuscriptAnalytics";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -154,6 +155,11 @@ Create a compelling chapter illustration that captures the essence of this scene
 
   return (
     <div className="space-y-6">
+      {/* Analytics */}
+      {manuscript.length > 0 && (
+        <ManuscriptAnalytics book={book} manuscript={manuscript} />
+      )}
+
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
