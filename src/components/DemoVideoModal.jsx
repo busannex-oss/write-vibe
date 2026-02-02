@@ -17,53 +17,18 @@ export default function DemoVideoModal({ isOpen, onClose }) {
   const generateDemoVideo = async () => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a professional 90-second product demo video script and concept for AuthorForge, an AI-powered book creation platform.
-
-Features to showcase:
-1. AI Character Creation - showing character profiles with visuals
-2. Smart Outlining - demonstrating chapter-by-chapter outline generation
-3. AI Manuscript Writing - showing manuscript being generated with text
-4. Cover Design - displaying beautiful AI-generated book covers
-5. Video Commercials - showing professional book trailers
-6. Book Websites - instant landing pages for book marketing
-7. Team Collaboration - inviting editors and publishers
-8. Analytics & Insights - showing book performance metrics
-
-Requirements:
-- Professional, cinematic presentation
-- Show UI mockups/screenshots of the platform
-- Include before/after transformations
-- Motivational but professional tone
-- Call to action at the end
-- Smooth transitions between scenes
-- High production quality
-- Suitable for landing page
-
-Provide a detailed production plan for a professional AI-generated demo video.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            video_concept: { type: "string" },
-            production_quality: { type: "string" },
-            duration: { type: "string" }
-          }
-        }
-      });
-
-      // In production, this would integrate with a video generation service like Synthesia, Pictory, or Runway
-      // For now, we'll use a professional placeholder video
+      // Use a professional demo video directly
+      // In production, this would integrate with a video generation service
       const videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4";
       setDemoVideoUrl(videoUrl);
-
-      // Save to localStorage for persistence
       localStorage.setItem("authorforgeDemo", videoUrl);
     } catch (error) {
-      console.error("Error generating demo:", error);
+      console.error("Error loading demo:", error);
+      setDemoVideoUrl("https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4");
+    } finally {
+      setGenerating(false);
+      setLoading(false);
     }
-    setGenerating(false);
-    setLoading(false);
   };
 
   const loadOrGenerateDemoVideo = async () => {
