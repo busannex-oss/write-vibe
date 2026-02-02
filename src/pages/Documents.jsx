@@ -28,9 +28,14 @@ import {
   Edit3,
   Trash2,
   Check,
-  BookOpen
+  BookOpen,
+  RefreshCw,
+  FileDown,
+  Printer,
+  Save
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { jsPDF } from "jspdf";
 
 export default function Documents() {
   const queryClient = useQueryClient();
@@ -163,6 +168,44 @@ Make them engaging and shareable.`;
   };
 
   const filteredDocs = documents.filter(d => d.type === activeTab);
+
+  const downloadDocument = (doc) => {
+    const element = document.createElement('a');
+    const file = new Blob([doc.content], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `${doc.title.replace(/\s+/g, '-')}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const printToPDF = (doc) => {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 15;
+    const maxWidth = pageWidth - 2 * margin;
+    
+    // Add title
+    pdf.setFontSize(16);
+    pdf.text(doc.title, margin, margin + 10);
+    
+    // Add content
+    pdf.setFontSize(11);
+    const lines = pdf.splitTextToSize(doc.content, maxWidth);
+    pdf.text(lines, margin, margin + 25);
+    
+    pdf.save(`${doc.title.replace(/\s+/g, '-')}.pdf`);
+  };
+
+  const handleRegenerateDoc = async (doc) => {
+    await generateDocument(doc.type);
+  };
 
   const docTypes = [
     { id: "publisher_letter", label: "Publisher Letters", icon: Mail },
@@ -306,13 +349,25 @@ Make them engaging and shareable.`;
                               }}
                               className="bg-white/5 border-white/20 text-white min-h-[300px] font-mono text-sm"
                             />
-                            <div className="flex gap-2">
+                             <div className="flex gap-2 flex-wrap">
                               <Button
                                 onClick={() => updateDocMutation.mutate({ id: doc.id, data: { status: 'final' } })}
                                 className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
                               >
                                 <Check className="w-4 h-4 mr-2" />
                                 Mark as Final
+                              </Button>
+                              <Button
+                                onClick={() => updateDocMutation.mutate({ id: doc.id, data: { content: doc.content } })}
+                                disabled={updateDocMutation.isPending}
+                                className="bg-blue-500 hover:bg-blue-600 text-white border-0"
+                              >
+                                {updateDocMutation.isPending ? (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Save className="w-4 h-4 mr-2" />
+                                )}
+                                Save
                               </Button>
                               <Button
                                 variant="outline"
@@ -324,11 +379,43 @@ Make them engaging and shareable.`;
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto">
-                            <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">
-                              {doc.content}
-                            </pre>
-                          </div>
+                          <>
+                            <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
+                              <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">
+                                {doc.content}
+                              </pre>
+                            </div>
+                            <div className="flex gap-2 flex-wrap">
+                              <Button
+                                onClick={() => handleRegenerateDoc(doc)}
+                                disabled={generating}
+                                size="sm"
+                                variant="outline"
+                                className="border-white/20 text-white hover:bg-white/10"
+                              >
+                                <RefreshCw className="w-3 h-3 mr-2" />
+                                Regenerate
+                              </Button>
+                              <Button
+                                onClick={() => downloadDocument(doc)}
+                                size="sm"
+                                variant="outline"
+                                className="border-white/20 text-white hover:bg-white/10"
+                              >
+                                <Download className="w-3 h-3 mr-2" />
+                                Download
+                              </Button>
+                              <Button
+                                onClick={() => printToPDF(doc)}
+                                size="sm"
+                                variant="outline"
+                                className="border-white/20 text-white hover:bg-white/10"
+                              >
+                                <FileDown className="w-3 h-3 mr-2" />
+                                PDF
+                              </Button>
+                            </div>
+                          </>
                         )}
                       </CardContent>
                     </Card>
