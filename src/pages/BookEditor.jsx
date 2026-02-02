@@ -66,24 +66,26 @@ export default function BookEditor() {
     await updateBookMutation.mutateAsync(data);
   };
 
-  const stages = [
+  // Production stages - must complete sequentially
+  const productionStages = [
     { id: "title", label: "Title", icon: Edit3, status: book?.title && book.title !== "Untitled Book" ? "complete" : "pending" },
     { id: "characters", label: "Characters", icon: Users, status: book?.characters?.length > 0 ? "complete" : "pending" },
-    { id: "toc", label: "Table of Contents", icon: FileText, status: book?.table_of_contents?.length > 0 ? "complete" : "pending" },
-    { id: "detailed_outline", label: "Detailed Outline", icon: FileText, status: book?.detailed_outline?.length > 0 ? "complete" : "pending" },
-    { id: "industry_outline", label: "Industry Outline", icon: FileText, status: book?.industry_outline?.length > 0 ? "complete" : "pending" },
-    { id: "summary", label: "Summary", icon: BookOpen, status: book?.book_summary ? "complete" : "pending" },
-    { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
-    { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
-    { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
+    { id: "outline", label: "Outline", icon: FileText, status: book?.table_of_contents?.length > 0 ? "complete" : "pending" },
     { id: "manuscript", label: "Manuscript", icon: BookOpen, status: book?.manuscript_chapters?.length > 0 ? "complete" : "pending" },
-    { id: "marketing", label: "Marketing", icon: Sparkles, status: "pending" },
-    { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
-    { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" }
   ];
 
-  const completedCount = stages.filter(s => s.status === "complete").length;
-  const progress = (completedCount / stages.length) * 100;
+  // Refinement stages - available after production complete
+  const refinementStages = [
+    { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
+    { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
+    { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
+    { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
+  ];
+
+  const isProductionComplete = productionStages.every(s => s.status === "complete");
+  const completedCount = [...productionStages, ...refinementStages].filter(s => s.status === "complete").length;
+  const totalCount = productionStages.length + refinementStages.length;
+  const progress = (completedCount / totalCount) * 100;
 
   if (isLoading) {
     return (
