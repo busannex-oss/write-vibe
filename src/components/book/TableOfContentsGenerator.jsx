@@ -97,7 +97,8 @@ The chapter titles should:
             <Button
               onClick={generateTOC}
               disabled={generating}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
             >
               {generating ? (
                 <>
