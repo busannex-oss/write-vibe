@@ -4,19 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { 
-  Sparkles, 
-  Check, 
-  Loader2, 
-  BookOpen, 
-  RefreshCw, 
-  ChevronDown, 
+import {
+  Sparkles,
+  Check,
+  Loader2,
+  BookOpen,
+  RefreshCw,
+  ChevronDown,
   ChevronUp,
   Image as ImageIcon,
   Users,
   Save,
-  Wand2
-} from "lucide-react";
+  Wand2 } from
+"lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIEditorPanel from "./AIEditorPanel";
 import ManuscriptAnalytics from "./ManuscriptAnalytics";
@@ -36,9 +36,9 @@ export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
     try {
       const chapter = chapters[chapterIndex];
       const existingChapter = manuscript[chapterIndex];
-      
-      const prompt = coAuthorMode && coAuthorPrompt
-        ? `Continue or revise this chapter based on the author's notes: "${coAuthorPrompt}"
+
+      const prompt = coAuthorMode && coAuthorPrompt ?
+      `Continue or revise this chapter based on the author's notes: "${coAuthorPrompt}"
 
 Existing content:
 ${existingChapter?.content || 'No existing content'}
@@ -46,12 +46,12 @@ ${existingChapter?.content || 'No existing content'}
 Chapter ${chapter.chapter_number}: ${chapter.chapter_title}
 ${chapter.summary || chapter.scene_breakdown || ''}
 
-Write engaging, literary prose that matches the book's style and genre.`
-        : `Write Chapter ${chapter.chapter_number}: ${chapter.chapter_title}
+Write engaging, literary prose that matches the book's style and genre.` :
+      `Write Chapter ${chapter.chapter_number}: ${chapter.chapter_title}
 
 Book: ${book.title}
 Genre: ${book.category}
-Characters: ${JSON.stringify(book.characters?.slice(0, 3).map(c => c.name))}
+Characters: ${JSON.stringify(book.characters?.slice(0, 3).map((c) => c.name))}
 
 Chapter Details:
 ${chapter.summary || ''}
@@ -93,7 +93,7 @@ Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid des
       const chapter = manuscript[chapterIndex];
       const bookChapter = chapters[chapterIndex];
 
-      const characterImages = book.characters?.map(c => c.image_url).filter(Boolean) || [];
+      const characterImages = book.characters?.map((c) => c.image_url).filter(Boolean) || [];
 
       const { url } = await base44.integrations.Core.GenerateImage({
         prompt: `Illustration for book chapter:
@@ -134,7 +134,7 @@ Create a compelling chapter illustration that captures the essence of this scene
   const applySuggestion = (chapterIndex, original, suggested) => {
     const manuscriptChapter = manuscript[chapterIndex];
     if (!manuscriptChapter?.content) return;
-    
+
     const updatedContent = manuscriptChapter.content.replace(original, suggested);
     updateChapterContent(chapterIndex, updatedContent);
   };
@@ -156,9 +156,9 @@ Create a compelling chapter illustration that captures the essence of this scene
   return (
     <div className="space-y-6">
       {/* Analytics */}
-      {manuscript.length > 0 && (
-        <ManuscriptAnalytics book={book} manuscript={manuscript} />
-      )}
+      {manuscript.length > 0 &&
+      <ManuscriptAnalytics book={book} manuscript={manuscript} />
+      }
 
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
@@ -179,7 +179,7 @@ Create a compelling chapter illustration that captures the essence of this scene
             <div className="text-right">
               <div className="text-sm text-white/50">Chapters Written</div>
               <div className="text-2xl font-bold text-amber-400">
-                {manuscript.filter(ch => ch?.content).length} / {chapters.length}
+                {manuscript.filter((ch) => ch?.content).length} / {chapters.length}
               </div>
             </div>
           </div>
@@ -188,203 +188,203 @@ Create a compelling chapter illustration that captures the essence of this scene
             <Button
               onClick={generateAllChapters}
               disabled={generatingChapter !== null}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-            >
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+
               <Sparkles className="w-4 h-4 mr-2" />
               Generate All Chapters
             </Button>
             <Button
               onClick={() => setCoAuthorMode(!coAuthorMode)}
-              variant={coAuthorMode ? "default" : "outline"}
-              className={coAuthorMode ? "bg-purple-500 hover:bg-purple-600 text-white" : "border-white/20 text-white hover:bg-white/10"}
-            >
+              variant={coAuthorMode ? "default" : "outline"} className="bg-[#f4a61f] text-white px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
+
+
               <Users className="w-4 h-4 mr-2" />
               {coAuthorMode ? "Co-Author Mode Active" : "Co-Author Mode"}
             </Button>
             <Button
               onClick={saveManuscript}
               disabled={manuscript.length === 0 || isUpdating}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 ml-auto"
-            >
-              {isUpdating ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4 mr-2" />
-              )}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 ml-auto">
+
+              {isUpdating ?
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> :
+
+              <Save className="w-4 h-4 mr-2" />
+              }
               Save Manuscript
             </Button>
           </div>
 
-          {coAuthorMode && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30"
-            >
+          {coAuthorMode &&
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+
               <div className="flex items-center gap-2 mb-2">
                 <Users className="w-4 h-4 text-purple-400" />
                 <span className="text-sm font-medium text-purple-300">Co-Author Instructions</span>
               </div>
               <Input
-                value={coAuthorPrompt}
-                onChange={(e) => setCoAuthorPrompt(e.target.value)}
-                placeholder="E.g., 'Add more dialogue', 'Make it darker', 'Focus on character emotions'..."
-                className="bg-white/5 border-white/20 text-white"
-              />
+              value={coAuthorPrompt}
+              onChange={(e) => setCoAuthorPrompt(e.target.value)}
+              placeholder="E.g., 'Add more dialogue', 'Make it darker', 'Focus on character emotions'..."
+              className="bg-white/5 border-white/20 text-white" />
+
               <p className="text-xs text-white/40 mt-2">
                 AI will use your notes to revise or continue the chapter
               </p>
             </motion.div>
-          )}
+          }
         </CardContent>
       </Card>
 
-      {chapters.length > 0 ? (
-        <div className="space-y-3">
+      {chapters.length > 0 ?
+      <div className="space-y-3">
           <AnimatePresence>
             {chapters.map((chapter, index) => {
-              const manuscriptChapter = manuscript[index];
-              const hasContent = manuscriptChapter?.content;
-              
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
+            const manuscriptChapter = manuscript[index];
+            const hasContent = manuscriptChapter?.content;
+
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}>
+
                   <Card className="bg-white/5 border-white/10">
                     <CardContent className="p-4">
-                      <div 
-                        className="flex items-start gap-4 cursor-pointer"
-                        onClick={() => setExpandedChapter(expandedChapter === index ? null : index)}
-                      >
+                      <div
+                      className="flex items-start gap-4 cursor-pointer"
+                      onClick={() => setExpandedChapter(expandedChapter === index ? null : index)}>
+
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 flex items-center justify-center flex-shrink-0">
                           <span className="font-semibold text-amber-400">{chapter.chapter_number}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-white">{chapter.chapter_title}</h4>
-                          {hasContent && (
-                            <div className="flex items-center gap-3 mt-1">
+                          {hasContent &&
+                        <div className="flex items-center gap-3 mt-1">
                               <span className="text-xs text-emerald-400 flex items-center gap-1">
                                 <Check className="w-3 h-3" />
                                 {manuscriptChapter.word_count.toLocaleString()} words
                               </span>
-                              {manuscriptChapter.images?.length > 0 && (
-                                <span className="text-xs text-purple-400 flex items-center gap-1">
+                              {manuscriptChapter.images?.length > 0 &&
+                          <span className="text-xs text-purple-400 flex items-center gap-1">
                                   <ImageIcon className="w-3 h-3" />
                                   {manuscriptChapter.images.length} image{manuscriptChapter.images.length > 1 ? 's' : ''}
                                 </span>
-                              )}
+                          }
                             </div>
-                          )}
-                          {!hasContent && (
-                            <p className="text-xs text-white/40 mt-1">Not written yet</p>
-                          )}
+                        }
+                          {!hasContent &&
+                        <p className="text-xs text-white/40 mt-1">Not written yet</p>
+                        }
                         </div>
                         <div className="flex items-center gap-2">
                           <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              generateChapter(index);
-                            }}
-                            disabled={generatingChapter === index}
-                            size="sm"
-                            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-                          >
-                            {generatingChapter === index ? (
-                              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                            ) : hasContent ? (
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                            ) : (
-                              <Wand2 className="w-3 h-3 mr-1" />
-                            )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            generateChapter(index);
+                          }}
+                          disabled={generatingChapter === index}
+                          size="sm"
+                          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+
+                            {generatingChapter === index ?
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" /> :
+                          hasContent ?
+                          <RefreshCw className="w-3 h-3 mr-1" /> :
+
+                          <Wand2 className="w-3 h-3 mr-1" />
+                          }
                             {generatingChapter === index ? "Writing..." : hasContent ? "Rewrite" : "Write"}
                           </Button>
-                          {expandedChapter === index ? (
-                            <ChevronUp className="w-5 h-5 text-white/40" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-white/40" />
-                          )}
+                          {expandedChapter === index ?
+                        <ChevronUp className="w-5 h-5 text-white/40" /> :
+
+                        <ChevronDown className="w-5 h-5 text-white/40" />
+                        }
                         </div>
                       </div>
 
                       <AnimatePresence>
-                        {expandedChapter === index && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="mt-4 pt-4 border-t border-white/10 space-y-4"
-                          >
+                        {expandedChapter === index &&
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="mt-4 pt-4 border-t border-white/10 space-y-4">
+
                             <div>
                               <div className="flex items-center justify-between mb-2">
                                 <label className="text-sm text-white/50">Chapter Content</label>
                                 <Button
-                                  onClick={() => generateChapterImage(index)}
-                                  disabled={!hasContent || generatingImage === index}
-                                  size="sm"
-                                  variant="outline"
-                                  className="border-white/20 text-white hover:bg-white/10"
-                                >
-                                  {generatingImage === index ? (
-                                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                  ) : (
-                                    <ImageIcon className="w-3 h-3 mr-1" />
-                                  )}
+                              onClick={() => generateChapterImage(index)}
+                              disabled={!hasContent || generatingImage === index}
+                              size="sm"
+                              variant="outline"
+                              className="border-white/20 text-white hover:bg-white/10">
+
+                                  {generatingImage === index ?
+                              <Loader2 className="w-3 h-3 mr-1 animate-spin" /> :
+
+                              <ImageIcon className="w-3 h-3 mr-1" />
+                              }
                                   Generate Image
                                 </Button>
                               </div>
                               <Textarea
-                                value={manuscriptChapter?.content || ""}
-                                onChange={(e) => updateChapterContent(index, e.target.value)}
-                                className="bg-white/5 border-white/20 text-white font-mono text-sm"
-                                rows={12}
-                                placeholder="Chapter content will appear here..."
-                              />
+                            value={manuscriptChapter?.content || ""}
+                            onChange={(e) => updateChapterContent(index, e.target.value)}
+                            className="bg-white/5 border-white/20 text-white font-mono text-sm"
+                            rows={12}
+                            placeholder="Chapter content will appear here..." />
+
                             </div>
 
-                            {hasContent && (
-                              <AIEditorPanel 
-                                content={manuscriptChapter.content} 
-                                onApplySuggestion={(original, suggested) => applySuggestion(index, original, suggested)}
-                              />
-                            )}
+                            {hasContent &&
+                        <AIEditorPanel
+                          content={manuscriptChapter.content}
+                          onApplySuggestion={(original, suggested) => applySuggestion(index, original, suggested)} />
 
-                            {manuscriptChapter?.images?.length > 0 && (
-                              <div>
+                        }
+
+                            {manuscriptChapter?.images?.length > 0 &&
+                        <div>
                                 <label className="text-sm text-white/50 mb-2 block">Chapter Illustrations</label>
                                 <div className="grid grid-cols-2 gap-3">
-                                  {manuscriptChapter.images.map((img, imgIndex) => (
-                                    <img
-                                      key={imgIndex}
-                                      src={img}
-                                      alt={`Chapter ${chapter.chapter_number} illustration ${imgIndex + 1}`}
-                                      className="rounded-lg border border-white/10 w-full h-48 object-cover"
-                                    />
-                                  ))}
+                                  {manuscriptChapter.images.map((img, imgIndex) =>
+                            <img
+                              key={imgIndex}
+                              src={img}
+                              alt={`Chapter ${chapter.chapter_number} illustration ${imgIndex + 1}`}
+                              className="rounded-lg border border-white/10 w-full h-48 object-cover" />
+
+                            )}
                                 </div>
                               </div>
-                            )}
+                        }
                           </motion.div>
-                        )}
+                      }
                       </AnimatePresence>
                     </CardContent>
                   </Card>
-                </motion.div>
-              );
-            })}
+                </motion.div>);
+
+          })}
           </AnimatePresence>
-        </div>
-      ) : (
-        <Card className="bg-white/5 border-white/10">
+        </div> :
+
+      <Card className="bg-white/5 border-white/10">
           <CardContent className="py-12 text-center">
             <BookOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">No chapters yet</h3>
             <p className="text-white/50">Create a table of contents or outline first</p>
           </CardContent>
         </Card>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
