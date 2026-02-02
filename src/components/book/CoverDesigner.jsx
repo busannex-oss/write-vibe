@@ -110,6 +110,12 @@ IMPORTANT - NO CHARACTERS:
 - Use landscapes, settings, objects, or abstract elements that match the front cover's style
 - The back cover should show the WORLD of the story, not the characters
 
+IMPORTANT - NO TITLE/AUTHOR REPETITION:
+- DO NOT include the book title or author name on the back cover
+- The title and author already appear on the front cover
+- Back cover is for summary text, author bio, and visual elements only
+- Follow standard publishing conventions
+
 Book: "${book.title}"
 Style: ${coverStyle}
 Genre: ${book.category}
@@ -120,6 +126,7 @@ Layout requirements:
 - Barcode area at bottom right
 - ${includeAuthorPhoto ? 'Circular author photo placeholder' : ''}
 - Professional, cohesive design that looks like the back of the same book
+- No book title or author name visible
 
 High quality, professional book back cover, 6x9 aspect ratio, publishing quality.`;
 
