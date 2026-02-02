@@ -22,6 +22,7 @@ import {
   Calendar,
   Clock
 } from "lucide-react";
+import AIWebsiteContent from "./AIWebsiteContent";
 
 const BOOKSTORES = [
   { id: "amazon", name: "Amazon", logo: "📦" },
@@ -102,8 +103,18 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
 
   const daysUntilRelease = calculateDaysUntil(releaseDate);
 
+  const applyAIContent = (field, value) => {
+    // Handle applying AI-generated content to the website
+    console.log(`Applying ${field}:`, value);
+  };
+
   return (
     <div className="space-y-6">
+      {/* AI Content Generator */}
+      {hasBackCover && (
+        <AIWebsiteContent book={book} onApplyContent={applyAIContent} />
+      )}
+
       {/* Header Card */}
       <Card className="bg-white/5 border-white/10">
         <CardHeader>

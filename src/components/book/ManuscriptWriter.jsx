@@ -18,6 +18,7 @@ import {
   Wand2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import AIEditorPanel from "./AIEditorPanel";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -127,6 +128,14 @@ Create a compelling chapter illustration that captures the essence of this scene
       word_count: content.split(/\s+/).length
     };
     setManuscript(newManuscript);
+  };
+
+  const applySuggestion = (chapterIndex, original, suggested) => {
+    const manuscriptChapter = manuscript[chapterIndex];
+    if (!manuscriptChapter?.content) return;
+    
+    const updatedContent = manuscriptChapter.content.replace(original, suggested);
+    updateChapterContent(chapterIndex, updatedContent);
   };
 
   const saveManuscript = () => {
@@ -328,6 +337,13 @@ Create a compelling chapter illustration that captures the essence of this scene
                                 placeholder="Chapter content will appear here..."
                               />
                             </div>
+
+                            {hasContent && (
+                              <AIEditorPanel 
+                                content={manuscriptChapter.content} 
+                                onApplySuggestion={(original, suggested) => applySuggestion(index, original, suggested)}
+                              />
+                            )}
 
                             {manuscriptChapter?.images?.length > 0 && (
                               <div>
