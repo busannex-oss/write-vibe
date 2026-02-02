@@ -156,7 +156,7 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10">
               <img 
-                src="https://images.unsplash.com/photo-150784272343-583f7270bfba?w=1400&h=800&fit=crop&q=80" 
+                src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80" 
                 alt="Diverse Authors Proudly Holding Their Published Books"
                 className="w-full h-[500px] object-cover"
               />
