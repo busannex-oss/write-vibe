@@ -135,24 +135,62 @@ export default function BookEditor() {
       </div>
 
       {/* Stage Navigation */}
-      <div className="mb-6 overflow-x-auto">
-        <div className="flex gap-2 min-w-max">
-          {stages.map((stage) => (
-            <button
-              key={stage.id}
-              onClick={() => setActiveTab(stage.id)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
-                activeTab === stage.id
-                  ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-white'
-                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-              } border`}
-            >
-              <stage.icon className={`w-4 h-4 ${stage.status === 'complete' ? 'text-emerald-400' : ''}`} />
-              <span className="font-medium">{stage.label}</span>
-              {stage.status === 'complete' && <Check className="w-4 h-4 text-emerald-400" />}
-            </button>
-          ))}
+      <div className="mb-6 space-y-4">
+        {/* Production */}
+        <div>
+          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wide mb-3">Production</h3>
+          <div className="flex gap-2 overflow-x-auto">
+            {productionStages.map((stage, idx) => {
+              const isAccessible = idx === 0 || productionStages.slice(0, idx).every(s => s.status === 'complete');
+              return (
+                <button
+                  key={stage.id}
+                  onClick={() => isAccessible && setActiveTab(stage.id)}
+                  disabled={!isAccessible}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
+                    !isAccessible 
+                      ? 'bg-white/5 border-white/10 text-white/30 cursor-not-allowed opacity-50'
+                      : activeTab === stage.id
+                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-white'
+                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                  } border whitespace-nowrap`}
+                >
+                  <stage.icon className={`w-4 h-4 ${stage.status === 'complete' ? 'text-emerald-400' : ''}`} />
+                  <span className="font-medium">{stage.label}</span>
+                  {stage.status === 'complete' && <Check className="w-4 h-4 text-emerald-400" />}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Refinement */}
+        {isProductionComplete && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+            <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wide mb-3">Refinement</h3>
+            <div className="flex gap-2 overflow-x-auto">
+              {refinementStages.map((stage) => (
+                <button
+                  key={stage.id}
+                  onClick={() => setActiveTab(stage.id)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
+                    activeTab === stage.id
+                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-white'
+                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                  } border whitespace-nowrap`}
+                >
+                  <stage.icon className={`w-4 h-4 ${stage.status === 'complete' ? 'text-emerald-400' : ''}`} />
+                  <span className="font-medium">{stage.label}</span>
+                  {stage.status === 'complete' && <Check className="w-4 h-4 text-emerald-400" />}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {!isProductionComplete && (
+          <div className="text-sm text-white/40 italic">Complete all production stages to unlock refinement features</div>
+        )}
       </div>
 
       {/* Tab Content */}
