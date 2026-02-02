@@ -35,6 +35,7 @@ import IndustryOutlineGenerator from "@/components/book/IndustryOutlineGenerator
 import OutlineGenerator from "@/components/book/OutlineGenerator.jsx";
 import SummaryGenerator from "@/components/book/SummaryGenerator.jsx";
 import CoverDesigner from "@/components/book/CoverDesigner.jsx";
+import ManuscriptWriter from "@/components/book/ManuscriptWriter.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import CharacterCreator from "@/components/book/CharacterCreator.jsx";
@@ -75,6 +76,7 @@ export default function BookEditor() {
     { id: "summary", label: "Summary", icon: BookOpen, status: book?.book_summary ? "complete" : "pending" },
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
+    { id: "manuscript", label: "Manuscript", icon: BookOpen, status: book?.manuscript_chapters?.length > 0 ? "complete" : "pending" },
     { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" }
   ];
@@ -208,6 +210,13 @@ export default function BookEditor() {
         )}
         {activeTab === "cover" && (
           <CoverDesigner 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "manuscript" && (
+          <ManuscriptWriter 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
