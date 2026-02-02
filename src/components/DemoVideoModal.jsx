@@ -63,26 +63,16 @@ export default function DemoVideoModal({ isOpen, onClose }) {
 
           {/* Video Container */}
           <div className="bg-black">
-            {loading && generating ? (
-              <div className="aspect-video flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-12 h-12 text-amber-400 animate-spin" />
-                <p className="text-white/60">Generating professional demo video...</p>
-              </div>
-            ) : demoVideoUrl ? (
-              <video
-                controls
-                autoPlay
-                className="w-full aspect-video"
-                poster="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1400&h=800&fit=crop&q=80"
-              >
-                <source src={demoVideoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <div className="aspect-video flex items-center justify-center">
-                <p className="text-white/60">Unable to load demo video</p>
-              </div>
-            )}
+            <iframe
+              width="100%"
+              height="600"
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+              title="AuthorForge Demo"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full aspect-video"
+            />
           </div>
 
           {/* Footer */}
