@@ -69,7 +69,9 @@ export default function BookEditor() {
   const stages = [
     { id: "title", label: "Title", icon: Edit3, status: book?.title && book.title !== "Untitled Book" ? "complete" : "pending" },
     { id: "characters", label: "Characters", icon: Users, status: book?.characters?.length > 0 ? "complete" : "pending" },
-    { id: "outline", label: "Outline", icon: FileText, status: book?.outline?.length > 0 ? "complete" : "pending" },
+    { id: "toc", label: "Table of Contents", icon: FileText, status: book?.table_of_contents?.length > 0 ? "complete" : "pending" },
+    { id: "detailed_outline", label: "Detailed Outline", icon: FileText, status: book?.detailed_outline?.length > 0 ? "complete" : "pending" },
+    { id: "industry_outline", label: "Industry Outline", icon: FileText, status: book?.industry_outline?.length > 0 ? "complete" : "pending" },
     { id: "summary", label: "Summary", icon: BookOpen, status: book?.book_summary ? "complete" : "pending" },
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
