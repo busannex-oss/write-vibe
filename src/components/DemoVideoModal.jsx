@@ -17,14 +17,12 @@ export default function DemoVideoModal({ isOpen, onClose }) {
   const generateDemoVideo = async () => {
     setGenerating(true);
     try {
-      // Use a professional demo video directly
-      // In production, this would integrate with a video generation service
-      const videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4";
+      // Use a professional demo video with better availability
+      const videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4";
       setDemoVideoUrl(videoUrl);
       localStorage.setItem("authorforgeDemo", videoUrl);
     } catch (error) {
       console.error("Error loading demo:", error);
-      setDemoVideoUrl("https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4");
     } finally {
       setGenerating(false);
       setLoading(false);
