@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,11 @@ import {
   Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
+import DemoVideoModal from "@/components/DemoVideoModal";
 
 export default function Landing() {
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   const features = [
     {
       icon: Wand2,
@@ -130,7 +133,11 @@ export default function Landing() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
+              <Button 
+               size="lg" 
+               variant="outline" 
+               onClick={() => setShowDemoModal(true)}
+               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
                 Watch Demo
               </Button>
             </div>
@@ -274,6 +281,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Demo Video Modal */}
+      <DemoVideoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5">
