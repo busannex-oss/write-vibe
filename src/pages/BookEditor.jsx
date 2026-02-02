@@ -128,7 +128,7 @@ export default function BookEditor() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-white/50">{completedCount}/{stages.length} complete</span>
+            <span className="text-sm text-white/50">{completedCount}/{totalCount} complete</span>
             <Progress value={progress} className="w-32 h-2 bg-white/10" />
           </div>
         </div>
