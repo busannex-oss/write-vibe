@@ -8,7 +8,7 @@ import { Upload, Sparkles, RefreshCw, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HeroImageManager() {
-  const [heroImage, setHeroImage] = useState("https://images.unsplash.com/photo-150784272343-583f7270bfba?w=1400&h=800&fit=crop&q=80");
+  const [heroImage, setHeroImage] = useState("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80");
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
 
