@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { 
   Sparkles, 
@@ -92,16 +93,19 @@ export default function Landing() {
             <Link to={createPageUrl("Pricing")} className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
           </div>
           <div className="flex items-center gap-3">
-            <Link to={createPageUrl("Dashboard")}>
-              <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
-                Sign In
-              </Button>
-            </Link>
-            <Link to={createPageUrl("Dashboard")}>
-              <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
-                Start Free Trial
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Sign In
+            </Button>
+            <Button 
+              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+            >
+              Start Free Trial
+            </Button>
           </div>
         </div>
       </nav>
@@ -127,20 +131,22 @@ export default function Landing() {
               From character creation to marketing, our intelligent AI agents handle every aspect of your book journey on autopilot.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={createPageUrl("Dashboard")}>
-                <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
-                  Start 7-Day Free Trial
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Button 
-               size="lg" 
-               variant="outline" 
-               onClick={() => setShowDemoModal(true)}
-               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
-                Watch Demo
-              </Button>
-            </div>
+               <Button 
+                 size="lg" 
+                 onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+               >
+                 Start 7-Day Free Trial
+                 <ArrowRight className="w-5 h-5 ml-2" />
+               </Button>
+               <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => setShowDemoModal(true)}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
+                 Watch Demo
+               </Button>
+             </div>
             <div className="flex items-center justify-center gap-6 mt-8 text-sm text-white/40">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-400" />
@@ -272,12 +278,14 @@ export default function Landing() {
             <p className="text-white/60 mb-8 max-w-xl mx-auto">
               Join thousands of authors using AI to bring their stories to life
             </p>
-            <Link to={createPageUrl("Dashboard")}>
-              <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
-                Start Your Free Trial
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+            >
+              Start Your Free Trial
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
