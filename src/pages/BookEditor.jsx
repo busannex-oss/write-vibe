@@ -40,6 +40,7 @@ import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import CharacterCreator from "@/components/book/CharacterCreator.jsx";
 import ManuscriptFormatter from "@/components/book/ManuscriptFormatter.jsx";
+import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -77,6 +78,7 @@ export default function BookEditor() {
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
     { id: "manuscript", label: "Manuscript", icon: BookOpen, status: book?.manuscript_chapters?.length > 0 ? "complete" : "pending" },
+    { id: "marketing", label: "Marketing", icon: Sparkles, status: "pending" },
     { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" }
   ];
@@ -220,6 +222,11 @@ export default function BookEditor() {
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "marketing" && (
+          <MarketingCampaignGenerator 
+            book={book}
           />
         )}
         {activeTab === "video" && (
