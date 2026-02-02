@@ -97,15 +97,22 @@ High quality, professional book cover design, 6x9 aspect ratio, publishing quali
     try {
       const prompt = `Professional book back cover design that perfectly matches and continues the visual style of the front cover.
 
-CRITICAL: Match ALL visual elements from the reference front cover:
-- Use the EXACT same color palette, gradients, and tones
+CRITICAL REQUIREMENTS:
+- Use the EXACT same color palette, gradients, and tones from the front cover
 - Match the background texture, patterns, and artistic style
 - Continue the same lighting, atmosphere, and mood
 - Use consistent design elements and decorative motifs
 - Maintain the same level of detail and quality
 
+IMPORTANT - NO CHARACTERS:
+- DO NOT include any main characters or people that appear on the front cover
+- Focus ONLY on scenery, atmosphere, background elements, and environmental details
+- Use landscapes, settings, objects, or abstract elements that match the front cover's style
+- The back cover should show the WORLD of the story, not the characters
+
 Book: "${book.title}"
 Style: ${coverStyle}
+Genre: ${book.category}
 
 Layout requirements:
 - Clean readable area for book summary text
