@@ -171,8 +171,22 @@ export default function BookEditor() {
             isUpdating={updateBookMutation.isPending}
           />
         )}
-        {activeTab === "outline" && (
-          <OutlineGenerator 
+        {activeTab === "toc" && (
+          <TableOfContentsGenerator 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "detailed_outline" && (
+          <DetailedOutlineGenerator 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "industry_outline" && (
+          <IndustryOutlineGenerator 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
