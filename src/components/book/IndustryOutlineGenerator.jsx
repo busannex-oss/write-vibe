@@ -124,8 +124,8 @@ Follow industry standards for:
             <Button
               onClick={generateIndustryOutline}
               disabled={generating || industryOutline.length === 0}
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10"
+              variant="ghost"
+              className="border-white/20 text-white/60 hover:text-white hover:bg-white/10"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Regenerate
