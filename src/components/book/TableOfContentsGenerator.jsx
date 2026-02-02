@@ -166,7 +166,7 @@ The chapter titles should:
                           <Input
                             value={chapter.chapter_title}
                             onChange={(e) => updateChapter(index, 'chapter_title', e.target.value)}
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-slate-800/50 border-white/20 text-white placeholder:text-white/40"
                             placeholder="Chapter title"
                             autoFocus
                           />
