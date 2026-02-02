@@ -29,18 +29,15 @@ import {
 import { motion } from "framer-motion";
 
 import TitleGenerator from "@/components/book/TitleGenerator.jsx";
-import TableOfContentsGenerator from "@/components/book/TableOfContentsGenerator.jsx";
-import DetailedOutlineGenerator from "@/components/book/DetailedOutlineGenerator.jsx";
-import IndustryOutlineGenerator from "@/components/book/IndustryOutlineGenerator.jsx";
-import OutlineGenerator from "@/components/book/OutlineGenerator.jsx";
+import UnifiedOutlineGenerator from "@/components/book/UnifiedOutlineGenerator.jsx";
 import SummaryGenerator from "@/components/book/SummaryGenerator.jsx";
-import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import ManuscriptWriter from "@/components/book/ManuscriptWriter.jsx";
+import ManuscriptFormatter from "@/components/book/ManuscriptFormatter.jsx";
+import ManuscriptViewer from "@/components/book/ManuscriptViewer.jsx";
+import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import CharacterCreator from "@/components/book/CharacterCreator.jsx";
-import ManuscriptFormatter from "@/components/book/ManuscriptFormatter.jsx";
-import ManuscriptViewer from "@/components/book/ManuscriptViewer.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
 
 export default function BookEditor() {
