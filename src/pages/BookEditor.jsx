@@ -221,15 +221,8 @@ export default function BookEditor() {
             isUpdating={updateBookMutation.isPending}
           />
         )}
-        {activeTab === "format" && (
-          <ManuscriptFormatter 
-            book={book} 
-            onUpdate={handleUpdate}
-            isUpdating={updateBookMutation.isPending}
-          />
-        )}
-        {activeTab === "viewer" && (
-          <ManuscriptViewer 
+        {activeTab === "manuscript" && (
+          <ManuscriptWriter 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
@@ -242,20 +235,15 @@ export default function BookEditor() {
             isUpdating={updateBookMutation.isPending}
           />
         )}
-        {activeTab === "manuscript" && (
-          <ManuscriptWriter 
+        {activeTab === "format" && (
+          <ManuscriptFormatter 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
         )}
-        {activeTab === "marketing" && (
-          <MarketingCampaignGenerator 
-            book={book}
-          />
-        )}
-        {activeTab === "video" && (
-          <VideoCommercial 
+        {activeTab === "viewer" && (
+          <ManuscriptViewer 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
