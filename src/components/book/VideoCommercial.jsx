@@ -16,7 +16,10 @@ import {
   Clock,
   Image,
   Download,
-  Play
+  Play,
+  RefreshCw,
+  ExternalLink,
+  Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -206,6 +209,32 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
     }, true);
   };
 
+  const downloadVideo = () => {
+    if (!videoUrl) return;
+    const link = document.createElement('a');
+    link.href = videoUrl;
+    link.download = `${book.title.replace(/\s+/g, '-')}-trailer-${selectedDuration}s.mp4`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const regenerateVideo = async () => {
+    setVideoUrl(null);
+    await generateVideo();
+  };
+
+  const getHostingLinks = () => {
+    if (!videoUrl) return null;
+    
+    return {
+      youtube: `https://www.youtube.com/upload`,
+      vimeo: `https://vimeo.com/upload`,
+      wistia: `https://app.wistia.com/`,
+      cloudinary: `https://cloudinary.com/console/media_library`
+    };
+  };
+
   const currentVersion = script?.versions?.[selectedDuration + "s"];
 
   return (
@@ -278,9 +307,30 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
                     </>
                   )}
                 </Button>
+                {videoUrl && (
+                  <>
+                    <Button
+                      onClick={regenerateVideo}
+                      disabled={generatingVideo}
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Regenerate
+                    </Button>
+                    <Button
+                      onClick={downloadVideo}
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </Button>
+                  </>
+                )}
                 <Button
                   onClick={saveVideo}
-                  disabled={isUpdating}
+                  disabled={isUpdating || !videoUrl}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
                 >
                   {isUpdating ? (
@@ -384,26 +434,82 @@ The video should be ${selectedDuration} seconds long, suitable for website embed
 
               {/* Generated Video */}
               {videoUrl && (
-                <Card className="bg-white/5 border-white/10">
-                  <CardHeader>
-                    <CardTitle className="text-white text-sm flex items-center gap-2">
-                      <Play className="w-4 h-4 text-amber-400" />
-                      Generated Video Preview
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                      <video 
-                        controls 
-                        className="w-full h-full"
-                        poster="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
-                      >
-                        <source src={videoUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    </div>
-                  </CardContent>
-                </Card>
+                <>
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white text-sm flex items-center gap-2">
+                        <Play className="w-4 h-4 text-amber-400" />
+                        Generated Video Preview ({selectedDuration}s)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="aspect-video rounded-lg overflow-hidden bg-black mb-4">
+                        <video 
+                          controls 
+                          className="w-full h-full"
+                          poster="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+                        >
+                          <source src={videoUrl} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={downloadVideo}
+                          size="sm"
+                          className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
+                        >
+                          <Download className="w-3 h-3 mr-2" />
+                          Download
+                        </Button>
+                        <Button
+                          onClick={regenerateVideo}
+                          size="sm"
+                          disabled={generatingVideo}
+                          className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
+                        >
+                          <RefreshCw className="w-3 h-3 mr-2" />
+                          Regenerate
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Hosting Options */}
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white text-sm flex items-center gap-2">
+                        <Share2 className="w-4 h-4 text-amber-400" />
+                        Host Video
+                      </CardTitle>
+                      <CardDescription className="text-white/50 text-xs">
+                        Upload to video hosting platforms
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {Object.entries(getHostingLinks()).map(([platform, url]) => (
+                        <a
+                          key={platform}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Video className="w-4 h-4 text-amber-400" />
+                            <span className="text-sm text-white capitalize">{platform}</span>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-white/70" />
+                        </a>
+                      ))}
+                      <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                        <p className="text-xs text-amber-300">
+                          💡 Tip: Download the video first, then upload to your preferred platform for professional hosting
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
               )}
 
               {/* Storyboard Images */}
