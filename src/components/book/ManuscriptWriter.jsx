@@ -195,9 +195,10 @@ Create a compelling chapter illustration that captures the essence of this scene
             </Button>
             <Button
               onClick={() => setCoAuthorMode(!coAuthorMode)}
-              variant={coAuthorMode ? "default" : "outline"} className="bg-[#f4a61f] text-white px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
-
-
+              className={coAuthorMode 
+                ? "bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                : "border-white/20 text-white hover:bg-white/10"
+              }>
               <Users className="w-4 h-4 mr-2" />
               {coAuthorMode ? "Co-Author Mode Active" : "Co-Author Mode"}
             </Button>
