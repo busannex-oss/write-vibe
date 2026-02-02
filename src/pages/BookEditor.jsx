@@ -29,6 +29,9 @@ import {
 import { motion } from "framer-motion";
 
 import TitleGenerator from "@/components/book/TitleGenerator.jsx";
+import TableOfContentsGenerator from "@/components/book/TableOfContentsGenerator.jsx";
+import DetailedOutlineGenerator from "@/components/book/DetailedOutlineGenerator.jsx";
+import IndustryOutlineGenerator from "@/components/book/IndustryOutlineGenerator.jsx";
 import OutlineGenerator from "@/components/book/OutlineGenerator.jsx";
 import SummaryGenerator from "@/components/book/SummaryGenerator.jsx";
 import CoverDesigner from "@/components/book/CoverDesigner.jsx";
