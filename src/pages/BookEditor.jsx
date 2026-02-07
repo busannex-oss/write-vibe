@@ -77,6 +77,7 @@ export default function BookEditor() {
   // Refinement stages - available after production complete
   const refinementStages = [
     { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
+    { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
@@ -230,6 +231,13 @@ export default function BookEditor() {
         )}
         {activeTab === "cover" && (
           <CoverDesigner 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "video" && (
+          <VideoCommercial 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
