@@ -72,12 +72,12 @@ export default function BookEditor() {
     { id: "characters", label: "Characters", icon: Users, status: book?.characters?.length > 0 ? "complete" : "pending" },
     { id: "outline", label: "Outline", icon: FileText, status: book?.table_of_contents?.length > 0 ? "complete" : "pending" },
     { id: "manuscript", label: "Manuscript", icon: BookOpen, status: book?.manuscript_chapters?.length > 0 ? "complete" : "pending" },
+    { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
+    { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
   ];
 
   // Refinement stages - available after production complete
   const refinementStages = [
-    { id: "cover", label: "Cover", icon: Image, status: book?.front_cover_url ? "complete" : "pending" },
-    { id: "video", label: "Video", icon: Video, status: book?.video_commercial_url ? "complete" : "pending" },
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
