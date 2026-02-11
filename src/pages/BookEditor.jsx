@@ -17,6 +17,7 @@ import {
   FileText, 
   Image, 
   Video,
+  Volume2,
   Globe,
   Users,
   Loader2,
@@ -36,6 +37,7 @@ import ManuscriptFormatter from "@/components/book/ManuscriptFormatter.jsx";
 import ManuscriptViewer from "@/components/book/ManuscriptViewer.jsx";
 import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
+import AudiobookGenerator from "@/components/book/AudiobookGenerator.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import CharacterCreator from "@/components/book/CharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
@@ -79,6 +81,7 @@ export default function BookEditor() {
   // Refinement stages - available after production complete
   const refinementStages = [
     { id: "format", label: "Format", icon: RefreshCw, status: book?.formatted_manuscript ? "complete" : "pending" },
+    { id: "audiobook", label: "Audiobook", icon: Volume2, status: book?.audiobook_url ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
   ];
@@ -245,6 +248,13 @@ export default function BookEditor() {
         )}
         {activeTab === "format" && (
           <ManuscriptFormatter 
+            book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "audiobook" && (
+          <AudiobookGenerator 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
