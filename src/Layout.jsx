@@ -51,7 +51,6 @@ export default function Layout({ children, currentPageName }) {
     : null;
 
   const navigation = [
-    { name: "Home", href: "Landing", icon: BookOpen },
     { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },
     { name: "My Books", href: "Books", icon: BookOpen },
     { name: "Documents", href: "Documents", icon: FileText },
