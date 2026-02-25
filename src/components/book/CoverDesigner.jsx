@@ -304,7 +304,7 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
             </Button>
             <Button
               onClick={generateBackCover}
-              disabled={generating || !book.book_summary}
+              disabled={generating || !frontCover}
               className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0"
             >
               {generating ? (

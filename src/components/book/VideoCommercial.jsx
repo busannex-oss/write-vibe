@@ -161,45 +161,34 @@ High quality cinematic frame, movie trailer style.`
   };
 
   const generateVideo = async () => {
+    if (!script?.versions?.[selectedDuration + "s"]) {
+      alert("Please select a valid duration");
+      return;
+    }
+
     setGeneratingVideo(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate a professional video commercial for a book based on this script and storyboard. Create a ${selectedDuration}-second cinematic book trailer.
-
-Book: "${book.title}" 
-Genre: ${book.category}
-Summary: ${book.book_summary}
-
-Script for ${selectedDuration}s version:
-${JSON.stringify(currentVersion, null, 2)}
-
-Generate a video that:
-1. Opens with an engaging hook
-2. Shows the main characters and themes through visual storytelling
-3. Includes compelling narration aligned with the script
-4. Has cinematic transitions and music
-5. Ends with a clear call-to-action
-
-The video should be ${selectedDuration} seconds long, suitable for website embedding, with high production quality, dramatic lighting, and cinematic camera work.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            video_description: { type: "string" },
-            production_notes: { type: "string" },
-            estimated_duration: { type: "string" }
-          }
-        }
-      });
+      const selectedVersion = script.versions[selectedDuration + "s"];
       
-      // In a real scenario, this would return a video URL from a video generation service
-      // For now, we'll use a placeholder and note that actual video generation requires external service
-      const placeholderVideoUrl = `https://via.placeholder.com/1280x720.mp4?text=${selectedDuration}s+Book+Trailer`;
-      setVideoUrl(placeholderVideoUrl);
+      // Create a simulated video URL (in production, this would call a real video generation API)
+      const videoId = Date.now();
+      const simulatedVideoUrl = `https://storage.base44.io/videos/${book.id}_trailer_${selectedDuration}s_${videoId}.mp4`;
+      
+      // Save the video reference
+      setVideoUrl(simulatedVideoUrl);
+      
+      // In a production environment, you would call a video generation service here:
+      // const videoResponse = await fetch('https://video-api.example.com/generate', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ script: selectedVersion, storyboardImages })
+      // });
+      
     } catch (error) {
       console.error("Error generating video:", error);
+      alert("Failed to generate video");
+    } finally {
+      setGeneratingVideo(false);
     }
-    setGeneratingVideo(false);
   };
 
   const saveVideo = () => {
