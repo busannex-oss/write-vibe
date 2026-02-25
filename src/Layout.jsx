@@ -59,6 +59,11 @@ export default function Layout({ children, currentPageName }) {
     { name: "Settings", href: "Settings", icon: Settings },
   ];
 
+  // Add User Management for super admin
+  if (user?.is_super_admin) {
+    navigation.push({ name: "User Management", href: "UserManagement", icon: Crown });
+  }
+
   // Public pages without sidebar
   const publicPages = ["Landing", "BookWebsite", "Pricing"];
   if (publicPages.includes(currentPageName)) {
