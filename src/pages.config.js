@@ -47,41 +47,41 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import About from './pages/About';
 import BookEditor from './pages/BookEditor';
 import BookWebsite from './pages/BookWebsite';
 import Books from './pages/Books';
+import Contact from './pages/Contact';
 import CreateBook from './pages/CreateBook';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
 import Landing from './pages/Landing';
 import Pricing from './pages/Pricing';
+import Privacy from './pages/Privacy';
+import ProjectReports from './pages/ProjectReports';
 import Settings from './pages/Settings';
 import Team from './pages/Team';
-import About from './pages/About';
-import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
-import Contact from './pages/Contact';
-import ProjectReports from './pages/ProjectReports';
 import UserManagement from './pages/UserManagement';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "About": About,
     "BookEditor": BookEditor,
     "BookWebsite": BookWebsite,
     "Books": Books,
+    "Contact": Contact,
     "CreateBook": CreateBook,
     "Dashboard": Dashboard,
     "Documents": Documents,
     "Landing": Landing,
     "Pricing": Pricing,
+    "Privacy": Privacy,
+    "ProjectReports": ProjectReports,
     "Settings": Settings,
     "Team": Team,
-    "About": About,
-    "Privacy": Privacy,
     "Terms": Terms,
-    "Contact": Contact,
-    "ProjectReports": ProjectReports,
     "UserManagement": UserManagement,
 }
 

@@ -39,7 +39,7 @@ import CoverDesigner from "@/components/book/CoverDesigner.jsx";
 import VideoCommercial from "@/components/book/VideoCommercial.jsx";
 import AudiobookGenerator from "@/components/book/AudiobookGenerator.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
-import CharacterCreator from "@/components/book/CharacterCreator.jsx";
+import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
 
 export default function BookEditor() {
@@ -212,7 +212,7 @@ export default function BookEditor() {
           />
         )}
         {activeTab === "characters" && (
-          <CharacterCreator 
+          <EnhancedCharacterCreator 
             book={book} 
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
