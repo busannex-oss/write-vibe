@@ -31,6 +31,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AIGenerateButton from "@/components/AIGenerateButton";
 import HeroImageManager from "@/components/HeroImageManager";
+import WhiteLabelBranding from "@/components/WhiteLabelBranding";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
@@ -426,53 +427,7 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
         {/* White Label Branding Tab */}
         {user?.subscription_tier === "white_label" && (
           <TabsContent value="branding" className="space-y-6">
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
-                  White Label Branding
-                </CardTitle>
-                <CardDescription className="text-white/50">
-                  Customize the app with your own branding
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label className="text-white/70">Brand Name</Label>
-                  <Input
-                    placeholder="Your Brand Name"
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white/70">Logo</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    className="bg-white/5 border-white/20 text-white file:bg-amber-500 file:text-white file:border-0 file:rounded file:px-3 file:py-1 file:mr-3"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white/70">Primary Color</Label>
-                  <div className="flex gap-3 mt-2">
-                    {["#1a1a2e", "#f59e0b", "#10b981", "#8b5cf6", "#ef4444", "#3b82f6"].map((color) => (
-                      <button
-                        key={color}
-                        className="w-10 h-10 rounded-lg border-2 border-white/20 hover:border-white/50 transition-colors"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-white/70">Custom Domain</Label>
-                  <Input
-                    placeholder="books.yourdomain.com"
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <WhiteLabelBranding user={user} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['user'] })} />
           </TabsContent>
         )}
       </Tabs>

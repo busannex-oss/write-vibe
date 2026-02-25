@@ -46,6 +46,9 @@ export default function Layout({ children, currentPageName }) {
   const brandColor = isWhiteLabel && user?.white_label_config?.primary_color 
     ? user.white_label_config.primary_color 
     : "#f59e0b";
+  const brandLogo = isWhiteLabel && user?.white_label_config?.logo_url 
+    ? user.white_label_config.logo_url 
+    : null;
 
   const navigation = [
     { name: "Home", href: "Landing", icon: BookOpen },
@@ -74,9 +77,15 @@ export default function Layout({ children, currentPageName }) {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center justify-between px-4 h-16">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            {brandLogo ? (
+              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center">
+                <img src={brandLogo} alt={brandName} className="w-full h-full object-contain" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+            )}
             <span className="font-semibold text-white tracking-tight">{brandName}</span>
           </div>
           <Button
@@ -108,9 +117,15 @@ export default function Layout({ children, currentPageName }) {
           {/* Logo */}
           <div className="p-6 border-b border-white/5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              {brandLogo ? (
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
+                  <img src={brandLogo} alt={brandName} className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+              )}
               <div>
                 <h1 className="font-bold text-lg text-white tracking-tight">{brandName}</h1>
                 <p className="text-xs text-white/40">AI Book Studio</p>
