@@ -61,6 +61,7 @@ import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
+import ProjectReports from './pages/ProjectReports';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "Privacy": Privacy,
     "Terms": Terms,
     "Contact": Contact,
+    "ProjectReports": ProjectReports,
 }
 
 export const pagesConfig = {

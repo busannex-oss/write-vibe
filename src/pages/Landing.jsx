@@ -304,9 +304,10 @@ export default function Landing() {
               <span className="font-semibold text-white">AuthorForge</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-white/40">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
-              <a href="#" className="hover:text-white transition-colors">Support</a>
+              <Link to={createPageUrl("About")} className="hover:text-white transition-colors">About</Link>
+              <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy</Link>
+              <Link to={createPageUrl("Terms")} className="hover:text-white transition-colors">Terms</Link>
+              <Link to={createPageUrl("Contact")} className="hover:text-white transition-colors">Contact</Link>
             </div>
             <div className="text-sm text-white/40">
               © 2026 AuthorForge. All rights reserved.
