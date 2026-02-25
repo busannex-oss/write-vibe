@@ -50,10 +50,12 @@ export default function BookEditor() {
 
   const [activeTab, setActiveTab] = useState("title");
 
-  const { data: book, isLoading } = useQuery({
+  const { data: book, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
-    queryFn: () => base44.entities.Book.filter({ id: bookId }),
-    select: (data) => data[0],
+    queryFn: async () => {
+      const books = await base44.entities.Book.list();
+      return books.find(b => b.id === bookId);
+    },
     enabled: !!bookId
   });
 
@@ -99,11 +101,15 @@ export default function BookEditor() {
     );
   }
 
-  if (!book) {
+  if (!book && !isLoading) {
     return (
       <div className="p-6 lg:p-8 text-center">
-        <h2 className="text-xl font-semibold text-white">Book not found</h2>
-        <Button onClick={() => navigate(createPageUrl("Books"))} className="mt-4">
+        <h2 className="text-xl font-semibold text-white mb-2">Book not found</h2>
+        <p className="text-white/50 mb-4">This book may have been deleted or you don't have access to it.</p>
+        <Button 
+          onClick={() => navigate(createPageUrl("Books"))} 
+          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+        >
           Back to Books
         </Button>
       </div>
