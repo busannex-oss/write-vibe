@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -29,18 +29,13 @@ import {
   Grid,
   List,
   ArrowRight,
-  Calendar,
-  Trash2,
-  Archive,
-  Copy,
   CheckSquare,
   Square,
-  MoreHorizontal,
   SortAsc,
-  Users as UsersIcon
+  Users as UsersIcon,
+  User
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { format } from "date-fns";
 
 export default function Books() {
   const [viewMode, setViewMode] = useState("grid");
@@ -49,11 +44,33 @@ export default function Books() {
   const [sortBy, setSortBy] = useState("-created_date");
   const [selectedBooks, setSelectedBooks] = useState([]);
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const { data: books = [], isLoading } = useQuery({
     queryKey: ['books', sortBy],
     queryFn: () => base44.entities.Book.list(sortBy)
   });
+
+  const { data: allTeamMembers = [] } = useQuery({
+    queryKey: ['all-team-members'],
+    queryFn: () => base44.entities.TeamMember.list()
+  });
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await base44.auth.me();
+        setCurrentUser(user);
+      } catch (e) {
+        // Not logged in
+      }
+    };
+    loadUser();
+  }, []);
+
+  const getBookTeam = (bookId) => {
+    return allTeamMembers.filter(tm => tm.book_id === bookId);
+  };
 
   const statusColors = {
     draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -302,25 +319,35 @@ export default function Books() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <Badge className={`text-xs mb-2 ${statusColors[book.status] || statusColors.draft}`}>
-                        {book.status?.replace('_', ' ') || 'draft'}
-                      </Badge>
-                      <h3 className="font-semibold text-white line-clamp-2">{book.title || "Untitled Book"}</h3>
-                      <p className="text-sm text-white/60 mt-1">{book.category || "No category"}</p>
+                      <h3 className="font-semibold text-white line-clamp-2 mb-1">{book.title || "Untitled Book"}</h3>
+                      <p className="text-sm text-white/60">{book.category || "No category"}</p>
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <Progress 
-                      value={getProgressPercentage(book.status)} 
-                      className="h-1.5 bg-white/10" 
-                    />
-                    <div className="flex items-center justify-between mt-3 text-xs text-white/40">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {format(new Date(book.created_date), "MMM d, yyyy")}
-                      </span>
-                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <User className="w-3.5 h-3.5 text-white/40" />
+                      <span className="text-xs text-white/60">{book.created_by || currentUser?.email || "Unknown"}</span>
                     </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <Badge className={`text-xs ${statusColors[book.status] || statusColors.draft}`}>
+                          {book.status?.replace('_', ' ') || 'draft'}
+                        </Badge>
+                        <span className="text-xs font-medium text-white/70">{Math.round(getProgressPercentage(book.status))}%</span>
+                      </div>
+                      <Progress 
+                        value={getProgressPercentage(book.status)} 
+                        className="h-1.5 bg-white/10" 
+                      />
+                    </div>
+                    {getBookTeam(book.id).length > 0 && (
+                      <div className="flex items-center gap-2 pt-1 border-t border-white/10">
+                        <UsersIcon className="w-3.5 h-3.5 text-white/40" />
+                        <span className="text-xs text-white/60">
+                          {getBookTeam(book.id).length} team {getBookTeam(book.id).length === 1 ? 'member' : 'members'}
+                        </span>
+                      </div>
+                    )}
                   </CardContent>
                 </Link>
               </Card>
@@ -348,21 +375,34 @@ export default function Books() {
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate">{book.title || "Untitled Book"}</h3>
-                      <p className="text-sm text-white/50">{book.category || "No category"}</p>
-                      <div className="flex items-center gap-3 mt-2">
-                        <Progress 
-                          value={getProgressPercentage(book.status)} 
-                          className="h-1.5 flex-1 max-w-32 bg-white/10" 
-                        />
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div>
+                        <h3 className="font-semibold text-white truncate">{book.title || "Untitled Book"}</h3>
+                        <p className="text-xs text-white/50">{book.category || "No category"}</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-white/60">
+                        <User className="w-3 h-3" />
+                        <span>{book.created_by || currentUser?.email || "Unknown"}</span>
+                        {getBookTeam(book.id).length > 0 && (
+                          <>
+                            <span className="text-white/30">•</span>
+                            <UsersIcon className="w-3 h-3" />
+                            <span>{getBookTeam(book.id).length} team</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 flex-1">
+                          <Progress 
+                            value={getProgressPercentage(book.status)} 
+                            className="h-1.5 flex-1 max-w-24 bg-white/10" 
+                          />
+                          <span className="text-xs text-white/50 w-10">{Math.round(getProgressPercentage(book.status))}%</span>
+                        </div>
                         <Badge className={`text-xs ${statusColors[book.status] || statusColors.draft}`}>
                           {book.status?.replace('_', ' ') || 'draft'}
                         </Badge>
                       </div>
-                    </div>
-                    <div className="text-sm text-white/40">
-                      {format(new Date(book.created_date), "MMM d, yyyy")}
                     </div>
                     <ArrowRight className="w-5 h-5 text-white/30" />
                   </CardContent>
