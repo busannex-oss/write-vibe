@@ -322,8 +322,8 @@ export default function Books() {
                       <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </CardContent>
-                </Card>
-              </Link>
+                </Link>
+              </Card>
             </motion.div>
           ))}
         </div>
