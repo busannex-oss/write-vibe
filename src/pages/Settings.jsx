@@ -56,8 +56,9 @@ export default function Settings() {
   });
 
   const [profile, setProfile] = useState({
-    pen_name: "",
-    bio: "",
+    first_name: "",
+    last_name: "",
+    biography: "",
     author_photo_url: "",
     social_media: {}
   });
@@ -65,8 +66,9 @@ export default function Settings() {
   useEffect(() => {
     if (user) {
       setProfile({
-        pen_name: user.pen_name || "",
-        bio: user.bio || "",
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        biography: user.biography || "",
         author_photo_url: user.author_photo_url || "",
         social_media: user.social_media || {}
       });
@@ -106,24 +108,27 @@ export default function Settings() {
   const generateBio = async () => {
     setGeneratingBio(true);
     try {
-      const prompt = `Generate a professional author bio for:
-Name: ${user?.full_name || user?.email}
-Pen Name: ${profile.pen_name || "N/A"}
-Current Bio: ${profile.bio || "No bio yet"}
+      const authorName = profile.first_name && profile.last_name 
+        ? `${profile.first_name} ${profile.last_name}`
+        : user?.full_name || user?.email;
+      
+      const prompt = `Generate a professional author biography for:
+Name: ${authorName}
+Current Bio: ${profile.biography || "No bio yet"}
 
-Create a compelling 2-3 paragraph author biography that sounds professional and engaging.`;
+Create a compelling 2-3 paragraph author biography that sounds professional and engaging. This will be used on the back cover of their books.`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
           properties: {
-            bio: { type: "string" }
+            biography: { type: "string" }
           }
         }
       });
 
-      setProfile(prev => ({ ...prev, bio: response.bio }));
+      setProfile(prev => ({ ...prev, biography: response.biography }));
     } catch (error) {
       console.error("Error generating bio:", error);
     }
@@ -203,7 +208,7 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
             <CardHeader>
               <CardTitle className="text-white">Author Profile</CardTitle>
               <CardDescription className="text-white/50">
-                Your public author information
+                Your author information for book back covers
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -232,33 +237,43 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
                     onChange={handlePhotoUpload}
                     className="hidden"
                   />
-                  <p className="text-xs text-white/40 mt-2">Recommended: 400x400px, JPG or PNG</p>
+                  <p className="text-xs text-white/40 mt-2">For book back covers • Recommended: 400x400px, JPG or PNG</p>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/70">Full Name</Label>
+                  <Label className="text-white/70">First Name</Label>
                   <Input
-                    value={user?.full_name || ""}
-                    disabled
-                    className="bg-white/5 border-white/20 text-white/50"
+                    value={profile.first_name}
+                    onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
+                    placeholder="Your first name"
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/70">Pen Name (optional)</Label>
+                  <Label className="text-white/70">Last Name</Label>
                   <Input
-                    value={profile.pen_name}
-                    onChange={(e) => setProfile(prev => ({ ...prev, pen_name: e.target.value }))}
-                    placeholder="Your pen name"
+                    value={profile.last_name}
+                    onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
+                    placeholder="Your last name"
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
                   />
                 </div>
               </div>
 
               <div>
+                <Label className="text-white/70 mb-2 block">Email</Label>
+                <Input
+                  value={user?.email || ""}
+                  disabled
+                  className="bg-white/5 border-white/20 text-white/50"
+                />
+              </div>
+
+              <div>
                 <div className="flex justify-between items-center mb-2">
-                  <Label className="text-white/70">Bio</Label>
+                  <Label className="text-white/70">Author Biography</Label>
                   <AIGenerateButton
                     onClick={generateBio}
                     loading={generatingBio}
@@ -266,12 +281,13 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
                     size="sm"
                   />
                 </div>
+                <p className="text-xs text-white/40 mb-2">This will appear on the back cover of your books</p>
                 <Textarea
-                  value={profile.bio}
-                  onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
-                  placeholder="Tell readers about yourself..."
+                  value={profile.biography}
+                  onChange={(e) => setProfile(prev => ({ ...prev, biography: e.target.value }))}
+                  placeholder="Tell readers about yourself as an author..."
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                  rows={4}
+                  rows={5}
                 />
               </div>
             </CardContent>
