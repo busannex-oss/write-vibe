@@ -93,26 +93,34 @@ Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid des
       const chapter = manuscript[chapterIndex];
       const bookChapter = chapters[chapterIndex];
 
-      const characterImages = book.characters?.map((c) => c.image_url).filter(Boolean) || [];
+      // Use book cover and character images as reference for consistent quality and style
+      const referenceImages = [
+        book.front_cover_url,
+        ...(book.characters?.map((c) => c.image_url).filter(Boolean) || [])
+      ].filter(Boolean);
 
       const { url } = await base44.integrations.Core.GenerateImage({
-        prompt: `Illustration for book chapter:
+        prompt: `Professional book illustration for Chapter ${chapter.chapter_number}: ${chapter.chapter_title}
 
-Chapter: ${chapter.chapter_title}
+Book: "${book.title}"
 Genre: ${book.category}
-Scene: ${bookChapter.summary || bookChapter.scene_breakdown || 'Key moment from the chapter'}
+Chapter Summary: ${bookChapter.summary || bookChapter.scene_breakdown || chapter.content?.substring(0, 300)}
 
-Style: ${book.category} book illustration, professional, atmospheric, mood-appropriate
-Characters: Maintain visual consistency with established character designs
+CRITICAL - Visual Consistency:
+- Match the exact artistic style, color palette, and quality of the book cover
+- Maintain consistent character appearances and visual motifs
+- Use the same level of detail and professional polish as the cover art
+- ${book.category} genre aesthetics
 
-Create a compelling chapter illustration that captures the essence of this scene.`,
-        existing_image_urls: characterImages.slice(0, 2)
+Create ONE compelling, publication-quality illustration that captures the key moment of this chapter.
+High quality, professional book illustration, suitable for print publication.`,
+        existing_image_urls: referenceImages.slice(0, 3)
       });
 
       const newManuscript = [...manuscript];
       newManuscript[chapterIndex] = {
         ...newManuscript[chapterIndex],
-        images: [...(newManuscript[chapterIndex].images || []), url]
+        images: [url] // One image per chapter
       };
       setManuscript(newManuscript);
     } catch (error) {
