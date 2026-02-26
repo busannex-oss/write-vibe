@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users, Trash2, Save } from "lucide-react";
 import { motion } from "framer-motion";
+import CoverCompositor from "./CoverCompositor";
 
 export default function CoverDesigner({ book, onUpdate, isUpdating }) {
   const [generating, setGenerating] = useState(false);
@@ -345,7 +346,14 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
           <CardContent>
             <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden relative">
               {frontCover ? (
-                <img src={frontCover} alt="Front Cover" className="w-full h-full object-cover" />
+                <CoverCompositor
+                  type="front"
+                  backgroundUrl={frontCover}
+                  title={book.title}
+                  subtitle={book.subtitle}
+                  authorName={`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`.trim() || currentUser?.full_name || "Author"}
+                  category={book.category}
+                />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
@@ -388,7 +396,16 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
           <CardContent>
             <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden relative">
               {backCover ? (
-                <img src={backCover} alt="Back Cover" className="w-full h-full object-cover" />
+                <CoverCompositor
+                  type="back"
+                  backgroundUrl={backCover}
+                  title={book.title}
+                  authorName={`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`.trim() || currentUser?.full_name || "Author"}
+                  bookSummary={book.book_summary || book.plot_summary}
+                  authorBio={currentUser?.biography}
+                  authorPhotoUrl={includeAuthorPhoto ? (authorPhoto || currentUser?.author_photo_url) : null}
+                  category={book.category}
+                />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
