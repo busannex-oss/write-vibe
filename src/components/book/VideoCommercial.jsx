@@ -30,7 +30,28 @@ export default function VideoCommercial({ book, onUpdate, isUpdating }) {
   const [generatingImages, setGeneratingImages] = useState(false);
   const [storyboardImages, setStoryboardImages] = useState([]);
   const [generatingVideo, setGeneratingVideo] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(book.video_commercial_url || null);
+  const [videoUrl, setVideoUrl] = useState(null);
+
+  // Load saved video data on mount
+  React.useEffect(() => {
+    if (book.video_commercial_url) {
+      try {
+        const saved = JSON.parse(book.video_commercial_url);
+        if (saved.videoUrl) {
+          setVideoUrl(saved.videoUrl);
+          setScript(saved.script || null);
+          setSelectedDuration(saved.duration || "60");
+          setStoryboardImages(saved.storyboardImages || []);
+        } else {
+          // Legacy format - just a URL
+          setVideoUrl(book.video_commercial_url);
+        }
+      } catch {
+        // Not JSON, treat as direct URL
+        setVideoUrl(book.video_commercial_url);
+      }
+    }
+  }, [book.video_commercial_url]);
 
   const generateScript = async () => {
     setGenerating(true);
@@ -174,14 +195,20 @@ High quality cinematic frame, movie trailer style.`
       const videoId = Date.now();
       const simulatedVideoUrl = `https://storage.base44.io/videos/${book.id}_trailer_${selectedDuration}s_${videoId}.mp4`;
       
-      // Save the video reference
       setVideoUrl(simulatedVideoUrl);
       
-      // In a production environment, you would call a video generation service here:
-      // const videoResponse = await fetch('https://video-api.example.com/generate', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ script: selectedVersion, storyboardImages })
-      // });
+      // Auto-save the video data immediately
+      const videoData = {
+        videoUrl: simulatedVideoUrl,
+        script,
+        duration: selectedDuration,
+        storyboardImages
+      };
+      
+      await onUpdate({ 
+        video_commercial_url: JSON.stringify(videoData),
+        status: "marketing" 
+      }, true);
       
     } catch (error) {
       console.error("Error generating video:", error);
@@ -192,8 +219,14 @@ High quality cinematic frame, movie trailer style.`
   };
 
   const saveVideo = () => {
+    const videoData = {
+      videoUrl,
+      script,
+      duration: selectedDuration,
+      storyboardImages
+    };
     onUpdate({ 
-      video_commercial_url: videoUrl || JSON.stringify({ script, storyboardImages }),
+      video_commercial_url: JSON.stringify(videoData),
       status: "marketing" 
     }, true);
   };
@@ -210,6 +243,7 @@ High quality cinematic frame, movie trailer style.`
 
   const regenerateVideo = async () => {
     setVideoUrl(null);
+    setGeneratingVideo(true);
     await generateVideo();
   };
 
@@ -313,18 +347,20 @@ High quality cinematic frame, movie trailer style.`
                     </Button>
                   </>
                 )}
-                <Button
-                  onClick={saveVideo}
-                  disabled={isUpdating || !videoUrl}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
-                >
-                  {isUpdating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Check className="w-4 h-4 mr-2" />
-                  )}
-                  Save Video
-                </Button>
+                {script && !videoUrl && (
+                  <Button
+                    onClick={saveVideo}
+                    disabled={isUpdating}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4 mr-2" />
+                    )}
+                    Save Script
+                  </Button>
+                )}
               </>
             )}
           </div>
