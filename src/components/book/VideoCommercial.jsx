@@ -409,8 +409,6 @@ Using ${storyboardImages.length} storyboard images as visual reference.
                   <Download className="w-4 h-4 mr-2" />
                   Download
                 </Button>
-                {videoUrl && (
-                  <>
               </div>
             )}
           </div>
