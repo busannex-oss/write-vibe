@@ -263,8 +263,7 @@ High quality cinematic frame, movie trailer style.`
                 <Button
                   onClick={generateStoryboardImages}
                   disabled={generatingImages}
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0"
                 >
                   {generatingImages ? (
                     <>
@@ -281,8 +280,7 @@ High quality cinematic frame, movie trailer style.`
                 <Button
                   onClick={generateVideo}
                   disabled={generatingVideo}
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
                 >
                   {generatingVideo ? (
                     <>
@@ -301,16 +299,14 @@ High quality cinematic frame, movie trailer style.`
                     <Button
                       onClick={regenerateVideo}
                       disabled={generatingVideo}
-                      variant="outline"
-                      className="border-white/20 text-white hover:bg-white/10"
+                      className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Regenerate
                     </Button>
                     <Button
                       onClick={downloadVideo}
-                      variant="outline"
-                      className="border-white/20 text-white hover:bg-white/10"
+                      className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download
