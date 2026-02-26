@@ -41,6 +41,7 @@ import AudiobookGenerator from "@/components/book/AudiobookGenerator.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
+import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -86,6 +87,7 @@ export default function BookEditor() {
     { id: "audiobook", label: "Audiobook", icon: Volume2, status: book?.audiobook_url ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
+    { id: "team", label: "Team", icon: Users, status: "available" },
   ];
 
   const isProductionComplete = productionStages.every(s => s.status === "complete");
@@ -279,6 +281,9 @@ export default function BookEditor() {
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />
+        )}
+        {activeTab === "team" && (
+          <CollaborationPanel book={book} />
         )}
       </motion.div>
     </div>

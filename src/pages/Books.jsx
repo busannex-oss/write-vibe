@@ -15,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   Plus, 
   Search, 
@@ -23,7 +29,15 @@ import {
   Grid,
   List,
   ArrowRight,
-  Calendar
+  Calendar,
+  Trash2,
+  Archive,
+  Copy,
+  CheckSquare,
+  Square,
+  MoreHorizontal,
+  SortAsc,
+  Users as UsersIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
@@ -32,10 +46,13 @@ export default function Books() {
   const [viewMode, setViewMode] = useState("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("-created_date");
+  const [selectedBooks, setSelectedBooks] = useState([]);
+  const [bulkEditMode, setBulkEditMode] = useState(false);
 
   const { data: books = [], isLoading } = useQuery({
-    queryKey: ['books'],
-    queryFn: () => base44.entities.Book.list('-created_date')
+    queryKey: ['books', sortBy],
+    queryFn: () => base44.entities.Book.list(sortBy)
   });
 
   const statusColors = {
@@ -61,6 +78,37 @@ export default function Books() {
     return matchesSearch && matchesStatus;
   });
 
+  const toggleBookSelection = (bookId) => {
+    setSelectedBooks(prev => 
+      prev.includes(bookId) ? prev.filter(id => id !== bookId) : [...prev, bookId]
+    );
+  };
+
+  const selectAll = () => {
+    setSelectedBooks(filteredBooks.map(b => b.id));
+  };
+
+  const deselectAll = () => {
+    setSelectedBooks([]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selectedBooks.length} books?`)) return;
+    for (const id of selectedBooks) {
+      await base44.entities.Book.delete(id);
+    }
+    setSelectedBooks([]);
+    setBulkEditMode(false);
+  };
+
+  const handleBulkStatusChange = async (newStatus) => {
+    for (const id of selectedBooks) {
+      await base44.entities.Book.update(id, { status: newStatus });
+    }
+    setSelectedBooks([]);
+    setBulkEditMode(false);
+  };
+
   return (
     <div className="p-6 lg:p-8">
       {/* Header */}
@@ -77,14 +125,14 @@ export default function Books() {
         </Link>
       </div>
 
-      {/* Filters */}
+      {/* Filters & Actions */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search books..."
+            placeholder="Search by title or category..."
             className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
           />
         </div>
@@ -105,6 +153,19 @@ export default function Books() {
               <SelectItem value="published">Published</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white">
+              <SortAsc className="w-4 h-4 mr-2 text-white/50" />
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-created_date">Newest First</SelectItem>
+              <SelectItem value="created_date">Oldest First</SelectItem>
+              <SelectItem value="title">Title A-Z</SelectItem>
+              <SelectItem value="-title">Title Z-A</SelectItem>
+              <SelectItem value="-updated_date">Recently Updated</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex bg-white/5 rounded-lg p-1">
             <Button
               variant="ghost"
@@ -123,8 +184,56 @@ export default function Books() {
               <List className="w-4 h-4" />
             </Button>
           </div>
+          <Button
+            variant={bulkEditMode ? "default" : "outline"}
+            onClick={() => {
+              setBulkEditMode(!bulkEditMode);
+              setSelectedBooks([]);
+            }}
+            className={bulkEditMode ? "bg-amber-500 hover:bg-amber-600 text-white border-0" : "bg-white/5 border-white/10 text-white hover:bg-white/10"}
+          >
+            <CheckSquare className="w-4 h-4 mr-2" />
+            {bulkEditMode ? "Done" : "Select"}
+          </Button>
         </div>
       </div>
+
+      {/* Bulk Actions Bar */}
+      {bulkEditMode && selectedBooks.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between"
+        >
+          <span className="text-amber-300 font-medium">{selectedBooks.length} selected</span>
+          <div className="flex gap-2">
+            <Button onClick={selectAll} size="sm" variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+              Select All ({filteredBooks.length})
+            </Button>
+            <Button onClick={deselectAll} size="sm" variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+              Deselect All
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="bg-white/10 hover:bg-white/20 text-white border-0">
+                  Change Status
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleBulkStatusChange("draft")}>Draft</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleBulkStatusChange("outline")}>Outline</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleBulkStatusChange("writing")}>Writing</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleBulkStatusChange("editing")}>Editing</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleBulkStatusChange("published")}>Published</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button onClick={handleBulkDelete} size="sm" variant="destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Books Grid/List */}
       {isLoading ? (
@@ -164,8 +273,25 @@ export default function Books() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link to={createPageUrl(`BookEditor?id=${book.id}`)}>
-                <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer group overflow-hidden">
+              <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                {bulkEditMode && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleBookSelection(book.id);
+                      }}
+                      className="w-6 h-6 rounded bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/70 transition-all"
+                    >
+                      {selectedBooks.includes(book.id) ? (
+                        <CheckSquare className="w-4 h-4 text-amber-400" />
+                      ) : (
+                        <Square className="w-4 h-4 text-white/50" />
+                      )}
+                    </button>
+                  </div>
+                )}
+                <Link to={createPageUrl(`BookEditor?id=${book.id}`)} className={bulkEditMode ? "pointer-events-none" : ""}>
                   <div className="aspect-[3/4] relative bg-gradient-to-br from-slate-700 to-slate-800">
                     {book.front_cover_url ? (
                       <img src={book.front_cover_url} alt="" className="w-full h-full object-cover" />
