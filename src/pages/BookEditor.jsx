@@ -105,6 +105,16 @@ export default function BookEditor() {
   }
 
   if (!book && !isLoading) {
+    React.useEffect(() => {
+      base44.entities.ErrorLog.create({
+        error_type: "not_found_404",
+        message: `Book not found: ${bookId}`,
+        page: window.location.pathname + window.location.search,
+        component: "BookEditor",
+        severity: "medium",
+        status_code: 404
+      }).catch(() => {});
+    }, []);
     useErrorLogger(null);
     return (
       <div className="p-6 lg:p-8 text-center">
