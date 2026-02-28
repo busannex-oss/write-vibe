@@ -1,87 +1,89 @@
 import React from "react";
 
-// ─── LAYER SYSTEM ────────────────────────────────────────────────────────────
-// Each child of <CoverCanvas> is a discrete layer, just like Photoshop.
-// Editing one layer never touches the others.
+// ─── LAYER SYSTEM ─────────────────────────────────────────────────────────────
+// Each component is a discrete layer. Edit one without touching others.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CoverCanvas({ children }) {
   return (
-    <div className="relative w-full h-full overflow-hidden select-none">
+    <div className="relative w-full h-full overflow-hidden select-none rounded-lg">
       {children}
     </div>
   );
 }
 
-// Layer 0 — Background image
+// Layer 0 — Background image (fills canvas, no distortion)
 function BackgroundLayer({ url }) {
   return (
-    <div
-      className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${url})` }}
+    <img
+      src={url}
+      alt=""
+      className="absolute inset-0 w-full h-full"
+      style={{ objectFit: "cover", objectPosition: "center" }}
+      crossOrigin="anonymous"
     />
   );
 }
 
-// Layer 1 — Top vignette (darkens top so title pops)
+// Layer 1 — Top vignette (title legibility)
 function TopVignetteLayer({ opacity = 0.55 }) {
   return (
     <div
-      className="absolute inset-x-0 top-0"
+      className="absolute inset-x-0 top-0 pointer-events-none"
       style={{
         height: "45%",
-        background: `linear-gradient(to bottom, rgba(0,0,0,${opacity}) 0%, rgba(0,0,0,0) 100%)`
+        background: `linear-gradient(to bottom, rgba(0,0,0,${opacity}) 0%, transparent 100%)`
       }}
     />
   );
 }
 
-// Layer 2 — Bottom vignette (darkens bottom so author name pops)
-function BottomVignetteLayer({ opacity = 0.6 }) {
+// Layer 2 — Bottom vignette (author name legibility)
+function BottomVignetteLayer({ opacity = 0.65 }) {
   return (
     <div
-      className="absolute inset-x-0 bottom-0"
+      className="absolute inset-x-0 bottom-0 pointer-events-none"
       style={{
-        height: "30%",
-        background: `linear-gradient(to top, rgba(0,0,0,${opacity}) 0%, rgba(0,0,0,0) 100%)`
+        height: "28%",
+        background: `linear-gradient(to top, rgba(0,0,0,${opacity}) 0%, transparent 100%)`
       }}
     />
   );
 }
 
-// Layer 3 — Front: Title block
+// Layer 3 — Front: Title + subtitle
 function TitleLayer({ title, subtitle }) {
-  const isLong = (title?.length || 0) > 25;
+  const isLong = (title?.length || 0) > 22;
   return (
-    <div className="absolute inset-x-0 top-0 flex flex-col items-center px-4 pt-[6%]">
-      {/* Title */}
+    <div className="absolute inset-x-0 top-0 flex flex-col items-center px-[8%] pt-[7%]">
       <h1
-        className="text-center font-black leading-none tracking-tight uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
         style={{
-          fontSize: isLong ? "clamp(1.4rem,6vw,3.6rem)" : "clamp(1.8rem,7.5vw,4.4rem)",
+          fontSize: isLong ? "clamp(1.3rem,5.5vw,3.2rem)" : "clamp(1.7rem,7vw,4rem)",
           color: "#FFFFFF",
-          textShadow: "0 2px 20px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)",
           fontFamily: '"Georgia", "Times New Roman", serif',
+          fontWeight: 900,
           lineHeight: 1.05,
           letterSpacing: "0.04em",
+          textTransform: "uppercase",
+          textAlign: "center",
+          textShadow: "0 2px 20px rgba(0,0,0,0.95), 0 0 40px rgba(0,0,0,0.7)",
           wordBreak: "break-word",
-          maxWidth: "90%"
         }}
       >
         {title}
       </h1>
-
-      {/* Subtitle */}
       {subtitle && (
         <p
-          className="mt-[3%] text-center font-light tracking-wide"
           style={{
-            fontSize: "clamp(0.6rem,2.2vw,1.1rem)",
+            marginTop: "4%",
+            fontSize: "clamp(0.55rem,2vw,1rem)",
             color: "rgba(255,255,255,0.88)",
-            textShadow: "0 1px 8px rgba(0,0,0,0.8)",
             fontFamily: '"Georgia", serif',
             fontStyle: "italic",
-            maxWidth: "80%"
+            fontWeight: 300,
+            textAlign: "center",
+            textShadow: "0 1px 8px rgba(0,0,0,0.85)",
+            maxWidth: "80%",
           }}
         >
           {subtitle}
@@ -91,29 +93,28 @@ function TitleLayer({ title, subtitle }) {
   );
 }
 
-// Layer 4 — Front: Author name strip at bottom
+// Layer 4 — Front: Author name at bottom
 function AuthorNameLayer({ authorName }) {
   return (
-    <div
-      className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-[5%]"
-    >
-      {/* Thin gold rule above name */}
+    <div className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-[6%] pointer-events-none">
       <div
         style={{
-          width: "40%",
+          width: "38%",
           height: "1px",
-          background: "linear-gradient(to right, transparent, #F5CE62, transparent)",
-          marginBottom: "4%"
+          background: "linear-gradient(to right, transparent, rgba(245,206,98,0.8), transparent)",
+          marginBottom: "3%",
         }}
       />
       <p
-        className="uppercase tracking-[0.25em] font-bold text-center"
         style={{
-          fontSize: "clamp(0.55rem,2vw,1rem)",
+          fontSize: "clamp(0.55rem,1.9vw,0.95rem)",
           color: "#F5CE62",
-          textShadow: "0 1px 12px rgba(0,0,0,0.9)",
           fontFamily: '"Georgia", serif',
-          letterSpacing: "0.2em"
+          fontWeight: 700,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          textAlign: "center",
+          textShadow: "0 1px 12px rgba(0,0,0,0.95)",
         }}
       >
         {authorName}
@@ -122,31 +123,25 @@ function AuthorNameLayer({ authorName }) {
   );
 }
 
-// ── BACK COVER LAYERS ────────────────────────────────────────────────────────
+// ── BACK COVER LAYERS ─────────────────────────────────────────────────────────
 
-// Layer 5 — Back: full semi-dark overlay for readability
-function BackOverlayLayer() {
-  return (
-    <div
-      className="absolute inset-0"
-      style={{ background: "rgba(0,0,0,0.38)" }}
-    />
-  );
-}
-
-// Layer 6 — Back: Category badge (top-left)
+// Layer 5 — Back: Category badge top-left
 function CategoryBadgeLayer({ category }) {
   if (!category) return null;
   return (
     <div className="absolute top-[4%] left-[6%]">
       <span
-        className="uppercase tracking-widest font-bold px-3 py-1 text-xs rounded-sm"
         style={{
-          background: "rgba(245,206,98,0.92)",
+          display: "inline-block",
+          background: "rgba(245,206,98,0.95)",
           color: "#1a1a1a",
-          fontSize: "clamp(0.45rem,1.4vw,0.65rem)",
+          fontSize: "clamp(0.42rem,1.3vw,0.6rem)",
+          fontWeight: 700,
           letterSpacing: "0.18em",
-          boxShadow: "0 1px 6px rgba(0,0,0,0.4)"
+          textTransform: "uppercase",
+          padding: "2px 8px",
+          borderRadius: "2px",
+          boxShadow: "0 1px 6px rgba(0,0,0,0.4)",
         }}
       >
         {category}
@@ -155,34 +150,35 @@ function CategoryBadgeLayer({ category }) {
   );
 }
 
-// Layer 7 — Back: Book summary text box (centered, upper half)
+// Layer 6 — Back: Summary text (no white box, clean text over a subtle dark band)
 function SummaryLayer({ summary }) {
   const text = summary || "A compelling story that will keep you turning pages from the very first line to the last.";
   return (
     <div
-      className="absolute inset-x-[6%]"
-      style={{ top: "14%", maxHeight: "38%" }}
+      className="absolute inset-x-0"
+      style={{ top: "12%", padding: "0 7%" }}
     >
+      {/* Subtle frosted band — very low opacity so background shows through */}
       <div
-        className="w-full h-full p-[5%] rounded-sm overflow-hidden"
         style={{
-          background: "rgba(255,255,255,0.09)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          borderTop: "1px solid rgba(255,255,255,0.18)",
-          borderLeft: "1px solid rgba(255,255,255,0.12)",
+          background: "rgba(0,0,0,0.45)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          borderRadius: "4px",
+          padding: "5% 6%",
+          borderLeft: "2px solid rgba(245,206,98,0.4)",
         }}
       >
         <p
-          className="leading-relaxed"
           style={{
-            fontSize: "clamp(0.5rem,1.6vw,0.8rem)",
+            fontSize: "clamp(0.48rem,1.55vw,0.75rem)",
             color: "rgba(255,255,255,0.93)",
             fontFamily: '"Georgia", serif',
+            lineHeight: 1.65,
             display: "-webkit-box",
-            WebkitLineClamp: 9,
+            WebkitLineClamp: 10,
             WebkitBoxOrient: "vertical",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           {text}
@@ -192,43 +188,51 @@ function SummaryLayer({ summary }) {
   );
 }
 
-// Layer 8 — Back: Author bio + optional photo
+// Layer 7 — Back: Author bio + optional circular photo
 function AuthorBioLayer({ authorName, authorBio, authorPhotoUrl }) {
   if (!authorBio && !authorPhotoUrl) return null;
   return (
     <div
-      className="absolute inset-x-[6%] flex gap-[4%] items-start"
-      style={{ bottom: "18%", maxHeight: "22%" }}
+      className="absolute inset-x-0 flex gap-[3%] items-start"
+      style={{ bottom: "16%", padding: "0 7%" }}
     >
       {authorPhotoUrl && (
         <div
-          className="shrink-0 rounded-full overflow-hidden border-2 border-amber-400/60 shadow-lg"
-          style={{ width: "clamp(32px,9vw,56px)", height: "clamp(32px,9vw,56px)" }}
+          style={{
+            flexShrink: 0,
+            width: "clamp(28px,8vw,48px)",
+            height: "clamp(28px,8vw,48px)",
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: "1.5px solid rgba(245,206,98,0.7)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+          }}
         >
-          <img src={authorPhotoUrl} alt={authorName} className="w-full h-full object-cover" />
+          <img src={authorPhotoUrl} alt={authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       )}
-      <div className="flex-1 min-w-0">
+      <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="font-semibold mb-1"
           style={{
-            fontSize: "clamp(0.5rem,1.5vw,0.75rem)",
+            fontSize: "clamp(0.44rem,1.4vw,0.68rem)",
             color: "#F5CE62",
             fontFamily: '"Georgia", serif',
+            fontWeight: 600,
+            marginBottom: "2%",
           }}
         >
           About the Author
         </p>
         <p
-          className="leading-snug"
           style={{
-            fontSize: "clamp(0.42rem,1.3vw,0.65rem)",
+            fontSize: "clamp(0.4rem,1.2vw,0.6rem)",
             color: "rgba(255,255,255,0.80)",
             fontFamily: '"Georgia", serif',
+            lineHeight: 1.5,
             display: "-webkit-box",
             WebkitLineClamp: 4,
             WebkitBoxOrient: "vertical",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           {authorBio}
@@ -238,31 +242,36 @@ function AuthorBioLayer({ authorName, authorBio, authorPhotoUrl }) {
   );
 }
 
-// Layer 9 — Back: Barcode (bottom-right)
+// Layer 8 — Back: Barcode bottom-right
 function BarcodeLayer() {
-  // SVG barcode — looks real, fully scalable
-  const bars = [];
   const seed = [1,0,1,1,0,1,0,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,0,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,1,1,0,1,0,0,1,1,0,1];
+  const bars = [];
   let x = 0;
   for (let i = 0; i < seed.length; i++) {
-    const w = seed[i] ? 2.2 : 1.4;
+    const w = seed[i] ? 2.4 : 1.3;
     if (seed[i]) bars.push({ x, w });
-    x += w + 0.8;
+    x += w + 0.7;
   }
-  const totalW = x;
-
   return (
     <div
-      className="absolute right-[5%] bottom-[4%] bg-white rounded-sm p-1 shadow-md"
-      style={{ width: "clamp(56px,16vw,90px)" }}
+      className="absolute right-[5%] bottom-[3.5%] bg-white rounded-sm shadow-md"
+      style={{ padding: "3px 4px", width: "clamp(52px,14vw,82px)" }}
     >
-      <svg viewBox={`0 0 ${totalW} 32`} width="100%" style={{ display: "block" }}>
+      <svg viewBox={`0 0 ${x} 28`} width="100%" style={{ display: "block" }}>
         {bars.map((b, i) => (
-          <rect key={i} x={b.x} y={0} width={b.w} height={26} fill="#000" />
+          <rect key={i} x={b.x} y={0} width={b.w} height={22} fill="#000" />
         ))}
       </svg>
-      <p className="text-center font-mono text-black/70 leading-none mt-0.5"
-        style={{ fontSize: "clamp(4px,1vw,7px)" }}>
+      <p
+        style={{
+          textAlign: "center",
+          fontFamily: "monospace",
+          color: "#333",
+          fontSize: "clamp(3.5px,0.9vw,6px)",
+          marginTop: "1px",
+          lineHeight: 1,
+        }}
+      >
         ISBN 978-0-XXX-XXXXX-X
       </p>
     </div>
@@ -270,7 +279,7 @@ function BarcodeLayer() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPOSITOR — assembles layers based on cover type
+// MAIN COMPOSITOR
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function CoverCompositor({
@@ -282,42 +291,34 @@ export default function CoverCompositor({
   bookSummary,
   authorBio,
   authorPhotoUrl,
-  category
+  category,
 }) {
   if (!backgroundUrl) return null;
 
   if (type === "front") {
     return (
       <CoverCanvas>
-        {/* Layer 0 */}
-        <BackgroundLayer url={backgroundUrl} />
-        {/* Layer 1 */}
-        <TopVignetteLayer opacity={0.6} />
-        {/* Layer 2 */}
-        <BottomVignetteLayer opacity={0.65} />
-        {/* Layer 3 */}
-        <TitleLayer title={title} subtitle={subtitle} />
-        {/* Layer 4 */}
-        <AuthorNameLayer authorName={authorName} />
+        <BackgroundLayer url={backgroundUrl} />      {/* Layer 0 */}
+        <TopVignetteLayer opacity={0.58} />          {/* Layer 1 */}
+        <BottomVignetteLayer opacity={0.62} />       {/* Layer 2 */}
+        <TitleLayer title={title} subtitle={subtitle} />  {/* Layer 3 */}
+        <AuthorNameLayer authorName={authorName} />  {/* Layer 4 */}
       </CoverCanvas>
     );
   }
 
-  // Back cover
   return (
     <CoverCanvas>
-      {/* Layer 0 */}
-      <BackgroundLayer url={backgroundUrl} />
-      {/* Layer 5 */}
-      <BackOverlayLayer />
-      {/* Layer 6 */}
-      <CategoryBadgeLayer category={category} />
-      {/* Layer 7 */}
-      <SummaryLayer summary={bookSummary || ""} />
-      {/* Layer 8 */}
-      <AuthorBioLayer authorName={authorName} authorBio={authorBio} authorPhotoUrl={authorPhotoUrl} />
-      {/* Layer 9 */}
-      <BarcodeLayer />
+      <BackgroundLayer url={backgroundUrl} />        {/* Layer 0 */}
+      {/* NO full overlay — let the background breathe */}
+      <CategoryBadgeLayer category={category} />    {/* Layer 5 */}
+      <SummaryLayer summary={bookSummary || ""} />  {/* Layer 6 */}
+      <AuthorBioLayer
+        authorName={authorName}
+        authorBio={authorBio}
+        authorPhotoUrl={authorPhotoUrl}
+      />                                             {/* Layer 7 */}
+      <BarcodeLayer />                              {/* Layer 8 */}
     </CoverCanvas>
   );
 }
