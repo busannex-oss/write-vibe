@@ -22,7 +22,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
-const ADMIN_PAGES    = ["UserManagement"];
+const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports"];
 
 export default function Layout({ children, currentPageName }) {

@@ -52,10 +52,14 @@ import BookEditor from './pages/BookEditor';
 import BookWebsite from './pages/BookWebsite';
 import Books from './pages/Books';
 import Contact from './pages/Contact';
+import CookiePolicy from './pages/CookiePolicy';
 import CreateBook from './pages/CreateBook';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
 import ErrorDashboard from './pages/ErrorDashboard';
+import FAQ from './pages/FAQ';
+import HowItWorks from './pages/HowItWorks';
+import Investor from './pages/Investor';
 import Landing from './pages/Landing';
 import Pricing from './pages/Pricing';
 import Privacy from './pages/Privacy';
@@ -64,10 +68,6 @@ import Settings from './pages/Settings';
 import Team from './pages/Team';
 import Terms from './pages/Terms';
 import UserManagement from './pages/UserManagement';
-import Investor from './pages/Investor';
-import FAQ from './pages/FAQ';
-import CookiePolicy from './pages/CookiePolicy';
-import HowItWorks from './pages/HowItWorks';
 import __Layout from './Layout.jsx';
 
 
@@ -77,10 +77,14 @@ export const PAGES = {
     "BookWebsite": BookWebsite,
     "Books": Books,
     "Contact": Contact,
+    "CookiePolicy": CookiePolicy,
     "CreateBook": CreateBook,
     "Dashboard": Dashboard,
     "Documents": Documents,
     "ErrorDashboard": ErrorDashboard,
+    "FAQ": FAQ,
+    "HowItWorks": HowItWorks,
+    "Investor": Investor,
     "Landing": Landing,
     "Pricing": Pricing,
     "Privacy": Privacy,
@@ -89,10 +93,6 @@ export const PAGES = {
     "Team": Team,
     "Terms": Terms,
     "UserManagement": UserManagement,
-    "Investor": Investor,
-    "FAQ": FAQ,
-    "CookiePolicy": CookiePolicy,
-    "HowItWorks": HowItWorks,
 }
 
 export const pagesConfig = {
