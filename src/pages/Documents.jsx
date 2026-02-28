@@ -416,11 +416,78 @@ Make them engaging and shareable.`;
                           </div>
                         ) : (
                           <>
-                            <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
-                              <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">
-                                {doc.content}
-                              </pre>
-                            </div>
+                            {/* Social Caption Pack — rich card layout */}
+                            {doc.type === "social_image" ? (() => {
+                              const captions = parseCaptions(doc.content);
+                              if (captions) {
+                                return (
+                                  <div className="space-y-3 mb-4">
+                                    {captions.map((cap, ci) => {
+                                      const platInfo = SOCIAL_PLATFORMS.find(p =>
+                                        cap.platform.toLowerCase().includes(p.key)
+                                      );
+                                      const fullText = [cap.caption, cap.hashtags, cap.cta].filter(Boolean).join("\n\n");
+                                      const copyKey = `${doc.id}-${ci}`;
+                                      return (
+                                        <div key={ci} className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+                                          {/* Platform header */}
+                                          <div className={`flex items-center justify-between px-4 py-2 ${platInfo ? platInfo.color : 'bg-white/10'} bg-opacity-80`}>
+                                            <span className="text-sm font-semibold text-white flex items-center gap-2">
+                                              {platInfo?.icon} {cap.platform}
+                                            </span>
+                                            <div className="flex gap-1">
+                                              <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                onClick={() => copyCaption(fullText, copyKey)}
+                                                className="h-7 px-2 text-white/80 hover:text-white hover:bg-white/20"
+                                              >
+                                                {copiedId === copyKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                                <span className="ml-1 text-xs">{copiedId === copyKey ? "Copied!" : "Copy"}</span>
+                                              </Button>
+                                              {platInfo && (
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  onClick={() => window.open(platInfo.shareUrl(fullText), '_blank')}
+                                                  className="h-7 px-2 text-white/80 hover:text-white hover:bg-white/20"
+                                                >
+                                                  <Share2 className="w-3 h-3" />
+                                                  <span className="ml-1 text-xs">Share</span>
+                                                </Button>
+                                              )}
+                                            </div>
+                                          </div>
+                                          {/* Caption body */}
+                                          <div className="px-4 py-3 space-y-2">
+                                            <p className="text-sm text-white/85 whitespace-pre-wrap leading-relaxed">{cap.caption}</p>
+                                            {cap.hashtags && (
+                                              <p className="text-xs text-pink-300 font-medium">{cap.hashtags}</p>
+                                            )}
+                                            {cap.cta && (
+                                              <p className="text-xs text-amber-300 italic">{cap.cta}</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                );
+                              }
+                              // fallback raw view
+                              return (
+                                <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
+                                  <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">{doc.content}</pre>
+                                </div>
+                              );
+                            })() : (
+                              <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
+                                <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">
+                                  {doc.content}
+                                </pre>
+                              </div>
+                            )}
+
                             <div className="flex gap-2 flex-wrap">
                               <Button
                                 onClick={() => handleRegenerateDoc(doc)}
