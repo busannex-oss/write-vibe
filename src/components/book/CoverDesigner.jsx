@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users, Trash2, Save } from "lucide-react";
 import { motion } from "framer-motion";
-import CoverCompositor from "./CoverCompositor";
+
 
 export default function CoverDesigner({ book, onUpdate, isUpdating }) {
   const [generating, setGenerating] = useState(false);
