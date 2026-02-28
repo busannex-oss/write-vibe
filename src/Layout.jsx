@@ -95,8 +95,6 @@ export default function Layout({ children, currentPageName }) {
       ]
     : [];
 
-  const navigation = [...memberNav, ...adminNav];
-
   // Public pages — no sidebar/header
   if (PUBLIC_PAGES.includes(currentPageName)) {
     return <>{children}</>;
