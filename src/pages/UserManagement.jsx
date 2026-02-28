@@ -33,13 +33,20 @@ export default function UserManagement() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['all-users'],
     queryFn: async () => {
-      // Only super admin can list all users
-      if (!currentUser?.is_super_admin) return [];
-      const allUsers = await base44.entities.User.list();
+      const allUsers = await base44.entities.User.list('created_date', 200);
       return allUsers;
     },
-    enabled: !!currentUser?.is_super_admin
+    enabled: !!currentUser
   });
+
+  // The first admin (earliest created_date) is the super admin by default
+  const adminUsers = users.filter(u => u.role === 'admin');
+  const firstAdmin = adminUsers.length > 0 
+    ? adminUsers.reduce((earliest, u) => 
+        new Date(u.created_date) < new Date(earliest.created_date) ? u : earliest
+      )
+    : null;
+  const isSuperAdmin = currentUser && firstAdmin && currentUser.id === firstAdmin.id;
 
   const inviteMutation = useMutation({
     mutationFn: async (data) => {
