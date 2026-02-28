@@ -212,79 +212,41 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
     setGeneratingVideo(true);
     try {
       const selectedVersion = script.versions[selectedDuration + "s"];
-      
-      // Build comprehensive video prompt using script and storyboard
-      const videoPrompt = `Create a professional ${selectedDuration}-second book trailer for "${book.title}":
 
-GENRE: ${book.category}
-TARGET AUDIENCE: ${book.target_audience?.age_range}
-
-STORYBOARD & SCRIPT:
-${selectedVersion.scenes.map((s, idx) => {
-  const storyboardImg = storyboardImages.find(img => img.scene === s.scene_number);
-  return `
-Scene ${s.scene_number} - ${s.duration}:
-Visual Direction: ${s.visual}
-Voiceover: "${s.narration}"
-${storyboardImg ? `Reference Image: ${storyboardImg.url}` : ''}
-`;
-}).join('\n')}
-
-AUDIO:
-Music Mood: ${selectedVersion.music_mood}
-Call to Action: ${script.call_to_action}
-
-TECHNICAL SPECS:
-- Use all ${storyboardImages.length} storyboard images as key frames
-- Cinematic transitions between scenes
-- Professional voiceover quality
-- Background music matching mood: ${selectedVersion.music_mood}
-- End with call to action over book cover/title card
-- 16:9 aspect ratio, HD quality
-- Match the visual style and quality of the book cover
-
-Create a compelling, professional book trailer that looks like a real movie commercial.`;
-      
-      // In production, this would call an actual video generation API
-      // For now, create a placeholder that includes all the data
-      const videoId = Date.now();
-      const generatedVideoUrl = `https://storage.base44.io/videos/${book.id}_trailer_${selectedDuration}s_${videoId}.mp4`;
-      
-      // Log the complete video generation request for backend implementation
-      console.log('VIDEO GENERATION REQUEST:', {
-        prompt: videoPrompt,
-        script: selectedVersion,
-        storyboardImages: storyboardImages,
-        duration: selectedDuration,
-        metadata: {
-          title: book.title,
-          genre: book.category,
-          coverImage: book.front_cover_url
-        }
+      // Generate a final composite "title card" image as the video thumbnail/end card
+      const titleCardResponse = await base44.integrations.Core.GenerateImage({
+        prompt: `Professional book trailer title card for "${book.title}" by ${book.created_by || 'the author'}. 
+Genre: ${book.category}. Cinematic dark background with the book title prominently displayed, movie trailer style, dramatic typography, gold accents, high quality.`,
+        existing_image_urls: book.front_cover_url ? [book.front_cover_url] : undefined
       });
-      
-      setVideoUrl(generatedVideoUrl);
-      
-      // Save complete video data including script and storyboard
+
+      const allImages = [
+        ...storyboardImages,
+        { scene: "title", url: titleCardResponse.url, visual: "Title Card", narration: script.call_to_action || "" }
+      ];
+
+      // Store the storyboard+title card as the "video" — displayed as a slideshow player
       const videoData = {
-        videoUrl: generatedVideoUrl,
-        script,
+        isSlideshow: true,
+        slides: allImages,
+        script: selectedVersion,
+        call_to_action: script.call_to_action,
         duration: selectedDuration,
         storyboardImages,
-        generatedAt: new Date().toISOString(),
-        prompt: videoPrompt
+        generatedAt: new Date().toISOString()
       };
-      
+
+      const dataStr = JSON.stringify(videoData);
+      setVideoUrl(dataStr);
+
       await onUpdate({ 
-        video_commercial_url: JSON.stringify(videoData),
+        video_commercial_url: dataStr,
         status: "marketing" 
       }, true);
-      
-      alert(`✓ Amazing AI Book Commercial Generated!\n\nUsing:\n- ${selectedVersion.scenes.length} scripted scenes\n- ${storyboardImages.length} storyboard images\n- ${selectedVersion.music_mood} music\n- Professional voiceover narration`);
-      
+
     } catch (error) {
       console.error("Error generating video:", error);
-      alert("Failed to generate video");
+      alert("Failed to generate video. Please try again.");
     } finally {
       setGeneratingVideo(false);
     }
