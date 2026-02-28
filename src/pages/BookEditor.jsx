@@ -296,6 +296,9 @@ export default function BookEditor() {
             isUpdating={updateBookMutation.isPending}
           />
         )}
+        {activeTab === "leadmagnet" && (
+          <LeadMagnetHub bookId={bookId} />
+        )}
         {activeTab === "team" && (
           <CollaborationPanel book={book} />
         )}
