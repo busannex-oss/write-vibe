@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useErrorLogger } from "@/components/useErrorLogger";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms"];
