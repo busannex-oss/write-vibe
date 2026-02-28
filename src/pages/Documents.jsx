@@ -39,12 +39,14 @@ import {
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 
+// Note: Instagram and TikTok don't support web share URLs — copy only.
+// LinkedIn/Facebook don't support pre-filled text — copy first, then open.
 const SOCIAL_PLATFORMS = [
-  { key: "instagram", label: "Instagram", color: "bg-pink-500", icon: "📷", shareUrl: (text) => `https://www.instagram.com/` },
-  { key: "twitter",   label: "X / Twitter", color: "bg-sky-500",  icon: "🐦", shareUrl: (text) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}` },
-  { key: "facebook",  label: "Facebook",  color: "bg-blue-600", icon: "📘", shareUrl: (text) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}` },
-  { key: "tiktok",    label: "TikTok",    color: "bg-black",    icon: "🎵", shareUrl: (text) => `https://www.tiktok.com/` },
-  { key: "linkedin",  label: "LinkedIn",  color: "bg-blue-700", icon: "💼", shareUrl: (text) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}` },
+  { key: "instagram", label: "Instagram", color: "bg-pink-500",  icon: "📷", copyOnly: true,  shareUrl: null },
+  { key: "twitter",   label: "X / Twitter", color: "bg-sky-500", icon: "🐦", copyOnly: false, shareUrl: (text) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}` },
+  { key: "facebook",  label: "Facebook",  color: "bg-blue-600",  icon: "📘", copyOnly: false, shareUrl: () => `https://www.facebook.com/` },
+  { key: "tiktok",    label: "TikTok",    color: "bg-neutral-900", icon: "🎵", copyOnly: true, shareUrl: null },
+  { key: "linkedin",  label: "LinkedIn",  color: "bg-blue-700",  icon: "💼", copyOnly: false, shareUrl: () => `https://www.linkedin.com/feed/` },
 ];
 
 function parseCaptions(content) {
