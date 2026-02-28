@@ -88,58 +88,103 @@ export default function BookWebsite() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent" />
-        <div className="max-w-4xl mx-auto relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            {/* Cover Image */}
-            <div className="mb-8">
+      {/* Hero Section - Maximized Impact */}
+      <section className="relative py-16 px-6 min-h-screen flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-slate-950" />
+        <div className="max-w-6xl mx-auto relative w-full">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Book Cover - Left Side */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center"
+            >
               {book.front_cover_url ? (
-                <motion.img 
-                  src={book.front_cover_url} 
-                  alt={book.title}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="w-48 md:w-64 h-auto mx-auto rounded-xl shadow-2xl shadow-black/50"
-                />
+                <div className="relative group">
+                  <div className="absolute -inset-6 bg-gradient-to-br from-amber-500/30 to-orange-500/20 rounded-2xl blur-2xl opacity-75 group-hover:opacity-100 transition-opacity" />
+                  <img 
+                    src={book.front_cover_url} 
+                    alt={book.title}
+                    className="relative w-80 h-auto rounded-2xl shadow-2xl shadow-black/80 object-cover"
+                  />
+                </div>
               ) : (
-                <div className="w-48 md:w-64 aspect-[2/3] mx-auto rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-                  <BookOpen className="w-16 h-16 text-white/20" />
+                <div className="w-80 aspect-[2/3] rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+                  <BookOpen className="w-24 h-24 text-white/20" />
                 </div>
               )}
-            </div>
+            </motion.div>
 
-            {/* Status Badge */}
-            {isComingSoon && (
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 mb-4">
-                🚧 Coming Soon
-              </Badge>
-            )}
+            {/* Copy & CTA - Right Side */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-8"
+            >
+              {/* Status Badge */}
+              {isComingSoon && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-sm font-semibold text-amber-300">Coming Soon</span>
+                </div>
+              )}
 
-            {/* Title & Info */}
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {book.title}
-            </h1>
-            {book.subtitle && (
-              <p className="text-xl text-amber-400 mb-4">{book.subtitle}</p>
-            )}
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <Badge className="bg-white/10 text-white/70 border-0">
-                {book.category}
-              </Badge>
-              {book.subjects?.slice(0, 3).map((subject) => (
-                <Badge key={subject} className="bg-amber-500/20 text-amber-300 border-0">
-                  {subject}
+              {/* Title */}
+              <div className="space-y-4">
+                <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                  {book.title}
+                </h1>
+                {book.subtitle && (
+                  <p className="text-2xl text-amber-400 font-light">{book.subtitle}</p>
+                )}
+              </div>
+
+              {/* Meta Info */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/20 text-amber-300 border-amber-500/40 text-sm px-4 py-2">
+                  {book.category}
                 </Badge>
-              ))}
-            </div>
-          </motion.div>
+                {book.subjects?.slice(0, 2).map((subject) => (
+                  <Badge key={subject} className="bg-white/10 text-white/80 border-white/20 text-sm">
+                    {subject}
+                  </Badge>
+                ))}
+              </div>
+
+              {/* Hook/Teaser Copy */}
+              <div className="text-lg text-white/80 leading-relaxed font-light">
+                <p>{book.book_summary?.slice(0, 150)}...</p>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="space-y-3 pt-4">
+                {isComingSoon ? (
+                  <>
+                    <p className="text-white/60 text-sm">Available on release date</p>
+                    <Button className="w-full h-14 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg border-0 rounded-xl shadow-lg shadow-amber-500/30">
+                      Notify Me When Available
+                    </Button>
+                  </>
+                ) : bookstores.length > 0 ? (
+                  <Button className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg border-0 rounded-xl shadow-lg shadow-emerald-500/30">
+                    Buy Now
+                  </Button>
+                ) : null}
+                
+                <Button variant="outline" className="w-full h-12 border-white/30 text-white hover:bg-white/10 rounded-xl font-semibold">
+                  📖 Read More Details
+                </Button>
+              </div>
+
+              {/* Trust Signals */}
+              <div className="pt-6 border-t border-white/10 space-y-2 text-sm text-white/60">
+                <p>✓ Instant delivery to your device</p>
+                <p>✓ Available in multiple formats</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
