@@ -188,17 +188,18 @@ export default function BookWebsite() {
         </div>
       </section>
 
-      {/* Summary Section */}
+      {/* Full Summary Section */}
       {book.book_summary && (
-        <section className="py-16 px-6">
-          <div className="max-w-2xl mx-auto">
+        <section className="py-20 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
+          <div className="max-w-3xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-center"
+              transition={{ delay: 0.4 }}
+              className="space-y-8"
             >
-              <p className="text-lg text-white/70 leading-relaxed">
+              <h2 className="text-3xl font-bold text-white text-center">About This Book</h2>
+              <p className="text-lg text-white/80 leading-relaxed text-center">
                 {book.book_summary}
               </p>
             </motion.div>
