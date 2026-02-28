@@ -238,52 +238,55 @@ export default function BookWebsite() {
         </section>
       )}
 
-      {/* Newsletter Section */}
-      <section className="py-16 px-6">
-        <div className="max-w-xl mx-auto">
+      {/* Newsletter Section - High Converting */}
+      <section className="py-20 px-6">
+        <div className="max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-center p-8 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
+            transition={{ delay: 0.5 }}
+            className="rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-900/50 border border-amber-500/40 p-12 space-y-6"
           >
-            <Mail className="w-10 h-10 text-amber-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">
-              {isComingSoon ? "Get Notified on Release" : "Stay Updated"}
-            </h2>
-            <p className="text-white/50 mb-6">
-              {isComingSoon 
-                ? "Be the first to know when this book is available"
-                : "Subscribe for exclusive updates and content"
-              }
-            </p>
+            <div className="text-center">
+              <Mail className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {isComingSoon ? "📬 Get Notified on Release" : "📬 Exclusive Updates"}
+              </h2>
+              <p className="text-white/70 text-lg">
+                {isComingSoon 
+                  ? "Be among the first to know. Limited early access for subscribers."
+                  : "Exclusive content, behind-the-scenes stories, and special offers for subscribers."
+                }
+              </p>
+            </div>
             
             {subscribed ? (
-              <div className="flex items-center justify-center gap-2 text-emerald-400">
-                <Check className="w-5 h-5" />
-                <span>You're subscribed! We'll keep you updated.</span>
+              <div className="flex items-center justify-center gap-3 text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-4 px-6">
+                <Check className="w-6 h-6" />
+                <span className="font-semibold">Success! Check your email to confirm.</span>
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex gap-3">
+              <form onSubmit={handleSubscribe} className="space-y-3">
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+                  placeholder="your@email.com"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-12 rounded-xl"
                   required
                 />
                 <Button 
                   type="submit"
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 px-6"
+                  className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30"
                   disabled={subscribeMutation.isPending}
                 >
                   {subscribeMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
                   ) : (
-                    "Subscribe"
+                    "✓ Notify Me"
                   )}
                 </Button>
+                <p className="text-center text-xs text-white/50">No spam, just updates about the book.</p>
               </form>
             )}
           </motion.div>
