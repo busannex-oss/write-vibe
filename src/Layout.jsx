@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms"];
@@ -88,7 +89,10 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const adminNav = user?.role === "admin" || user?.is_super_admin
-    ? [{ name: "User Management", href: "UserManagement", icon: Crown }]
+    ? [
+        { name: "User Management", href: "UserManagement", icon: Crown },
+        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert }
+      ]
     : [];
 
   const navigation = [...memberNav, ...adminNav];
@@ -268,7 +272,9 @@ export default function Layout({ children, currentPageName }) {
           )}
         </div>
         <div className="pt-16 lg:pt-0">
-          {children}
+          <ErrorBoundary componentName={currentPageName}>
+            {children}
+          </ErrorBoundary>
         </div>
       </main>
     </div>
