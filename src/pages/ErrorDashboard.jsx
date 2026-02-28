@@ -201,9 +201,9 @@ Keep it concise and technical.`,
                         <p className="text-white/30 text-xs mt-1">{err.page} • {err.created_date ? format(new Date(err.created_date), "MMM d, h:mma") : ""}</p>
                       </div>
                       <div className="flex gap-1 shrink-0">
-                        <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); analyzeWithAI(err); }}
-                          className="text-amber-400/60 hover:text-amber-400 hover:bg-amber-500/10 h-7 px-2 text-xs">
-                          <Bot className="w-3 h-3 mr-1" /> AI Fix
+                        <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); !analyzing && analyzeWithAI(err); }} disabled={analyzing}
+                          className="text-amber-400/60 hover:text-amber-400 hover:bg-amber-500/10 h-7 px-2 text-xs disabled:opacity-50">
+                          <Bot className="w-3 h-3 mr-1" /> {analyzing && selectedError?.id === err.id ? "Analyzing..." : "AI Fix"}
                         </Button>
                         {!err.resolved && (
                           <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); resolveMutation.mutate({ id: err.id, notes: "Manually resolved" }); }}
