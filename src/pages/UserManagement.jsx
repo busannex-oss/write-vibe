@@ -120,15 +120,15 @@ export default function UserManagement() {
     suspendMutation.mutate({ userId, status: newStatus });
   };
 
-  // Check if current user is super admin
-  if (!currentUser?.is_super_admin) {
+  // Check if current user is super admin (first admin by creation date)
+  if (!currentUser || (users.length > 0 && !isSuperAdmin)) {
     return (
       <div className="p-6 lg:p-8">
         <Card className="bg-red-500/10 border-red-500/30">
           <CardContent className="py-8 text-center">
             <Shield className="w-12 h-12 text-red-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">Access Denied</h2>
-            <p className="text-white/60">Only super admin can access user management</p>
+            <p className="text-white/60">Only the super admin (first admin) can access user management</p>
           </CardContent>
         </Card>
       </div>
