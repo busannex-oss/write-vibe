@@ -447,17 +447,24 @@ Make them engaging and shareable.`;
                                                 {copiedId === copyKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                                 <span className="ml-1 text-xs">{copiedId === copyKey ? "Copied!" : "Copy"}</span>
                                               </Button>
-                                              {platInfo && (
+                                              {platInfo && platInfo.copyOnly ? (
+                                                <span className="h-7 px-2 flex items-center text-xs text-white/50 italic">
+                                                  (copy &amp; paste)
+                                                </span>
+                                              ) : platInfo ? (
                                                 <Button
                                                   size="sm"
                                                   variant="ghost"
-                                                  onClick={() => window.open(platInfo.shareUrl(fullText), '_blank')}
+                                                  onClick={() => {
+                                                    copyCaption(fullText, copyKey);
+                                                    setTimeout(() => window.open(platInfo.shareUrl(fullText), '_blank'), 300);
+                                                  }}
                                                   className="h-7 px-2 text-white/80 hover:text-white hover:bg-white/20"
                                                 >
                                                   <Share2 className="w-3 h-3" />
-                                                  <span className="ml-1 text-xs">Share</span>
+                                                  <span className="ml-1 text-xs">Open</span>
                                                 </Button>
-                                              )}
+                                              ) : null}
                                             </div>
                                           </div>
                                           {/* Caption body */}
