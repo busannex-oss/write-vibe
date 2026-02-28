@@ -42,7 +42,6 @@ import AudiobookGenerator from "@/components/book/AudiobookGenerator.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
-import LeadMagnetHub from "@/components/book/LeadMagnetHub.jsx";
 import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 
 export default function BookEditor() {
