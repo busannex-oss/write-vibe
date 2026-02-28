@@ -88,7 +88,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
-  const adminNav = user?.role === "admin" || user?.is_super_admin
+  const adminNav = user?.role === "admin"
     ? [
         { name: "User Management", href: "UserManagement", icon: Crown },
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert }
