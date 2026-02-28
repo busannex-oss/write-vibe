@@ -215,11 +215,11 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
       const selectedVersion = script.versions[selectedDuration + "s"];
 
       // Generate a final composite "title card" image as the video thumbnail/end card
-      const titleCardResponse = await base44.integrations.Core.GenerateImage({
-        prompt: `Professional book trailer title card for "${book.title}" by ${book.created_by || 'the author'}. 
-Genre: ${book.category}. Cinematic dark background with the book title prominently displayed, movie trailer style, dramatic typography, gold accents, high quality.`,
-        existing_image_urls: book.front_cover_url ? [book.front_cover_url] : undefined
-      });
+       const titleCardResponse = await base44.integrations.Core.GenerateImage({
+         prompt: `Professional book trailer title card for "${book.title}". 
+      Genre: ${book.category}. Cinematic dark background with the book title prominently displayed, movie trailer style, dramatic typography, gold accents, high quality.`,
+         existing_image_urls: book.front_cover_url ? [book.front_cover_url] : undefined
+       });
 
       const allImages = [
         ...storyboardImages,
