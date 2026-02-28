@@ -244,6 +244,88 @@ export default function BookWebsite() {
         </section>
       )}
 
+      {/* Reader Reviews Section */}
+      {reviews.length > 0 && (
+        <section className="py-20 px-6 bg-gradient-to-b from-slate-900/50 to-transparent border-t border-white/10">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                ⭐ What Readers Are Saying
+              </h2>
+              <p className="text-white/60 text-lg">
+                Join thousands who've discovered this book
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {reviews.slice(0, 3).map((review, idx) => (
+                <motion.div
+                  key={review.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + idx * 0.1 }}
+                  className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-xl p-6 space-y-4 hover:border-amber-500/40 transition-all"
+                >
+                  {/* Rating Stars */}
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={i < review.rating ? "text-amber-400" : "text-white/20"}>
+                        ★
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Review Title */}
+                  {review.title && (
+                    <h3 className="text-lg font-semibold text-white">{review.title}</h3>
+                  )}
+
+                  {/* Review Content */}
+                  <p className="text-white/70 leading-relaxed text-sm">
+                    "{review.content}"
+                  </p>
+
+                  {/* Reviewer Name */}
+                  <div className="pt-4 border-t border-white/10">
+                    <p className="text-sm font-medium text-amber-400">— {review.author_name}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Rating Summary */}
+            {reviews.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="mt-12 text-center"
+              >
+                <div className="inline-block bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/40 rounded-xl px-8 py-4">
+                  <p className="text-sm text-white/60 mb-1">Average Rating</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-3xl font-bold text-amber-400">
+                      {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)}
+                    </span>
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-amber-400 text-lg">★</span>
+                      ))}
+                    </div>
+                    <span className="text-white/60 text-sm">({reviews.length} reviews)</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Newsletter Section - High Converting */}
       <section className="py-20 px-6">
         <div className="max-w-2xl mx-auto">
