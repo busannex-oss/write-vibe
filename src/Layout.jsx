@@ -202,6 +202,26 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="lg:pl-72 min-h-screen">
+        {/* Desktop Top Header */}
+        <div className="hidden lg:flex items-center justify-between px-8 h-14 border-b border-white/5 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-30">
+          <h2 className="text-sm font-medium text-white/60 tracking-wide capitalize">
+            {currentPageName?.replace(/([A-Z])/g, ' $1').trim()}
+          </h2>
+          {user && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-white/40">{user.email}</span>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center overflow-hidden">
+                {user.author_photo_url ? (
+                  <img src={user.author_photo_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-xs font-medium text-white/60">
+                    {user.full_name?.charAt(0) || user.email?.charAt(0)}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <div className="pt-16 lg:pt-0">
           {children}
         </div>
