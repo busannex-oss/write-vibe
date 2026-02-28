@@ -13,6 +13,16 @@ export default function TitleGenerator({ book, onUpdate, isUpdating }) {
   const [customTitle, setCustomTitle] = useState(book.title || "");
   const [customSubtitle, setCustomSubtitle] = useState(book.subtitle || "");
 
+  // Auto-generate suggestions if book has data and no title yet
+  React.useEffect(() => {
+    const hasBookData = book.characters?.length > 0 || book.target_audience?.age_range || book.category || book.plot_summary;
+    const isTitleEmpty = !book.title || book.title === "Untitled Book";
+    
+    if (hasBookData && isTitleEmpty && suggestions.length === 0 && !generating) {
+      generateTitles();
+    }
+  }, [book.id]);
+
   const generateTitles = async () => {
     setGenerating(true);
     try {
