@@ -209,10 +209,13 @@ export default function BookWebsite() {
 
       {/* Buy Buttons */}
       {!isComingSoon && bookstores.length > 0 && (
-        <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl font-semibold text-white mb-6">Available Now</h2>
-            <div className="flex flex-wrap justify-center gap-4">
+        <section className="py-16 px-6 bg-gradient-to-r from-slate-900/50 to-slate-800/50 border-y border-white/10">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Get Your Copy Today</h2>
+              <p className="text-white/60">Available on your favorite platforms</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {bookstores.map((storeId) => {
                 const store = BOOKSTORE_INFO[storeId];
                 const link = book.website_config?.bookstore_links?.[storeId];
@@ -223,10 +226,10 @@ export default function BookWebsite() {
                     href={link || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    className="flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 text-white transition-all border border-white/10 hover:border-white/20"
                   >
-                    <span className="text-xl">{store.logo}</span>
-                    <span>{store.name}</span>
+                    <span className="text-2xl">{store.logo}</span>
+                    <span className="font-semibold text-sm">{store.name}</span>
                   </a>
                 );
               })}
