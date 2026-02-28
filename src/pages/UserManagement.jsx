@@ -254,13 +254,13 @@ export default function UserManagement() {
                           <p className="font-medium text-white truncate">
                             {user.full_name || user.email}
                           </p>
-                          {user.is_super_admin && (
+                          {firstAdmin?.id === user.id && (
                             <Badge className="bg-amber-500 text-white border-0 text-xs">
                               <Crown className="w-3 h-3 mr-1" />
                               Super Admin
                             </Badge>
                           )}
-                          {user.role === "admin" && !user.is_super_admin && (
+                          {user.role === "admin" && firstAdmin?.id !== user.id && (
                             <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">
                               <Shield className="w-3 h-3 mr-1" />
                               Admin
