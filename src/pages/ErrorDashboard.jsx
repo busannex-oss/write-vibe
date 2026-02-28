@@ -260,13 +260,23 @@ Keep it concise and technical.`,
                         <p className="text-white/80 text-sm leading-relaxed">{aiAnalysis[key]}</p>
                       </div>
                     ))}
-                    <Button
-                      className="w-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
-                      onClick={() => resolveMutation.mutate({ id: selectedError.id, notes: aiAnalysis.recommended_fix })}
-                    >
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
-                      Mark as Resolved
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
+                        onClick={() => applyFix(selectedError, aiAnalysis)}
+                        disabled={analyzing}
+                      >
+                        <Bot className="w-4 h-4 mr-2" />
+                        Apply Fix
+                      </Button>
+                      <Button
+                        className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
+                        onClick={() => resolveMutation.mutate({ id: selectedError.id, notes: aiAnalysis.recommended_fix })}
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                        Mark Resolved
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Button className="w-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30"
