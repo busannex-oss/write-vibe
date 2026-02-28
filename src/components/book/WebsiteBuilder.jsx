@@ -111,6 +111,11 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
 
   return (
     <div className="space-y-6">
+      {/* Lead Magnet Designer */}
+      {hasBackCover && (
+        <LeadMagnetHub bookId={book.id} />
+      )}
+
       {/* AI Content Generator */}
       {hasBackCover && (
         <AIWebsiteContent book={book} onApplyContent={applyAIContent} />
