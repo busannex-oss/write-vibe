@@ -32,78 +32,65 @@ export default function ManuscriptFormatter({ book, onUpdate }) {
   ];
 
   const startFormatting = async () => {
-    if (!manuscript && !book.outline?.length) {
+    const contentSource = manuscript ||
+      book.manuscript_chapters?.map(ch =>
+        `Chapter ${ch.chapter_number}: ${ch.chapter_title}\n\n${ch.content || ''}`
+      ).join('\n\n---\n\n') ||
+      book.outline?.map(ch =>
+        `Chapter ${ch.chapter_number}: ${ch.chapter_title}\n\n${ch.summary || ''}\n\nKey Events:\n${ch.key_events?.join('\n- ') || ''}`
+      ).join('\n\n---\n\n');
+
+    if (!contentSource?.trim()) {
       alert("Please add manuscript content or create an outline first");
       return;
     }
 
     setFormatting(true);
     try {
-      // Create conversation with Text Formatter agent
-      const conversation = await base44.agents.createConversation({
-        agent_name: "text_formatter",
-        metadata: {
-          name: `Format: ${book.title}`,
-          book_id: book.id
-        }
-      });
-      setConversationId(conversation.id);
-
-      const contentToFormat = manuscript || book.outline?.map((ch, i) => 
-        `Chapter ${ch.chapter_number}: ${ch.chapter_title}\n\n${ch.summary}\n\nKey Events:\n${ch.key_events?.join('\n- ') || ''}`
-      ).join('\n\n---\n\n');
-
-      const prompt = `Format this book manuscript for ${platform} platform using ${format} formatting style.
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a professional manuscript formatter. Format the following book content for ${platform} platform using ${format} style.
 
 Book Title: ${book.title}
 ${book.subtitle ? `Subtitle: ${book.subtitle}` : ''}
-Category: ${book.category}
-Author: ${book.created_by}
+Category: ${book.category || ''}
 
 Requirements:
-- Create proper heading hierarchy (H1/H2/H3)
+- Create proper heading hierarchy
 - Optimize paragraph structure and flow
-- Apply consistent typography and styling
+- Apply consistent typography markers
 - Ensure grammar and punctuation accuracy
-- Generate Table of Contents
-- Add page breaks at appropriate sections
+- Generate a Table of Contents at the top
+- Add chapter breaks
 - ${platform === 'ebook' ? 'Format for Kindle/ePub standards with chapter navigation' : ''}
 - ${platform === 'web' ? 'Optimize for web readability with SEO-friendly structure' : ''}
-- ${platform === 'pdf' ? 'Format for print-ready PDF with proper margins and page numbering' : ''}
+- ${platform === 'pdf' ? 'Format for print-ready PDF with proper margins and page numbering guidance' : ''}
 
 MANUSCRIPT CONTENT:
-${contentToFormat}
+${contentSource.slice(0, 12000)}
 
-Please provide:
-1. Fully formatted manuscript ready for ${platform}
-2. Table of Contents
-3. Style and consistency audit report
-4. Readability improvements made`;
-
-      await base44.agents.addMessage(conversation, {
-        role: "user",
-        content: prompt
-      });
-
-      // Subscribe to updates
-      const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
-        const lastMessage = data.messages[data.messages.length - 1];
-        if (lastMessage?.role === "assistant" && lastMessage?.content) {
-          setFormattedOutput(lastMessage.content);
+Provide the fully formatted manuscript with a Table of Contents at the top, followed by all chapters properly formatted. Include a brief style audit at the end.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            formatted_manuscript: { type: "string" },
+            table_of_contents: { type: "string" },
+            style_notes: { type: "string" }
+          }
         }
       });
 
-      // Cleanup after 2 minutes
-      setTimeout(() => {
-        unsubscribe();
-        setFormatting(false);
-      }, 120000);
+      const output = [
+        response.table_of_contents,
+        response.formatted_manuscript,
+        response.style_notes ? `\n\n---\nStyle Notes:\n${response.style_notes}` : ''
+      ].filter(Boolean).join('\n\n');
 
+      setFormattedOutput(output);
     } catch (error) {
       console.error("Formatting error:", error);
       alert("Failed to format manuscript. Please try again.");
-      setFormatting(false);
     }
+    setFormatting(false);
   };
 
   const saveFormatted = async () => {
