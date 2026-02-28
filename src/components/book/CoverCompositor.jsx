@@ -55,19 +55,20 @@ function BottomVignetteLayer({ opacity = 0.65 }) {
 function TitleLayer({ title, subtitle }) {
   const isLong = (title?.length || 0) > 22;
   return (
-    <div className="absolute inset-x-0 top-0 flex flex-col items-center px-[8%] pt-[7%]">
+    <div className="absolute inset-x-0 top-0 flex flex-col items-center px-[8%] pt-[8%]">
       <h1
         style={{
-          fontSize: isLong ? "clamp(1.3rem,5.5vw,3.2rem)" : "clamp(1.7rem,7vw,4rem)",
+          fontSize: isLong ? "clamp(1.5rem,6vw,3.5rem)" : "clamp(2rem,8vw,4.5rem)",
           color: "#FFFFFF",
-          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontFamily: '"Playfair Display", "Georgia", serif',
           fontWeight: 900,
-          lineHeight: 1.05,
-          letterSpacing: "0.04em",
+          lineHeight: 0.95,
+          letterSpacing: isLong ? "0.08em" : "0.12em",
           textTransform: "uppercase",
           textAlign: "center",
-          textShadow: "0 2px 20px rgba(0,0,0,0.95), 0 0 40px rgba(0,0,0,0.7)",
+          textShadow: "0 4px 30px rgba(0,0,0,0.95), 0 0 50px rgba(0,0,0,0.8)",
           wordBreak: "break-word",
+          fontVariant: "small-caps",
         }}
       >
         {title}
@@ -75,15 +76,16 @@ function TitleLayer({ title, subtitle }) {
       {subtitle && (
         <p
           style={{
-            marginTop: "4%",
-            fontSize: "clamp(0.55rem,2vw,1rem)",
-            color: "rgba(255,255,255,0.88)",
+            marginTop: "5%",
+            fontSize: "clamp(0.6rem,2.2vw,1.1rem)",
+            color: "rgba(255,255,255,0.92)",
             fontFamily: '"Georgia", serif',
-            fontStyle: "italic",
-            fontWeight: 300,
+            fontStyle: "normal",
+            fontWeight: 400,
+            letterSpacing: "0.08em",
             textAlign: "center",
-            textShadow: "0 1px 8px rgba(0,0,0,0.85)",
-            maxWidth: "80%",
+            textShadow: "0 2px 12px rgba(0,0,0,0.88)",
+            maxWidth: "85%",
           }}
         >
           {subtitle}
