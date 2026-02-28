@@ -23,6 +23,7 @@ import {
   Clock
 } from "lucide-react";
 import AIWebsiteContent from "./AIWebsiteContent";
+import LeadMagnetHub from "./LeadMagnetHub";
 
 const BOOKSTORES = [
   { id: "amazon", name: "Amazon", logo: "📦" },
