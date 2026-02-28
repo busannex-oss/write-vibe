@@ -64,6 +64,10 @@ import Settings from './pages/Settings';
 import Team from './pages/Team';
 import Terms from './pages/Terms';
 import UserManagement from './pages/UserManagement';
+import Investor from './pages/Investor';
+import FAQ from './pages/FAQ';
+import CookiePolicy from './pages/CookiePolicy';
+import HowItWorks from './pages/HowItWorks';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +89,10 @@ export const PAGES = {
     "Team": Team,
     "Terms": Terms,
     "UserManagement": UserManagement,
+    "Investor": Investor,
+    "FAQ": FAQ,
+    "CookiePolicy": CookiePolicy,
+    "HowItWorks": HowItWorks,
 }
 
 export const pagesConfig = {
