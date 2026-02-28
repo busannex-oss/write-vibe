@@ -295,115 +295,135 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
 
   const currentVersion = script?.versions?.[selectedDuration + "s"];
 
-  return (
-    <div className="space-y-6">
-      {/* Header Card */}
-      <Card className="bg-white/5 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Video className="w-5 h-5 text-amber-400" />
-            Video Commercial
-          </CardTitle>
-          <CardDescription className="text-white/50">
-            Create a professional book trailer script and storyboard
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-500 text-white text-sm font-bold">1</div>
-              <Button
-                onClick={generateScript}
-                disabled={generating}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-              >
-                {generating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating Script...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {script ? 'Regenerate Script' : 'Generate Video Script'}
-                  </>
-                )}
-              </Button>
-              {script && <Badge className="bg-green-500/20 text-green-300 border-green-500/30">✓ Complete</Badge>}
-            </div>
-            
-            {script && (
+  const StepItem = ({ number, isActive, isComplete, title, isLoading, onClick, disabled, children }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="group"
+    >
+      <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/7 transition-all">
+        <div className={`flex items-center justify-center w-10 h-10 rounded-full text-white text-sm font-bold flex-shrink-0 transition-all ${
+          isComplete ? 'bg-gradient-to-br from-emerald-400 to-green-500' :
+          isActive ? 'bg-gradient-to-br from-amber-400 to-orange-500' : 
+          'bg-white/10'
+        }`}>
+          {isComplete ? <Check className="w-5 h-5" /> : number}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-white mb-3">{title}</h3>
+          {children}
+        </div>
+        <div className="flex-shrink-0">
+          <Button
+            onClick={onClick}
+            disabled={disabled || isLoading}
+            size="sm"
+            className={`whitespace-nowrap ${
+              isActive || isComplete ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' :
+              'bg-white/10 hover:bg-white/20'
+            } text-white border-0`}
+          >
+            {isLoading ? (
               <>
-                <div className="flex items-center gap-3">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold ${storyboardImages.length > 0 ? 'bg-blue-500' : 'bg-slate-600'}`}>2</div>
-                  <Button
-                    onClick={generateStoryboardImages}
-                    disabled={generatingImages || !script}
-                    className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {generatingImages ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating Storyboard...
-                      </>
-                    ) : (
-                      <>
-                        <Image className="w-4 h-4 mr-2" />
-                        {storyboardImages.length > 0 ? 'Regenerate Storyboard' : 'Generate Storyboard Images'}
-                      </>
-                    )}
-                  </Button>
-                  {storyboardImages.length > 0 && <Badge className="bg-green-500/20 text-green-300 border-green-500/30">✓ {storyboardImages.length} images</Badge>}
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold ${videoUrl ? 'bg-purple-500' : 'bg-slate-600'}`}>3</div>
-                  <Button
-                    onClick={generateVideo}
-                    disabled={generatingVideo || !script || storyboardImages.length === 0}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {generatingVideo ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Assembling Video...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        {videoUrl ? 'Regenerate Video' : 'Generate Final Video'}
-                      </>
-                    )}
-                  </Button>
-                  {videoUrl && <Badge className="bg-green-500/20 text-green-300 border-green-500/30">✓ Ready</Badge>}
-                  {!script && <span className="text-xs text-white/40">Complete step 1 first</span>}
-                  {script && storyboardImages.length === 0 && <span className="text-xs text-white/40">Complete step 2 first</span>}
-                </div>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                {isComplete ? 'Regenerate' : 'Generate'}
               </>
             )}
-            
-            {videoUrl && (
-              <div className="flex gap-3 ml-11 mt-2">
-                <Button
-                  onClick={regenerateVideo}
-                  disabled={generatingVideo}
-                  className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Regenerate
-                </Button>
-                <Button
-                  onClick={downloadVideo}
-                  className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
-                </Button>
-              </div>
-            )}
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30">
+            <Video className="w-5 h-5 text-amber-400" />
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Video Commercial</h2>
+            <p className="text-sm text-white/50">Create a professional book trailer in 3 steps</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="space-y-4">
+        {/* Step 1: Script */}
+        <StepItem
+          number={1}
+          isActive={!script}
+          isComplete={!!script}
+          title="Generate Script"
+          isLoading={generating}
+          onClick={generateScript}
+          disabled={false}
+        >
+          <p className="text-sm text-white/60">Generate professional trailer scripts for 30s, 60s, and 90s versions with scene breakdowns and narration.</p>
+        </StepItem>
+
+        {/* Step 2: Storyboard */}
+        {script && (
+          <StepItem
+            number={2}
+            isActive={!storyboardImages.length}
+            isComplete={storyboardImages.length > 0}
+            title="Generate Storyboard Images"
+            isLoading={generatingImages}
+            onClick={generateStoryboardImages}
+            disabled={!script}
+          >
+            <p className="text-sm text-white/60">Create 4 cinematic storyboard images to visualize your trailer scenes.</p>
+            {storyboardImages.length > 0 && <Badge className="mt-2 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">✓ {storyboardImages.length} images ready</Badge>}
+          </StepItem>
+        )}
+
+        {/* Step 3: Video */}
+        {script && storyboardImages.length > 0 && (
+          <StepItem
+            number={3}
+            isActive={!videoUrl}
+            isComplete={!!videoUrl}
+            title="Assemble Final Video"
+            isLoading={generatingVideo}
+            onClick={generateVideo}
+            disabled={!script || storyboardImages.length === 0}
+          >
+            <p className="text-sm text-white/60">Combine all elements into a professional slideshow-style trailer video.</p>
+            {videoUrl && <Badge className="mt-2 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">✓ Ready to download</Badge>}
+          </StepItem>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      {videoUrl && (
+        <div className="flex gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+          <Button
+            onClick={regenerateVideo}
+            disabled={generatingVideo}
+            variant="outline"
+            className="flex-1"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Regenerate Video
+          </Button>
+          <Button
+            onClick={downloadVideo}
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download Video
+          </Button>
+        </div>
+      )}
 
       {/* Script Content */}
       {script && (
