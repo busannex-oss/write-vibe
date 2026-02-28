@@ -54,8 +54,8 @@ export default function BookEditor() {
   const { data: book, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
-      const books = await base44.entities.Book.list();
-      return books.find(b => b.id === bookId);
+      const books = await base44.entities.Book.filter({ id: bookId });
+      return books?.[0] || null;
     },
     enabled: !!bookId
   });
