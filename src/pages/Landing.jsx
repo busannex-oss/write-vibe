@@ -95,13 +95,13 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              onClick={() => base44.auth.redirectToLogin()}
               className="text-white/70 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
             <Button 
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              onClick={() => base44.auth.redirectToLogin()}
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
             >
               Start Free Trial
@@ -132,13 +132,13 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                <Button 
-                 size="lg" 
-                 onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
-                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
-               >
-                 Start 7-Day Free Trial
-                 <ArrowRight className="w-5 h-5 ml-2" />
-               </Button>
+                  size="lg" 
+                  onClick={() => base44.auth.redirectToLogin()}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+                >
+                  Start 7-Day Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
                <Button 
                 size="lg" 
                 variant="outline" 
@@ -280,7 +280,7 @@ export default function Landing() {
             </p>
             <Button 
               size="lg" 
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Dashboard"))}
+              onClick={() => base44.auth.redirectToLogin()}
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
             >
               Start Your Free Trial
