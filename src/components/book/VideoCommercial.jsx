@@ -577,7 +577,7 @@ Genre: ${book.category}. Cinematic dark background with the book title prominent
                   )}
 
                   {/* Storyboard Images */}
-              {storyboardImages.length > 0 && (
+                  {storyboardImages.length > 0 && (
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader>
                     <CardTitle className="text-white text-sm">Storyboard Preview</CardTitle>
