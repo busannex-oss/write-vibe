@@ -39,12 +39,46 @@ import {
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 
+const SOCIAL_PLATFORMS = [
+  { key: "instagram", label: "Instagram", color: "bg-pink-500", icon: "📷", shareUrl: (text) => `https://www.instagram.com/` },
+  { key: "twitter",   label: "X / Twitter", color: "bg-sky-500",  icon: "🐦", shareUrl: (text) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}` },
+  { key: "facebook",  label: "Facebook",  color: "bg-blue-600", icon: "📘", shareUrl: (text) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}` },
+  { key: "tiktok",    label: "TikTok",    color: "bg-black",    icon: "🎵", shareUrl: (text) => `https://www.tiktok.com/` },
+  { key: "linkedin",  label: "LinkedIn",  color: "bg-blue-700", icon: "💼", shareUrl: (text) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}` },
+];
+
+function parseCaptions(content) {
+  if (!content) return [];
+  // Split on numbered platform sections like "1. **Platform: Instagram**" or "---"
+  const sections = content.split(/(?=\d+\.\s+\*\*Platform)/i).filter(Boolean);
+  if (sections.length < 2) return null; // fallback to raw
+  return sections.map((section) => {
+    const platformMatch = section.match(/Platform:\s*\*?\*?([^\n*]+)/i);
+    const captionMatch  = section.match(/Caption:\*?\*?\s*([\s\S]*?)(?=\*\*Hashtags|\*\*Call|$)/i);
+    const hashtagMatch  = section.match(/Hashtags:\*?\*?\s*([^\n]+)/i);
+    const ctaMatch      = section.match(/Call to Action:\*?\*?\s*([^\n]+)/i);
+    return {
+      platform: platformMatch?.[1]?.trim() || "Unknown",
+      caption:  captionMatch?.[1]?.trim()  || section.trim(),
+      hashtags: hashtagMatch?.[1]?.trim()  || "",
+      cta:      ctaMatch?.[1]?.trim()      || "",
+    };
+  }).filter(c => c.caption);
+}
+
 export default function Documents() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("publisher_letter");
   const [selectedBook, setSelectedBook] = useState("");
   const [generating, setGenerating] = useState(false);
   const [editingDoc, setEditingDoc] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const copyCaption = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const { data: books = [] } = useQuery({
     queryKey: ['books'],
