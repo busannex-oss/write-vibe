@@ -495,90 +495,84 @@ Genre: ${book.category}. Cinematic dark background with the book title prominent
               {videoUrl && (() => {
                 let slideshowData = null;
                 try { slideshowData = JSON.parse(videoUrl); } catch {}
-                if (slideshowData?.isSlideshow) {
-                  const slides = slideshowData.slides || [];
-                  const currentSlide = slides[slideIndex] || slides[0];
-                  return (
-                    <Card className="bg-white/5 border-white/10">
-                      <CardHeader>
-                        <CardTitle className="text-white text-sm flex items-center gap-2">
-                          <Play className="w-4 h-4 text-amber-400" />
-                          Storyboard Preview ({slides.length} scenes)
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="aspect-video rounded-lg overflow-hidden bg-black relative mb-3">
-                          {currentSlide?.url && (
-                            <img src={currentSlide.url} alt={`Scene ${currentSlide.scene}`} className="w-full h-full object-cover" />
-                          )}
-                          {currentSlide?.narration && (
-                            <div className="absolute bottom-0 inset-x-0 bg-black/60 p-3">
-                              <p className="text-white text-xs italic text-center">"{currentSlide.narration}"</p>
-                            </div>
-                          )}
-                          <div className="absolute top-2 left-2">
-                            <Badge className="bg-black/60 text-white border-0">Scene {slideIndex + 1}/{slides.length}</Badge>
-                          </div>
-                        </div>
-                        {/* Navigation */}
-                        <div className="flex gap-2 mb-3">
-                          <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))} disabled={slideIndex === 0}>← Prev</Button>
-                          <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))} disabled={slideIndex === slides.length - 1}>Next →</Button>
-                        </div>
-                        {/* Thumbnails */}
-                        <div className="grid grid-cols-5 gap-1">
-                          {slides.map((s, i) => (
-                            <button key={i} onClick={() => setSlideIndex(i)} className={`aspect-video rounded overflow-hidden border-2 transition-all ${i === slideIndex ? 'border-amber-400' : 'border-transparent'}`}>
-                              <img src={s.url} alt="" className="w-full h-full object-cover" />
-                            </button>
-                          ))}
-                        </div>
-                        <Button onClick={regenerateVideo} size="sm" disabled={generatingVideo} className="w-full mt-3 bg-white/10 hover:bg-white/20 text-white border-0">
-                          <RefreshCw className="w-3 h-3 mr-2" /> Regenerate
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  );
-                }
-                return null;
-              })()}
-
-                  {/* Hosting Options */}
+                if (!slideshowData?.isSlideshow) return null;
+                const slides = slideshowData.slides || [];
+                const currentSlide = slides[slideIndex] || slides[0];
+                return (
                   <Card className="bg-white/5 border-white/10">
                     <CardHeader>
                       <CardTitle className="text-white text-sm flex items-center gap-2">
-                        <Share2 className="w-4 h-4 text-amber-400" />
-                        Host Video
+                        <Play className="w-4 h-4 text-amber-400" />
+                        Storyboard Preview ({slides.length} scenes)
                       </CardTitle>
-                      <CardDescription className="text-white/50 text-xs">
-                        Upload to video hosting platforms
-                      </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      {Object.entries(getHostingLinks()).map(([platform, url]) => (
-                        <a
-                          key={platform}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Video className="w-4 h-4 text-amber-400" />
-                            <span className="text-sm text-white capitalize">{platform}</span>
+                    <CardContent>
+                      <div className="aspect-video rounded-lg overflow-hidden bg-black relative mb-3">
+                        {currentSlide?.url && (
+                          <img src={currentSlide.url} alt={`Scene ${currentSlide.scene}`} className="w-full h-full object-cover" />
+                        )}
+                        {currentSlide?.narration && (
+                          <div className="absolute bottom-0 inset-x-0 bg-black/60 p-3">
+                            <p className="text-white text-xs italic text-center">"{currentSlide.narration}"</p>
                           </div>
-                          <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-white/70" />
-                        </a>
-                      ))}
-                      <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                        <p className="text-xs text-amber-300">
-                          💡 Tip: Download the video first, then upload to your preferred platform for professional hosting
-                        </p>
+                        )}
+                        <div className="absolute top-2 left-2">
+                          <Badge className="bg-black/60 text-white border-0">Scene {slideIndex + 1}/{slides.length}</Badge>
+                        </div>
                       </div>
+                      <div className="flex gap-2 mb-3">
+                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))} disabled={slideIndex === 0}>← Prev</Button>
+                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))} disabled={slideIndex === slides.length - 1}>Next →</Button>
+                      </div>
+                      <div className="grid grid-cols-5 gap-1">
+                        {slides.map((s, i) => (
+                          <button key={i} onClick={() => setSlideIndex(i)} className={`aspect-video rounded overflow-hidden border-2 transition-all ${i === slideIndex ? 'border-amber-400' : 'border-transparent'}`}>
+                            <img src={s.url} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                      <Button onClick={regenerateVideo} size="sm" disabled={generatingVideo} className="w-full mt-3 bg-white/10 hover:bg-white/20 text-white border-0">
+                        <RefreshCw className="w-3 h-3 mr-2" /> Regenerate
+                      </Button>
                     </CardContent>
                   </Card>
-                </>
-              )}
+                );
+              })()}
+
+              {/* Hosting Options */}
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white text-sm flex items-center gap-2">
+                    <Share2 className="w-4 h-4 text-amber-400" />
+                    Host Video
+                  </CardTitle>
+                  <CardDescription className="text-white/50 text-xs">
+                    Upload to video hosting platforms
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {Object.entries(getHostingLinks()).map(([platform, url]) => (
+                    <a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Video className="w-4 h-4 text-amber-400" />
+                        <span className="text-sm text-white capitalize">{platform}</span>
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-white/70" />
+                    </a>
+                  ))}
+                  <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                    <p className="text-xs text-amber-300">
+                      💡 Tip: Download the video first, then upload to your preferred platform for professional hosting
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Storyboard Images */}
               {storyboardImages.length > 0 && (
