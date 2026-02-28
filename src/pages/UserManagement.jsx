@@ -176,6 +176,9 @@ export default function UserManagement() {
                 onChange={(e) => setInviteRole(e.target.value)}
                 className="w-full h-9 px-3 rounded-md bg-white/5 border border-white/20 text-white"
               >
+                <option value="author">Author</option>
+                <option value="publisher">Publisher</option>
+                <option value="assistant">Assistant</option>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </select>

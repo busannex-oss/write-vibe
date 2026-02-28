@@ -55,6 +55,7 @@ import Contact from './pages/Contact';
 import CreateBook from './pages/CreateBook';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
+import ErrorDashboard from './pages/ErrorDashboard';
 import Landing from './pages/Landing';
 import Pricing from './pages/Pricing';
 import Privacy from './pages/Privacy';
@@ -63,7 +64,6 @@ import Settings from './pages/Settings';
 import Team from './pages/Team';
 import Terms from './pages/Terms';
 import UserManagement from './pages/UserManagement';
-import ErrorDashboard from './pages/ErrorDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +76,7 @@ export const PAGES = {
     "CreateBook": CreateBook,
     "Dashboard": Dashboard,
     "Documents": Documents,
+    "ErrorDashboard": ErrorDashboard,
     "Landing": Landing,
     "Pricing": Pricing,
     "Privacy": Privacy,
@@ -84,7 +85,6 @@ export const PAGES = {
     "Team": Team,
     "Terms": Terms,
     "UserManagement": UserManagement,
-    "ErrorDashboard": ErrorDashboard,
 }
 
 export const pagesConfig = {
