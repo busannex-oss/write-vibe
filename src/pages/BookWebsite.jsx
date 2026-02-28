@@ -38,6 +38,12 @@ export default function BookWebsite() {
     enabled: !!bookId
   });
 
+  const { data: reviews = [] } = useQuery({
+    queryKey: ['reviews', bookId],
+    queryFn: () => base44.entities.Review.filter({ book_id: bookId, status: "approved" }),
+    enabled: !!bookId
+  });
+
   const subscribeMutation = useMutation({
     mutationFn: (email) => base44.entities.NewsletterSubscriber.create({
       book_id: bookId,
