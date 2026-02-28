@@ -230,7 +230,7 @@ export default function UserManagement() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className={`p-4 rounded-xl border transition-all ${
-                    user.is_super_admin
+                    firstAdmin?.id === user.id
                       ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/5 border-amber-500/30'
                       : 'bg-white/5 border-white/10 hover:bg-white/10'
                   }`}
