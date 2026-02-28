@@ -32,7 +32,9 @@ import {
   RefreshCw,
   FileDown,
   Printer,
-  Save
+  Save,
+  Copy,
+  Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
