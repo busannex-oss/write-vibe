@@ -12,13 +12,20 @@ import {
   Menu,
   X,
   Crown,
-  Sparkles
+  Sparkles,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+// Route protection zones
+const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms"];
+const ADMIN_PAGES    = ["UserManagement"];
+const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports"];
+
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -26,12 +33,31 @@ export default function Layout({ children, currentPageName }) {
     loadUser();
   }, []);
 
+  // Re-check auth whenever page changes
+  useEffect(() => {
+    if (!loading) checkAccess();
+  }, [currentPageName, loading]);
+
   const loadUser = async () => {
     try {
       const userData = await base44.auth.me();
       setUser(userData);
     } catch (e) {
-      // Not logged in
+      setUser(null);
+    }
+    setLoading(false);
+  };
+
+  const checkAccess = () => {
+    const isMemberPage = MEMBER_PAGES.some(p => currentPageName?.startsWith(p));
+    const isAdminPage  = ADMIN_PAGES.includes(currentPageName);
+
+    if ((isMemberPage || isAdminPage) && !user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
+    }
+    if (isAdminPage && user?.role !== "admin") {
+      navigate(createPageUrl("Dashboard"));
     }
   };
 
@@ -50,31 +76,38 @@ export default function Layout({ children, currentPageName }) {
     ? user.white_label_config.logo_url 
     : null;
 
-  const navigation = [
-    { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },
-    { name: "My Books", href: "Books", icon: BookOpen },
-    { name: "Documents", href: "Documents", icon: FileText },
-    { name: "Team", href: "Team", icon: Users },
-    { name: "Settings", href: "Settings", icon: Settings },
+  const memberNav = [
+    { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
+    { name: "My Books",   href: "Books",       icon: BookOpen },
+    { name: "Documents",  href: "Documents",   icon: FileText },
+    { name: "Team",       href: "Team",        icon: Users },
+    { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
-  // Add User Management for super admin
-  if (user?.is_super_admin) {
-    navigation.push({ name: "User Management", href: "UserManagement", icon: Crown });
+  const adminNav = user?.role === "admin" || user?.is_super_admin
+    ? [{ name: "User Management", href: "UserManagement", icon: Crown }]
+    : [];
+
+  const navigation = [...memberNav, ...adminNav];
+
+  // Public pages — no sidebar/header
+  if (PUBLIC_PAGES.includes(currentPageName)) {
+    return <>{children}</>;
   }
 
-  // Public pages without sidebar
-  const publicPages = ["Landing", "BookWebsite", "Pricing"];
-  if (publicPages.includes(currentPageName)) {
-    return <>{children}</>;
+  // Show nothing while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <style>{`
-        :root {
-          --brand-primary: ${brandColor};
-        }
+        :root { --brand-primary: ${brandColor}; }
       `}</style>
 
       {/* Mobile Header */}
@@ -138,7 +171,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = currentPageName === item.href;
               return (
@@ -172,6 +205,12 @@ export default function Layout({ children, currentPageName }) {
                   <span>Upgrade Plan</span>
                 </Link>
               )}
+              {(user.role === "admin" || user.is_super_admin) && (
+                <div className="flex items-center gap-2 px-4 py-1 mb-2">
+                  <ShieldAlert className="w-3 h-3 text-amber-400" />
+                  <span className="text-xs text-amber-400/80 uppercase tracking-wider">Admin</span>
+                </div>
+              )}
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center overflow-hidden">
                   {user.author_photo_url ? (
@@ -204,12 +243,15 @@ export default function Layout({ children, currentPageName }) {
       <main className="lg:pl-72 min-h-screen">
         {/* Desktop Top Header */}
         <div className="hidden lg:flex items-center justify-between px-8 h-14 border-b border-white/5 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-30">
-          <h2 className="text-sm font-medium text-white/60 tracking-wide capitalize">
+          <h2 className="text-sm font-medium text-white/50 tracking-wide">
             {currentPageName?.replace(/([A-Z])/g, ' $1').trim()}
           </h2>
           {user && (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-white/40">{user.email}</span>
+              {(user.role === "admin" || user.is_super_admin) && (
+                <span className="text-xs text-amber-400/70 bg-amber-400/10 px-2 py-1 rounded-full">Admin</span>
+              )}
+              <span className="text-sm text-white/30">{user.email}</span>
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center overflow-hidden">
                 {user.author_photo_url ? (
                   <img src={user.author_photo_url} alt="" className="w-full h-full object-cover" />
