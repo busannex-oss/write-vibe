@@ -346,13 +346,10 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
           <CardContent>
             <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden relative">
               {frontCover ? (
-                <CoverCompositor
-                  type="front"
-                  backgroundUrl={frontCover}
-                  title={book.title}
-                  subtitle={book.subtitle}
-                  authorName={`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`.trim() || currentUser?.full_name || "Author"}
-                  category={book.category}
+                <img
+                  src={frontCover}
+                  alt="Front Cover"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -396,15 +393,10 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
           <CardContent>
             <div className="aspect-[2/3] rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden relative">
               {backCover ? (
-                <CoverCompositor
-                  type="back"
-                  backgroundUrl={backCover}
-                  title={book.title}
-                  authorName={`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`.trim() || currentUser?.full_name || "Author"}
-                  bookSummary={book.book_summary || book.plot_summary}
-                  authorBio={currentUser?.biography}
-                  authorPhotoUrl={includeAuthorPhoto ? (authorPhoto || currentUser?.author_photo_url) : null}
-                  category={book.category}
+                <img
+                  src={backCover}
+                  alt="Back Cover"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
