@@ -289,7 +289,7 @@ export default function UserManagement() {
                     </div>
 
                     {/* Actions */}
-                    {!user.is_super_admin && (
+                    {firstAdmin?.id !== user.id && (
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
