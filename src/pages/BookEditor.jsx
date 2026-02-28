@@ -88,7 +88,6 @@ export default function BookEditor() {
     { id: "audiobook", label: "Audiobook", icon: Volume2, status: book?.audiobook_url ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
-    { id: "leadmagnet", label: "Lead Magnet", icon: Sparkles, status: "available" },
     { id: "team", label: "Team", icon: Users, status: "available" },
   ];
 
