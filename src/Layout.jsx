@@ -179,7 +179,7 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
+            {memberNav.map((item) => {
               const isActive = currentPageName === item.href;
               return (
                 <Link
@@ -198,6 +198,38 @@ export default function Layout({ children, currentPageName }) {
                 </Link>
               );
             })}
+
+            {/* Admin-only section */}
+            {adminNav.length > 0 && (
+              <>
+                <div className="pt-3 pb-1 px-4">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-white/10" />
+                    <span className="text-[10px] uppercase tracking-widest text-amber-400/60 font-semibold">Admin</span>
+                    <div className="flex-1 h-px bg-white/10" />
+                  </div>
+                </div>
+                {adminNav.map((item) => {
+                  const isActive = currentPageName === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={createPageUrl(item.href)}
+                      onClick={() => setSidebarOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
+                        isActive
+                          ? "bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400 shadow-lg shadow-amber-500/5"
+                          : "text-amber-400/60 hover:text-amber-400 hover:bg-amber-500/5"
+                      )}
+                    >
+                      <item.icon className={cn("w-5 h-5", isActive ? "text-amber-400" : "text-amber-400/60")} />
+                      <span className="font-medium">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </>
+            )}
           </nav>
 
           {/* User Section */}
