@@ -91,6 +91,22 @@ Keep it concise and technical.`,
     setAnalyzing(false);
   };
 
+  const applyFix = async (error, analysis) => {
+    setAnalyzing(true);
+    try {
+      await base44.functions.invoke('fixError', {
+        errorId: error.id,
+        errorData: { ...error, ...analysis }
+      });
+      queryClient.invalidateQueries({ queryKey: ["errorLogs"] });
+      setSelectedError(null);
+      setAiAnalysis(null);
+    } catch (err) {
+      console.error('Failed to apply fix:', err);
+    }
+    setAnalyzing(false);
+  };
+
   const stats = {
     total: errors.length,
     critical: errors.filter(e => e.severity === "critical" && !e.resolved).length,
