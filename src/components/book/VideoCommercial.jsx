@@ -540,6 +540,7 @@ Genre: ${book.category}. Cinematic dark background with the book title prominent
               })()}
 
               {/* Hosting Options */}
+              {videoUrl && (
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
                   <CardTitle className="text-white text-sm flex items-center gap-2">
@@ -551,7 +552,7 @@ Genre: ${book.category}. Cinematic dark background with the book title prominent
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {Object.entries(getHostingLinks()).map(([platform, url]) => (
+                  {Object.entries(getHostingLinks() || {}).map(([platform, url]) => (
                     <a
                       key={platform}
                       href={url}
