@@ -572,10 +572,11 @@ Genre: ${book.category}. Cinematic dark background with the book title prominent
                       💡 Tip: Download the video first, then upload to your preferred platform for professional hosting
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                  </Card>
+                  )}
 
-              {/* Storyboard Images */}
+                  {/* Storyboard Images */}
               {storyboardImages.length > 0 && (
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader>
