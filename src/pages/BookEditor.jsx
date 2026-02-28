@@ -28,6 +28,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useErrorLogger } from "@/components/useErrorLogger";
 
 import TitleGenerator from "@/components/book/TitleGenerator.jsx";
 import UnifiedOutlineGenerator from "@/components/book/UnifiedOutlineGenerator.jsx";
@@ -104,6 +105,7 @@ export default function BookEditor() {
   }
 
   if (!book && !isLoading) {
+    useErrorLogger(null);
     return (
       <div className="p-6 lg:p-8 text-center">
         <h2 className="text-xl font-semibold text-white mb-2">Book not found</h2>
