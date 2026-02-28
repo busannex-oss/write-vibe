@@ -30,6 +30,8 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
+  useErrorLogger(user);
+
   useEffect(() => {
     loadUser();
   }, []);
