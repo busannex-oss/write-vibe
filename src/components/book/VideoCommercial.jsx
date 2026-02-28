@@ -147,6 +147,15 @@ Make it cinematic, emotional, and appropriate for the target audience.`,
         }
       });
       setScript(response);
+      
+      // Auto-save script
+      const videoData = {
+        script: response,
+        duration: selectedDuration,
+        storyboardImages: [],
+        generatedAt: new Date().toISOString()
+      };
+      await onUpdate({ video_commercial_url: JSON.stringify(videoData) }, true);
     } catch (error) {
       console.error("Error generating script:", error);
     }
