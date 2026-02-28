@@ -63,6 +63,7 @@ import Settings from './pages/Settings';
 import Team from './pages/Team';
 import Terms from './pages/Terms';
 import UserManagement from './pages/UserManagement';
+import ErrorDashboard from './pages/ErrorDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +84,7 @@ export const PAGES = {
     "Team": Team,
     "Terms": Terms,
     "UserManagement": UserManagement,
+    "ErrorDashboard": ErrorDashboard,
 }
 
 export const pagesConfig = {
