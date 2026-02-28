@@ -195,9 +195,10 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
       
       // Auto-save progress
       const videoData = {
-        script,
+        script: script,
         duration: selectedDuration,
-        storyboardImages: images
+        storyboardImages: images,
+        generatedAt: new Date().toISOString()
       };
       await onUpdate({ video_commercial_url: JSON.stringify(videoData) }, true);
       
