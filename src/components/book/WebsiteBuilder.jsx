@@ -308,7 +308,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
               )}
 
               {/* Book Display */}
-              <div className="flex items-center justify-center gap-8 mb-6">
+              <div className="flex items-center justify-center mb-6">
                 {/* Main Book Cover */}
                 {book.front_cover_url ? (
                   <div className="relative group">
@@ -316,34 +316,15 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
                     <img 
                       src={book.front_cover_url} 
                       alt="" 
-                      className="relative w-48 h-72 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform"
+                      className="relative w-64 h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform"
                       style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))' }}
                     />
                   </div>
                 ) : (
-                  <div className="w-48 h-72 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                  <div className="w-64 h-96 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
                     <span className="text-white/30 text-sm">No Cover Yet</span>
                   </div>
                 )}
-
-                {/* Book Stack */}
-                <div className="hidden md:flex flex-col gap-2">
-                  {[...Array(3)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="w-32 h-8 rounded-sm bg-gradient-to-r from-slate-600 to-slate-700 shadow-lg relative overflow-hidden"
-                      style={{
-                        transform: `perspective(400px) rotateY(-15deg) translateX(${i * -2}px)`,
-                        opacity: 0.7 - i * 0.15
-                      }}
-                    >
-                      <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-amber-500/40 to-orange-500/40" />
-                      <div className="px-3 py-1 text-[8px] text-white/60 font-medium truncate">
-                        {book.title}
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Book Info */}
