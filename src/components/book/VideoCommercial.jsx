@@ -32,6 +32,10 @@ export default function VideoCommercial({ book, onUpdate, isUpdating }) {
   const [generatingVideo, setGeneratingVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const playIntervalRef = React.useRef(null);
+  const progressIntervalRef = React.useRef(null);
 
   // Load saved video data on mount
   React.useEffect(() => {
