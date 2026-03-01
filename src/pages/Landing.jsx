@@ -95,13 +95,13 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
-              onClick={() => base44.auth.redirectToLogin()}
+              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
               className="text-white/70 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
             <Button 
-              onClick={() => base44.auth.redirectToLogin()}
+              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
             >
               Start Free Trial
