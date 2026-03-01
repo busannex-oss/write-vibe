@@ -402,12 +402,12 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
             number={3}
             isActive={!videoUrl}
             isComplete={!!videoUrl}
-            title="Assemble Final Video"
+            title="Assemble Storyboard Trailer"
             isLoading={generatingVideo}
             onClick={generateVideo}
             disabled={!script || storyboardImages.length === 0}
           >
-            <p className="text-sm text-white/60">Combine all elements into a professional slideshow-style trailer video.</p>
+            <p className="text-sm text-white/60">Combine your scenes into a storyboard preview with narration. Export images to a video editor (iMovie, CapCut) to produce the final video.</p>
             {videoUrl && <Badge className="mt-2 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">✓ Ready to download</Badge>}
           </StepItem>
         )}
