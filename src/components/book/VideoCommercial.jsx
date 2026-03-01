@@ -415,22 +415,20 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
 
       {/* Action Buttons */}
       {videoUrl && (
-        <div className="flex gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="flex gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+          <div className="flex-1">
+            <p className="text-sm text-amber-300 font-medium">✓ Storyboard Trailer Ready</p>
+            <p className="text-xs text-white/50 mt-1">Your cinematic storyboard slideshow is complete. To create a real video, use the storyboard images with a video editor like iMovie, CapCut, or Adobe Premiere.</p>
+          </div>
           <Button
             onClick={regenerateVideo}
             disabled={generatingVideo}
             variant="outline"
-            className="flex-1"
+            size="sm"
+            className="flex-shrink-0"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Regenerate Video
-          </Button>
-          <Button
-            onClick={downloadVideo}
-            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download Video
+            Regenerate
           </Button>
         </div>
       )}
