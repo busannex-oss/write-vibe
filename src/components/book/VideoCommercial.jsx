@@ -280,14 +280,17 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
     }, true);
   };
 
-  const downloadVideo = () => {
-    if (!videoUrl) return;
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.download = `${book.title.replace(/\s+/g, '-')}-trailer-${selectedDuration}s.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadImages = () => {
+    // Download each storyboard image separately since we can't generate a real MP4
+    storyboardImages.forEach((img, i) => {
+      const link = document.createElement('a');
+      link.href = img.url;
+      link.download = `${book.title.replace(/\s+/g, '-')}-scene-${i + 1}.jpg`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   };
 
   const togglePlay = (slides) => {
