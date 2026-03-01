@@ -290,6 +290,36 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
     document.body.removeChild(link);
   };
 
+  const togglePlay = (slides) => {
+    if (isPlaying) {
+      clearInterval(playIntervalRef.current);
+      clearInterval(progressIntervalRef.current);
+      setIsPlaying(false);
+      setProgress(0);
+      return;
+    }
+    setIsPlaying(true);
+    const durationMs = (parseInt(selectedDuration) * 1000) / slides.length;
+    let current = slideIndex;
+    let elapsed = 0;
+    const tick = 100;
+    progressIntervalRef.current = setInterval(() => {
+      elapsed += tick;
+      setProgress((elapsed / durationMs) * 100);
+      if (elapsed >= durationMs) {
+        elapsed = 0;
+        current = (current + 1) % slides.length;
+        setSlideIndex(current);
+        setProgress(0);
+        if (current === 0) {
+          clearInterval(playIntervalRef.current);
+          clearInterval(progressIntervalRef.current);
+          setIsPlaying(false);
+        }
+      }
+    }, tick);
+  };
+
   const regenerateVideo = async () => {
     setVideoUrl(null);
     setGeneratingVideo(true);
