@@ -133,7 +133,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                <Button 
                   size="lg" 
-                  onClick={() => base44.auth.redirectToLogin()}
+                  onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
                 >
                   Start 7-Day Free Trial
