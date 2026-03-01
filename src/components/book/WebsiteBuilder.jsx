@@ -216,14 +216,20 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
 
       {/* Bookstores */}
       <Card className="bg-white/5 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white text-sm flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-amber-400" />
-            Where to Buy
-          </CardTitle>
-          <CardDescription className="text-white/50">
-            Select bookstores and add purchase links
-          </CardDescription>
+        <CardHeader className="flex flex-row items-start justify-between gap-4">
+          <div>
+            <CardTitle className="text-white text-sm flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-amber-400" />
+              Where to Buy
+            </CardTitle>
+            <CardDescription className="text-white/50">
+              Select bookstores and add purchase links
+            </CardDescription>
+          </div>
+          <Button onClick={saveWebsite} disabled={isUpdating} size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 flex-shrink-0">
+            {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 mr-1" />}
+            Save
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
