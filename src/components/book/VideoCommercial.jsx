@@ -569,22 +569,43 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="aspect-video rounded-lg overflow-hidden bg-black relative mb-3">
+                      <div className="aspect-video rounded-lg overflow-hidden bg-black relative mb-2">
                         {currentSlide?.url && (
                           <img src={currentSlide.url} alt={`Scene ${currentSlide.scene}`} className="w-full h-full object-cover" />
                         )}
                         {currentSlide?.narration && (
-                          <div className="absolute bottom-0 inset-x-0 bg-black/60 p-3">
+                          <div className="absolute bottom-0 inset-x-0 bg-black/70 p-3">
                             <p className="text-white text-xs italic text-center">"{currentSlide.narration}"</p>
                           </div>
                         )}
                         <div className="absolute top-2 left-2">
                           <Badge className="bg-black/60 text-white border-0">Scene {slideIndex + 1}/{slides.length}</Badge>
                         </div>
+                        {/* Big play/pause button overlay */}
+                        <button
+                          onClick={() => togglePlay(slides)}
+                          className="absolute inset-0 flex items-center justify-center group"
+                        >
+                          <div className={`w-14 h-14 rounded-full bg-black/60 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
+                            {isPlaying
+                              ? <span className="text-white text-xl font-bold">⏸</span>
+                              : <Play className="w-6 h-6 text-white ml-1" />}
+                          </div>
+                        </button>
+                      </div>
+                      {/* Progress bar */}
+                      <div className="h-1 w-full bg-white/10 rounded-full mb-3 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all"
+                          style={{ width: `${((slideIndex / slides.length) * 100) + (progress / slides.length)}%` }}
+                        />
                       </div>
                       <div className="flex gap-2 mb-3">
-                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))} disabled={slideIndex === 0}>← Prev</Button>
-                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))} disabled={slideIndex === slides.length - 1}>Next →</Button>
+                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => { setIsPlaying(false); clearInterval(playIntervalRef.current); clearInterval(progressIntervalRef.current); setSlideIndex(Math.max(0, slideIndex - 1)); }} disabled={isPlaying || slideIndex === 0}>← Prev</Button>
+                        <Button size="sm" onClick={() => togglePlay(slides)} className={`flex-1 ${isPlaying ? 'bg-white/20' : 'bg-gradient-to-r from-amber-500 to-orange-500'} text-white border-0`}>
+                          {isPlaying ? '⏸ Pause' : '▶ Play Preview'}
+                        </Button>
+                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => { setIsPlaying(false); clearInterval(playIntervalRef.current); clearInterval(progressIntervalRef.current); setSlideIndex(Math.min(slides.length - 1, slideIndex + 1)); }} disabled={isPlaying || slideIndex === slides.length - 1}>Next →</Button>
                       </div>
                       <div className="grid grid-cols-5 gap-1">
                         {slides.map((s, i) => (
