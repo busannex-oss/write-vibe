@@ -123,6 +123,12 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
         <AIWebsiteContent book={book} onApplyContent={applyAIContent} />
       )}
 
+      {/* Amazon Reviews Importer */}
+      <AmazonReviewImporter book={book} />
+
+      {/* Amazon KDP/ACX Publisher */}
+      <AmazonPublisher book={book} />
+
       {/* Header Card */}
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
