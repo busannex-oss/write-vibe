@@ -368,6 +368,13 @@ export default function UserManagement() {
           </div>
         </CardContent>
       </Card>
+
+        </TabsContent>
+
+        <TabsContent value="integrations">
+          <AmazonAdwizarSettings user={currentUser} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
