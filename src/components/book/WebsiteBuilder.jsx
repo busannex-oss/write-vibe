@@ -83,11 +83,16 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
   };
 
   const saveWebsite = () => {
+    // Convert bookstoreLinks object to array format expected by entity schema
+    const bookstoreLinksArray = Object.entries(bookstoreLinks)
+      .filter(([_, url]) => url)
+      .map(([id, url]) => ({ id, url }));
+
     onUpdate({ 
       website_config: {
         status: websiteStatus,
         release_date: releaseDate,
-        bookstore_links: bookstoreLinks
+        bookstore_links: bookstoreLinksArray
       },
       selected_bookstores: selectedBookstores,
       social_media_links: socialLinks,
