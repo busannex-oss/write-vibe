@@ -44,6 +44,16 @@ export default function BookWebsite() {
     enabled: !!bookId
   });
 
+  // Load author profile from the User who created this book
+  const { data: authorProfile } = useQuery({
+    queryKey: ['author', book?.created_by],
+    queryFn: async () => {
+      const users = await base44.entities.User.filter({ email: book.created_by });
+      return users[0] || null;
+    },
+    enabled: !!book?.created_by
+  });
+
   const subscribeMutation = useMutation({
     mutationFn: (email) => base44.entities.NewsletterSubscriber.create({
       book_id: bookId,
