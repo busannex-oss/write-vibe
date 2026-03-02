@@ -162,8 +162,7 @@ export default function UserManagement() {
         </TabsList>
 
         <TabsContent value="users" className="space-y-6">
-
-      {/* Invite User */}
+          {/* Invite User */}
       <Card className="bg-white/5 border-white/10 mb-6">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
