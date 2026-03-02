@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Users, 
   UserPlus, 
@@ -16,9 +17,11 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Settings
 } from "lucide-react";
 import { motion } from "framer-motion";
+import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
 
 export default function UserManagement() {
   const queryClient = useQueryClient();

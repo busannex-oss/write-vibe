@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import AIWebsiteContent from "./AIWebsiteContent";
 import LeadMagnetHub from "./LeadMagnetHub";
+import AmazonPublisher from "./AmazonPublisher";
+import AmazonReviewImporter from "./AmazonReviewImporter";
 
 const BOOKSTORES = [
   { id: "amazon", name: "Amazon", logo: "📦" },
