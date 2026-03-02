@@ -144,10 +144,24 @@ export default function UserManagement() {
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-3">
           <Users className="w-8 h-8 text-amber-400" />
-          User Management
+          Admin Panel
         </h1>
-        <p className="text-white/50 mt-1">Manage users, permissions, and access</p>
+        <p className="text-white/50 mt-1">Manage users, permissions, and platform integrations</p>
       </div>
+
+      <Tabs defaultValue="users">
+        <TabsList className="bg-white/5 border border-white/10 mb-6">
+          <TabsTrigger value="users" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Users className="w-4 h-4 mr-2" />
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Settings className="w-4 h-4 mr-2" />
+            Integrations
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users" className="space-y-6">
 
       {/* Invite User */}
       <Card className="bg-white/5 border-white/10 mb-6">
