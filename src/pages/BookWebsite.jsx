@@ -91,7 +91,11 @@ export default function BookWebsite() {
 
   const isComingSoon = book.website_config?.status !== "live";
   const bookstores = book.selected_bookstores || [];
-  const socialLinks = book.social_media_links || {};
+  // Merge social links: book-level + author profile level (author profile takes precedence)
+  const socialLinks = { ...(book.social_media_links || {}), ...(authorProfile?.social_media || {}) };
+  const authorName = authorProfile?.full_name || book.created_by;
+  const authorPhoto = authorProfile?.author_photo_url || book.author_photo_url;
+  const authorBio = authorProfile?.biography;
 
   const BOOKSTORE_INFO = {
     amazon: { name: "Amazon", logo: "📦" },
