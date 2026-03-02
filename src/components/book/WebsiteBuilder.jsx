@@ -63,7 +63,15 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
   const [websiteStatus, setWebsiteStatus] = useState(getDefaultStatus());
   const [releaseDate, setReleaseDate] = useState(book.website_config?.release_date || "");
   const [selectedBookstores, setSelectedBookstores] = useState(book.selected_bookstores || []);
-  const [bookstoreLinks, setBookstoreLinks] = useState(book.website_config?.bookstore_links || {});
+  // Normalize bookstore_links: may be stored as array [{id, url}] or legacy object {id: url}
+  const normalizeLinks = (links) => {
+    if (!links) return {};
+    if (Array.isArray(links)) {
+      return links.reduce((acc, { id, url }) => { acc[id] = url; return acc; }, {});
+    }
+    return links;
+  };
+  const [bookstoreLinks, setBookstoreLinks] = useState(normalizeLinks(book.website_config?.bookstore_links));
   const [socialLinks, setSocialLinks] = useState(book.social_media_links || {});
 
   const hasBackCover = !!book.back_cover_url;
