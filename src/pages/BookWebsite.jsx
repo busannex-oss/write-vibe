@@ -395,19 +395,43 @@ export default function BookWebsite() {
         </div>
       </section>
 
+      {/* Video Commercial Section */}
+      {book.video_commercial_url && (
+        <section className="py-16 px-6 border-t border-white/5">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-white text-center mb-8">🎬 Book Trailer</h2>
+            <div className="rounded-2xl overflow-hidden border border-white/10">
+              <video
+                src={book.video_commercial_url}
+                controls
+                className="w-full aspect-video bg-black"
+                poster={book.front_cover_url}
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Author Section */}
-      {book.author_photo_url && (
+      {(authorPhoto || authorName) && (
         <section className="py-16 px-6 border-t border-white/5">
           <div className="max-w-2xl mx-auto text-center">
-            <img 
-              src={book.author_photo_url} 
-              alt="Author" 
-              className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-            />
-            <h3 className="text-lg font-semibold text-white mb-2">About the Author</h3>
-            <p className="text-white/50">
-              The author of {book.title}
-            </p>
+            {authorPhoto && (
+              <img 
+                src={authorPhoto} 
+                alt={authorName || "Author"} 
+                className="w-28 h-28 rounded-full mx-auto mb-6 object-cover border-4 border-amber-500/30 shadow-xl"
+              />
+            )}
+            <h3 className="text-2xl font-bold text-white mb-2">About the Author</h3>
+            {authorName && (
+              <p className="text-amber-400 font-semibold text-lg mb-4">{authorName}</p>
+            )}
+            {authorBio && (
+              <p className="text-white/60 leading-relaxed max-w-xl mx-auto">
+                {authorBio}
+              </p>
+            )}
           </div>
         </section>
       )}
