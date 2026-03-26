@@ -59,8 +59,10 @@ export default function BookEditor() {
       try {
         console.log('Fetching book with ID:', bookId);
         const books = await base44.entities.Book.filter({ id: bookId });
-        console.log('Book data received:', books);
-        return books && books.length > 0 ? books[0] : null;
+        console.log('Raw filter result:', books);
+        const result = books && books.length > 0 ? books[0] : null;
+        console.log('Returning book:', result, 'has id?', result?.id);
+        return result;
       } catch (err) {
         console.error('Error fetching book:', err);
         return null;
@@ -68,6 +70,8 @@ export default function BookEditor() {
     },
     enabled: !!bookId
   });
+  
+  console.log('Render state - book:', book, 'isLoading:', isLoading, 'has book?', !!book);
 
   const updateBookMutation = useMutation({
     mutationFn: (data) => base44.entities.Book.update(bookId, data),
