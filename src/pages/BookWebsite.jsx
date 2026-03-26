@@ -395,22 +395,54 @@ export default function BookWebsite() {
         </div>
       </section>
 
-      {/* Video Commercial Section */}
-      {book.video_commercial_url && (
-        <section className="py-16 px-6 border-t border-white/5">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white text-center mb-8">🎬 Book Trailer</h2>
-            <div className="rounded-2xl overflow-hidden border border-white/10">
-              <video
-                src={book.video_commercial_url}
-                controls
-                className="w-full aspect-video bg-black"
-                poster={book.front_cover_url}
-              />
+      {/* Video / Storyboard Trailer Section */}
+      {book.video_commercial_url && (() => {
+        let trailerData = null;
+        try { trailerData = JSON.parse(book.video_commercial_url); } catch {}
+        
+        // If it's a URL string (legacy), render a video player
+        if (!trailerData) {
+          return (
+            <section className="py-16 px-6 border-t border-white/5">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-3xl font-bold text-white text-center mb-8">🎬 Book Trailer</h2>
+                <video src={book.video_commercial_url} controls className="w-full aspect-video bg-black rounded-2xl" poster={book.front_cover_url} />
+              </div>
+            </section>
+          );
+        }
+
+        const images = trailerData.storyboardImages || [];
+        if (!images.length) return null;
+
+        return (
+          <section className="py-16 px-6 border-t border-white/5">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold text-white text-center mb-4">🎬 Book Trailer Storyboard</h2>
+              <p className="text-center text-white/50 mb-8">{trailerData.duration}s trailer &mdash; {images.length} scenes</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {images.map((img, i) => (
+                  <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10">
+                    <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 inset-x-0 p-3">
+                      <p className="text-white text-xs italic line-clamp-2">"{img.narration}"</p>
+                    </div>
+                    <div className="absolute top-2 left-2">
+                      <span className="bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">Scene {img.scene}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {trailerData.script?.call_to_action || trailerData.call_to_action ? (
+                <div className="mt-8 text-center">
+                  <p className="text-amber-300 font-semibold text-lg">{trailerData.script?.call_to_action || trailerData.call_to_action}</p>
+                </div>
+              ) : null}
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {/* Author Section */}
       {(authorPhoto || authorName) && (

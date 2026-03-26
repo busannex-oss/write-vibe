@@ -1,755 +1,338 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Sparkles, 
-  Check, 
-  Loader2, 
-  Video, 
-  Film,
-  Music,
-  Clock,
-  Image,
-  Download,
-  Play,
-  RefreshCw,
-  ExternalLink,
-  Share2
+import {
+  Sparkles, Check, Loader2, Video, Film, Music, Clock, Download, RefreshCw, Save
 } from "lucide-react";
-import { motion } from "framer-motion";
 
-export default function VideoCommercial({ book, onUpdate, isUpdating }) {
+export default function VideoCommercial({ book, onUpdate }) {
   const [generating, setGenerating] = useState(false);
-  const [script, setScript] = useState(null);
-  const [selectedDuration, setSelectedDuration] = useState("60");
   const [generatingImages, setGeneratingImages] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState("60");
+  const [script, setScript] = useState(null);
   const [storyboardImages, setStoryboardImages] = useState([]);
-  const [generatingVideo, setGeneratingVideo] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const playIntervalRef = React.useRef(null);
-  const progressIntervalRef = React.useRef(null);
 
-  // Load saved video data on mount — handles all saved formats
-  React.useEffect(() => {
-    if (!book.video_commercial_url) return;
+  // ── Load saved data on mount ──────────────────────────────────────────────
+  useEffect(() => {
+    const raw = book.video_commercial_url;
+    if (!raw) return;
     try {
-      const saved = JSON.parse(book.video_commercial_url);
-      if (saved.isSlideshow) {
-        // Current format saved by generateVideo / saveTrailerToBook
-        setVideoUrl(book.video_commercial_url);
-        setStoryboardImages(saved.storyboardImages || saved.slides?.filter(s => s.scene !== 'title') || []);
-        if (saved.script) setScript(saved.script);
-        if (saved.duration) setSelectedDuration(saved.duration);
-      } else if (saved.videoUrl) {
-        // Old legacy wrapper format
-        setVideoUrl(saved.videoUrl);
-        setScript(saved.script || null);
-        setSelectedDuration(saved.duration || "60");
-        setStoryboardImages(saved.storyboardImages || []);
-      } else {
-        setVideoUrl(book.video_commercial_url);
-      }
+      const saved = JSON.parse(raw);
+      if (saved.script) setScript(saved.script);
+      if (saved.duration) setSelectedDuration(saved.duration);
+      if (saved.storyboardImages?.length) setStoryboardImages(saved.storyboardImages);
     } catch {
-      // Plain URL
-      setVideoUrl(book.video_commercial_url);
+      // not JSON — ignore
     }
   }, [book.video_commercial_url]);
 
+  // ── Persist helper ────────────────────────────────────────────────────────
+  const persist = async (scriptData, duration, images) => {
+    const payload = JSON.stringify({
+      script: scriptData,
+      duration,
+      storyboardImages: images,
+      savedAt: new Date().toISOString()
+    });
+    await onUpdate({ video_commercial_url: payload }, true);
+  };
+
+  // ── Step 1: Generate script ───────────────────────────────────────────────
   const generateScript = async () => {
     setGenerating(true);
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a professional book trailer/commercial script for:
+        prompt: `Create a professional book trailer script for:
 
 Book: "${book.title}"
-Genre: ${book.category}
-Target Audience: ${book.target_audience?.age_range}
-Themes: ${book.subjects?.join(', ')}
-Characters: ${JSON.stringify(book.characters?.map(c => ({ name: c.name, role: c.role, appearance: c.appearance })))}
-Summary: ${book.book_summary}
+${book.subtitle ? `Subtitle: "${book.subtitle}"` : ""}
+Genre: ${book.category || "General"}
+Summary: ${book.book_summary || book.plot_summary || ""}
+Characters: ${JSON.stringify(book.characters?.map(c => ({ name: c.name, role: c.role })))}
+Target Audience: ${book.target_audience?.age_range || "General"}
+Themes: ${book.subjects?.join(", ") || ""}
 
-Create scripts for 30s, 60s, and 90s versions.
+Create scripts for 30-second, 60-second, and 90-second versions.
 
-For each version include:
-1. Opening hook (attention-grabbing first 3 seconds)
-2. Scene-by-scene breakdown with:
-   - Visual description (maintaining character consistency)
-   - Narration/voiceover text
-   - Timing for each scene
-3. Music/sound mood recommendations
-4. Call-to-action ending
+Each version must have:
+- 4–8 scenes, each with: scene_number, duration_seconds (number), visual (what's on screen), narration (voiceover text)
+- music_mood: recommended background music style
+- The total narration should fit naturally within the chosen duration.
 
-Make it cinematic, emotional, and appropriate for the target audience.`,
+Make it cinematic, emotional, and compelling.`,
         response_json_schema: {
           type: "object",
           properties: {
             title: { type: "string" },
+            call_to_action: { type: "string" },
             versions: {
               type: "object",
               properties: {
                 "30s": {
                   type: "object",
                   properties: {
-                    scenes: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        properties: {
-                          scene_number: { type: "number" },
-                          duration: { type: "string" },
-                          visual: { type: "string" },
-                          narration: { type: "string" }
-                        }
-                      }
-                    },
-                    music_mood: { type: "string" }
+                    music_mood: { type: "string" },
+                    scenes: { type: "array", items: { type: "object", properties: { scene_number: { type: "number" }, duration_seconds: { type: "number" }, visual: { type: "string" }, narration: { type: "string" } } } }
                   }
                 },
                 "60s": {
                   type: "object",
                   properties: {
-                    scenes: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        properties: {
-                          scene_number: { type: "number" },
-                          duration: { type: "string" },
-                          visual: { type: "string" },
-                          narration: { type: "string" }
-                        }
-                      }
-                    },
-                    music_mood: { type: "string" }
+                    music_mood: { type: "string" },
+                    scenes: { type: "array", items: { type: "object", properties: { scene_number: { type: "number" }, duration_seconds: { type: "number" }, visual: { type: "string" }, narration: { type: "string" } } } }
                   }
                 },
                 "90s": {
                   type: "object",
                   properties: {
-                    scenes: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        properties: {
-                          scene_number: { type: "number" },
-                          duration: { type: "string" },
-                          visual: { type: "string" },
-                          narration: { type: "string" }
-                        }
-                      }
-                    },
-                    music_mood: { type: "string" }
+                    music_mood: { type: "string" },
+                    scenes: { type: "array", items: { type: "object", properties: { scene_number: { type: "number" }, duration_seconds: { type: "number" }, visual: { type: "string" }, narration: { type: "string" } } } }
                   }
                 }
               }
-            },
-            call_to_action: { type: "string" }
+            }
           }
         }
       });
       setScript(response);
-      
-      // Auto-save script
-      const videoData = {
-        script: response,
-        duration: selectedDuration,
-        storyboardImages: [],
-        generatedAt: new Date().toISOString()
-      };
-      await onUpdate({ video_commercial_url: JSON.stringify(videoData) }, true);
-    } catch (error) {
-      console.error("Error generating script:", error);
+      await persist(response, selectedDuration, storyboardImages);
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   };
 
+  // ── Step 2: Generate storyboard images ───────────────────────────────────
   const generateStoryboardImages = async () => {
-    if (!script?.versions?.[selectedDuration + "s"]?.scenes) return;
-    
+    const scenes = script?.versions?.[selectedDuration + "s"]?.scenes;
+    if (!scenes) return;
     setGeneratingImages(true);
-    const scenes = script.versions[selectedDuration + "s"].scenes;
     const images = [];
-    
     try {
-      for (const scene of scenes.slice(0, 4)) { // Generate first 4 key scenes
-        const response = await base44.integrations.Core.GenerateImage({
-          prompt: `Cinematic storyboard frame for "${book.title}" book trailer, ${selectedDuration} second version:
-
+      for (const scene of scenes.slice(0, 5)) {
+        const res = await base44.integrations.Core.GenerateImage({
+          prompt: `Cinematic movie trailer still frame for book "${book.title}".
 Scene ${scene.scene_number}: ${scene.visual}
-Narration: "${scene.narration}"
-Duration: ${scene.duration}
-
-Book Genre: ${book.category}
-Target Audience: ${book.target_audience?.age_range || 'General'}
-${book.characters?.length > 0 ? `\nMain Characters: ${book.characters.map(c => `${c.name} (${c.role}): ${c.appearance || c.description}`).join('; ')}` : ''}
-
-Style: Cinematic movie trailer quality, dramatic lighting, professional commercial aesthetic, 16:9 widescreen format. Make it look like a real movie poster frame.`
+Voiceover: "${scene.narration}"
+Genre: ${book.category || "drama"}
+${book.characters?.length ? `Characters: ${book.characters.map(c => `${c.name}: ${c.appearance || c.description || ""}`).join("; ")}` : ""}
+Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster aesthetic.`
         });
-        images.push({ 
-          scene: scene.scene_number, 
-          url: response.url,
+        images.push({
+          scene: scene.scene_number,
+          url: res.url,
           visual: scene.visual,
-          narration: scene.narration 
+          narration: scene.narration,
+          duration_seconds: scene.duration_seconds
         });
       }
       setStoryboardImages(images);
-      
-      // Auto-save progress
-      const videoData = {
-        script: script,
-        duration: selectedDuration,
-        storyboardImages: images,
-        generatedAt: new Date().toISOString()
-      };
-      await onUpdate({ video_commercial_url: JSON.stringify(videoData) }, true);
-      
-    } catch (error) {
-      console.error("Error generating images:", error);
-      alert("Failed to generate storyboard images");
-    }
-    setGeneratingImages(false);
-  };
-
-  const generateVideo = async () => {
-    if (!script?.versions?.[selectedDuration + "s"]) {
-      alert("Please generate a script first");
-      return;
-    }
-    
-    if (!storyboardImages || storyboardImages.length === 0) {
-      alert("Please generate storyboard images first");
-      return;
-    }
-
-    setGeneratingVideo(true);
-    try {
-      const selectedVersion = script.versions[selectedDuration + "s"];
-
-      // Generate a final composite "title card" image as the video thumbnail/end card
-       const titleCardResponse = await base44.integrations.Core.GenerateImage({
-         prompt: `Professional book trailer title card for "${book.title}". 
-      Genre: ${book.category}. Cinematic dark background with the book title prominently displayed, movie trailer style, dramatic typography, gold accents, high quality.`,
-         existing_image_urls: book.front_cover_url ? [book.front_cover_url] : undefined
-       });
-
-      const allImages = [
-        ...storyboardImages,
-        { scene: "title", url: titleCardResponse.url, visual: "Title Card", narration: script.call_to_action || "" }
-      ];
-
-      // Store the storyboard+title card as the "video" — displayed as a slideshow player
-      const videoData = {
-        isSlideshow: true,
-        slides: allImages,
-        script: selectedVersion,
-        call_to_action: script.call_to_action,
-        duration: selectedDuration,
-        storyboardImages,
-        generatedAt: new Date().toISOString()
-      };
-
-      const dataStr = JSON.stringify(videoData);
-      setVideoUrl(dataStr);
-
-      await onUpdate({ 
-        video_commercial_url: dataStr,
-        status: "marketing" 
-      }, true);
-      setLastSaved(new Date());
-
-    } catch (error) {
-      console.error("Error generating video:", error);
-      alert("Failed to generate video. Please try again.");
+      await persist(script, selectedDuration, images);
     } finally {
-      setGeneratingVideo(false);
+      setGeneratingImages(false);
     }
   };
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
-
-  const saveTrailerToBook = async () => {
-    if (!storyboardImages.length && !videoUrl) return;
+  // ── Save to book ──────────────────────────────────────────────────────────
+  const saveToBook = async () => {
     setIsSaving(true);
     try {
-      // Build a clean slideshow payload every time — never loses data
-      const slides = [
-        ...storyboardImages.map(img => ({
-          scene: img.scene,
-          url: img.url,
-          visual: img.visual,
-          narration: img.narration
-        }))
-      ];
-      // If videoUrl contains a title card slide not in storyboardImages, include it
-      try {
-        const parsed = JSON.parse(videoUrl);
-        if (parsed.isSlideshow && parsed.slides) {
-          const extra = parsed.slides.filter(s => s.scene === 'title');
-          slides.push(...extra);
-        }
-      } catch {}
-
-      const dataToSave = JSON.stringify({
-        isSlideshow: true,
-        slides,
-        script: script?.versions?.[selectedDuration + "s"] || null,
-        call_to_action: script?.call_to_action || null,
-        duration: selectedDuration,
-        storyboardImages,
-        generatedAt: new Date().toISOString()
-      });
-
-      await onUpdate({ video_commercial_url: dataToSave, status: "marketing" }, true);
-      setVideoUrl(dataToSave); // keep local state in sync
+      await persist(script, selectedDuration, storyboardImages);
       setLastSaved(new Date());
     } finally {
       setIsSaving(false);
     }
   };
 
+  // ── Download storyboard images ────────────────────────────────────────────
   const downloadImages = () => {
-    // Download each storyboard image separately since we can't generate a real MP4
     storyboardImages.forEach((img, i) => {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = img.url;
-      link.download = `${book.title.replace(/\s+/g, '-')}-scene-${i + 1}.jpg`;
-      link.target = '_blank';
+      link.download = `${book.title.replace(/\s+/g, "-")}-scene-${i + 1}.jpg`;
+      link.target = "_blank";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
   };
 
-  const togglePlay = (slides) => {
-    if (isPlaying) {
-      clearInterval(playIntervalRef.current);
-      clearInterval(progressIntervalRef.current);
-      setIsPlaying(false);
-      setProgress(0);
-      return;
-    }
-    setIsPlaying(true);
-    const durationMs = (parseInt(selectedDuration) * 1000) / slides.length;
-    let current = slideIndex;
-    let elapsed = 0;
-    const tick = 100;
-    progressIntervalRef.current = setInterval(() => {
-      elapsed += tick;
-      setProgress((elapsed / durationMs) * 100);
-      if (elapsed >= durationMs) {
-        elapsed = 0;
-        current = (current + 1) % slides.length;
-        setSlideIndex(current);
-        setProgress(0);
-        if (current === 0) {
-          clearInterval(playIntervalRef.current);
-          clearInterval(progressIntervalRef.current);
-          setIsPlaying(false);
-        }
-      }
-    }, tick);
-  };
-
-  const regenerateVideo = async () => {
-    setVideoUrl(null);
-    setGeneratingVideo(true);
-    await generateVideo();
-  };
-
-  const getHostingLinks = () => {
-    if (!videoUrl) return null;
-    
-    return {
-      youtube: `https://www.youtube.com/upload`,
-      vimeo: `https://vimeo.com/upload`,
-      wistia: `https://app.wistia.com/`,
-      cloudinary: `https://cloudinary.com/console/media_library`
-    };
-  };
-
   const currentVersion = script?.versions?.[selectedDuration + "s"];
-
-  const StepItem = ({ number, isActive, isComplete, title, isLoading, onClick, disabled, children }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="group"
-    >
-      <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/7 transition-all">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full text-white text-sm font-bold flex-shrink-0 transition-all ${
-          isComplete ? 'bg-gradient-to-br from-emerald-400 to-green-500' :
-          isActive ? 'bg-gradient-to-br from-amber-400 to-orange-500' : 
-          'bg-white/10'
-        }`}>
-          {isComplete ? <Check className="w-5 h-5" /> : number}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-white mb-3">{title}</h3>
-          {children}
-        </div>
-        <div className="flex-shrink-0">
-          <Button
-            onClick={onClick}
-            disabled={disabled || isLoading}
-            size="sm"
-            className={`whitespace-nowrap ${
-              isActive || isComplete ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' :
-              'bg-white/10 hover:bg-white/20'
-            } text-white border-0`}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                {isComplete ? 'Regenerate' : 'Generate'}
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
+  const hasScript = !!script;
+  const hasImages = storyboardImages.length > 0;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30">
-            <Video className="w-5 h-5 text-amber-400" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white">Video Commercial</h2>
-            <p className="text-sm text-white/50">Create a professional book trailer in 3 steps</p>
-          </div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
+          <Video className="w-5 h-5 text-amber-400" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-white">Video Trailer</h2>
+          <p className="text-sm text-white/50">Generate a 30s, 60s, or 90s book trailer script with storyboard visuals</p>
         </div>
       </div>
 
-      {/* Steps */}
-      <div className="space-y-4">
-        {/* Step 1: Script */}
-        <StepItem
-          number={1}
-          isActive={!script}
-          isComplete={!!script}
-          title="Generate Script"
-          isLoading={generating}
-          onClick={generateScript}
-          disabled={false}
-        >
-          <p className="text-sm text-white/60">Generate professional trailer scripts for 30s, 60s, and 90s versions with scene breakdowns and narration.</p>
-        </StepItem>
-
-        {/* Step 2: Storyboard */}
-        {script && (
-          <StepItem
-            number={2}
-            isActive={!storyboardImages.length}
-            isComplete={storyboardImages.length > 0}
-            title="Generate Storyboard Images"
-            isLoading={generatingImages}
-            onClick={generateStoryboardImages}
-            disabled={!script}
-          >
-            <p className="text-sm text-white/60">Create 4 cinematic storyboard images to visualize your trailer scenes.</p>
-            {storyboardImages.length > 0 && <Badge className="mt-2 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">✓ {storyboardImages.length} images ready</Badge>}
-          </StepItem>
-        )}
-
-        {/* Step 3: Video */}
-        {script && storyboardImages.length > 0 && (
-          <StepItem
-            number={3}
-            isActive={!videoUrl}
-            isComplete={!!videoUrl}
-            title="Assemble Storyboard Trailer"
-            isLoading={generatingVideo}
-            onClick={generateVideo}
-            disabled={!script || storyboardImages.length === 0}
-          >
-            <p className="text-sm text-white/60">Combine your scenes into a storyboard preview with narration. Export images to a video editor (iMovie, CapCut) to produce the final video.</p>
-            {videoUrl && <Badge className="mt-2 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">✓ Ready to download</Badge>}
-          </StepItem>
-        )}
-      </div>
-
-      {/* Action Buttons — show as soon as we have storyboard images */}
-      {storyboardImages.length > 0 && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3">
-          <div>
-            <p className="text-sm text-amber-300 font-medium">✓ Storyboard Trailer Ready</p>
-            <p className="text-xs text-white/50 mt-1">Preview your trailer below. Click <strong className="text-amber-300">Save Trailer to Book</strong> to attach it to your book's landing page.</p>
+      {/* Duration Selector — always visible */}
+      <Card className="bg-white/5 border-white/10">
+        <CardContent className="pt-5">
+          <p className="text-sm text-white/60 mb-3 flex items-center gap-2"><Clock className="w-4 h-4" /> Choose trailer length</p>
+          <div className="flex gap-3">
+            {["30", "60", "90"].map(d => (
+              <button
+                key={d}
+                onClick={() => setSelectedDuration(d)}
+                className={`px-5 py-3 rounded-xl border font-semibold text-sm transition-all ${
+                  selectedDuration === d
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500 border-amber-500 text-white shadow-lg shadow-amber-500/20"
+                    : "bg-white/5 border-white/15 text-white/60 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {d} seconds
+              </button>
+            ))}
           </div>
-          <div className="flex flex-wrap gap-2">
+        </CardContent>
+      </Card>
+
+      {/* Step 1: Script */}
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white text-base flex items-center gap-2">
+              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${hasScript ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"}`}>
+                {hasScript ? <Check className="w-4 h-4" /> : "1"}
+              </span>
+              Generate Script
+            </CardTitle>
             <Button
-              onClick={saveTrailerToBook}
-              disabled={isSaving}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 font-semibold"
+              onClick={generateScript}
+              disabled={generating}
+              size="sm"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
             >
-              {isSaving ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
-              ) : (
-                <><Check className="w-4 h-4 mr-2" />Save Trailer to Book</>
-              )}
-            </Button>
-            <Button onClick={downloadImages} size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              <Download className="w-4 h-4 mr-2" /> Download Images
-            </Button>
-            <Button onClick={regenerateVideo} disabled={generatingVideo} variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
-              <RefreshCw className="w-4 h-4 mr-2" /> Regenerate
+              {generating ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating…</> : <><Sparkles className="w-4 h-4 mr-1" />{hasScript ? "Regenerate" : "Generate Script"}</>}
             </Button>
           </div>
-          {lastSaved && (
-            <p className="text-xs text-emerald-400">✓ Saved to book at {lastSaved.toLocaleTimeString()}</p>
-          )}
-        </div>
-      )}
+          <p className="text-sm text-white/50 mt-1">AI writes scene-by-scene voiceover script for all 3 durations at once.</p>
+        </CardHeader>
 
-      {/* Script Content */}
-      {script && (
-        <>
-          {/* Duration Selector */}
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="pt-6">
-              <Label className="text-white/70 mb-3 block">Video Duration</Label>
-              <div className="flex gap-3">
-                {["30", "60", "90"].map((duration) => (
-                  <button
-                    key={duration}
-                    onClick={() => setSelectedDuration(duration)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
-                      selectedDuration === duration
-                        ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-amber-300'
-                        : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                    } border`}
-                  >
-                    <Clock className="w-4 h-4" />
-                    {duration} seconds
-                  </button>
+        {hasScript && currentVersion && (
+          <CardContent className="space-y-4">
+            {/* Music mood */}
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10">
+              <Music className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-white/40 uppercase tracking-wider">Music Mood</p>
+                <p className="text-sm text-white/80">{currentVersion.music_mood}</p>
+              </div>
+            </div>
+
+            {/* Scenes */}
+            <div className="space-y-3">
+              {currentVersion.scenes?.map((scene, i) => (
+                <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 text-xs flex items-center justify-center font-bold">{scene.scene_number}</span>
+                    <Badge className="bg-white/10 text-white/50 border-0 text-xs">{scene.duration_seconds}s</Badge>
+                  </div>
+                  <p className="text-xs text-white/40 uppercase tracking-wider mb-0.5">Visual</p>
+                  <p className="text-sm text-white/70 mb-2">{scene.visual}</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wider mb-0.5">Narration</p>
+                  <p className="text-sm text-white italic">"{scene.narration}"</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Call to action */}
+            {script.call_to_action && (
+              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <p className="text-xs text-amber-400/70 uppercase tracking-wider mb-1">Call to Action</p>
+                <p className="text-amber-300 font-medium">{script.call_to_action}</p>
+              </div>
+            )}
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Step 2: Storyboard Images */}
+      {hasScript && (
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-white text-base flex items-center gap-2">
+                <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${hasImages ? "bg-emerald-500 text-white" : "bg-white/20 text-white/60"}`}>
+                  {hasImages ? <Check className="w-4 h-4" /> : "2"}
+                </span>
+                Generate Storyboard Images
+              </CardTitle>
+              <Button
+                onClick={generateStoryboardImages}
+                disabled={generatingImages}
+                size="sm"
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+              >
+                {generatingImages ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating…</> : <><Film className="w-4 h-4 mr-1" />{hasImages ? "Regenerate" : "Generate Visuals"}</>}
+              </Button>
+            </div>
+            <p className="text-sm text-white/50 mt-1">Creates one cinematic image per scene — use these in iMovie, CapCut, or Premiere to produce the actual video.</p>
+          </CardHeader>
+
+          {hasImages && (
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                {storyboardImages.map((img, i) => (
+                  <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                    <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 flex gap-1">
+                      <Badge className="bg-black/60 text-white border-0 text-xs">Scene {img.scene}</Badge>
+                      {img.duration_seconds && <Badge className="bg-black/60 text-white border-0 text-xs">{img.duration_seconds}s</Badge>}
+                    </div>
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                      <p className="text-white text-xs italic line-clamp-2">"{img.narration}"</p>
+                    </div>
+                  </div>
                 ))}
               </div>
+              <Button onClick={downloadImages} variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
+                <Download className="w-4 h-4 mr-2" /> Download All Images
+              </Button>
             </CardContent>
-          </Card>
-
-          {/* Storyboard & Script */}
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Scenes */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white text-sm flex items-center gap-2">
-                    <Film className="w-4 h-4 text-amber-400" />
-                    Scenes
-                  </CardTitle>
-                  <Badge className="bg-white/10 text-white/60 border-0">
-                    {currentVersion?.scenes?.length || 0} scenes
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {currentVersion?.scenes?.map((scene, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="p-4 rounded-xl bg-white/5 border border-white/10"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 flex items-center justify-center">
-                        <span className="text-sm font-semibold text-amber-400">{scene.scene_number}</span>
-                      </div>
-                      <Badge className="bg-white/10 text-white/60 border-0">{scene.duration}</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-xs text-white/40 uppercase tracking-wider">Visual</p>
-                        <p className="text-sm text-white/70">{scene.visual}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-white/40 uppercase tracking-wider">Narration</p>
-                        <p className="text-sm text-white italic">"{scene.narration}"</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Storyboard Images & Music */}
-            <div className="space-y-6">
-              {/* Music Mood */}
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white text-sm flex items-center gap-2">
-                    <Music className="w-4 h-4 text-amber-400" />
-                    Music & Sound
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-white/70">{currentVersion?.music_mood}</p>
-                </CardContent>
-              </Card>
-
-              {/* Generated Video / Slideshow */}
-              {videoUrl && (() => {
-                let slideshowData = null;
-                try { slideshowData = JSON.parse(videoUrl); } catch {}
-                if (!slideshowData?.isSlideshow) return null;
-                const slides = slideshowData.slides || [];
-                const currentSlide = slides[slideIndex] || slides[0];
-                return (
-                  <Card className="bg-white/5 border-white/10">
-                    <CardHeader>
-                      <CardTitle className="text-white text-sm flex items-center gap-2">
-                        <Play className="w-4 h-4 text-amber-400" />
-                        Storyboard Preview ({slides.length} scenes)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="aspect-video rounded-lg overflow-hidden bg-black relative mb-2">
-                        {currentSlide?.url && (
-                          <img src={currentSlide.url} alt={`Scene ${currentSlide.scene}`} className="w-full h-full object-cover" />
-                        )}
-                        {currentSlide?.narration && (
-                          <div className="absolute bottom-0 inset-x-0 bg-black/70 p-3">
-                            <p className="text-white text-xs italic text-center">"{currentSlide.narration}"</p>
-                          </div>
-                        )}
-                        <div className="absolute top-2 left-2">
-                          <Badge className="bg-black/60 text-white border-0">Scene {slideIndex + 1}/{slides.length}</Badge>
-                        </div>
-                        {/* Big play/pause button overlay */}
-                        <button
-                          onClick={() => togglePlay(slides)}
-                          className="absolute inset-0 flex items-center justify-center group"
-                        >
-                          <div className={`w-14 h-14 rounded-full bg-black/60 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
-                            {isPlaying
-                              ? <span className="text-white text-xl font-bold">⏸</span>
-                              : <Play className="w-6 h-6 text-white ml-1" />}
-                          </div>
-                        </button>
-                      </div>
-                      {/* Progress bar */}
-                      <div className="h-1 w-full bg-white/10 rounded-full mb-3 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all"
-                          style={{ width: `${((slideIndex / slides.length) * 100) + (progress / slides.length)}%` }}
-                        />
-                      </div>
-                      <div className="flex gap-2 mb-3">
-                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => { setIsPlaying(false); clearInterval(playIntervalRef.current); clearInterval(progressIntervalRef.current); setSlideIndex(Math.max(0, slideIndex - 1)); }} disabled={isPlaying || slideIndex === 0}>← Prev</Button>
-                        <Button size="sm" onClick={() => togglePlay(slides)} className={`flex-1 ${isPlaying ? 'bg-white/20' : 'bg-gradient-to-r from-amber-500 to-orange-500'} text-white border-0`}>
-                          {isPlaying ? '⏸ Pause' : '▶ Play Preview'}
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={() => { setIsPlaying(false); clearInterval(playIntervalRef.current); clearInterval(progressIntervalRef.current); setSlideIndex(Math.min(slides.length - 1, slideIndex + 1)); }} disabled={isPlaying || slideIndex === slides.length - 1}>Next →</Button>
-                      </div>
-                      <div className="grid grid-cols-5 gap-1">
-                        {slides.map((s, i) => (
-                          <button key={i} onClick={() => setSlideIndex(i)} className={`aspect-video rounded overflow-hidden border-2 transition-all ${i === slideIndex ? 'border-amber-400' : 'border-transparent'}`}>
-                            <img src={s.url} alt="" className="w-full h-full object-cover" />
-                          </button>
-                        ))}
-                      </div>
-                      <Button onClick={regenerateVideo} size="sm" disabled={generatingVideo} className="w-full mt-3 bg-white/10 hover:bg-white/20 text-white border-0">
-                        <RefreshCw className="w-3 h-3 mr-2" /> Regenerate
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })()}
-
-              {/* Hosting Options */}
-              {videoUrl && (
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white text-sm flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-amber-400" />
-                    Host Video
-                  </CardTitle>
-                  <CardDescription className="text-white/50 text-xs">
-                    Upload to video hosting platforms
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {Object.entries(getHostingLinks() || {}).map(([platform, url]) => (
-                    <a
-                      key={platform}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Video className="w-4 h-4 text-amber-400" />
-                        <span className="text-sm text-white capitalize">{platform}</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-white/70" />
-                    </a>
-                  ))}
-                  <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                    <p className="text-xs text-amber-300">
-                      💡 Tip: Download the video first, then upload to your preferred platform for professional hosting
-                    </p>
-                  </div>
-                  </CardContent>
-                  </Card>
-                  )}
-
-                  {/* Storyboard Images */}
-                  {storyboardImages.length > 0 && (
-                <Card className="bg-white/5 border-white/10">
-                  <CardHeader>
-                    <CardTitle className="text-white text-sm">Storyboard Preview</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      {storyboardImages.map((img, index) => (
-                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
-                          <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover" />
-                          <div className="absolute top-2 left-2">
-                            <Badge className="bg-black/50 text-white border-0">Scene {img.scene}</Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Call to Action */}
-              <Card className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border-amber-500/30">
-                <CardContent className="py-4">
-                  <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Call to Action</p>
-                  <p className="text-amber-300 font-medium">{script.call_to_action}</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </>
+          )}
+        </Card>
       )}
 
-      {/* Empty State */}
-      {!script && (
+      {/* Save to Book */}
+      {hasScript && (
+        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-emerald-300 font-semibold">Save Trailer to Book</p>
+              <p className="text-xs text-white/50 mt-0.5">Saves your {selectedDuration}s trailer script{hasImages ? " + storyboard images" : ""} to the book's landing page.</p>
+              {lastSaved && <p className="text-xs text-emerald-400 mt-1">✓ Last saved {lastSaved.toLocaleTimeString()}</p>}
+            </div>
+            <Button
+              onClick={saveToBook}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 font-semibold flex-shrink-0"
+            >
+              {isSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</> : <><Save className="w-4 h-4 mr-2" />Save to Book</>}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!hasScript && !generating && (
         <Card className="bg-white/5 border-white/10">
           <CardContent className="py-12 text-center">
             <Video className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No video script yet</h3>
-            <p className="text-white/50">Generate an AI script for your book trailer</p>
+            <h3 className="text-lg font-medium text-white mb-2">No trailer script yet</h3>
+            <p className="text-white/50 mb-4">Select a duration above and click Generate Script to start.</p>
           </CardContent>
         </Card>
       )}
