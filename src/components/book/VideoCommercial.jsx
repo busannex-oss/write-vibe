@@ -37,24 +37,29 @@ export default function VideoCommercial({ book, onUpdate, isUpdating }) {
   const playIntervalRef = React.useRef(null);
   const progressIntervalRef = React.useRef(null);
 
-  // Load saved video data on mount
+  // Load saved video data on mount — handles all saved formats
   React.useEffect(() => {
-    if (book.video_commercial_url) {
-      try {
-        const saved = JSON.parse(book.video_commercial_url);
-        if (saved.videoUrl) {
-          setVideoUrl(saved.videoUrl);
-          setScript(saved.script || null);
-          setSelectedDuration(saved.duration || "60");
-          setStoryboardImages(saved.storyboardImages || []);
-        } else {
-          // Legacy format - just a URL
-          setVideoUrl(book.video_commercial_url);
-        }
-      } catch {
-        // Not JSON, treat as direct URL
+    if (!book.video_commercial_url) return;
+    try {
+      const saved = JSON.parse(book.video_commercial_url);
+      if (saved.isSlideshow) {
+        // Current format saved by generateVideo / saveTrailerToBook
+        setVideoUrl(book.video_commercial_url);
+        setStoryboardImages(saved.storyboardImages || saved.slides?.filter(s => s.scene !== 'title') || []);
+        if (saved.script) setScript(saved.script);
+        if (saved.duration) setSelectedDuration(saved.duration);
+      } else if (saved.videoUrl) {
+        // Old legacy wrapper format
+        setVideoUrl(saved.videoUrl);
+        setScript(saved.script || null);
+        setSelectedDuration(saved.duration || "60");
+        setStoryboardImages(saved.storyboardImages || []);
+      } else {
         setVideoUrl(book.video_commercial_url);
       }
+    } catch {
+      // Plain URL
+      setVideoUrl(book.video_commercial_url);
     }
   }, [book.video_commercial_url]);
 
@@ -272,39 +277,39 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
   const [lastSaved, setLastSaved] = useState(null);
 
   const saveTrailerToBook = async () => {
-    if (!videoUrl) return;
+    if (!storyboardImages.length && !videoUrl) return;
     setIsSaving(true);
     try {
-      // Always save in the slideshow format so BookWebsite can render it
-      let dataToSave = videoUrl;
-      // If videoUrl is already valid JSON slideshow format, use it directly
+      // Build a clean slideshow payload every time — never loses data
+      const slides = [
+        ...storyboardImages.map(img => ({
+          scene: img.scene,
+          url: img.url,
+          visual: img.visual,
+          narration: img.narration
+        }))
+      ];
+      // If videoUrl contains a title card slide not in storyboardImages, include it
       try {
         const parsed = JSON.parse(videoUrl);
-        if (!parsed.isSlideshow) {
-          // Legacy format — re-wrap as slideshow if we have storyboard images
-          if (storyboardImages.length > 0) {
-            const slides = storyboardImages.map(img => ({
-              scene: img.scene,
-              url: img.url,
-              visual: img.visual,
-              narration: img.narration
-            }));
-            dataToSave = JSON.stringify({
-              isSlideshow: true,
-              slides,
-              script: script?.versions?.[selectedDuration + "s"],
-              call_to_action: script?.call_to_action,
-              duration: selectedDuration,
-              storyboardImages,
-              generatedAt: new Date().toISOString()
-            });
-          }
+        if (parsed.isSlideshow && parsed.slides) {
+          const extra = parsed.slides.filter(s => s.scene === 'title');
+          slides.push(...extra);
         }
-      } catch {
-        // Not JSON — it's a direct URL, wrap it
-        dataToSave = videoUrl;
-      }
+      } catch {}
+
+      const dataToSave = JSON.stringify({
+        isSlideshow: true,
+        slides,
+        script: script?.versions?.[selectedDuration + "s"] || null,
+        call_to_action: script?.call_to_action || null,
+        duration: selectedDuration,
+        storyboardImages,
+        generatedAt: new Date().toISOString()
+      });
+
       await onUpdate({ video_commercial_url: dataToSave, status: "marketing" }, true);
+      setVideoUrl(dataToSave); // keep local state in sync
       setLastSaved(new Date());
     } finally {
       setIsSaving(false);
@@ -481,8 +486,8 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
         )}
       </div>
 
-      {/* Action Buttons */}
-      {videoUrl && (
+      {/* Action Buttons — show as soon as we have storyboard images */}
+      {storyboardImages.length > 0 && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3">
           <div>
             <p className="text-sm text-amber-300 font-medium">✓ Storyboard Trailer Ready</p>
