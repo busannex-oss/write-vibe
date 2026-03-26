@@ -187,6 +187,16 @@ export default function ConfidentialWhitePapers() {
     setEditForm({ title: doc.title, content: doc.content });
   };
 
+  const drawHorizBar = (pdf, x, y, maxW, val, maxVal, label, valLabel, colorRGB) => {
+    const [r, g, b] = colorRGB;
+    pdf.setFillColor(25, 35, 55); pdf.rect(x, y, maxW, 5, "F");
+    pdf.setFillColor(r, g, b); pdf.rect(x, y, (val / maxVal) * maxW, 5, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(148, 163, 184);
+    pdf.text(label, x - 2, y + 4, { align: "right" });
+    pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold");
+    pdf.text(valLabel, x + maxW + 2, y + 4);
+  };
+
   const downloadPDF = (doc) => {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pw = pdf.internal.pageSize.getWidth();
@@ -194,113 +204,268 @@ export default function ConfidentialWhitePapers() {
     const margin = 18;
     const contentW = pw - 2 * margin;
 
-    // ── Cover Page ────────────────────────────────────────────────
-    pdf.setFillColor(15, 23, 42);
+    // ══════════════════════════════════════════════════════════════
+    // PAGE 1 — COVER
+    // ══════════════════════════════════════════════════════════════
+    pdf.setFillColor(8, 12, 24);
     pdf.rect(0, 0, pw, ph, "F");
-    // Red accent bar
-    pdf.setFillColor(220, 38, 38);
-    pdf.rect(0, 0, 6, ph, "F");
-    // Logo area
-    pdf.setFillColor(30, 41, 59);
-    pdf.roundedRect(margin, 30, contentW, 18, 3, 3, "F");
-    pdf.setTextColor(239, 68, 68);
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("AUTHORFORGE  ·  CONFIDENTIAL", margin + 6, 41);
-    // Title
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(22);
-    pdf.setFont("helvetica", "bold");
-    const titleLines = pdf.splitTextToSize(doc.title, contentW);
-    pdf.text(titleLines, margin, 75);
-    // Subtitle
-    pdf.setFontSize(11);
-    pdf.setFont("helvetica", "normal");
-    pdf.setTextColor(148, 163, 184);
-    pdf.text("Confidential Industry White Paper", margin, 75 + titleLines.length * 10 + 8);
-    // Meta block
-    const metaY = 140;
-    pdf.setFillColor(30, 41, 59);
-    pdf.roundedRect(margin, metaY, contentW, 50, 3, 3, "F");
-    pdf.setFontSize(9);
-    pdf.setTextColor(100, 116, 139);
-    pdf.text("DATE GENERATED", margin + 8, metaY + 10);
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.text(new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), margin + 8, metaY + 17);
-    pdf.setFont("helvetica", "normal");
-    pdf.setTextColor(100, 116, 139);
-    pdf.text("CLASSIFICATION", margin + 8, metaY + 28);
-    pdf.setTextColor(239, 68, 68);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("STRICTLY CONFIDENTIAL — INTERNAL USE ONLY", margin + 8, metaY + 35);
-    // Footer
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(51, 65, 85);
-    pdf.text("This document contains proprietary information. Unauthorized distribution is strictly prohibited.", margin, ph - 15);
+    // Left red accent
+    pdf.setFillColor(220, 38, 38); pdf.rect(0, 0, 5, ph, "F");
+    // Subtle grid lines (decorative)
+    pdf.setDrawColor(20, 30, 50); pdf.setLineWidth(0.3);
+    for (let gx = 12; gx < pw; gx += 18) { pdf.line(gx, 0, gx, ph); }
 
-    // ── Content Pages ─────────────────────────────────────────────
+    // AuthorForge logo block — top right
+    pdf.setFillColor(15, 23, 42);
+    pdf.roundedRect(pw - 60, 12, 46, 17, 2, 2, "F");
+    pdf.setFillColor(239, 68, 68);
+    pdf.roundedRect(pw - 59, 13, 6, 15, 1, 1, "F");
+    pdf.setFontSize(8.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("AUTHORFORGE", pw - 51, 21.5);
+    pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(100, 116, 139);
+    pdf.text("AI BOOK CREATION PLATFORM", pw - 51, 26);
+
+    // Classification badge
+    pdf.setFillColor(127, 29, 29);
+    pdf.roundedRect(margin, 14, 72, 10, 2, 2, "F");
+    pdf.setFontSize(7); pdf.setFont("helvetica", "bold"); pdf.setTextColor(252, 165, 165);
+    pdf.text("STRICTLY CONFIDENTIAL  ·  INTERNAL USE ONLY", margin + 3, 20.5);
+
+    // Main title
+    pdf.setFontSize(24); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    const titleLines = pdf.splitTextToSize(doc.title, contentW);
+    pdf.text(titleLines, margin, 55);
+
+    // Document subtitle
+    pdf.setFontSize(11); pdf.setFont("helvetica", "normal"); pdf.setTextColor(100, 116, 139);
+    pdf.text("AuthorForge  ·  Investment Research & Industry Analysis", margin, 55 + titleLines.length * 12 + 5);
+
+    // Rule
+    const ruleY = 82;
+    pdf.setFillColor(220, 38, 38); pdf.rect(margin, ruleY, 30, 0.8, "F");
+    pdf.setFillColor(30, 41, 59); pdf.rect(margin + 32, ruleY, contentW - 32, 0.8, "F");
+
+    // Meta block
+    const metaY = 90;
+    pdf.setFillColor(12, 18, 34); pdf.roundedRect(margin, metaY, contentW, 56, 3, 3, "F");
+    pdf.setFillColor(127, 29, 29); pdf.roundedRect(margin, metaY, contentW, 9, 3, 3, "F");
+    pdf.rect(margin, metaY + 4, contentW, 5, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(252, 165, 165);
+    pdf.text("DOCUMENT METADATA", margin + 4, metaY + 6.5);
+
+    const col2 = margin + contentW / 2 + 4;
+    const metaItems = [
+      ["DATE ISSUED", new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })],
+      ["DOCUMENT TYPE", "Investment-Grade White Paper"],
+      ["PREPARED BY", "AuthorForge Research Division"],
+      ["CLASSIFICATION", "STRICTLY CONFIDENTIAL"],
+      ["DISTRIBUTION", "Board of Directors · Senior Leadership"],
+      ["VERSION", "v1.0 — Initial Publication"]
+    ];
+    metaItems.forEach((item, i) => {
+      const cx = i < 3 ? margin + 4 : col2;
+      const row = i % 3;
+      const iy = metaY + 16 + row * 14;
+      pdf.setFontSize(6); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+      pdf.text(item[0], cx, iy);
+      pdf.setFontSize(7.5); pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(item[0] === "CLASSIFICATION" ? 252 : 203, item[0] === "CLASSIFICATION" ? 165 : 213, item[0] === "CLASSIFICATION" ? 165 : 225);
+      pdf.text(item[1], cx, iy + 5.5);
+    });
+
+    // Platform snapshot box
+    const snapY = metaY + 60;
+    pdf.setFillColor(15, 23, 42); pdf.roundedRect(margin, snapY, contentW, 30, 3, 3, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
+    pdf.text("AUTHORFORGE AT A GLANCE", margin + 4, snapY + 7);
+    const snap = [
+      { k: "Founded", v: "2025" }, { k: "HQ", v: "Chicago, IL" }, { k: "TAM", v: "$47B" },
+      { k: "Target ARR Yr5", v: "$24M" }, { k: "Gross Margin", v: "78%+" }, { k: "AI Features", v: "12+" }
+    ];
+    snap.forEach((s, i) => {
+      const sx = margin + 4 + i * (contentW / 6);
+      pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105); pdf.text(s.k, sx, snapY + 17);
+      pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68); pdf.text(s.v, sx, snapY + 24);
+    });
+
+    // Cover footer
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(25, 35, 55);
+    pdf.text("PROPRIETARY & CONFIDENTIAL — This document is intended solely for authorized recipients. Unauthorized use is prohibited.", pw / 2, ph - 8, { align: "center" });
+
+    // ══════════════════════════════════════════════════════════════
+    // PAGE 2 — FINANCIAL CHARTS
+    // ══════════════════════════════════════════════════════════════
+    pdf.addPage();
+    pdf.setFillColor(8, 12, 24); pdf.rect(0, 0, pw, ph, "F");
+    pdf.setFillColor(220, 38, 38); pdf.rect(0, 0, 5, ph, "F");
+
+    const wpPageHeader = () => {
+      pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, pw, 14, "F");
+      pdf.setFillColor(220, 38, 38); pdf.rect(0, 13.5, pw, 0.5, "F");
+      pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
+      pdf.text("AUTHORFORGE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
+      pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
+      pdf.text(doc.title.slice(0, 55), pw - margin, 9, { align: "right" });
+    };
+    wpPageHeader();
+
+    pdf.setFontSize(13); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("MARKET INTELLIGENCE OVERVIEW", margin, 25);
+    pdf.setFillColor(239, 68, 68); pdf.rect(margin, 28, 35, 0.7, "F");
+    pdf.setFontSize(7); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+    pdf.text("AuthorForge Platform — Financial & Market Data", margin, 33);
+
+    // Revenue projection chart
+    pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("AUTHORFORGE PROJECTED ARR ($USD MILLIONS)", margin, 42);
+    const arrData = [
+      { yr: "Yr 1", v: 0.18, label: "$180K" }, { yr: "Yr 2", v: 1.2, label: "$1.2M" },
+      { yr: "Yr 3", v: 5.8, label: "$5.8M" }, { yr: "Yr 5", v: 24, label: "$24M" },
+      { yr: "Yr 7", v: 68, label: "$68M" }, { yr: "Yr 10", v: 118, label: "$118M" }
+    ];
+    const chartX = margin, chartY = 46, chartW = contentW, chartH = 40;
+    pdf.setFillColor(17, 24, 39); pdf.rect(chartX, chartY, chartW, chartH, "F");
+    const maxV = 118;
+    const bw = Math.floor((chartW - 14) / arrData.length) - 4;
+    arrData.forEach((d, i) => {
+      const bh = Math.max(2, (d.v / maxV) * (chartH - 14));
+      const bx = chartX + 7 + i * (bw + 4);
+      const by = chartY + chartH - 8 - bh;
+      pdf.setFillColor(239, 68, 68); pdf.rect(bx, by, bw, bh, "F");
+      pdf.setFontSize(5.5); pdf.setTextColor(148, 163, 184); pdf.setFont("helvetica", "normal");
+      pdf.text(d.yr, bx + bw / 2, chartY + chartH - 3, { align: "center" });
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(d.label, bx + bw / 2, by - 1.5, { align: "center" });
+    });
+
+    // Market sizing horizontal bars
+    pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("MARKET OPPORTUNITY SIZING", margin, 96);
+    pdf.setFillColor(239, 68, 68); pdf.rect(margin, 98.5, 28, 0.6, "F");
+    const barMaxW = contentW - 38;
+    const barStartX = margin + 32;
+    drawHorizBar(pdf, barStartX, 104, barMaxW, 47, 47, "TAM", "$47B Global Publishing", [239, 68, 68]);
+    drawHorizBar(pdf, barStartX, 114, barMaxW, 8.2, 47, "SAM", "$8.2B Self-Publishing Tools", [245, 158, 11]);
+    drawHorizBar(pdf, barStartX, 124, barMaxW, 0.85, 47, "SOM", "$850M AI-Assisted Authoring", [16, 185, 129]);
+    pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+    pdf.text("CAGR 34% through 2030 · Source: AuthorForge Strategic Research, 2025", margin, 133);
+
+    // SaaS metrics
+    const smY2 = 138;
+    pdf.setFillColor(12, 18, 34); pdf.roundedRect(margin, smY2, contentW, 36, 3, 3, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
+    pdf.text("PLATFORM SAAS BENCHMARKS (TARGET)", margin + 4, smY2 + 7);
+    const metrics2 = [
+      { k: "Gross Margin", v: "78%" }, { k: "Churn Target", v: "<2%/mo" },
+      { k: "LTV", v: "$2,400" }, { k: "CAC", v: "$180" },
+      { k: "LTV:CAC", v: "13:1" }, { k: "NPS Target", v: "60+" }
+    ];
+    metrics2.forEach((m, i) => {
+      const mx = margin + 4 + i * (contentW / 6);
+      pdf.setFontSize(6); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+      pdf.text(m.k, mx, smY2 + 18);
+      pdf.setFontSize(9); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
+      pdf.text(m.v, mx, smY2 + 27);
+    });
+
+    // Competitive landscape table
+    const compY = 180;
+    pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("COMPETITIVE LANDSCAPE", margin, compY);
+    pdf.setFillColor(239, 68, 68); pdf.rect(margin, compY + 2.5, 26, 0.6, "F");
+    const compHeaders = ["Platform", "AI Writing", "AI Cover", "AI Audio", "Distribution", "White-Label", "Pricing"];
+    const compRows = [
+      ["AuthorForge", "✓", "✓", "✓", "✓", "✓", "$29-$999/mo"],
+      ["Scrivener", "✗", "✗", "✗", "✗", "✗", "$59 one-time"],
+      ["Jasper AI", "✓", "✗", "✗", "✗", "✗", "$49-$125/mo"],
+      ["Reedsy", "✗", "✓", "✗", "✓", "✗", "Project fees"],
+    ];
+    const colW = contentW / compHeaders.length;
+    let tY = compY + 8;
+    pdf.setFillColor(30, 41, 59); pdf.rect(margin - 2, tY - 3, contentW + 4, 7, "F");
+    compHeaders.forEach((h, i) => {
+      pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
+      pdf.text(h, margin + i * colW, tY + 1);
+    });
+    tY += 9;
+    compRows.forEach((row, ri) => {
+      if (ri === 0) { pdf.setFillColor(30, 58, 80); } else { pdf.setFillColor(ri % 2 === 0 ? 17 : 13, ri % 2 === 0 ? 24 : 18, ri % 2 === 0 ? 39 : 30); }
+      pdf.rect(margin - 2, tY - 3, contentW + 4, 7, "F");
+      row.forEach((cell, ci) => {
+        pdf.setFontSize(6.5); pdf.setFont("helvetica", ci === 0 ? "bold" : "normal");
+        pdf.setTextColor(cell === "✓" ? 52 : cell === "✗" ? 239 : ci === 0 && ri === 0 ? 96 : 180, cell === "✓" ? 211 : cell === "✗" ? 68 : ci === 0 && ri === 0 ? 165 : 190, cell === "✓" ? 153 : cell === "✗" ? 68 : ci === 0 && ri === 0 ? 250 : 210);
+        pdf.text(cell, margin + ci * colW, tY + 1.5);
+      });
+      tY += 8;
+    });
+
+    // ══════════════════════════════════════════════════════════════
+    // CONTENT PAGES
+    // ══════════════════════════════════════════════════════════════
     const lines = (doc.content || "").split("\n");
     pdf.addPage();
-    let y = margin + 8;
+    pdf.setFillColor(8, 12, 24); pdf.rect(0, 0, pw, ph, "F");
+    pdf.setFillColor(220, 38, 38); pdf.rect(0, 0, 5, ph, "F");
+    let y = 22;
+    let pageNum = 3;
 
     const addPageHeader = () => {
-      pdf.setFillColor(15, 23, 42);
-      pdf.rect(0, 0, pw, 12, "F");
-      pdf.setFillColor(220, 38, 38);
-      pdf.rect(0, 0, pw, 1.5, "F");
-      pdf.setFontSize(7);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(100, 116, 139);
-      pdf.text("CONFIDENTIAL — AUTHORFORGE", margin, 8);
-      pdf.text(doc.title.slice(0, 60), pw - margin, 8, { align: "right" });
-      y = 20;
+      pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, pw, 14, "F");
+      pdf.setFillColor(220, 38, 38); pdf.rect(0, 13.5, pw, 0.5, "F");
+      pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
+      pdf.text("AUTHORFORGE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
+      pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
+      pdf.text(doc.title.slice(0, 55), pw - margin, 9, { align: "right" });
+      y = 22;
     };
-    const addPageFooter = (pageNum) => {
-      pdf.setFillColor(15, 23, 42);
-      pdf.rect(0, ph - 10, pw, 10, "F");
-      pdf.setFontSize(7);
-      pdf.setTextColor(71, 85, 105);
-      pdf.text(`Page ${pageNum}`, pw / 2, ph - 4, { align: "center" });
-      pdf.text(new Date().getFullYear().toString(), margin, ph - 4);
+    const addPageFooter = (pn) => {
+      pdf.setFillColor(15, 23, 42); pdf.rect(0, ph - 10, pw, 10, "F");
+      pdf.setFillColor(220, 38, 38); pdf.rect(0, ph - 10, pw, 0.5, "F");
+      pdf.setFontSize(6.5); pdf.setTextColor(71, 85, 105);
+      pdf.text(`Page ${pn}`, pw / 2, ph - 4, { align: "center" });
+      pdf.text("© AuthorForge " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
     };
-
     addPageHeader();
-    let pageNum = 2;
 
     lines.forEach((rawLine) => {
       const line = rawLine.trim();
-      if (!line) { y += 4; return; }
-
-      // Section headers (ALL CAPS or starts with number+dot)
-      const isHeader = /^[A-Z][A-Z\s&:()\-\/]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line);
+      if (!line) { y += 3; return; }
+      const isHeader = /^[A-Z][A-Z\s&:()\/\-]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line);
+      const isBullet = /^[-•*]\s/.test(line);
 
       if (isHeader) {
         if (y > ph - 40) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
-        pdf.setFillColor(30, 41, 59);
-        pdf.rect(margin - 2, y - 4, contentW + 4, 10, "F");
+        if (y > 24) y += 3;
+        pdf.setFillColor(15, 23, 42);
+        pdf.rect(margin - 2, y - 4, contentW + 4, 11, "F");
         pdf.setFillColor(220, 38, 38);
-        pdf.rect(margin - 2, y - 4, 3, 10, "F");
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(239, 68, 68);
-        pdf.text(line, margin + 4, y + 2);
+        pdf.rect(margin - 2, y - 4, 3, 11, "F");
+        pdf.setFontSize(8.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
+        pdf.text(line, margin + 5, y + 3);
         y += 14;
+      } else if (isBullet) {
+        const text = line.replace(/^[-•*]\s/, "");
+        const wrapped = pdf.splitTextToSize(text, contentW - 8);
+        wrapped.forEach((wl, wi) => {
+          if (y > ph - 18) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          pdf.setFontSize(8.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(148, 163, 184);
+          if (wi === 0) { pdf.setFillColor(220, 38, 38); pdf.rect(margin, y - 2, 1.5, 1.5, "F"); }
+          pdf.text(wl, margin + 5, y);
+          y += 5;
+        });
+        y += 1;
       } else {
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(51, 65, 85);
+        pdf.setFontSize(8.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(180, 190, 210);
         const wrapped = pdf.splitTextToSize(line, contentW);
         wrapped.forEach((wl) => {
-          if (y > ph - 20) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          if (y > ph - 18) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
           pdf.text(wl, margin, y);
-          y += 5.5;
+          y += 5.2;
         });
       }
     });
     addPageFooter(pageNum);
-    pdf.save(`${doc.title.replace(/\s+/g, "-")}-CONFIDENTIAL.pdf`);
+    pdf.save(`${doc.title.replace(/\s+/g, "-")}-CONFIDENTIAL-AuthorForge.pdf`);
   };
 
   const extractDate = (content) => {

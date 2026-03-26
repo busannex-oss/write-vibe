@@ -66,6 +66,11 @@ export default function AIBusinessPlan() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["business-plans"] })
   });
 
+  const saveFinalMutation = useMutation({
+    mutationFn: (id) => base44.entities.Document.update(id, { status: "final" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["business-plans"] })
+  });
+
   const handleGenerate = async () => {
     if (!form.company_name) return;
     setGeneratingId("new");
@@ -94,6 +99,42 @@ export default function AIBusinessPlan() {
     }
   };
 
+  // Draw a bar chart using jsPDF primitives
+  const drawBarChart = (pdf, x, y, w, h, data, chartTitle, color) => {
+    const [r, g, b] = color;
+    pdf.setFillColor(17, 24, 39);
+    pdf.rect(x, y, w, h, "F");
+    pdf.setFontSize(7); pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(255, 255, 255);
+    pdf.text(chartTitle, x + 2, y - 2);
+    const maxVal = Math.max(...data.map(d => d.value));
+    const barW = Math.floor((w - 12) / data.length) - 3;
+    data.forEach((d, i) => {
+      const barH = Math.max(2, ((d.value / maxVal) * (h - 16)));
+      const bx = x + 6 + i * (barW + 3);
+      const by = y + h - 10 - barH;
+      pdf.setFillColor(r, g, b);
+      pdf.rect(bx, by, barW, barH, "F");
+      pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(148, 163, 184);
+      pdf.text(d.label, bx + barW / 2, y + h - 4, { align: "center" });
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(d.display, bx + barW / 2, by - 1.5, { align: "center" });
+    });
+  };
+
+  const drawHorizBar = (pdf, x, y, maxW, val, maxVal, label, valLabel, color) => {
+    const [r, g, b] = color;
+    const barW = (val / maxVal) * maxW;
+    pdf.setFillColor(30, 41, 59); pdf.rect(x, y, maxW, 5, "F");
+    pdf.setFillColor(r, g, b); pdf.rect(x, y, barW, 5, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(203, 213, 225);
+    pdf.text(label, x - 2, y + 4, { align: "right" });
+    pdf.setTextColor(255, 255, 255);
+    pdf.text(valLabel, x + maxW + 2, y + 4);
+  };
+
   const downloadPDF = (doc) => {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pw = pdf.internal.pageSize.getWidth();
@@ -101,148 +142,299 @@ export default function AIBusinessPlan() {
     const margin = 18;
     const contentW = pw - 2 * margin;
     const title = displayTitle(doc);
+    const companyName = title.replace(/ — 30-Year Strategic Business Plan.*/, "").replace("[BIZPLAN] ", "");
 
-    // ── Cover Page ─────────────────────────────────────────────
-    pdf.setFillColor(10, 15, 30);
+    // ══════════════════════════════════════════════════════════════
+    // PAGE 1 — COVER
+    // ══════════════════════════════════════════════════════════════
+    pdf.setFillColor(7, 11, 22);
     pdf.rect(0, 0, pw, ph, "F");
-    // Blue accent bar
+    // Left accent stripe
     pdf.setFillColor(59, 130, 246);
-    pdf.rect(0, 0, 6, ph, "F");
-    // Header badge
-    pdf.setFillColor(17, 24, 39);
-    pdf.roundedRect(margin, 28, contentW, 18, 3, 3, "F");
-    pdf.setTextColor(96, 165, 250);
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("AUTHORFORGE  ·  30-YEAR STRATEGIC BUSINESS PLAN", margin + 6, 39);
-    // Main title
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(24);
-    pdf.setFont("helvetica", "bold");
-    const titleLines = pdf.splitTextToSize(title, contentW);
-    pdf.text(titleLines, margin, 76);
-    // Tagline
-    pdf.setFontSize(11);
-    pdf.setFont("helvetica", "normal");
-    pdf.setTextColor(100, 116, 139);
-    pdf.text("Comprehensive Strategic Business Plan — 30-Year Horizon", margin, 76 + titleLines.length * 11 + 7);
-    // Gold divider
+    pdf.rect(0, 0, 5, ph, "F");
+    // Gold accent stripe
     pdf.setFillColor(245, 158, 11);
-    pdf.rect(margin, 120, 40, 1.5, "F");
-    // Meta block
-    const metaY = 135;
-    pdf.setFillColor(17, 24, 39);
-    pdf.roundedRect(margin, metaY, contentW, 62, 3, 3, "F");
-    const col2 = margin + contentW / 2 + 4;
-    pdf.setFontSize(8);
-    pdf.setFont("helvetica", "normal");
-    pdf.setTextColor(71, 85, 105);
-    pdf.text("DATE GENERATED", margin + 8, metaY + 11);
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
-    pdf.text(new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), margin + 8, metaY + 19);
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(71, 85, 105);
-    pdf.text("CLASSIFICATION", margin + 8, metaY + 31);
-    pdf.setTextColor(239, 68, 68);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
-    pdf.text("STRICTLY CONFIDENTIAL", margin + 8, metaY + 39);
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(71, 85, 105);
-    pdf.text("DOCUMENT TYPE", col2, metaY + 11);
-    pdf.setTextColor(96, 165, 250);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
-    pdf.text("Strategic Business Plan", col2, metaY + 19);
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(71, 85, 105);
-    pdf.text("PLANNING HORIZON", col2, metaY + 31);
-    pdf.setTextColor(245, 158, 11);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
-    pdf.text("30 Years (2025–2055)", col2, metaY + 39);
-    // Footer
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(30, 41, 59);
-    pdf.text("This document contains proprietary and confidential strategic information. Unauthorized disclosure is prohibited.", margin, ph - 14);
+    pdf.rect(0, ph / 2 - 1, 5, 2, "F");
 
-    // ── Content Pages ───────────────────────────────────────────
+    // AuthorForge logo block (top-right)
+    pdf.setFillColor(17, 24, 39);
+    pdf.roundedRect(pw - 58, 12, 44, 16, 2, 2, "F");
+    pdf.setFillColor(245, 158, 11);
+    pdf.roundedRect(pw - 57, 13, 6, 14, 1, 1, "F");
+    pdf.setFontSize(8); pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(255, 255, 255);
+    pdf.text("AUTHORFORGE", pw - 49, 21.5);
+    pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(100, 116, 139);
+    pdf.text("AI BOOK CREATION PLATFORM", pw - 49, 25.5);
+
+    // Document type badge
+    pdf.setFillColor(30, 58, 138);
+    pdf.roundedRect(margin, 15, 80, 10, 2, 2, "F");
+    pdf.setFontSize(7); pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(147, 197, 253);
+    pdf.text("STRATEGIC BUSINESS PLAN  ·  30-YEAR HORIZON", margin + 4, 21.5);
+
+    // Main title
+    pdf.setFontSize(26); pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(255, 255, 255);
+    const titleLines = pdf.splitTextToSize(companyName, contentW - 4);
+    pdf.text(titleLines, margin, 55);
+
+    // Subtitle line
+    pdf.setFontSize(12); pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(96, 165, 250);
+    pdf.text("Comprehensive 30-Year Strategic Business Plan", margin, 55 + titleLines.length * 13 + 4);
+
+    // Gold rule
+    const ruleY = 82;
+    pdf.setFillColor(245, 158, 11);
+    pdf.rect(margin, ruleY, 50, 0.8, "F");
+    pdf.setFillColor(59, 130, 246);
+    pdf.rect(margin + 52, ruleY, contentW - 52, 0.8, "F");
+
+    // Meta info grid
+    const metaY = 90;
+    pdf.setFillColor(13, 20, 38);
+    pdf.roundedRect(margin, metaY, contentW, 58, 3, 3, "F");
+    pdf.setFillColor(30, 58, 138);
+    pdf.roundedRect(margin, metaY, contentW, 9, 3, 3, "F");
+    pdf.rect(margin, metaY + 4, contentW, 5, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(147, 197, 253);
+    pdf.text("DOCUMENT METADATA", margin + 4, metaY + 6.5);
+
+    const metaItems = [
+      ["DATE GENERATED", new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })],
+      ["DOCUMENT CLASS", "Strictly Confidential — Board Use Only"],
+      ["PLANNING HORIZON", "30 Years · 2025–2055"],
+      ["PREPARED BY", "AuthorForge Strategic Intelligence"],
+      ["DOCUMENT VERSION", "v1.0 — Initial Release"],
+      ["STATUS", doc.status === "final" ? "FINAL — APPROVED" : "DRAFT — PENDING APPROVAL"]
+    ];
+    const col1X = margin + 4, col2X = margin + contentW / 2 + 4;
+    metaItems.forEach((item, i) => {
+      const col = i < 3 ? col1X : col2X;
+      const row = i % 3;
+      const iy = metaY + 16 + row * 14;
+      pdf.setFontSize(6); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+      pdf.text(item[0], col, iy);
+      pdf.setFontSize(7.5); pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(item[0] === "STATUS" && doc.status === "final" ? 52 : 255, item[0] === "STATUS" && doc.status === "final" ? 211 : 255, item[0] === "STATUS" && doc.status === "final" ? 153 : 255);
+      pdf.text(item[1], col, iy + 5.5);
+    });
+
+    // Revenue at a glance
+    const glanceY = metaY + 62;
+    pdf.setFillColor(17, 24, 39);
+    pdf.roundedRect(margin, glanceY, contentW, 32, 3, 3, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
+    pdf.text("PROJECTED ARR MILESTONES", margin + 4, glanceY + 7);
+    const snapshots = [
+      { yr: "Yr 1", v: "$180K" }, { yr: "Yr 3", v: "$5.8M" }, { yr: "Yr 5", v: "$24M" },
+      { yr: "Yr 10", v: "$118M" }, { yr: "Yr 20", v: "$490M" }, { yr: "Yr 30", v: "$1.9B" }
+    ];
+    snapshots.forEach((s, i) => {
+      const sx = margin + 4 + i * (contentW / 6);
+      pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+      pdf.text(s.yr, sx, glanceY + 17);
+      pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
+      pdf.text(s.v, sx, glanceY + 24);
+    });
+
+    // Cover footer
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(30, 41, 59);
+    pdf.text("PROPRIETARY & CONFIDENTIAL — Unauthorized reproduction or distribution of this document is strictly prohibited.", pw / 2, ph - 8, { align: "center" });
+
+    // ══════════════════════════════════════════════════════════════
+    // PAGE 2 — TABLE OF CONTENTS
+    // ══════════════════════════════════════════════════════════════
+    pdf.addPage();
+    pdf.setFillColor(7, 11, 22); pdf.rect(0, 0, pw, ph, "F");
+    pdf.setFillColor(59, 130, 246); pdf.rect(0, 0, 5, ph, "F");
+
+    const tocHeader = () => {
+      pdf.setFillColor(17, 24, 39); pdf.rect(0, 0, pw, 14, "F");
+      pdf.setFillColor(245, 158, 11); pdf.rect(0, 13.5, pw, 0.5, "F");
+      pdf.setFontSize(7); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
+      pdf.text("AUTHORFORGE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
+    };
+    tocHeader();
+    pdf.setFontSize(16); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("TABLE OF CONTENTS", margin, 28);
+    pdf.setFillColor(245, 158, 11); pdf.rect(margin, 31, 35, 0.8, "F");
+
+    const tocSections = [
+      { n: "1", t: "Executive Summary", p: "3" },
+      { n: "2", t: "Company Overview & Value Proposition", p: "3" },
+      { n: "3", t: "Market Analysis & Sizing", p: "4" },
+      { n: "4", t: "Product Roadmap", p: "4" },
+      { n: "5", t: "Phase 1 Strategy — Years 1–5 (2025–2030)", p: "5" },
+      { n: "6", t: "Phase 2 Strategy — Years 6–10 (2031–2035)", p: "5" },
+      { n: "7", t: "Phase 3 Strategy — Years 11–20 (2036–2045)", p: "6" },
+      { n: "8", t: "Phase 4 Strategy — Years 21–30 (2046–2055)", p: "6" },
+      { n: "9", t: "Financial Projections & SaaS Metrics", p: "7" },
+      { n: "10", t: "Risk Analysis & Mitigation", p: "8" },
+      { n: "11", t: "Technology & AI Strategy", p: "8" },
+      { n: "12", t: "Organizational Design", p: "9" },
+      { n: "13", t: "Investor Value Proposition", p: "9" },
+      { n: "14", t: "Conclusion & 90-Day Action Plan", p: "10" },
+    ];
+    let tocY = 40;
+    tocSections.forEach((s, i) => {
+      const isAlt = i % 2 === 0;
+      if (isAlt) { pdf.setFillColor(17, 24, 39); pdf.rect(margin - 2, tocY - 3, contentW + 4, 8, "F"); }
+      pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(96, 165, 250);
+      pdf.text(s.n + ".", margin + 1, tocY + 2);
+      pdf.setFont("helvetica", "normal"); pdf.setTextColor(203, 213, 225);
+      pdf.text(s.t, margin + 10, tocY + 2);
+      pdf.setTextColor(71, 85, 105);
+      pdf.text(s.p, pw - margin, tocY + 2, { align: "right" });
+      tocY += 9;
+    });
+
+    // ══════════════════════════════════════════════════════════════
+    // PAGE 3 — FINANCIAL CHARTS
+    // ══════════════════════════════════════════════════════════════
+    pdf.addPage();
+    pdf.setFillColor(7, 11, 22); pdf.rect(0, 0, pw, ph, "F");
+    pdf.setFillColor(59, 130, 246); pdf.rect(0, 0, 5, ph, "F");
+    tocHeader();
+
+    pdf.setFontSize(13); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("FINANCIAL OVERVIEW", margin, 26);
+    pdf.setFillColor(245, 158, 11); pdf.rect(margin, 29, 30, 0.8, "F");
+    pdf.setFontSize(7); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+    pdf.text("Projected ARR · EBITDA · Market Sizing", margin, 34);
+
+    // ARR Bar Chart
+    const revenueData = [
+      { label: "Yr 1", value: 0.18, display: "$180K" },
+      { label: "Yr 2", value: 1.2, display: "$1.2M" },
+      { label: "Yr 3", value: 5.8, display: "$5.8M" },
+      { label: "Yr 5", value: 24, display: "$24M" },
+      { label: "Yr 10", value: 118, display: "$118M" },
+      { label: "Yr 20", value: 490, display: "$490M" },
+    ];
+    drawBarChart(pdf, margin, 42, contentW, 45, revenueData, "PROJECTED ARR (USD)", [59, 130, 246]);
+
+    // EBITDA Bar Chart
+    const ebitdaData = [
+      { label: "Yr 1", value: 0.1, display: "-$420K" },
+      { label: "Yr 2", value: 0.5, display: "-$180K" },
+      { label: "Yr 3", value: 1.5, display: "$580K" },
+      { label: "Yr 5", value: 6.2, display: "$6.2M" },
+      { label: "Yr 10", value: 38, display: "$38M" },
+      { label: "Yr 20", value: 172, display: "$172M" },
+    ];
+    drawBarChart(pdf, margin, 98, contentW, 42, ebitdaData, "PROJECTED EBITDA (USD)", [16, 185, 129]);
+
+    // Market sizing horizontal bars
+    pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+    pdf.text("MARKET OPPORTUNITY", margin, 152);
+    pdf.setFillColor(245, 158, 11); pdf.rect(margin, 154.5, 30, 0.6, "F");
+    const barMaxW = contentW - 40;
+    const barX = margin + 36;
+    drawHorizBar(pdf, barX, 160, barMaxW, 47, 47, "TAM", "$47B", [59, 130, 246]);
+    drawHorizBar(pdf, barX, 170, barMaxW, 8.2, 47, "SAM", "$8.2B", [245, 158, 11]);
+    drawHorizBar(pdf, barX, 180, barMaxW, 0.85, 47, "SOM", "$850M", [16, 185, 129]);
+    pdf.setFontSize(6); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+    pdf.text("TAM = Total Addressable Market (Global Publishing)  ·  SAM = Self-Publishing Tools  ·  SOM = AI-Assisted Authoring (2025)", margin, 193);
+
+    // SaaS metrics panel
+    const smY = 198;
+    pdf.setFillColor(13, 20, 38); pdf.roundedRect(margin, smY, contentW, 36, 3, 3, "F");
+    pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
+    pdf.text("KEY SAAS METRICS (TARGET)", margin + 4, smY + 7);
+    const metrics = [
+      { k: "Gross Margin", v: "78%+" }, { k: "Monthly Churn", v: "<2%" },
+      { k: "LTV", v: "$2,400" }, { k: "CAC", v: "$180" },
+      { k: "LTV:CAC", v: "13:1" }, { k: "NPS Target", v: "60+" }
+    ];
+    metrics.forEach((m, i) => {
+      const mx = margin + 4 + i * (contentW / 6);
+      pdf.setFontSize(6); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
+      pdf.text(m.k, mx, smY + 17);
+      pdf.setFontSize(9); pdf.setFont("helvetica", "bold"); pdf.setTextColor(96, 165, 250);
+      pdf.text(m.v, mx, smY + 26);
+    });
+
+    // ══════════════════════════════════════════════════════════════
+    // CONTENT PAGES
+    // ══════════════════════════════════════════════════════════════
     const lines = (doc.content || "").split("\n");
     pdf.addPage();
-    let y = 20;
-    let pageNum = 2;
+    let y = 22;
+    let pageNum = 4;
 
     const addPageHeader = () => {
-      pdf.setFillColor(10, 15, 30);
-      pdf.rect(0, 0, pw, 13, "F");
-      pdf.setFillColor(59, 130, 246);
-      pdf.rect(0, 0, pw, 1.5, "F");
-      pdf.setFontSize(7);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(71, 85, 105);
-      pdf.text("CONFIDENTIAL — AUTHORFORGE STRATEGIC PLAN", margin, 9);
-      pdf.text(title.slice(0, 55), pw - margin, 9, { align: "right" });
+      pdf.setFillColor(7, 11, 22); pdf.rect(0, 0, pw, 14, "F");
+      pdf.setFillColor(245, 158, 11); pdf.rect(0, 13.5, pw, 0.5, "F");
+      pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
+      pdf.text("AUTHORFORGE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
+      pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
+      pdf.text(companyName.slice(0, 50), pw - margin, 9, { align: "right" });
       y = 22;
     };
     const addPageFooter = (pn) => {
-      pdf.setFillColor(10, 15, 30);
-      pdf.rect(0, ph - 11, pw, 11, "F");
-      pdf.setFontSize(7);
-      pdf.setTextColor(51, 65, 85);
+      pdf.setFillColor(7, 11, 22); pdf.rect(0, ph - 10, pw, 10, "F");
+      pdf.setFillColor(59, 130, 246); pdf.rect(0, ph - 10, pw, 0.5, "F");
+      pdf.setFontSize(6.5); pdf.setTextColor(71, 85, 105);
       pdf.text(`Page ${pn}`, pw / 2, ph - 4, { align: "center" });
-      pdf.text("© AuthorForge " + new Date().getFullYear(), margin, ph - 4);
+      pdf.text("© AuthorForge " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
     };
-
     addPageHeader();
 
     lines.forEach((rawLine) => {
       const line = rawLine.trim();
-      if (!line) { y += 4; return; }
-
-      // Phase / section headers
+      if (!line) { y += 3.5; return; }
       const isPhaseHeader = /^PHASE \d/i.test(line);
-      const isMainHeader = /^[A-Z][A-Z\s&:()\-\/]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line);
+      const isMainHeader = /^[A-Z][A-Z\s&:()\/\-]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line) || /^TABLE OF CONTENTS/i.test(line);
+      const isBullet = /^[-•*]\s/.test(line);
 
       if (isPhaseHeader) {
-        if (y > ph - 45) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
-        pdf.setFillColor(59, 130, 246);
-        pdf.rect(margin - 2, y - 5, contentW + 4, 13, "F");
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(255, 255, 255);
-        pdf.text(line, margin + 4, y + 3);
+        if (y > ph - 50) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+        pdf.setFillColor(30, 58, 138);
+        pdf.roundedRect(margin - 2, y - 5, contentW + 4, 14, 2, 2, "F");
+        pdf.setFillColor(245, 158, 11);
+        pdf.rect(margin - 2, y - 5, 4, 14, "F");
+        pdf.setFontSize(10); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
+        pdf.text(line, margin + 6, y + 4);
         y += 18;
       } else if (isMainHeader) {
         if (y > ph - 40) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+        if (y > 24) y += 3;
         pdf.setFillColor(17, 24, 39);
         pdf.rect(margin - 2, y - 4, contentW + 4, 11, "F");
         pdf.setFillColor(245, 158, 11);
         pdf.rect(margin - 2, y - 4, 3, 11, "F");
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(245, 158, 11);
+        pdf.setFontSize(8.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
         pdf.text(line, margin + 5, y + 3);
-        y += 15;
+        y += 14;
+      } else if (isBullet) {
+        const text = line.replace(/^[-•*]\s/, "");
+        pdf.setFontSize(8.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(148, 163, 184);
+        const wrapped = pdf.splitTextToSize(text, contentW - 8);
+        wrapped.forEach((wl, wi) => {
+          if (y > ph - 18) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          if (wi === 0) { pdf.setFillColor(245, 158, 11); pdf.rect(margin, y - 2, 1.5, 1.5, "F"); }
+          pdf.setTextColor(148, 163, 184);
+          pdf.text(wl, margin + 5, y);
+          y += 5;
+        });
+        y += 1;
       } else {
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(51, 65, 85);
+        pdf.setFontSize(8.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(180, 190, 210);
         const wrapped = pdf.splitTextToSize(line, contentW);
         wrapped.forEach((wl) => {
-          if (y > ph - 20) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          if (y > ph - 18) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
           pdf.text(wl, margin, y);
-          y += 5.5;
+          y += 5.2;
         });
       }
     });
     addPageFooter(pageNum);
-    pdf.save(`${title.replace(/\s+/g, "-")}-30YR-BIZPLAN.pdf`);
+    pdf.save(`${companyName.replace(/\s+/g, "-")}-30YR-Strategic-Plan.pdf`);
   };
 
   const displayTitle = (doc) => doc.title.replace("[BIZPLAN] ", "");
@@ -407,6 +599,15 @@ export default function AIBusinessPlan() {
                             <Button size="icon" variant="ghost" onClick={() => { setEditingId(doc.id); setEditForm({ title: doc.title, content: doc.content }); }} className="text-white/40 hover:text-white hover:bg-white/10 w-8 h-8">
                               <Edit3 className="w-4 h-4" />
                             </Button>
+                            {doc.status !== "final" && (
+                              <Button size="sm" variant="ghost" onClick={() => saveFinalMutation.mutate(doc.id)} disabled={saveFinalMutation.isPending} title="Save as Final" className="text-emerald-400/70 hover:text-emerald-400 hover:bg-emerald-500/10 h-8 px-2 text-xs">
+                                {saveFinalMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3 mr-1" />}
+                                Save
+                              </Button>
+                            )}
+                            {doc.status === "final" && (
+                              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs h-8 px-2 flex items-center">Final</Badge>
+                            )}
                             <Button size="icon" variant="ghost" onClick={() => downloadPDF(doc)} className="text-white/40 hover:text-blue-400 hover:bg-white/10 w-8 h-8" title="Download PDF">
                               <Download className="w-4 h-4" />
                             </Button>
