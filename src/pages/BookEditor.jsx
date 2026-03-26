@@ -114,17 +114,6 @@ export default function BookEditor() {
 
   // Check if book is null, undefined, or empty object (no id means no data loaded)
   if ((!book || !book.id) && !isLoading) {
-    React.useEffect(() => {
-      base44.entities.ErrorLog.create({
-        error_type: "not_found_404",
-        message: `Book not found or empty: ${bookId}`,
-        page: window.location.pathname + window.location.search,
-        component: "BookEditor",
-        severity: "medium",
-        status_code: 404
-      }).catch(() => {});
-    }, []);
-    useErrorLogger(null);
     return (
       <div className="p-6 lg:p-8 text-center">
         <h2 className="text-xl font-semibold text-white mb-2">Book not found</h2>
