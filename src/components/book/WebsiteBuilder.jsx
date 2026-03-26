@@ -321,6 +321,25 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
         </CardContent>
       </Card>
 
+      {/* View Website Button */}
+      <Card className="bg-emerald-500/10 border-emerald-500/30">
+        <CardContent className="py-5 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-emerald-300 font-semibold">Your Book Website</p>
+            <p className="text-xs text-white/50 mt-0.5">This is the public landing page for your book — share this link with readers.</p>
+          </div>
+          <a
+            href={`/BookWebsite?id=${book.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 font-semibold flex-shrink-0">
+              <ExternalLink className="w-4 h-4 mr-2" /> View Book Website
+            </Button>
+          </a>
+        </CardContent>
+      </Card>
+
       {/* Website Preview */}
       <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-white/10 overflow-hidden">
         <CardHeader>
