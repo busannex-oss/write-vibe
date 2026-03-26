@@ -55,18 +55,26 @@ export default function BookEditor() {
   const { data: book, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
-      if (!bookId) return null;
+      if (!bookId) {
+        console.log('No bookId provided');
+        return null;
+      }
       try {
         console.log('Fetching book with ID:', bookId);
-        const bookData = await base44.entities.Book.get(bookId);
-        console.log('Book data received:', bookData);
-        return bookData;
+        // Try using filter instead of get
+        const books = await base44.entities.Book.filter({ id: bookId });
+        console.log('Filter result:', books);
+        if (books && books.length > 0) {
+          return books[0];
+        }
+        return null;
       } catch (err) {
         console.error('Error fetching book:', err);
         return null;
       }
     },
-    enabled: !!bookId
+    enabled: !!bookId,
+    retry: 1
   });
 
   const updateBookMutation = useMutation({
@@ -118,6 +126,9 @@ export default function BookEditor() {
       <div className="p-6 lg:p-8 text-center">
         <h2 className="text-xl font-semibold text-white mb-2">Book not found</h2>
         <p className="text-white/50 mb-4">This book may have been deleted or you don't have access to it.</p>
+        <div className="text-xs text-white/30 mb-4 font-mono">
+          Debug: bookId={bookId || 'null'} | book={JSON.stringify(book)} | error={error?.message || 'none'}
+        </div>
         <Button 
           onClick={() => navigate(createPageUrl("Books"))} 
           className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
