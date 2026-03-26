@@ -58,9 +58,11 @@ export default function BookWebsite() {
   const { data: pageData, isLoading, error } = useQuery({
     queryKey: ['public-book', bookId],
     queryFn: async () => {
+      console.log('📘 BookWebsite: Fetching bookId:', bookId);
       // Try direct entity access first (works for logged-in book owner)
       try {
         const books = await base44.entities.Book.filter({ id: bookId });
+        console.log('📘 Direct entity result:', books);
         if (books?.[0]) {
           const book = books[0];
           let reviews = [];
@@ -68,11 +70,17 @@ export default function BookWebsite() {
             const allReviews = await base44.entities.Review.filter({ book_id: bookId });
             reviews = allReviews.filter(r => r.status === 'approved');
           } catch (_) {}
-          return { book, author: null, reviews };
+          const result = { book, author: null, reviews };
+          console.log('📘 Returning direct result:', result);
+          return result;
         }
-      } catch (_) {}
+      } catch (err) {
+        console.log('📘 Direct entity failed:', err);
+      }
       // Fallback to public backend function (for unauthenticated visitors)
+      console.log('📘 Calling getPublicBook function');
       const res = await base44.functions.invoke('getPublicBook', { bookId });
+      console.log('📘 getPublicBook result:', res.data);
       return res.data;
     },
     enabled: !!bookId,
@@ -82,6 +90,7 @@ export default function BookWebsite() {
   const book = pageData?.book || null;
   const authorProfile = pageData?.author || null;
   const reviews = pageData?.reviews || [];
+  console.log('📘 Final data:', { hasBook: !!book, hasAuthor: !!authorProfile, reviewCount: reviews?.length });
 
   const subscribeMutation = useMutation({
     mutationFn: () => base44.entities.NewsletterSubscriber.create({
