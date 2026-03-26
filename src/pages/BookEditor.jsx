@@ -49,6 +49,8 @@ export default function BookEditor() {
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const bookId = urlParams.get("id");
+  
+  console.log('[BookEditor] URL params:', window.location.search, 'bookId:', bookId);
 
   const [activeTab, setActiveTab] = useState("title");
 
