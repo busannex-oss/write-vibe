@@ -20,10 +20,12 @@ import {
   XCircle,
   Settings,
   Lock,
-  BarChart3
+  BarChart3,
+  Briefcase
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
+import AIBusinessPlan from "@/components/admin/AIBusinessPlan";
 import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 
@@ -166,6 +168,10 @@ export default function UserManagement() {
           <TabsTrigger value="confidential" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300">
             <Lock className="w-4 h-4 mr-2" />
             Confidential
+          </TabsTrigger>
+          <TabsTrigger value="bizplan" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-300">
+            <Briefcase className="w-4 h-4 mr-2" />
+            Business Plan
           </TabsTrigger>
           <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -388,6 +394,10 @@ export default function UserManagement() {
 
         <TabsContent value="confidential">
           <ConfidentialWhitePapers />
+        </TabsContent>
+
+        <TabsContent value="bizplan">
+          <AIBusinessPlan />
         </TabsContent>
 
         <TabsContent value="analytics">
