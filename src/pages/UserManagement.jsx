@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
-import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers";
+import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 
 export default function UserManagement() {
