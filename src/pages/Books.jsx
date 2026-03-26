@@ -33,7 +33,8 @@ import {
   Square,
   SortAsc,
   Users as UsersIcon,
-  User
+  User,
+  Trash2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -308,7 +309,7 @@ export default function Books() {
                     </button>
                   </div>
                 )}
-                <Link to={createPageUrl(`BookEditor?id=${book.id}`)} className={bulkEditMode ? "pointer-events-none" : ""}>
+                <Link to={`/BookEditor?id=${book.id}`} className={bulkEditMode ? "pointer-events-none" : ""}>
                   <div className="aspect-[3/4] relative bg-gradient-to-br from-slate-700 to-slate-800">
                     {book.front_cover_url ? (
                       <img src={book.front_cover_url} alt="" className="w-full h-full object-cover" />
@@ -363,7 +364,7 @@ export default function Books() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link to={createPageUrl(`BookEditor?id=${book.id}`)}>
+              <Link to={`/BookEditor?id=${book.id}`}>
                 <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer">
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex-shrink-0 overflow-hidden">
