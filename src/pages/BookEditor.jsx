@@ -55,8 +55,14 @@ export default function BookEditor() {
   const { data: book, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
-      const books = await base44.entities.Book.filter({ id: bookId });
-      return books?.[0] || null;
+      if (!bookId) return null;
+      try {
+        const bookData = await base44.entities.Book.get(bookId);
+        return bookData;
+      } catch (err) {
+        console.error('Error fetching book:', err);
+        return null;
+      }
     },
     enabled: !!bookId
   });
