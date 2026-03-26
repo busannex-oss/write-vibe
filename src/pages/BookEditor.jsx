@@ -152,11 +152,9 @@ export default function BookEditor() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a href={`/BookWebsite?id=${bookId}`} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10">
+            <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}>
                 <ExternalLink className="w-4 h-4 mr-1" /> View Website
               </Button>
-            </a>
             <span className="text-sm text-white/50">{completedCount}/{totalCount} complete</span>
             <Progress value={progress} className="w-32 h-2 bg-white/10" />
           </div>
