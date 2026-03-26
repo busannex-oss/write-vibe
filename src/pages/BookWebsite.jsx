@@ -58,6 +58,20 @@ export default function BookWebsite() {
   const { data: pageData, isLoading, error } = useQuery({
     queryKey: ['public-book', bookId],
     queryFn: async () => {
+      // Try direct entity access first (works for logged-in book owner)
+      try {
+        const books = await base44.entities.Book.filter({ id: bookId });
+        if (books?.[0]) {
+          const book = books[0];
+          let reviews = [];
+          try {
+            const allReviews = await base44.entities.Review.filter({ book_id: bookId });
+            reviews = allReviews.filter(r => r.status === 'approved');
+          } catch (_) {}
+          return { book, author: null, reviews };
+        }
+      } catch (_) {}
+      // Fallback to public backend function (for unauthenticated visitors)
       const res = await base44.functions.invoke('getPublicBook', { bookId });
       return res.data;
     },
