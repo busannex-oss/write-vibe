@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import AIEditorPanel from "./AIEditorPanel";
 import ManuscriptAnalytics from "./ManuscriptAnalytics";
+import ChapterVersionHistory from "./ChapterVersionHistory";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -28,6 +29,7 @@ export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [generatingImage, setGeneratingImage] = useState(null);
   const [coAuthorMode, setCoAuthorMode] = useState(false);
   const [coAuthorPrompt, setCoAuthorPrompt] = useState("");
+  const [chapterVersions, setChapterVersions] = useState(book.chapter_versions || {});
 
   const chapters = book.industry_outline || book.detailed_outline || book.table_of_contents || [];
 
@@ -159,6 +161,32 @@ High quality, professional book illustration, suitable for print publication.`,
         images: Array.isArray(ch.images) ? ch.images : []
       }));
     onUpdate({ manuscript_chapters: cleanManuscript }, true);
+  };
+
+  const saveChapterVersion = async (versionData) => {
+    const chapterKey = `chapter_${versionData.chapter_number}`;
+    const currentVersions = chapterVersions[chapterKey] || [];
+    const newVersions = [...currentVersions, versionData];
+    
+    const updatedVersions = {
+      ...chapterVersions,
+      [chapterKey]: newVersions
+    };
+    
+    setChapterVersions(updatedVersions);
+    onUpdate({ chapter_versions: updatedVersions }, false);
+  };
+
+  const restoreChapterVersion = (chapterIndex, version) => {
+    const newManuscript = [...manuscript];
+    newManuscript[chapterIndex] = {
+      chapter_number: version.chapter_number,
+      chapter_title: version.chapter_title,
+      content: version.content,
+      word_count: version.word_count,
+      images: newManuscript[chapterIndex]?.images || []
+    };
+    setManuscript(newManuscript);
   };
 
   const generateAllChapters = async () => {
@@ -338,19 +366,29 @@ High quality, professional book illustration, suitable for print publication.`,
 
                             <div>
                               <div className="flex items-center justify-between mb-2">
-                                <label className="text-sm text-white/50">Chapter Content</label>
+                                <div className="flex items-center gap-2">
+                                  <label className="text-sm text-white/50">Chapter Content</label>
+                                  <ChapterVersionHistory
+                                    chapterNumber={chapter.chapter_number}
+                                    chapterTitle={chapter.chapter_title}
+                                    currentContent={manuscriptChapter?.content}
+                                    versions={chapterVersions[`chapter_${chapter.chapter_number}`] || []}
+                                    onSaveVersion={saveChapterVersion}
+                                    onRestore={(version) => restoreChapterVersion(index, version)}
+                                  />
+                                </div>
                                 <Button
-                              onClick={() => generateChapterImage(index)}
-                              disabled={!hasContent || generatingImage === index}
-                              size="sm"
-                              variant="outline"
-                              className="border-white/20 text-white hover:bg-white/10">
+                               onClick={() => generateChapterImage(index)}
+                               disabled={!hasContent || generatingImage === index}
+                               size="sm"
+                               variant="outline"
+                               className="border-white/20 text-white hover:bg-white/10">
 
                                   {generatingImage === index ?
-                              <Loader2 className="w-3 h-3 mr-1 animate-spin" /> :
+                               <Loader2 className="w-3 h-3 mr-1 animate-spin" /> :
 
-                              <ImageIcon className="w-3 h-3 mr-1" />
-                              }
+                               <ImageIcon className="w-3 h-3 mr-1" />
+                               }
                                   Generate Image
                                 </Button>
                               </div>
