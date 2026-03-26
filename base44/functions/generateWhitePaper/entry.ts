@@ -134,7 +134,53 @@ Instructions:
       return Response.json({ success: true, updated_content: updatedContent, updated_at: today });
     }
 
-    return Response.json({ error: 'Invalid action. Use: generate, monitor, auto_update' }, { status: 400 });
+    // ── BIZPLAN ───────────────────────────────────────────────────────────────
+    if (action === 'bizplan') {
+      const { company_name, tagline, industry, headquarters, founded, mission } = body;
+      if (!company_name) return Response.json({ error: 'company_name is required' }, { status: 400 });
+
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        model: 'claude_sonnet_4_6',
+        prompt: `You are a McKinsey-level strategic consultant. Write a COMPREHENSIVE 30-YEAR STRATEGIC BUSINESS PLAN for:
+
+Company: ${company_name}
+Tagline: ${tagline || ''}
+Industry: ${industry || 'AI SaaS'}
+HQ: ${headquarters || 'USA'}
+Founded: ${founded || '2025'}
+Mission: ${mission || 'To democratize professional publishing through AI'}
+Date: ${today}
+
+Write a professional, branded, multi-page document with these sections:
+
+[BUSINESS PLAN: ${company_name}]
+[CONFIDENTIAL — INTERNAL USE ONLY]
+[Date: ${today}]
+
+EXECUTIVE SUMMARY
+COMPANY OVERVIEW & BRAND IDENTITY
+MARKET ANALYSIS & OPPORTUNITY (include TAM/SAM/SOM with dollar figures)
+PRODUCT & SERVICE ROADMAP
+PHASE 1 STRATEGY (YEARS 1-5): FOUNDATION & GROWTH (revenue targets, team size, key milestones)
+PHASE 2 STRATEGY (YEARS 6-10): SCALE & DOMINATION (market leadership, international expansion)
+PHASE 3 STRATEGY (YEARS 11-20): DIVERSIFICATION & MOATS (new verticals, AI R&D, M&A)
+PHASE 4 STRATEGY (YEARS 21-30): LEGACY & ENDURANCE (moats, valuation targets, IPO/exit)
+FINANCIAL PROJECTIONS (Year 1, 5, 10, 20, 30 with revenue + EBITDA)
+RISK ANALYSIS & MITIGATION (top 8 risks)
+TECHNOLOGY & AI STRATEGY
+ORGANIZATIONAL DESIGN
+INVESTOR VALUE PROPOSITION
+CONCLUSION & 90-DAY ACTION ITEMS
+
+Be specific: use real dollar amounts, percentages, team sizes. Professional McKinsey tone. 2500+ words.`
+      });
+
+      return Response.json({ success: true, content: `[Generated: ${today}]\n\n${content}` });
+    }
+
+    return Response.json({ error: 'Invalid action. Use: generate, monitor, auto_update, bizplan' }, { status: 400 });
 
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

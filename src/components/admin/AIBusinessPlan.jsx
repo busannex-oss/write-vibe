@@ -70,77 +70,17 @@ export default function AIBusinessPlan() {
     if (!form.company_name) return;
     setGeneratingId("new");
     try {
-      const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-      const res = await base44.integrations.Core.InvokeLLM({
-        model: "claude_sonnet_4_6",
-        prompt: `You are a world-class strategic business consultant and McKinsey-level analyst. Write a COMPREHENSIVE, BRANDED, MULTI-PAGE 30-YEAR STRATEGIC BUSINESS PLAN for the following company:
-
-Company Name: ${form.company_name}
-Tagline: ${form.tagline}
-Industry: ${form.industry}
-Headquarters: ${form.headquarters || "USA"}
-Founded: ${form.founded}
-Mission: ${form.mission || "To democratize professional book creation through AI"}
-Document Date: ${today}
-
-The plan must be extremely detailed, professional, and exhaustive. Include ALL of the following sections with full depth:
-
----
-[BUSINESS PLAN: ${form.company_name}]
-[Classification: CONFIDENTIAL — INTERNAL USE ONLY]
-[Date: ${today}]
-[Document Version: 1.0]
-[Prepared by: Strategic Planning Office]
-
-EXECUTIVE SUMMARY
-(2-3 paragraphs: company overview, core value proposition, 30-year vision, key success factors)
-
-COMPANY OVERVIEW & BRAND IDENTITY
-(Mission, vision, values, brand voice, target market, competitive positioning)
-
-MARKET ANALYSIS & OPPORTUNITY
-(TAM/SAM/SOM sizing with numbers, market trends, competitive landscape, barriers to entry, market timing)
-
-PRODUCT & SERVICE ROADMAP
-(Current offerings, 5-year product pipeline, 10-year platform evolution, 30-year technology vision)
-
-PHASE 1 STRATEGY (YEARS 1–5): FOUNDATION & GROWTH
-(Key objectives, revenue targets, team growth from X to Y people, geographic expansion, marketing channels, KPIs, milestones by quarter)
-
-PHASE 2 STRATEGY (YEARS 6–10): SCALE & DOMINATION
-(Market leadership goals, enterprise sales strategy, international expansion, platform ecosystem, M&A targets, revenue $X–$Y)
-
-PHASE 3 STRATEGY (YEARS 11–20): DIVERSIFICATION & MOATS
-(Category expansion, new verticals, AI R&D investment, talent strategy, strategic partnerships, revenue $X–$Y)
-
-PHASE 4 STRATEGY (YEARS 21–30): LEGACY & ENDURANCE
-(Long-term competitive moats, generational leadership transition, philanthropic initiatives, IPO/exit considerations, $X billion valuation target)
-
-FINANCIAL PROJECTIONS (30-YEAR MODEL)
-(Year 1, 3, 5, 10, 15, 20, 25, 30 revenue and EBITDA projections with assumptions)
-
-RISK ANALYSIS & MITIGATION
-(Top 10 risks across technology, market, regulatory, competitive dimensions with mitigation strategies)
-
-TECHNOLOGY & AI STRATEGY
-(Core tech stack, AI investment roadmap, data moat strategy, R&D budget allocation)
-
-ORGANIZATIONAL DESIGN
-(Current org chart concept, future leadership team, culture, hiring philosophy, remote-first strategy)
-
-INVESTOR VALUE PROPOSITION
-(Why invest, ROI thesis, comparable companies, exit multiples)
-
-CONCLUSION & CALL TO ACTION
-(Summary of why this plan will succeed, next 90-day action items)
-
----
-
-Write this as a REAL, PROFESSIONAL business document. Be specific with numbers, percentages, dollar amounts. Use headers, subheaders. Make it feel like a real McKinsey document. Minimum 3000 words.`,
-        response_json_schema: null
+      const res = await base44.functions.invoke("generateWhitePaper", {
+        action: "bizplan",
+        company_name: form.company_name,
+        tagline: form.tagline,
+        industry: form.industry,
+        headquarters: form.headquarters,
+        founded: form.founded,
+        mission: form.mission
       });
 
-      const content = typeof res === "string" ? res : res?.content || res?.text || JSON.stringify(res);
+      const content = res.data?.content || "";
 
       createMutation.mutate({
         type: "white_paper",
