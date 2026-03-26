@@ -55,26 +55,18 @@ export default function BookEditor() {
   const { data: book, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
-      if (!bookId) {
-        console.log('No bookId provided');
-        return null;
-      }
+      if (!bookId) return null;
       try {
         console.log('Fetching book with ID:', bookId);
-        // Try using filter instead of get
         const books = await base44.entities.Book.filter({ id: bookId });
-        console.log('Filter result:', books);
-        if (books && books.length > 0) {
-          return books[0];
-        }
-        return null;
+        console.log('Book data received:', books);
+        return books && books.length > 0 ? books[0] : null;
       } catch (err) {
         console.error('Error fetching book:', err);
         return null;
       }
     },
-    enabled: !!bookId,
-    retry: 1
+    enabled: !!bookId
   });
 
   const updateBookMutation = useMutation({
