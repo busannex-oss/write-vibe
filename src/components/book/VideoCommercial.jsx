@@ -258,6 +258,7 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
         video_commercial_url: dataStr,
         status: "marketing" 
       }, true);
+      setLastSaved(new Date());
 
     } catch (error) {
       console.error("Error generating video:", error);
@@ -267,17 +268,47 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
     }
   };
 
-  const saveVideo = () => {
-    const videoData = {
-      videoUrl,
-      script,
-      duration: selectedDuration,
-      storyboardImages
-    };
-    onUpdate({ 
-      video_commercial_url: JSON.stringify(videoData),
-      status: "marketing" 
-    }, true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+
+  const saveTrailerToBook = async () => {
+    if (!videoUrl) return;
+    setIsSaving(true);
+    try {
+      // Always save in the slideshow format so BookWebsite can render it
+      let dataToSave = videoUrl;
+      // If videoUrl is already valid JSON slideshow format, use it directly
+      try {
+        const parsed = JSON.parse(videoUrl);
+        if (!parsed.isSlideshow) {
+          // Legacy format — re-wrap as slideshow if we have storyboard images
+          if (storyboardImages.length > 0) {
+            const slides = storyboardImages.map(img => ({
+              scene: img.scene,
+              url: img.url,
+              visual: img.visual,
+              narration: img.narration
+            }));
+            dataToSave = JSON.stringify({
+              isSlideshow: true,
+              slides,
+              script: script?.versions?.[selectedDuration + "s"],
+              call_to_action: script?.call_to_action,
+              duration: selectedDuration,
+              storyboardImages,
+              generatedAt: new Date().toISOString()
+            });
+          }
+        }
+      } catch {
+        // Not JSON — it's a direct URL, wrap it
+        dataToSave = videoUrl;
+      }
+      await onUpdate({ video_commercial_url: dataToSave, status: "marketing" }, true);
+      setLastSaved(new Date());
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const downloadImages = () => {
@@ -454,17 +485,31 @@ Style: Cinematic movie trailer quality, dramatic lighting, professional commerci
       {videoUrl && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3">
           <div>
-            <p className="text-sm text-amber-300 font-medium">✓ Storyboard Trailer Ready — Preview below</p>
-            <p className="text-xs text-white/50 mt-1">Use the play button to preview your trailer. To create a real video file, download the scene images and import them into iMovie, CapCut, or Adobe Premiere.</p>
+            <p className="text-sm text-amber-300 font-medium">✓ Storyboard Trailer Ready</p>
+            <p className="text-xs text-white/50 mt-1">Preview your trailer below. Click <strong className="text-amber-300">Save Trailer to Book</strong> to attach it to your book's landing page.</p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={downloadImages} size="sm" className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white border-0">
-              <Download className="w-4 h-4 mr-2" /> Download Scene Images
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={saveTrailerToBook}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 font-semibold"
+            >
+              {isSaving ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+              ) : (
+                <><Check className="w-4 h-4 mr-2" />Save Trailer to Book</>
+              )}
             </Button>
-            <Button onClick={regenerateVideo} disabled={generatingVideo} variant="outline" size="sm">
+            <Button onClick={downloadImages} size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Download className="w-4 h-4 mr-2" /> Download Images
+            </Button>
+            <Button onClick={regenerateVideo} disabled={generatingVideo} variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
               <RefreshCw className="w-4 h-4 mr-2" /> Regenerate
             </Button>
           </div>
+          {lastSaved && (
+            <p className="text-xs text-emerald-400">✓ Saved to book at {lastSaved.toLocaleTimeString()}</p>
+          )}
         </div>
       )}
 
