@@ -57,7 +57,9 @@ export default function BookEditor() {
     queryFn: async () => {
       if (!bookId) return null;
       try {
+        console.log('Fetching book with ID:', bookId);
         const bookData = await base44.entities.Book.get(bookId);
+        console.log('Book data received:', bookData);
         return bookData;
       } catch (err) {
         console.error('Error fetching book:', err);
@@ -110,11 +112,12 @@ export default function BookEditor() {
     );
   }
 
-  if (!book && !isLoading) {
+  // Check if book is null, undefined, or empty object (no id means no data loaded)
+  if ((!book || !book.id) && !isLoading) {
     React.useEffect(() => {
       base44.entities.ErrorLog.create({
         error_type: "not_found_404",
-        message: `Book not found: ${bookId}`,
+        message: `Book not found or empty: ${bookId}`,
         page: window.location.pathname + window.location.search,
         component: "BookEditor",
         severity: "medium",
