@@ -23,7 +23,8 @@ import {
   BarChart3,
   Briefcase,
   Zap,
-  Film
+  Film,
+  DollarSign
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
@@ -32,6 +33,7 @@ import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 import ClickgrowSettings from "@/components/admin/ClickgrowSettings";
 import AIVideoProduction from "@/components/admin/AIVideoProduction";
+import PaymentsAccounting from "@/components/admin/PaymentsAccounting";
 
 export default function UserManagement() {
   const queryClient = useQueryClient();
@@ -184,6 +186,10 @@ export default function UserManagement() {
           <TabsTrigger value="clickgrow" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">
             <Zap className="w-4 h-4 mr-2" />
             Clickgrow.AI
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">
+            <DollarSign className="w-4 h-4 mr-2" />
+            Payments
           </TabsTrigger>
           <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -418,6 +424,10 @@ export default function UserManagement() {
 
         <TabsContent value="clickgrow">
           <ClickgrowSettings user={currentUser} />
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <PaymentsAccounting />
         </TabsContent>
 
         <TabsContent value="analytics">
