@@ -92,8 +92,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
         bookstore_links: bookstoreLinksArray
       },
       selected_bookstores: selectedBookstores,
-      social_media_links: socialLinks,
-      status: websiteStatus === "live" ? "published" : "marketing"
+      social_media_links: socialLinks
     }, true);
   };
 
