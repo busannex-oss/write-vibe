@@ -54,7 +54,7 @@ export default function BookEditor() {
 
   const [activeTab, setActiveTab] = useState("title");
 
-  const { data: book, isLoading, error } = useQuery({
+  const { data: bookRaw, isLoading, error } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
       if (!bookId) return null;
@@ -73,6 +73,9 @@ export default function BookEditor() {
     },
     enabled: !!bookId
   });
+  
+  // Handle case where book might be returned as array
+  const book = Array.isArray(bookRaw) ? bookRaw[0] : bookRaw;
   
   console.log('Render state - book:', book, 'isLoading:', isLoading, 'has book?', !!book);
 
