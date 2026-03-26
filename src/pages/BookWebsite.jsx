@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -31,27 +31,22 @@ export default function BookWebsite() {
   const [email, setEmail] = React.useState("");
   const [subscribed, setSubscribed] = React.useState(false);
 
-  const { data: book, isLoading } = useQuery({
-    queryKey: ['book', bookId],
-    queryFn: () => base44.entities.Book.filter({ id: bookId }),
-    select: (data) => data[0],
+  const { data: pageData, isLoading } = useQuery({
+    queryKey: ['public-book', bookId],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getPublicBook', { bookId });
+      return res.data;
+    },
     enabled: !!bookId
   });
+
+  const book = pageData?.book || null;
+  const authorProfile = pageData?.author || null;
 
   const { data: reviews = [] } = useQuery({
     queryKey: ['reviews', bookId],
     queryFn: () => base44.entities.Review.filter({ book_id: bookId, status: "approved" }),
     enabled: !!bookId
-  });
-
-  // Load author profile from the User who created this book
-  const { data: authorProfile } = useQuery({
-    queryKey: ['author', book?.created_by],
-    queryFn: async () => {
-      const users = await base44.entities.User.filter({ email: book.created_by });
-      return users[0] || null;
-    },
-    enabled: !!book?.created_by
   });
 
   const subscribeMutation = useMutation({
@@ -91,7 +86,6 @@ export default function BookWebsite() {
 
   const isComingSoon = book.website_config?.status !== "live";
   const bookstores = book.selected_bookstores || [];
-  // Merge social links: book-level + author profile level (author profile takes precedence)
   const socialLinks = { ...(book.social_media_links || {}), ...(authorProfile?.social_media || {}) };
   const authorName = authorProfile?.full_name || book.created_by;
   const authorPhoto = authorProfile?.author_photo_url || book.author_photo_url;
@@ -108,12 +102,12 @@ export default function BookWebsite() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Hero Section - Maximized Impact */}
+      {/* Hero Section */}
       <section className="relative py-16 px-6 min-h-screen flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-slate-950" />
         <div className="max-w-6xl mx-auto relative w-full">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Book Cover - Left Side */}
+            {/* Book Cover */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -136,14 +130,13 @@ export default function BookWebsite() {
               )}
             </motion.div>
 
-            {/* Copy & CTA - Right Side */}
+            {/* Copy & CTA */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="space-y-8"
             >
-              {/* Status Badge */}
               {isComingSoon && (
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
@@ -151,7 +144,6 @@ export default function BookWebsite() {
                 </div>
               )}
 
-              {/* Title */}
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
                   {book.title}
@@ -161,11 +153,12 @@ export default function BookWebsite() {
                 )}
               </div>
 
-              {/* Meta Info */}
               <div className="flex flex-wrap gap-3 items-center">
-                <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/20 text-amber-300 border-amber-500/40 text-sm px-4 py-2">
-                  {book.category}
-                </Badge>
+                {book.category && (
+                  <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/20 text-amber-300 border-amber-500/40 text-sm px-4 py-2">
+                    {book.category}
+                  </Badge>
+                )}
                 {book.subjects?.slice(0, 2).map((subject) => (
                   <Badge key={subject} className="bg-white/10 text-white/80 border-white/20 text-sm">
                     {subject}
@@ -173,12 +166,12 @@ export default function BookWebsite() {
                 ))}
               </div>
 
-              {/* Hook/Teaser Copy */}
-              <div className="text-lg text-white/80 leading-relaxed font-light">
-                <p>{book.book_summary?.slice(0, 150)}...</p>
-              </div>
+              {book.book_summary && (
+                <div className="text-lg text-white/80 leading-relaxed font-light">
+                  <p>{book.book_summary?.slice(0, 150)}...</p>
+                </div>
+              )}
 
-              {/* CTA Buttons */}
               <div className="space-y-3 pt-4">
                 {isComingSoon ? (
                   <>
@@ -198,7 +191,6 @@ export default function BookWebsite() {
                 </Button>
               </div>
 
-              {/* Trust Signals */}
               <div className="pt-6 border-t border-white/10 space-y-2 text-sm text-white/60">
                 <p>✓ Instant delivery to your device</p>
                 <p>✓ Available in multiple formats</p>
@@ -238,7 +230,11 @@ export default function BookWebsite() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {bookstores.map((storeId) => {
                 const store = BOOKSTORE_INFO[storeId];
-                const link = book.website_config?.bookstore_links?.[storeId];
+                const linksArray = book.website_config?.bookstore_links || [];
+                const linkObj = Array.isArray(linksArray) 
+                  ? linksArray.find(l => l.id === storeId)
+                  : null;
+                const link = linkObj?.url || linksArray[storeId];
                 if (!store) return null;
                 return (
                   <a
@@ -285,26 +281,15 @@ export default function BookWebsite() {
                   transition={{ delay: 0.5 + idx * 0.1 }}
                   className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-xl p-6 space-y-4 hover:border-amber-500/40 transition-all"
                 >
-                  {/* Rating Stars */}
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className={i < review.rating ? "text-amber-400" : "text-white/20"}>
-                        ★
-                      </span>
+                      <span key={i} className={i < review.rating ? "text-amber-400" : "text-white/20"}>★</span>
                     ))}
                   </div>
-
-                  {/* Review Title */}
                   {review.title && (
                     <h3 className="text-lg font-semibold text-white">{review.title}</h3>
                   )}
-
-                  {/* Review Content */}
-                  <p className="text-white/70 leading-relaxed text-sm">
-                    "{review.content}"
-                  </p>
-
-                  {/* Reviewer Name */}
+                  <p className="text-white/70 leading-relaxed text-sm">"{review.content}"</p>
                   <div className="pt-4 border-t border-white/10">
                     <p className="text-sm font-medium text-amber-400">— {review.author_name}</p>
                   </div>
@@ -312,7 +297,6 @@ export default function BookWebsite() {
               ))}
             </div>
 
-            {/* Rating Summary */}
             {reviews.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -340,7 +324,7 @@ export default function BookWebsite() {
         </section>
       )}
 
-      {/* Newsletter Section - High Converting */}
+      {/* Newsletter Section */}
       <section className="py-20 px-6">
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -400,7 +384,6 @@ export default function BookWebsite() {
         let trailerData = null;
         try { trailerData = JSON.parse(book.video_commercial_url); } catch {}
         
-        // If it's a URL string (legacy), render a video player
         if (!trailerData) {
           return (
             <section className="py-16 px-6 border-t border-white/5">
@@ -434,11 +417,11 @@ export default function BookWebsite() {
                   </div>
                 ))}
               </div>
-              {trailerData.script?.call_to_action || trailerData.call_to_action ? (
+              {(trailerData.script?.call_to_action || trailerData.call_to_action) && (
                 <div className="mt-8 text-center">
                   <p className="text-amber-300 font-semibold text-lg">{trailerData.script?.call_to_action || trailerData.call_to_action}</p>
                 </div>
-              ) : null}
+              )}
             </div>
           </section>
         );
@@ -460,15 +443,13 @@ export default function BookWebsite() {
               <p className="text-amber-400 font-semibold text-lg mb-4">{authorName}</p>
             )}
             {authorBio && (
-              <p className="text-white/60 leading-relaxed max-w-xl mx-auto">
-                {authorBio}
-              </p>
+              <p className="text-white/60 leading-relaxed max-w-xl mx-auto">{authorBio}</p>
             )}
           </div>
         </section>
       )}
 
-      {/* Footer with Social Links */}
+      {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           {Object.keys(socialLinks).filter(k => socialLinks[k]).length > 0 && (
