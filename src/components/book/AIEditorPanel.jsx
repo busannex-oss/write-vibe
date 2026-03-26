@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import { sanitizeText } from "@/utils/sanitizeText";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -196,8 +197,8 @@ Format as structured analysis with actionable recommendations.`,
                   <div className="space-y-2">
                     {analysis.plot_holes.map((hole, i) => (
                       <div key={i} className="text-xs">
-                        <p className="text-white/70">{hole.issue}</p>
-                        <p className="text-amber-300/60 mt-1">Impact: {hole.impact}</p>
+                        <p className="text-white/70">{sanitizeText(hole.issue)}</p>
+                        <p className="text-amber-300/60 mt-1">Impact: {sanitizeText(hole.impact)}</p>
                       </div>
                     ))}
                   </div>
@@ -220,7 +221,7 @@ Format as structured analysis with actionable recommendations.`,
                     {analysis.dialogue_quality.suggestions.map((suggestion, i) => (
                       <li key={i} className="text-xs text-white/50 flex items-start gap-2">
                         <span className="text-purple-400">→</span>
-                        {suggestion}
+                        {sanitizeText(suggestion)}
                       </li>
                     ))}
                   </ul>
@@ -258,7 +259,7 @@ Format as structured analysis with actionable recommendations.`,
                     }`}
                   >
                     <p className="text-sm text-white mb-1">{issue.issue}</p>
-                    <p className="text-xs text-white/50">{issue.suggestion}</p>
+                    <p className="text-xs text-white/50">{sanitizeText(issue.suggestion)}</p>
                     <Badge className={`mt-2 ${
                       issue.severity === 'high' ? 'bg-red-500/20 text-red-300' :
                       issue.severity === 'medium' ? 'bg-amber-500/20 text-amber-300' :
@@ -283,7 +284,7 @@ Format as structured analysis with actionable recommendations.`,
                   {analysis.dialogue_quality.suggestions?.map((suggestion, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-white/60">{suggestion}</p>
+                      <p className="text-xs text-white/60">{sanitizeText(suggestion)}</p>
                     </div>
                   ))}
                 </div>
@@ -313,13 +314,13 @@ Format as structured analysis with actionable recommendations.`,
                       <div className="space-y-2">
                         <div className="text-xs">
                           <span className="text-white/40">Original:</span>
-                          <p className="text-white/60 mt-1 italic">"{improvement.original}"</p>
+                          <p className="text-white/60 mt-1 italic">"{sanitizeText(improvement.original)}"</p>
                         </div>
                         <div className="text-xs">
                           <span className="text-purple-300">Suggested:</span>
-                          <p className="text-white mt-1">"{improvement.suggested}"</p>
+                          <p className="text-white mt-1">"{sanitizeText(improvement.suggested)}"</p>
                         </div>
-                        <p className="text-xs text-white/40">{improvement.reason}</p>
+                        <p className="text-xs text-white/40">{sanitizeText(improvement.reason)}</p>
                       </div>
                       {!isApplied && (
                         <div className="flex gap-2 mt-3">

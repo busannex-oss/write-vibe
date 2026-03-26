@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import { sanitizeText } from "@/utils/sanitizeText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,7 @@ export default function TitleGenerator({ book, onUpdate, isUpdating }) {
   const [customSubtitle, setCustomSubtitle] = useState(book.subtitle || "");
 
   // Auto-generate suggestions if book has data and no title yet
-  React.useEffect(() => {
+  useEffect(() => {
     const hasBookData = book.characters?.length > 0 || book.target_audience?.age_range || book.category || book.plot_summary;
     const isTitleEmpty = !book.title || book.title === "Untitled Book";
     
@@ -159,11 +160,11 @@ Make titles memorable, marketable, and appropriate for the genre.`,
                       : 'bg-white/5 border-white/10 hover:bg-white/10'
                   }`}
                 >
-                  <h4 className="font-semibold text-white">{suggestion.title}</h4>
+                  <h4 className="font-semibold text-white">{sanitizeText(suggestion.title)}</h4>
                   {suggestion.subtitle && (
-                    <p className="text-sm text-amber-400 mt-1">{suggestion.subtitle}</p>
+                    <p className="text-sm text-amber-400 mt-1">{sanitizeText(suggestion.subtitle)}</p>
                   )}
-                  <p className="text-sm text-white/50 mt-2">{suggestion.reasoning}</p>
+                  <p className="text-sm text-white/50 mt-2">{sanitizeText(suggestion.reasoning)}</p>
                 </button>
               ))}
             </div>

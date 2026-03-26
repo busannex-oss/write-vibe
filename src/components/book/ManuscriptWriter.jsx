@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import { sanitizeText } from "@/utils/sanitizeText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -393,7 +394,7 @@ High quality, professional book illustration, suitable for print publication.`,
                                 </Button>
                               </div>
                               <Textarea
-                            value={manuscriptChapter?.content || ""}
+                            value={sanitizeText(manuscriptChapter?.content) || ""}
                             onChange={(e) => updateChapterContent(index, e.target.value)}
                             className="bg-white/5 border-white/20 text-white font-mono text-sm"
                             rows={12}
