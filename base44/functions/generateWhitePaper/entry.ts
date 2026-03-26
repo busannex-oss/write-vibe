@@ -143,38 +143,28 @@ Instructions:
 
       const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
         model: 'claude_sonnet_4_6',
-        prompt: `You are a McKinsey-level strategic consultant. Write a COMPREHENSIVE 30-YEAR STRATEGIC BUSINESS PLAN for:
-
-Company: ${company_name}
-Tagline: ${tagline || ''}
-Industry: ${industry || 'AI SaaS'}
-HQ: ${headquarters || 'USA'}
-Founded: ${founded || '2025'}
-Mission: ${mission || 'To democratize professional publishing through AI'}
+        prompt: `Write a professional 30-year strategic business plan for:
+Company: ${company_name} | Industry: ${industry || 'AI SaaS'} | HQ: ${headquarters || 'USA'} | Founded: ${founded || '2025'}
+Tagline: ${tagline || ''} | Mission: ${mission || 'Democratize publishing through AI'}
 Date: ${today}
 
-Write a professional, branded, multi-page document with these sections:
-
-[BUSINESS PLAN: ${company_name}]
-[CONFIDENTIAL — INTERNAL USE ONLY]
-[Date: ${today}]
-
+Include these sections with headers in ALL CAPS:
 EXECUTIVE SUMMARY
 COMPANY OVERVIEW & BRAND IDENTITY
-MARKET ANALYSIS & OPPORTUNITY (include TAM/SAM/SOM with dollar figures)
-PRODUCT & SERVICE ROADMAP
-PHASE 1 STRATEGY (YEARS 1-5): FOUNDATION & GROWTH (revenue targets, team size, key milestones)
-PHASE 2 STRATEGY (YEARS 6-10): SCALE & DOMINATION (market leadership, international expansion)
-PHASE 3 STRATEGY (YEARS 11-20): DIVERSIFICATION & MOATS (new verticals, AI R&D, M&A)
-PHASE 4 STRATEGY (YEARS 21-30): LEGACY & ENDURANCE (moats, valuation targets, IPO/exit)
-FINANCIAL PROJECTIONS (Year 1, 5, 10, 20, 30 with revenue + EBITDA)
-RISK ANALYSIS & MITIGATION (top 8 risks)
+MARKET ANALYSIS (TAM/SAM/SOM with $ figures)
+PRODUCT ROADMAP
+PHASE 1 STRATEGY YEARS 1-5 (revenue targets, team, milestones)
+PHASE 2 STRATEGY YEARS 6-10 (scale, international)
+PHASE 3 STRATEGY YEARS 11-20 (diversification, M&A)
+PHASE 4 STRATEGY YEARS 21-30 (legacy, IPO/exit)
+FINANCIAL PROJECTIONS (Year 1/5/10/20/30)
+RISK ANALYSIS & MITIGATION
 TECHNOLOGY & AI STRATEGY
 ORGANIZATIONAL DESIGN
 INVESTOR VALUE PROPOSITION
-CONCLUSION & 90-DAY ACTION ITEMS
+CONCLUSION & 90-DAY ACTIONS
 
-Be specific: use real dollar amounts, percentages, team sizes. Professional McKinsey tone. 2500+ words.`
+Use specific numbers, dollar amounts, headcount. Professional tone. ~1800 words.`
       });
 
       return Response.json({ success: true, content: `[Generated: ${today}]\n\n${content}` });
