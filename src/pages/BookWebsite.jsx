@@ -42,12 +42,7 @@ export default function BookWebsite() {
 
   const book = pageData?.book || null;
   const authorProfile = pageData?.author || null;
-
-  const { data: reviews = [] } = useQuery({
-    queryKey: ['reviews', bookId],
-    queryFn: () => base44.entities.Review.filter({ book_id: bookId, status: "approved" }),
-    enabled: !!bookId
-  });
+  const reviews = pageData?.reviews || [];
 
   const subscribeMutation = useMutation({
     mutationFn: (email) => base44.entities.NewsletterSubscriber.create({

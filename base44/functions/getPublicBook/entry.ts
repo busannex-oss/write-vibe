@@ -10,22 +10,34 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'bookId required' }, { status: 400 });
     }
 
-    // Use service role to fetch the book publicly (for book website landing pages)
-    const books = await base44.asServiceRole.entities.Book.filter({ id: bookId });
-    const book = books?.[0] || null;
+    // Use .get() directly — filter() with id can fail due to RLS
+    let book = null;
+    try {
+      book = await base44.asServiceRole.entities.Book.get(bookId);
+    } catch (_) {
+      book = null;
+    }
 
     if (!book) {
       return Response.json({ error: 'Book not found' }, { status: 404 });
     }
 
-    // Also fetch the author profile
+    // Fetch author profile
     let author = null;
     if (book.created_by) {
-      const users = await base44.asServiceRole.entities.User.filter({ email: book.created_by });
-      author = users?.[0] || null;
+      try {
+        const users = await base44.asServiceRole.entities.User.filter({ email: book.created_by });
+        author = users?.[0] || null;
+      } catch (_) {}
     }
 
-    return Response.json({ book, author });
+    // Fetch approved reviews via service role (so public visitors can always see them)
+    let reviews = [];
+    try {
+      reviews = await base44.asServiceRole.entities.Review.filter({ book_id: bookId, status: 'approved' });
+    } catch (_) {}
+
+    return Response.json({ book, author, reviews });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
