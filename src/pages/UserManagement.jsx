@@ -18,10 +18,12 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
-  Settings
+  Settings,
+  Lock
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
+import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers";
 
 export default function UserManagement() {
   const queryClient = useQueryClient();
@@ -158,6 +160,10 @@ export default function UserManagement() {
           <TabsTrigger value="integrations" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <Settings className="w-4 h-4 mr-2" />
             Integrations
+          </TabsTrigger>
+          <TabsTrigger value="confidential" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300">
+            <Lock className="w-4 h-4 mr-2" />
+            Confidential
           </TabsTrigger>
         </TabsList>
 
@@ -372,6 +378,10 @@ export default function UserManagement() {
 
         <TabsContent value="integrations">
           <AmazonAdwizarSettings user={currentUser} />
+        </TabsContent>
+
+        <TabsContent value="confidential">
+          <ConfidentialWhitePapers />
         </TabsContent>
       </Tabs>
     </div>
