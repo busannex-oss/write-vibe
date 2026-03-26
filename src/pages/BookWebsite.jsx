@@ -4,16 +4,23 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  BookOpen, 
-  Loader2, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin, 
+import {
+  BookOpen,
+  Loader2,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
   Youtube,
   Mail,
-  Check
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  Users,
+  FileText,
+  Headphones,
+  Video
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -25,19 +32,37 @@ const SOCIAL_ICONS = {
   youtube: Youtube
 };
 
+const BOOKSTORE_INFO = {
+  amazon: { name: "Amazon", logo: "📦" },
+  barnes_noble: { name: "Barnes & Noble", logo: "📚" },
+  apple_books: { name: "Apple Books", logo: "🍎" },
+  google_play: { name: "Google Play", logo: "📖" },
+  kobo: { name: "Kobo", logo: "📕" },
+  audible: { name: "Audible", logo: "🎧" },
+  bookshop: { name: "Bookshop.org", logo: "🏪" },
+  indiebound: { name: "IndieBound", logo: "📗" },
+  walmart: { name: "Walmart", logo: "🛒" },
+  target: { name: "Target", logo: "🎯" },
+  books_a_million: { name: "Books-A-Million", logo: "📘" },
+  thriftbooks: { name: "ThriftBooks", logo: "💰" }
+};
+
 export default function BookWebsite() {
   const urlParams = new URLSearchParams(window.location.search);
   const bookId = urlParams.get("id");
-  const [email, setEmail] = React.useState("");
-  const [subscribed, setSubscribed] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const [expandedChapter, setExpandedChapter] = useState(null);
+  const [showAllChars, setShowAllChars] = useState(false);
 
-  const { data: pageData, isLoading } = useQuery({
+  const { data: pageData, isLoading, error } = useQuery({
     queryKey: ['public-book', bookId],
     queryFn: async () => {
       const res = await base44.functions.invoke('getPublicBook', { bookId });
       return res.data;
     },
-    enabled: !!bookId
+    enabled: !!bookId,
+    retry: 2
   });
 
   const book = pageData?.book || null;
@@ -45,7 +70,7 @@ export default function BookWebsite() {
   const reviews = pageData?.reviews || [];
 
   const subscribeMutation = useMutation({
-    mutationFn: (email) => base44.entities.NewsletterSubscriber.create({
+    mutationFn: () => base44.entities.NewsletterSubscriber.create({
       book_id: bookId,
       email,
       subscribed_at: new Date().toISOString()
@@ -55,15 +80,16 @@ export default function BookWebsite() {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    if (email) {
-      subscribeMutation.mutate(email);
-    }
+    if (email) subscribeMutation.mutate();
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+        <div className="text-center space-y-4">
+          <Loader2 className="w-10 h-10 text-amber-500 animate-spin mx-auto" />
+          <p className="text-white/40">Loading book...</p>
+        </div>
       </div>
     );
   }
@@ -71,9 +97,10 @@ export default function BookWebsite() {
   if (!book) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-white/20 mx-auto mb-4" />
+        <div className="text-center space-y-4">
+          <BookOpen className="w-16 h-16 text-white/20 mx-auto" />
           <h1 className="text-2xl font-bold text-white">Book not found</h1>
+          <p className="text-white/40">{error?.message || "This book page is not available."}</p>
         </div>
       </div>
     );
@@ -82,166 +109,315 @@ export default function BookWebsite() {
   const isComingSoon = book.website_config?.status !== "live";
   const bookstores = book.selected_bookstores || [];
   const socialLinks = { ...(book.social_media_links || {}), ...(authorProfile?.social_media || {}) };
-  const authorName = authorProfile?.full_name || book.created_by;
+  const authorName = authorProfile?.full_name || book.created_by?.split("@")[0];
   const authorPhoto = authorProfile?.author_photo_url || book.author_photo_url;
   const authorBio = authorProfile?.biography;
+  const chapters = book.table_of_contents || book.outline || [];
+  const detailedOutline = book.detailed_outline || book.outline || [];
+  const characters = book.characters || [];
+  const releaseDate = book.website_config?.release_date;
 
-  const BOOKSTORE_INFO = {
-    amazon: { name: "Amazon", logo: "📦" },
-    barnes_noble: { name: "Barnes & Noble", logo: "📚" },
-    apple_books: { name: "Apple Books", logo: "🍎" },
-    google_play: { name: "Google Play", logo: "📖" },
-    kobo: { name: "Kobo", logo: "📕" },
-    audible: { name: "Audible", logo: "🎧" }
-  };
+  // Calculate days until release
+  const daysUntil = releaseDate ? Math.ceil((new Date(releaseDate) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
+  const avgRating = reviews.length
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Hero Section */}
-      <section className="relative py-16 px-6 min-h-screen flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-slate-950" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+
+      {/* ── HERO ── */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-24">
+        {/* Background glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          {book.front_cover_url && (
+            <div
+              className="absolute inset-0 opacity-15 bg-center bg-cover blur-3xl scale-110"
+              style={{ backgroundImage: `url(${book.front_cover_url})` }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
+        </div>
+
         <div className="max-w-6xl mx-auto relative w-full">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Book Cover */}
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+            {/* Cover */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -60 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.7 }}
               className="flex justify-center"
             >
               {book.front_cover_url ? (
                 <div className="relative group">
-                  <div className="absolute -inset-6 bg-gradient-to-br from-amber-500/30 to-orange-500/20 rounded-2xl blur-2xl opacity-75 group-hover:opacity-100 transition-opacity" />
-                  <img 
-                    src={book.front_cover_url} 
+                  <div className="absolute -inset-8 bg-gradient-to-br from-amber-500/40 to-orange-500/20 rounded-3xl blur-3xl opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                  <img
+                    src={book.front_cover_url}
                     alt={book.title}
-                    className="relative w-80 h-auto rounded-2xl shadow-2xl shadow-black/80 object-cover"
+                    className="relative w-72 md:w-96 h-auto rounded-2xl shadow-2xl shadow-black/80 object-cover ring-1 ring-white/10"
                   />
                 </div>
               ) : (
-                <div className="w-80 aspect-[2/3] rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-                  <BookOpen className="w-24 h-24 text-white/20" />
+                <div className="w-72 aspect-[2/3] rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex flex-col items-center justify-center gap-4 ring-1 ring-white/10">
+                  <BookOpen className="w-20 h-20 text-white/20" />
+                  <p className="text-white/30 text-sm">Cover Coming Soon</p>
                 </div>
               )}
             </motion.div>
 
-            {/* Copy & CTA */}
+            {/* Info */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-8"
+              transition={{ duration: 0.7, delay: 0.15 }}
+              className="space-y-6"
             >
-              {isComingSoon && (
+              {/* Status badge */}
+              {isComingSoon ? (
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  <span className="text-sm font-semibold text-amber-300">Coming Soon</span>
+                  <span className="text-sm font-semibold text-amber-300">
+                    Coming Soon{daysUntil && daysUntil > 0 ? ` · ${daysUntil} days away` : ""}
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-sm font-semibold text-emerald-300">Available Now</span>
                 </div>
               )}
 
-              <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+              {/* Title */}
+              <div>
+                <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white">
                   {book.title}
                 </h1>
                 {book.subtitle && (
-                  <p className="text-2xl text-amber-400 font-light">{book.subtitle}</p>
+                  <p className="text-xl md:text-2xl text-amber-400 font-light mt-2">{book.subtitle}</p>
+                )}
+                {authorName && (
+                  <p className="text-white/50 text-lg mt-2">by <span className="text-white/80 font-medium">{authorName}</span></p>
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-3 items-center">
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
                 {book.category && (
-                  <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/20 text-amber-300 border-amber-500/40 text-sm px-4 py-2">
+                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 px-3 py-1 text-sm">
                     {book.category}
                   </Badge>
                 )}
-                {book.subjects?.slice(0, 2).map((subject) => (
-                  <Badge key={subject} className="bg-white/10 text-white/80 border-white/20 text-sm">
-                    {subject}
+                {book.subcategory && (
+                  <Badge className="bg-white/10 text-white/70 border-white/20 px-3 py-1 text-sm">
+                    {book.subcategory}
                   </Badge>
+                )}
+                {(book.subjects || []).slice(0, 3).map(s => (
+                  <Badge key={s} className="bg-white/5 text-white/50 border-white/10 px-3 py-1 text-sm">{s}</Badge>
                 ))}
               </div>
 
-              {book.book_summary && (
-                <div className="text-lg text-white/80 leading-relaxed font-light">
-                  <p>{book.book_summary?.slice(0, 150)}...</p>
-                </div>
-              )}
-
-              <div className="space-y-3 pt-4">
-                {isComingSoon ? (
-                  <>
-                    <p className="text-white/60 text-sm">Available on release date</p>
-                    <Button className="w-full h-14 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg border-0 rounded-xl shadow-lg shadow-amber-500/30">
-                      Notify Me When Available
-                    </Button>
-                  </>
-                ) : bookstores.length > 0 ? (
-                  <Button className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg border-0 rounded-xl shadow-lg shadow-emerald-500/30">
-                    Buy Now
-                  </Button>
-                ) : null}
-                
-                <Button variant="outline" className="w-full h-12 border-white/30 text-white hover:bg-white/10 rounded-xl font-semibold">
-                  📖 Read More Details
-                </Button>
+              {/* Stats row */}
+              <div className="flex flex-wrap gap-6 text-sm text-white/50">
+                {chapters.length > 0 && (
+                  <span className="flex items-center gap-1.5"><FileText className="w-4 h-4" /> {chapters.length} Chapters</span>
+                )}
+                {characters.length > 0 && (
+                  <span className="flex items-center gap-1.5"><Users className="w-4 h-4" /> {characters.length} Characters</span>
+                )}
+                {book.audiobook_url && (
+                  <span className="flex items-center gap-1.5"><Headphones className="w-4 h-4" /> Audiobook</span>
+                )}
+                {avgRating && (
+                  <span className="flex items-center gap-1.5"><Star className="w-4 h-4 text-amber-400 fill-amber-400" /> {avgRating} ({reviews.length})</span>
+                )}
               </div>
 
-              <div className="pt-6 border-t border-white/10 space-y-2 text-sm text-white/60">
-                <p>✓ Instant delivery to your device</p>
-                <p>✓ Available in multiple formats</p>
+              {/* Summary excerpt */}
+              {book.book_summary && (
+                <p className="text-white/70 text-lg leading-relaxed">
+                  {book.book_summary.slice(0, 200)}{book.book_summary.length > 200 ? "…" : ""}
+                </p>
+              )}
+
+              {/* CTA Buttons */}
+              <div className="space-y-3 pt-2">
+                {!isComingSoon && bookstores.length > 0 && (
+                  <a href="#buy" className="block">
+                    <Button className="w-full h-14 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg border-0 rounded-xl shadow-lg shadow-amber-500/30">
+                      📖 Get Your Copy Now
+                    </Button>
+                  </a>
+                )}
+                <a href="#newsletter">
+                  <Button variant="outline" className="w-full h-12 border-white/20 text-white hover:bg-white/10 rounded-xl font-semibold">
+                    <Mail className="w-4 h-4 mr-2" />
+                    {isComingSoon ? "Notify Me on Release" : "Subscribe for Updates"}
+                  </Button>
+                </a>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Full Summary Section */}
-      {book.book_summary && (
-        <section className="py-20 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
-          <div className="max-w-3xl mx-auto">
+      {/* ── ABOUT THE BOOK ── */}
+      {(book.book_summary || book.plot_summary) && (
+        <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950">
+          <div className="max-w-4xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8 text-center"
             >
-              <h2 className="text-3xl font-bold text-white text-center">About This Book</h2>
-              <p className="text-lg text-white/80 leading-relaxed text-center">
-                {book.book_summary}
+              <h2 className="text-4xl font-bold text-white">About This Book</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <p className="text-xl text-white/75 leading-relaxed">
+                {book.book_summary || book.plot_summary}
               </p>
             </motion.div>
           </div>
         </section>
       )}
 
-      {/* Buy Buttons */}
-      {!isComingSoon && bookstores.length > 0 && (
-        <section className="py-16 px-6 bg-gradient-to-r from-slate-900/50 to-slate-800/50 border-y border-white/10">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">Get Your Copy Today</h2>
-              <p className="text-white/60">Available on your favorite platforms</p>
+      {/* ── CHARACTERS ── */}
+      {characters.length > 0 && (
+        <section className="py-24 px-6">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14"
+            >
+              <h2 className="text-4xl font-bold text-white mb-3">Meet the Characters</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {(showAllChars ? characters : characters.slice(0, 8)).map((char, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-gradient-to-br from-white/8 to-white/3 border border-white/10 rounded-2xl p-6 space-y-4 hover:border-amber-500/30 transition-all"
+                >
+                  {char.image_url ? (
+                    <img
+                      src={char.image_url}
+                      alt={char.name}
+                      className="w-20 h-20 rounded-full object-cover mx-auto ring-2 ring-amber-500/30"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mx-auto ring-2 ring-amber-500/20">
+                      <span className="text-2xl font-bold text-amber-400">
+                        {char.name?.charAt(0) || "?"}
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-white">{char.name}</h3>
+                    {char.role && (
+                      <p className="text-amber-400 text-sm font-medium mt-0.5">{char.role}</p>
+                    )}
+                  </div>
+                  {char.description && (
+                    <p className="text-white/60 text-sm leading-relaxed text-center line-clamp-3">
+                      {char.description}
+                    </p>
+                  )}
+                  {char.traits?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      {char.traits.slice(0, 3).map(t => (
+                        <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {bookstores.map((storeId) => {
-                const store = BOOKSTORE_INFO[storeId];
-                const linksArray = book.website_config?.bookstore_links || [];
-                const linkObj = Array.isArray(linksArray) 
-                  ? linksArray.find(l => l.id === storeId)
-                  : null;
-                const link = linkObj?.url || linksArray[storeId];
-                if (!store) return null;
+
+            {characters.length > 8 && (
+              <div className="text-center mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllChars(!showAllChars)}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  {showAllChars ? "Show Less" : `Show All ${characters.length} Characters`}
+                  {showAllChars ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── TABLE OF CONTENTS ── */}
+      {chapters.length > 0 && (
+        <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14"
+            >
+              <h2 className="text-4xl font-bold text-white mb-3">Table of Contents</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <p className="text-white/50 mt-4">{chapters.length} chapters</p>
+            </motion.div>
+
+            <div className="space-y-3">
+              {chapters.map((ch, i) => {
+                const detail = detailedOutline.find(d => d.chapter_number === ch.chapter_number);
+                const isOpen = expandedChapter === i;
                 return (
-                  <a
-                    key={storeId}
-                    href={link || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 text-white transition-all border border-white/10 hover:border-white/20"
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.03 }}
+                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-amber-500/30 transition-all"
                   >
-                    <span className="text-2xl">{store.logo}</span>
-                    <span className="font-semibold text-sm">{store.name}</span>
-                  </a>
+                    <button
+                      className="w-full flex items-center gap-4 px-6 py-4 text-left"
+                      onClick={() => detail && setExpandedChapter(isOpen ? null : i)}
+                    >
+                      <span className="text-2xl font-bold text-amber-500/50 min-w-[2.5rem]">
+                        {String(ch.chapter_number || i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex-1 text-white font-medium text-lg">{ch.chapter_title}</span>
+                      {detail && (
+                        isOpen
+                          ? <ChevronUp className="w-5 h-5 text-white/30 flex-shrink-0" />
+                          : <ChevronDown className="w-5 h-5 text-white/30 flex-shrink-0" />
+                      )}
+                    </button>
+                    {isOpen && detail && (
+                      <div className="px-6 pb-5 border-t border-white/5 space-y-3">
+                        {detail.summary && (
+                          <p className="text-white/60 leading-relaxed">{detail.summary}</p>
+                        )}
+                        {detail.key_events?.length > 0 && (
+                          <ul className="space-y-1">
+                            {detail.key_events.map((ev, j) => (
+                              <li key={j} className="text-white/50 text-sm flex items-start gap-2">
+                                <span className="text-amber-500 mt-1">•</span> {ev}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
                 );
               })}
             </div>
@@ -249,159 +425,29 @@ export default function BookWebsite() {
         </section>
       )}
 
-      {/* Reader Reviews Section */}
-      {reviews.length > 0 && (
-        <section className="py-20 px-6 bg-gradient-to-b from-slate-900/50 to-transparent border-t border-white/10">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                ⭐ What Readers Are Saying
-              </h2>
-              <p className="text-white/60 text-lg">
-                Join thousands who've discovered this book
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {reviews.slice(0, 3).map((review, idx) => (
-                <motion.div
-                  key={review.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + idx * 0.1 }}
-                  className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-xl p-6 space-y-4 hover:border-amber-500/40 transition-all"
-                >
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className={i < review.rating ? "text-amber-400" : "text-white/20"}>★</span>
-                    ))}
-                  </div>
-                  {review.title && (
-                    <h3 className="text-lg font-semibold text-white">{review.title}</h3>
-                  )}
-                  <p className="text-white/70 leading-relaxed text-sm">"{review.content}"</p>
-                  <div className="pt-4 border-t border-white/10">
-                    <p className="text-sm font-medium text-amber-400">— {review.author_name}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {reviews.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="mt-12 text-center"
-              >
-                <div className="inline-block bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/40 rounded-xl px-8 py-4">
-                  <p className="text-sm text-white/60 mb-1">Average Rating</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-3xl font-bold text-amber-400">
-                      {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)}
-                    </span>
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-amber-400 text-lg">★</span>
-                      ))}
-                    </div>
-                    <span className="text-white/60 text-sm">({reviews.length} reviews)</span>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Newsletter Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-900/50 border border-amber-500/40 p-12 space-y-6"
-          >
-            <div className="text-center">
-              <Mail className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {isComingSoon ? "📬 Get Notified on Release" : "📬 Exclusive Updates"}
-              </h2>
-              <p className="text-white/70 text-lg">
-                {isComingSoon 
-                  ? "Be among the first to know. Limited early access for subscribers."
-                  : "Exclusive content, behind-the-scenes stories, and special offers for subscribers."
-                }
-              </p>
-            </div>
-            
-            {subscribed ? (
-              <div className="flex items-center justify-center gap-3 text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-4 px-6">
-                <Check className="w-6 h-6" />
-                <span className="font-semibold">Success! Check your email to confirm.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="space-y-3">
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-12 rounded-xl"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30"
-                  disabled={subscribeMutation.isPending}
-                >
-                  {subscribeMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
-                  ) : (
-                    "✓ Notify Me"
-                  )}
-                </Button>
-                <p className="text-center text-xs text-white/50">No spam, just updates about the book.</p>
-              </form>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Video / Storyboard Trailer Section */}
+      {/* ── VIDEO TRAILER ── */}
       {book.video_commercial_url && (() => {
         let trailerData = null;
         try { trailerData = JSON.parse(book.video_commercial_url); } catch {}
-        
-        if (!trailerData) {
-          return (
-            <section className="py-16 px-6 border-t border-white/5">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold text-white text-center mb-8">🎬 Book Trailer</h2>
-                <video src={book.video_commercial_url} controls className="w-full aspect-video bg-black rounded-2xl" poster={book.front_cover_url} />
-              </div>
-            </section>
-          );
-        }
-
-        const images = trailerData.storyboardImages || [];
+        const images = trailerData?.storyboardImages || [];
         if (!images.length) return null;
 
         return (
-          <section className="py-16 px-6 border-t border-white/5">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-white text-center mb-4">🎬 Book Trailer Storyboard</h2>
-              <p className="text-center text-white/50 mb-8">{trailerData.duration}s trailer &mdash; {images.length} scenes</p>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <section className="py-24 px-6">
+            <div className="max-w-5xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-14"
+              >
+                <h2 className="text-4xl font-bold text-white mb-3">🎬 Book Trailer</h2>
+                <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              </motion.div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {images.map((img, i) => (
-                  <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10">
-                    <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover" />
+                  <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 group">
+                    <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     <div className="absolute bottom-0 inset-x-0 p-3">
                       <p className="text-white text-xs italic line-clamp-2">"{img.narration}"</p>
@@ -412,64 +458,209 @@ export default function BookWebsite() {
                   </div>
                 ))}
               </div>
-              {(trailerData.script?.call_to_action || trailerData.call_to_action) && (
-                <div className="mt-8 text-center">
-                  <p className="text-amber-300 font-semibold text-lg">{trailerData.script?.call_to_action || trailerData.call_to_action}</p>
-                </div>
-              )}
             </div>
           </section>
         );
       })()}
 
-      {/* Author Section */}
-      {(authorPhoto || authorName) && (
-        <section className="py-16 px-6 border-t border-white/5">
-          <div className="max-w-2xl mx-auto text-center">
-            {authorPhoto && (
-              <img 
-                src={authorPhoto} 
-                alt={authorName || "Author"} 
-                className="w-28 h-28 rounded-full mx-auto mb-6 object-cover border-4 border-amber-500/30 shadow-xl"
-              />
-            )}
-            <h3 className="text-2xl font-bold text-white mb-2">About the Author</h3>
-            {authorName && (
-              <p className="text-amber-400 font-semibold text-lg mb-4">{authorName}</p>
-            )}
-            {authorBio && (
-              <p className="text-white/60 leading-relaxed max-w-xl mx-auto">{authorBio}</p>
-            )}
+      {/* ── BUY NOW ── */}
+      {!isComingSoon && bookstores.length > 0 && (
+        <section id="buy" className="py-24 px-6 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-slate-950 border-y border-amber-500/20">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl font-bold text-white mb-3">Get Your Copy</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <p className="text-white/50 mt-4">Available on your favorite platforms</p>
+            </motion.div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {bookstores.map((storeId) => {
+                const store = BOOKSTORE_INFO[storeId];
+                if (!store) return null;
+                const linksArr = book.website_config?.bookstore_links || [];
+                const linkObj = Array.isArray(linksArr) ? linksArr.find(l => l.id === storeId) : null;
+                const href = linkObj?.url || "#";
+                return (
+                  <a
+                    key={storeId}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-3 px-5 py-5 rounded-xl bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 text-white transition-all border border-white/10 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/10 group"
+                  >
+                    <span className="text-3xl">{store.logo}</span>
+                    <span className="font-semibold">{store.name}</span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
 
-      {/* Footer */}
+      {/* ── REVIEWS ── */}
+      {reviews.length > 0 && (
+        <section className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14"
+            >
+              <h2 className="text-4xl font-bold text-white mb-3">⭐ Reader Reviews</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              {avgRating && (
+                <div className="mt-6 inline-flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl px-6 py-3">
+                  <span className="text-4xl font-bold text-amber-400">{avgRating}</span>
+                  <div>
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map(i => (
+                        <Star key={i} className={`w-5 h-5 ${i <= Math.round(avgRating) ? "fill-amber-400 text-amber-400" : "text-white/20"}`} />
+                      ))}
+                    </div>
+                    <p className="text-white/50 text-sm">{reviews.length} reviews</p>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {reviews.slice(0, 6).map((review, i) => (
+                <motion.div
+                  key={review.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="bg-gradient-to-br from-white/8 to-white/3 border border-white/10 rounded-2xl p-6 space-y-4 hover:border-amber-500/30 transition-all"
+                >
+                  <div className="flex gap-0.5">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className={`w-4 h-4 ${i <= review.rating ? "fill-amber-400 text-amber-400" : "text-white/20"}`} />
+                    ))}
+                  </div>
+                  {review.title && <h3 className="font-semibold text-white">{review.title}</h3>}
+                  <p className="text-white/65 text-sm leading-relaxed">"{review.content}"</p>
+                  <p className="text-amber-400 text-sm font-medium pt-2 border-t border-white/10">— {review.author_name}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── AUTHOR ── */}
+      {(authorPhoto || authorName || authorBio) && (
+        <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950">
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center space-y-6"
+            >
+              <h2 className="text-4xl font-bold text-white">About the Author</h2>
+              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              {authorPhoto && (
+                <img
+                  src={authorPhoto}
+                  alt={authorName}
+                  className="w-32 h-32 rounded-full mx-auto object-cover ring-4 ring-amber-500/30 shadow-2xl"
+                />
+              )}
+              {authorName && (
+                <p className="text-2xl font-bold text-amber-400">{authorName}</p>
+              )}
+              {authorBio && (
+                <p className="text-white/65 text-lg leading-relaxed max-w-xl mx-auto">{authorBio}</p>
+              )}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* ── NEWSLETTER ── */}
+      <section id="newsletter" className="py-24 px-6">
+        <div className="max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-3xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-900/60 border border-amber-500/40 p-12 space-y-6 text-center shadow-2xl shadow-amber-500/10"
+          >
+            <Mail className="w-14 h-14 text-amber-400 mx-auto" />
+            <h2 className="text-3xl font-bold text-white">
+              {isComingSoon ? "Be First to Know" : "Stay in the Loop"}
+            </h2>
+            <p className="text-white/65 text-lg">
+              {isComingSoon
+                ? `Get notified the moment "${book.title}" is available. Limited early-access for subscribers.`
+                : `Exclusive content, behind-the-scenes stories, and special offers for subscribers of "${book.title}".`}
+            </p>
+
+            {subscribed ? (
+              <div className="flex items-center justify-center gap-3 text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-4 px-6">
+                <Check className="w-6 h-6" />
+                <span className="font-semibold">You're subscribed! Check your email.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="space-y-3">
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-14 rounded-xl text-base"
+                  required
+                />
+                <Button
+                  type="submit"
+                  disabled={subscribeMutation.isPending}
+                  className="w-full h-14 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30"
+                >
+                  {subscribeMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    isComingSoon ? "Notify Me on Release →" : "Subscribe for Updates →"
+                  )}
+                </Button>
+                <p className="text-white/40 text-xs">No spam. Just updates about this book.</p>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
       <footer className="py-12 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          {Object.keys(socialLinks).filter(k => socialLinks[k]).length > 0 && (
-            <div className="flex justify-center gap-4 mb-8">
-              {Object.entries(socialLinks)
-                .filter(([_, url]) => url)
-                .map(([id, url]) => {
-                  const Icon = SOCIAL_ICONS[id];
-                  return (
-                    <a
-                      key={id}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-all"
-                    >
-                      {Icon ? <Icon className="w-5 h-5" /> : <span className="text-sm">{id.charAt(0).toUpperCase()}</span>}
-                    </a>
-                  );
-                })}
+        <div className="max-w-4xl mx-auto space-y-6">
+          {Object.entries(socialLinks).filter(([, v]) => v).length > 0 && (
+            <div className="flex justify-center gap-4">
+              {Object.entries(socialLinks).filter(([, url]) => url).map(([id, url]) => {
+                const Icon = SOCIAL_ICONS[id];
+                return (
+                  <a
+                    key={id}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-all"
+                  >
+                    {Icon ? <Icon className="w-5 h-5" /> : <span className="text-sm">{id.charAt(0).toUpperCase()}</span>}
+                  </a>
+                );
+              })}
             </div>
           )}
-          <p className="text-center text-sm text-white/30">
-            © {new Date().getFullYear()} {book.title}. All rights reserved.
-          </p>
+          <div className="text-center space-y-1">
+            <p className="text-lg font-semibold text-white">{book.title}</p>
+            {authorName && <p className="text-white/40 text-sm">by {authorName}</p>}
+            <p className="text-white/25 text-xs">© {new Date().getFullYear()} All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
