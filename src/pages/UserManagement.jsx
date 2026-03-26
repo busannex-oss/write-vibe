@@ -22,7 +22,8 @@ import {
   Lock,
   BarChart3,
   Briefcase,
-  Zap
+  Zap,
+  Film
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
@@ -30,6 +31,7 @@ import AIBusinessPlan from "@/components/admin/AIBusinessPlan";
 import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 import ClickgrowSettings from "@/components/admin/ClickgrowSettings";
+import AIVideoProduction from "@/components/admin/AIVideoProduction";
 
 export default function UserManagement() {
   const queryClient = useQueryClient();
@@ -174,6 +176,10 @@ export default function UserManagement() {
           <TabsTrigger value="bizplan" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-300">
             <Briefcase className="w-4 h-4 mr-2" />
             Business Plan
+          </TabsTrigger>
+          <TabsTrigger value="video" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            <Film className="w-4 h-4 mr-2" />
+            Video AI
           </TabsTrigger>
           <TabsTrigger value="clickgrow" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">
             <Zap className="w-4 h-4 mr-2" />
@@ -404,6 +410,10 @@ export default function UserManagement() {
 
         <TabsContent value="bizplan">
           <AIBusinessPlan />
+        </TabsContent>
+
+        <TabsContent value="video">
+          <AIVideoProduction user={currentUser} />
         </TabsContent>
 
         <TabsContent value="clickgrow">
