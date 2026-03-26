@@ -255,7 +255,37 @@ export default function Pricing() {
               Start Your 7-Day Free Trial
             </Button>
           </Link>
-          <p className="text-sm text-white/40 mt-4">No credit card required</p>
+          <p className="text-sm text-white/40 mt-4">No credit card required • Cancel anytime</p>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <p className="text-xs text-white/30 uppercase tracking-widest">Accepted payment methods</p>
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              {/* Apple Pay */}
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                <svg className="h-5" viewBox="0 0 56 24" fill="white"><path d="M11.0 4.5C10.1 5.6 8.7 6.4 7.4 6.3c-.2-1.3.5-2.7 1.3-3.6C9.6 1.5 11.1.8 12.2.9c.2 1.4-.4 2.7-1.2 3.6zm1.2 1.9c-1.9-.1-3.5 1.1-4.4 1.1-.9 0-2.3-1-3.8-1-2 0-3.8 1.2-4.8 3C-2 13.8.6 19.5 2.6 22.4c1 1.4 2.1 2.9 3.6 2.8 1.4 0 2-.9 3.7-.9 1.7 0 2.2.9 3.7.9 1.5 0 2.5-1.4 3.5-2.8.6-.9 1.1-1.8 1.5-2.8-3.8-1.5-4.4-7 .4-9.1-.9-1.4-2.4-2.1-3.8-2.1z"/></svg>
+                <span className="text-white text-sm font-medium">Apple Pay</span>
+              </div>
+              {/* Google Pay */}
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                <svg className="h-5 w-auto" viewBox="0 0 41 17" fill="none"><path d="M19.65 8.5c0 4.4-3.4 7.5-7.5 7.5S4.65 12.9 4.65 8.5 8.05 1 12.15 1s7.5 3.1 7.5 7.5z" fill="#4285F4"/><path d="M36.65 8.5c0 4.1-3.1 7.5-7 7.5s-7-3.4-7-7.5 3.1-7.5 7-7.5 7 3.4 7 7.5z" fill="#EA4335"/><path d="M40.15 8.5c0 3.7-1.6 7.5-4.5 7.5s-4.5-3.8-4.5-7.5 1.6-7.5 4.5-7.5 4.5 3.8 4.5 7.5z" fill="#FBBC05"/></svg>
+                <span className="text-white text-sm font-medium">Google Pay</span>
+              </div>
+              {/* Visa */}
+              <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                <svg className="h-5 w-12" viewBox="0 0 48 16" fill="none"><text x="0" y="13" fontSize="14" fontWeight="bold" fill="#1A1F71" fontFamily="Arial">VISA</text></svg>
+              </div>
+              {/* Mastercard */}
+              <div className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                <div className="w-5 h-5 rounded-full bg-red-500 opacity-90" />
+                <div className="w-5 h-5 rounded-full bg-yellow-400 opacity-90 -ml-2" />
+                <span className="text-white text-sm font-medium ml-1">Mastercard</span>
+              </div>
+              {/* Amex */}
+              <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                <span className="text-white text-sm font-semibold tracking-wide">AMEX</span>
+              </div>
+            </div>
+            <p className="text-xs text-white/25 mt-1">🔒 256-bit SSL encryption • PCI DSS compliant</p>
+          </div>
         </div>
       </section>
 
