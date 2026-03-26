@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { 
   Globe, 
@@ -12,8 +11,6 @@ import {
   Loader2, 
   ExternalLink,
   ShoppingBag,
-  Plus,
-  X,
   Facebook,
   Twitter,
   Instagram,
@@ -54,16 +51,10 @@ const SOCIAL_PLATFORMS = [
 ];
 
 export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
-  // Auto-set to coming_soon if back cover exists, otherwise pending
-  const getDefaultStatus = () => {
-    if (book.back_cover_url) return book.website_config?.status || "coming_soon";
-    return "pending";
-  };
-
-  const [websiteStatus, setWebsiteStatus] = useState(getDefaultStatus());
+  const [websiteStatus, setWebsiteStatus] = useState(book.website_config?.status || "coming_soon");
   const [releaseDate, setReleaseDate] = useState(book.website_config?.release_date || "");
   const [selectedBookstores, setSelectedBookstores] = useState(book.selected_bookstores || []);
-  // Normalize bookstore_links: may be stored as array [{id, url}] or legacy object {id: url}
+
   const normalizeLinks = (links) => {
     if (!links) return {};
     if (Array.isArray(links)) {
@@ -71,13 +62,12 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
     }
     return links;
   };
+
   const [bookstoreLinks, setBookstoreLinks] = useState(normalizeLinks(book.website_config?.bookstore_links));
   const [socialLinks, setSocialLinks] = useState(book.social_media_links || {});
 
-  const hasBackCover = !!book.back_cover_url;
-
   const toggleBookstore = (id) => {
-    setSelectedBookstores(prev => 
+    setSelectedBookstores(prev =>
       prev.includes(id) ? prev.filter(b => b !== id) : [...prev, id]
     );
   };
@@ -91,12 +81,11 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
   };
 
   const saveWebsite = () => {
-    // Convert bookstoreLinks object to array format expected by entity schema
     const bookstoreLinksArray = Object.entries(bookstoreLinks)
       .filter(([_, url]) => url)
       .map(([id, url]) => ({ id, url }));
 
-    onUpdate({ 
+    onUpdate({
       website_config: {
         status: websiteStatus,
         release_date: releaseDate,
@@ -120,21 +109,16 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
   const daysUntilRelease = calculateDaysUntil(releaseDate);
 
   const applyAIContent = (field, value) => {
-    // Handle applying AI-generated content to the website
     console.log(`Applying ${field}:`, value);
   };
 
   return (
     <div className="space-y-6">
       {/* Lead Magnet Designer */}
-      {hasBackCover && (
-        <LeadMagnetHub bookId={book.id} />
-      )}
+      {book.back_cover_url && <LeadMagnetHub bookId={book.id} />}
 
       {/* AI Content Generator */}
-      {hasBackCover && (
-        <AIWebsiteContent book={book} onApplyContent={applyAIContent} />
-      )}
+      {book.back_cover_url && <AIWebsiteContent book={book} onApplyContent={applyAIContent} />}
 
       {/* Amazon Reviews Importer */}
       <AmazonReviewImporter book={book} />
@@ -142,7 +126,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
       {/* Amazon KDP/ACX Publisher */}
       <AmazonPublisher book={book} />
 
-      {/* Header Card */}
+      {/* Website Status Card */}
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
@@ -154,50 +138,36 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Back Cover Required Notice */}
-          {!hasBackCover && (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
-              <div className="text-amber-400 mt-0.5">⚠️</div>
-              <div>
-                <p className="text-sm text-amber-300 font-medium">Back cover required</p>
-                <p className="text-xs text-amber-200/70 mt-1">
-                  Complete the book back cover to activate the website. It will automatically show as "Coming Soon" until you mark it live.
-                </p>
-              </div>
-            </div>
-          )}
 
           {/* Website Status */}
-          {hasBackCover && (
-            <div>
-              <Label className="text-white/70 mb-3 block">Website Status</Label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setWebsiteStatus("coming_soon")}
-                  className={`flex-1 px-4 py-3 rounded-xl transition-all ${
-                    websiteStatus === "coming_soon"
-                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-amber-300'
-                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                  } border text-center`}
-                >
-                  🚧 Coming Soon
-                </button>
-                <button
-                  onClick={() => setWebsiteStatus("live")}
-                  className={`flex-1 px-4 py-3 rounded-xl transition-all ${
-                    websiteStatus === "live"
-                      ? 'bg-gradient-to-r from-emerald-500/20 to-green-500/10 border-emerald-500/50 text-emerald-300'
-                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                  } border text-center`}
-                >
-                  🚀 Live & Available
-                </button>
-              </div>
+          <div>
+            <Label className="text-white/70 mb-3 block">Website Status</Label>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setWebsiteStatus("coming_soon")}
+                className={`flex-1 px-4 py-3 rounded-xl transition-all ${
+                  websiteStatus === "coming_soon"
+                    ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-amber-500/50 text-amber-300'
+                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                } border text-center`}
+              >
+                🚧 Coming Soon
+              </button>
+              <button
+                onClick={() => setWebsiteStatus("live")}
+                className={`flex-1 px-4 py-3 rounded-xl transition-all ${
+                  websiteStatus === "live"
+                    ? 'bg-gradient-to-r from-emerald-500/20 to-green-500/10 border-emerald-500/50 text-emerald-300'
+                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                } border text-center`}
+              >
+                🚀 Live & Available
+              </button>
             </div>
-          )}
+          </div>
 
           {/* Release Date (only for coming_soon) */}
-          {hasBackCover && websiteStatus === "coming_soon" && (
+          {websiteStatus === "coming_soon" && (
             <div>
               <Label className="text-white/70 mb-2 block flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -218,20 +188,18 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
             </div>
           )}
 
-          {hasBackCover && (
-            <Button
-              onClick={saveWebsite}
-              disabled={isUpdating}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
-            >
-              {isUpdating ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Check className="w-4 h-4 mr-2" />
-              )}
-              Save Website Settings
-            </Button>
-          )}
+          <Button
+            onClick={saveWebsite}
+            disabled={isUpdating}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
+          >
+            {isUpdating ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Check className="w-4 h-4 mr-2" />
+            )}
+            Save Website Settings
+          </Button>
         </CardContent>
       </Card>
 
@@ -328,11 +296,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
             <p className="text-emerald-300 font-semibold">Your Book Website</p>
             <p className="text-xs text-white/50 mt-0.5">This is the public landing page for your book — share this link with readers.</p>
           </div>
-          <a
-            href={`/BookWebsite?id=${book.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={`/BookWebsite?id=${book.id}`} target="_blank" rel="noopener noreferrer">
             <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 font-semibold flex-shrink-0">
               <ExternalLink className="w-4 h-4 mr-2" /> View Book Website
             </Button>
@@ -347,9 +311,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
         </CardHeader>
         <CardContent>
           <div className="rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 p-8 space-y-8">
-            {/* Hero Section with Book Display */}
             <div className="relative">
-              {/* Coming Soon Badge */}
               {websiteStatus === "coming_soon" && (
                 <div className="text-center mb-6">
                   <div className="inline-flex flex-col items-center gap-2">
@@ -365,15 +327,13 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
                 </div>
               )}
 
-              {/* Book Display */}
               <div className="flex items-center justify-center mb-6">
-                {/* Main Book Cover */}
                 {book.front_cover_url ? (
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 blur-2xl group-hover:blur-3xl transition-all" />
-                    <img 
-                      src={book.front_cover_url} 
-                      alt="" 
+                    <img
+                      src={book.front_cover_url}
+                      alt=""
                       className="relative w-64 h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform"
                       style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))' }}
                     />
@@ -385,34 +345,25 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
                 )}
               </div>
 
-              {/* Book Info */}
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-white mb-2">{book.title}</h2>
-                {book.subtitle && (
-                  <p className="text-lg text-white/60 mb-2">{book.subtitle}</p>
-                )}
+                {book.subtitle && <p className="text-lg text-white/60 mb-2">{book.subtitle}</p>}
                 <p className="text-amber-400">{book.category}</p>
               </div>
             </div>
 
-            {/* Summary */}
             {book.book_summary && (
               <p className="text-white/60 text-sm text-center max-w-2xl mx-auto leading-relaxed">
                 {book.book_summary?.slice(0, 200)}...
               </p>
             )}
 
-            {/* Buy Buttons */}
             {selectedBookstores.length > 0 && websiteStatus === "live" && (
               <div className="flex flex-wrap justify-center gap-2">
                 {selectedBookstores.slice(0, 4).map((id) => {
                   const store = BOOKSTORES.find(s => s.id === id);
                   return (
-                    <Button
-                      key={id}
-                      size="sm"
-                      className="bg-white/10 hover:bg-white/20 text-white border-0"
-                    >
+                    <Button key={id} size="sm" className="bg-white/10 hover:bg-white/20 text-white border-0">
                       {store?.logo} {store?.name}
                     </Button>
                   );
@@ -420,12 +371,11 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
               </div>
             )}
 
-            {/* Newsletter */}
             <div className="bg-white/5 rounded-xl p-4 text-center">
               <p className="text-sm text-white/70 mb-3">Stay updated about the release</p>
               <div className="flex gap-2 max-w-sm mx-auto">
-                <Input 
-                  placeholder="Enter your email" 
+                <Input
+                  placeholder="Enter your email"
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
                 />
                 <Button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
@@ -434,7 +384,6 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
               </div>
             </div>
 
-            {/* Social Icons */}
             {Object.keys(socialLinks).filter(k => socialLinks[k]).length > 0 && (
               <div className="flex justify-center gap-3 pt-4 border-t border-white/10">
                 {Object.entries(socialLinks)
@@ -442,10 +391,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
                   .map(([id]) => {
                     const platform = SOCIAL_PLATFORMS.find(p => p.id === id);
                     return (
-                      <div 
-                        key={id}
-                        className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
-                      >
+                      <div key={id} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                         {platform?.icon ? (
                           <platform.icon className="w-4 h-4 text-white/60" />
                         ) : (
