@@ -96,38 +96,153 @@ export default function AIBusinessPlan() {
 
   const downloadPDF = (doc) => {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const margin = 15;
-    const pageH = pdf.internal.pageSize.getHeight();
-    const maxW = pdf.internal.pageSize.getWidth() - 2 * margin;
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const margin = 18;
+    const contentW = pw - 2 * margin;
+    const title = displayTitle(doc);
 
-    // Cover page
-    pdf.setFillColor(15, 23, 42);
-    pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pageH, "F");
-    pdf.setTextColor(245, 158, 11);
-    pdf.setFontSize(28);
-    const displayTitle = doc.title.replace("[BIZPLAN] ", "");
-    pdf.text(displayTitle, margin, 60, { maxWidth: maxW });
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(12);
-    pdf.text("30-YEAR STRATEGIC BUSINESS PLAN", margin, 80);
-    pdf.setTextColor(150, 150, 150);
+    // ── Cover Page ─────────────────────────────────────────────
+    pdf.setFillColor(10, 15, 30);
+    pdf.rect(0, 0, pw, ph, "F");
+    // Blue accent bar
+    pdf.setFillColor(59, 130, 246);
+    pdf.rect(0, 0, 6, ph, "F");
+    // Header badge
+    pdf.setFillColor(17, 24, 39);
+    pdf.roundedRect(margin, 28, contentW, 18, 3, 3, "F");
+    pdf.setTextColor(96, 165, 250);
     pdf.setFontSize(9);
-    pdf.text("CONFIDENTIAL — INTERNAL USE ONLY", margin, 95);
-    pdf.text(`Generated: ${new Date(doc.created_date).toLocaleDateString()}`, margin, 102);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("AUTHORFORGE  ·  30-YEAR STRATEGIC BUSINESS PLAN", margin + 6, 39);
+    // Main title
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont("helvetica", "bold");
+    const titleLines = pdf.splitTextToSize(title, contentW);
+    pdf.text(titleLines, margin, 76);
+    // Tagline
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(100, 116, 139);
+    pdf.text("Comprehensive Strategic Business Plan — 30-Year Horizon", margin, 76 + titleLines.length * 11 + 7);
+    // Gold divider
+    pdf.setFillColor(245, 158, 11);
+    pdf.rect(margin, 120, 40, 1.5, "F");
+    // Meta block
+    const metaY = 135;
+    pdf.setFillColor(17, 24, 39);
+    pdf.roundedRect(margin, metaY, contentW, 62, 3, 3, "F");
+    const col2 = margin + contentW / 2 + 4;
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(71, 85, 105);
+    pdf.text("DATE GENERATED", margin + 8, metaY + 11);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text(new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), margin + 8, metaY + 19);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(71, 85, 105);
+    pdf.text("CLASSIFICATION", margin + 8, metaY + 31);
+    pdf.setTextColor(239, 68, 68);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text("STRICTLY CONFIDENTIAL", margin + 8, metaY + 39);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(71, 85, 105);
+    pdf.text("DOCUMENT TYPE", col2, metaY + 11);
+    pdf.setTextColor(96, 165, 250);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text("Strategic Business Plan", col2, metaY + 19);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(71, 85, 105);
+    pdf.text("PLANNING HORIZON", col2, metaY + 31);
+    pdf.setTextColor(245, 158, 11);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text("30 Years (2025–2055)", col2, metaY + 39);
+    // Footer
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(30, 41, 59);
+    pdf.text("This document contains proprietary and confidential strategic information. Unauthorized disclosure is prohibited.", margin, ph - 14);
 
-    // Content pages
+    // ── Content Pages ───────────────────────────────────────────
+    const lines = (doc.content || "").split("\n");
     pdf.addPage();
-    pdf.setTextColor(0, 0, 0);
-    pdf.setFontSize(10);
-    const lines = pdf.splitTextToSize(doc.content || "", maxW);
-    let y = margin + 5;
-    lines.forEach(line => {
-      if (y > pageH - margin) { pdf.addPage(); y = margin + 5; }
-      pdf.text(line, margin, y);
-      y += 5;
-    });
+    let y = 20;
+    let pageNum = 2;
 
-    pdf.save(`${displayTitle.replace(/\s+/g, "-")}-30YR-BIZPLAN.pdf`);
+    const addPageHeader = () => {
+      pdf.setFillColor(10, 15, 30);
+      pdf.rect(0, 0, pw, 13, "F");
+      pdf.setFillColor(59, 130, 246);
+      pdf.rect(0, 0, pw, 1.5, "F");
+      pdf.setFontSize(7);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(71, 85, 105);
+      pdf.text("CONFIDENTIAL — AUTHORFORGE STRATEGIC PLAN", margin, 9);
+      pdf.text(title.slice(0, 55), pw - margin, 9, { align: "right" });
+      y = 22;
+    };
+    const addPageFooter = (pn) => {
+      pdf.setFillColor(10, 15, 30);
+      pdf.rect(0, ph - 11, pw, 11, "F");
+      pdf.setFontSize(7);
+      pdf.setTextColor(51, 65, 85);
+      pdf.text(`Page ${pn}`, pw / 2, ph - 4, { align: "center" });
+      pdf.text("© AuthorForge " + new Date().getFullYear(), margin, ph - 4);
+    };
+
+    addPageHeader();
+
+    lines.forEach((rawLine) => {
+      const line = rawLine.trim();
+      if (!line) { y += 4; return; }
+
+      // Phase / section headers
+      const isPhaseHeader = /^PHASE \d/i.test(line);
+      const isMainHeader = /^[A-Z][A-Z\s&:()\-\/]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line);
+
+      if (isPhaseHeader) {
+        if (y > ph - 45) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(margin - 2, y - 5, contentW + 4, 13, "F");
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(255, 255, 255);
+        pdf.text(line, margin + 4, y + 3);
+        y += 18;
+      } else if (isMainHeader) {
+        if (y > ph - 40) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+        pdf.setFillColor(17, 24, 39);
+        pdf.rect(margin - 2, y - 4, contentW + 4, 11, "F");
+        pdf.setFillColor(245, 158, 11);
+        pdf.rect(margin - 2, y - 4, 3, 11, "F");
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(245, 158, 11);
+        pdf.text(line, margin + 5, y + 3);
+        y += 15;
+      } else {
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(51, 65, 85);
+        const wrapped = pdf.splitTextToSize(line, contentW);
+        wrapped.forEach((wl) => {
+          if (y > ph - 20) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          pdf.text(wl, margin, y);
+          y += 5.5;
+        });
+      }
+    });
+    addPageFooter(pageNum);
+    pdf.save(`${title.replace(/\s+/g, "-")}-30YR-BIZPLAN.pdf`);
   };
 
   const displayTitle = (doc) => doc.title.replace("[BIZPLAN] ", "");

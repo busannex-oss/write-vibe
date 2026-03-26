@@ -189,15 +189,117 @@ export default function ConfidentialWhitePapers() {
 
   const downloadPDF = (doc) => {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const margin = 15;
-    const maxWidth = pdf.internal.pageSize.getWidth() - 2 * margin;
-    pdf.setFontSize(18);
-    pdf.text(doc.title, margin, margin + 10);
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const margin = 18;
+    const contentW = pw - 2 * margin;
+
+    // ── Cover Page ────────────────────────────────────────────────
+    pdf.setFillColor(15, 23, 42);
+    pdf.rect(0, 0, pw, ph, "F");
+    // Red accent bar
+    pdf.setFillColor(220, 38, 38);
+    pdf.rect(0, 0, 6, ph, "F");
+    // Logo area
+    pdf.setFillColor(30, 41, 59);
+    pdf.roundedRect(margin, 30, contentW, 18, 3, 3, "F");
+    pdf.setTextColor(239, 68, 68);
     pdf.setFontSize(9);
-    pdf.text("CONFIDENTIAL — AuthorForge Internal Document", margin, margin + 18);
-    pdf.setFontSize(10);
-    const lines = pdf.splitTextToSize(doc.content || "", maxWidth);
-    pdf.text(lines, margin, margin + 28);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("AUTHORFORGE  ·  CONFIDENTIAL", margin + 6, 41);
+    // Title
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(22);
+    pdf.setFont("helvetica", "bold");
+    const titleLines = pdf.splitTextToSize(doc.title, contentW);
+    pdf.text(titleLines, margin, 75);
+    // Subtitle
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(148, 163, 184);
+    pdf.text("Confidential Industry White Paper", margin, 75 + titleLines.length * 10 + 8);
+    // Meta block
+    const metaY = 140;
+    pdf.setFillColor(30, 41, 59);
+    pdf.roundedRect(margin, metaY, contentW, 50, 3, 3, "F");
+    pdf.setFontSize(9);
+    pdf.setTextColor(100, 116, 139);
+    pdf.text("DATE GENERATED", margin + 8, metaY + 10);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), margin + 8, metaY + 17);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(100, 116, 139);
+    pdf.text("CLASSIFICATION", margin + 8, metaY + 28);
+    pdf.setTextColor(239, 68, 68);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("STRICTLY CONFIDENTIAL — INTERNAL USE ONLY", margin + 8, metaY + 35);
+    // Footer
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(51, 65, 85);
+    pdf.text("This document contains proprietary information. Unauthorized distribution is strictly prohibited.", margin, ph - 15);
+
+    // ── Content Pages ─────────────────────────────────────────────
+    const lines = (doc.content || "").split("\n");
+    pdf.addPage();
+    let y = margin + 8;
+
+    const addPageHeader = () => {
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, pw, 12, "F");
+      pdf.setFillColor(220, 38, 38);
+      pdf.rect(0, 0, pw, 1.5, "F");
+      pdf.setFontSize(7);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(100, 116, 139);
+      pdf.text("CONFIDENTIAL — AUTHORFORGE", margin, 8);
+      pdf.text(doc.title.slice(0, 60), pw - margin, 8, { align: "right" });
+      y = 20;
+    };
+    const addPageFooter = (pageNum) => {
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, ph - 10, pw, 10, "F");
+      pdf.setFontSize(7);
+      pdf.setTextColor(71, 85, 105);
+      pdf.text(`Page ${pageNum}`, pw / 2, ph - 4, { align: "center" });
+      pdf.text(new Date().getFullYear().toString(), margin, ph - 4);
+    };
+
+    addPageHeader();
+    let pageNum = 2;
+
+    lines.forEach((rawLine) => {
+      const line = rawLine.trim();
+      if (!line) { y += 4; return; }
+
+      // Section headers (ALL CAPS or starts with number+dot)
+      const isHeader = /^[A-Z][A-Z\s&:()\-\/]{8,}$/.test(line) || /^\d+\.\s+[A-Z]/.test(line);
+
+      if (isHeader) {
+        if (y > ph - 40) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+        pdf.setFillColor(30, 41, 59);
+        pdf.rect(margin - 2, y - 4, contentW + 4, 10, "F");
+        pdf.setFillColor(220, 38, 38);
+        pdf.rect(margin - 2, y - 4, 3, 10, "F");
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(239, 68, 68);
+        pdf.text(line, margin + 4, y + 2);
+        y += 14;
+      } else {
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(51, 65, 85);
+        const wrapped = pdf.splitTextToSize(line, contentW);
+        wrapped.forEach((wl) => {
+          if (y > ph - 20) { addPageFooter(pageNum); pdf.addPage(); pageNum++; addPageHeader(); }
+          pdf.text(wl, margin, y);
+          y += 5.5;
+        });
+      }
+    });
+    addPageFooter(pageNum);
     pdf.save(`${doc.title.replace(/\s+/g, "-")}-CONFIDENTIAL.pdf`);
   };
 
