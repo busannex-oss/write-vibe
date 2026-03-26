@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Film, Save, Loader2, CheckCircle2, ExternalLink, Key,
-  Wand2, Settings2, Play, Video, Zap, Globe, ImageIcon, Music
+  Wand2, Play, Video, Zap, ImageIcon, Download, Trash2,
+  FolderOpen, Calendar, Link2, Copy, HardDrive
 } from "lucide-react";
 
 const PROVIDERS = [
@@ -93,12 +95,70 @@ const WebGLPreview = ({ canvasRef }) => (
 );
 
 export default function AIVideoProduction({ user }) {
+  const queryClient = useQueryClient();
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
+  const [saveAssetForm, setSaveAssetForm] = useState({ url: "", title: "", provider: "", duration: "", resolution: "", notes: "" });
+  const [savingAsset, setSavingAsset] = useState(false);
+  const [assetSaved, setAssetSaved] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
+
+  // Load saved video assets from Document entity
+  const { data: videoAssets = [], isLoading: assetsLoading } = useQuery({
+    queryKey: ["video-assets"],
+    queryFn: () => base44.entities.Document.filter({ type: "promotional_material", status: "final" })
+      .then(docs => docs.filter(d => d.title?.startsWith("[VIDEO]")))
+  });
+
+  const deleteAssetMutation = useMutation({
+    mutationFn: (id) => base44.entities.Document.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["video-assets"] })
+  });
+
+  const handleSaveAsset = async () => {
+    if (!saveAssetForm.url || !saveAssetForm.title) return;
+    setSavingAsset(true);
+    try {
+      await base44.entities.Document.create({
+        type: "promotional_material",
+        status: "final",
+        book_id: "admin",
+        title: `[VIDEO] ${saveAssetForm.title}`,
+        file_url: saveAssetForm.url,
+        content: JSON.stringify({
+          provider: saveAssetForm.provider || config.active_provider,
+          duration: saveAssetForm.duration || config.default_duration,
+          resolution: saveAssetForm.resolution || config.default_resolution,
+          notes: saveAssetForm.notes,
+          saved_at: new Date().toISOString(),
+        })
+      });
+      queryClient.invalidateQueries({ queryKey: ["video-assets"] });
+      setSaveAssetForm({ url: "", title: "", provider: "", duration: "", resolution: "", notes: "" });
+      setAssetSaved(true);
+      setTimeout(() => setAssetSaved(false), 3000);
+    } finally {
+      setSavingAsset(false);
+    }
+  };
+
+  const handleCopyUrl = (url, id) => {
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDownload = (url, title) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title.replace(/[^a-z0-9]/gi, "-")}.mp4`;
+    a.target = "_blank";
+    a.click();
+  };
 
   const [config, setConfig] = useState({
     active_provider: "runway",
@@ -254,6 +314,12 @@ export default function AIVideoProduction({ user }) {
 
       <Tabs defaultValue="providers">
         <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto gap-1 p-1">
+          <TabsTrigger value="assets" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            <HardDrive className="w-3.5 h-3.5 mr-1.5" /> Saved Assets
+            {videoAssets.length > 0 && (
+              <span className="ml-1 bg-purple-500/40 text-purple-200 text-xs rounded-full px-1.5">{videoAssets.length}</span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="providers" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
             <Wand2 className="w-3.5 h-3.5 mr-1.5" /> AI Providers
           </TabsTrigger>
@@ -267,6 +333,141 @@ export default function AIVideoProduction({ user }) {
             <Zap className="w-3.5 h-3.5 mr-1.5" /> Web APIs
           </TabsTrigger>
         </TabsList>
+
+        {/* SAVED ASSETS */}
+        <TabsContent value="assets" className="mt-4 space-y-4">
+          {/* Save new asset form */}
+          <Card className="bg-purple-500/10 border-purple-500/30">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-white text-sm flex items-center gap-2">
+                <Save className="w-4 h-4 text-purple-400" /> Save a Generated Video Asset
+              </CardTitle>
+              <CardDescription className="text-white/40">Paste the URL returned by your AI video provider and save it to the library</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid md:grid-cols-2 gap-3">
+                <div>
+                  <Label className={labelClass}>Video Title *</Label>
+                  <Input value={saveAssetForm.title} onChange={e => setSaveAssetForm(f => ({ ...f, title: e.target.value }))} placeholder="Book Trailer — The Midnight Code" className={inputClass} />
+                </div>
+                <div>
+                  <Label className={labelClass}>Video URL *</Label>
+                  <Input value={saveAssetForm.url} onChange={e => setSaveAssetForm(f => ({ ...f, url: e.target.value }))} placeholder="https://...mp4 or CDN URL" className={inputClass} />
+                </div>
+                <div>
+                  <Label className={labelClass}>Provider Used</Label>
+                  <select value={saveAssetForm.provider || config.active_provider} onChange={e => setSaveAssetForm(f => ({ ...f, provider: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-md bg-white/5 border border-white/20 text-white">
+                    {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className={labelClass}>Duration</Label>
+                    <Input value={saveAssetForm.duration} onChange={e => setSaveAssetForm(f => ({ ...f, duration: e.target.value }))} placeholder="5s" className={inputClass} />
+                  </div>
+                  <div>
+                    <Label className={labelClass}>Resolution</Label>
+                    <Input value={saveAssetForm.resolution} onChange={e => setSaveAssetForm(f => ({ ...f, resolution: e.target.value }))} placeholder="1080p" className={inputClass} />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <Label className={labelClass}>Notes / Prompt Used</Label>
+                <Textarea value={saveAssetForm.notes} onChange={e => setSaveAssetForm(f => ({ ...f, notes: e.target.value }))} placeholder="Describe the prompt or notes for this video..." className={`${inputClass} min-h-[60px]`} />
+              </div>
+              <Button onClick={handleSaveAsset} disabled={savingAsset || !saveAssetForm.url || !saveAssetForm.title}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
+                {savingAsset ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</> :
+                  assetSaved ? <><CheckCircle2 className="w-4 h-4 mr-2" />Saved to Library!</> :
+                  <><HardDrive className="w-4 h-4 mr-2" />Save to Video Library</>}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Assets list */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-white/70 uppercase tracking-wider flex items-center gap-2">
+                <FolderOpen className="w-4 h-4" /> Video Library
+                <Badge className="bg-white/10 text-white/50 border-0">{videoAssets.length} asset{videoAssets.length !== 1 ? "s" : ""}</Badge>
+              </h3>
+            </div>
+
+            {assetsLoading ? (
+              <div className="py-8 text-center"><Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto" /></div>
+            ) : videoAssets.length === 0 ? (
+              <Card className="bg-white/5 border-white/10">
+                <CardContent className="py-10 text-center">
+                  <Film className="w-10 h-10 text-white/20 mx-auto mb-3" />
+                  <p className="text-white/40 text-sm">No video assets saved yet. Generate a video and save it above.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              videoAssets.map(asset => {
+                const meta = (() => { try { return JSON.parse(asset.content || "{"); } catch { return {}; } })();
+                const providerInfo = PROVIDERS.find(p => p.id === meta.provider);
+                const displayTitle = asset.title.replace("[VIDEO] ", "");
+                return (
+                  <Card key={asset.id} className="bg-white/5 border-white/10 hover:border-purple-500/20 transition-all">
+                    <CardContent className="py-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Film className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                            <p className="font-medium text-white truncate">{displayTitle}</p>
+                            {providerInfo && (
+                              <Badge className={`${providerInfo.badgeColor} text-xs`}>{providerInfo.name}</Badge>
+                            )}
+                            {meta.duration && <Badge className="bg-white/10 text-white/50 border-white/10 text-xs">{meta.duration}s</Badge>}
+                            {meta.resolution && <Badge className="bg-white/10 text-white/50 border-white/10 text-xs">{meta.resolution}</Badge>}
+                          </div>
+                          {meta.notes && <p className="text-xs text-white/40 mt-1 truncate">{meta.notes}</p>}
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Calendar className="w-3 h-3 text-white/20" />
+                            <span className="text-xs text-white/30">
+                              {meta.saved_at ? new Date(meta.saved_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}
+                            </span>
+                            {asset.file_url && (
+                              <a href={asset.file_url} target="_blank" rel="noopener noreferrer"
+                                className="text-xs text-purple-400/60 hover:text-purple-300 flex items-center gap-0.5 ml-2">
+                                <Link2 className="w-3 h-3" /> Preview
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {asset.file_url && (
+                            <>
+                              <Button size="icon" variant="ghost"
+                                onClick={() => handleCopyUrl(asset.file_url, asset.id)}
+                                className="text-white/40 hover:text-white hover:bg-white/10 w-8 h-8"
+                                title="Copy URL">
+                                {copiedId === asset.id ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                              </Button>
+                              <Button size="icon" variant="ghost"
+                                onClick={() => handleDownload(asset.file_url, displayTitle)}
+                                className="text-white/40 hover:text-purple-400 hover:bg-white/10 w-8 h-8"
+                                title="Download">
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </>
+                          )}
+                          <Button size="icon" variant="ghost"
+                            onClick={() => confirm("Delete this video asset?") && deleteAssetMutation.mutate(asset.id)}
+                            className="text-white/40 hover:text-red-400 hover:bg-red-500/10 w-8 h-8"
+                            title="Delete">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+        </TabsContent>
 
         {/* PROVIDERS */}
         <TabsContent value="providers" className="mt-4 space-y-4">
