@@ -13,7 +13,8 @@ import {
   X,
   Crown,
   Sparkles,
-  ShieldAlert
+  ShieldAlert,
+  Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -91,7 +92,8 @@ export default function Layout({ children, currentPageName }) {
   const adminNav = user?.role === "admin"
     ? [
         { name: "User Management", href: "UserManagement", icon: Crown },
-        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert }
+        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert },
+        { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain }
       ]
     : [];
 
