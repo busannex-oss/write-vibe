@@ -58,11 +58,12 @@ export default function BookEditor() {
       if (!bookId) return null;
       try {
         console.log('Fetching book with ID:', bookId);
-        const books = await base44.entities.Book.filter({ id: bookId });
-        console.log('Raw filter result:', books);
-        const result = books && books.length > 0 ? books[0] : null;
-        console.log('Returning book:', result, 'has id?', result?.id);
-        return result;
+        // Try to get all books and find the matching one
+        const allBooks = await base44.entities.Book.list();
+        console.log('All books:', allBooks);
+        const found = allBooks.find(b => b.id === bookId);
+        console.log('Found book:', found);
+        return found || null;
       } catch (err) {
         console.error('Error fetching book:', err);
         return null;
