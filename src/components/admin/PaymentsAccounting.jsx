@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -218,6 +219,111 @@ function AddPaymentModal({ onClose, onSave, nextInvoice }) {
   );
 }
 
+// ── Membership Breakdown Component ───────────────────────────────────────────
+
+const PLAN_COLORS = { starter: "#f59e0b", professional: "#3b82f6", enterprise: "#a855f7", white_label: "#10b981" };
+
+function MembershipBreakdown({ payments }) {
+  const paidPayments = payments.filter(p => p.status === "paid");
+
+  const byPlan = useMemo(() => {
+    const map = {};
+    paidPayments.forEach(p => {
+      if (!map[p.plan]) map[p.plan] = { name: p.plan?.replace(/_/g, " "), count: 0, revenue: 0 };
+      map[p.plan].count += 1;
+      map[p.plan].revenue += p.amount || 0;
+    });
+    return Object.values(map).sort((a, b) => b.revenue - a.revenue);
+  }, [paidPayments]);
+
+  const byCycle = useMemo(() => [
+    { name: "Monthly", value: paidPayments.filter(p => p.billing_cycle === "monthly").length },
+    { name: "Yearly", value: paidPayments.filter(p => p.billing_cycle === "yearly").length },
+  ], [paidPayments]);
+
+  const byMonth = useMemo(() => {
+    const map = {};
+    paidPayments.forEach(p => {
+      const m = p.created_date ? format(new Date(p.created_date), "MMM yy") : "Unknown";
+      if (!map[m]) map[m] = { month: m, revenue: 0, count: 0 };
+      map[m].revenue += p.amount || 0;
+      map[m].count += 1;
+    });
+    return Object.values(map).slice(-6);
+  }, [paidPayments]);
+
+  if (byPlan.length === 0) return (
+    <div className="text-center py-12 text-white/30">No paid transactions to analyze yet.</div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Plan breakdown table */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader><CardTitle className="text-white text-sm">Revenue by Plan</CardTitle></CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {byPlan.map(p => (
+                <div key={p.name} className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: PLAN_COLORS[p.name?.replace(/ /g,"_")] || "#888" }} />
+                  <span className="text-white/70 text-sm capitalize flex-1">{p.name}</span>
+                  <span className="text-white/50 text-xs">{p.count} txn</span>
+                  <span className="text-white font-semibold text-sm">{fmtUSD(p.revenue)}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader><CardTitle className="text-white text-sm">Plan Distribution</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart>
+                <Pie data={byPlan} dataKey="revenue" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent*100).toFixed(0)}%`}>
+                  {byPlan.map((p, i) => <Cell key={i} fill={PLAN_COLORS[p.name?.replace(/ /g,"_")] || "#888"} />)}
+                </Pie>
+                <Tooltip formatter={v => fmtUSD(v)} contentStyle={{ background: "#1e293b", border: "1px solid #334155", color: "#fff" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Monthly revenue chart */}
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader><CardTitle className="text-white text-sm">Monthly Revenue Trend</CardTitle></CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={byMonth}>
+              <XAxis dataKey="month" tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} tickFormatter={v => `$${v}`} />
+              <Tooltip formatter={v => fmtUSD(v)} contentStyle={{ background: "#1e293b", border: "1px solid #334155", color: "#fff" }} />
+              <Bar dataKey="revenue" fill="#f59e0b" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Billing cycle split */}
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader><CardTitle className="text-white text-sm">Billing Cycle Split</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex gap-8">
+            {byCycle.map(c => (
+              <div key={c.name} className="text-center">
+                <p className="text-3xl font-bold text-white">{c.value}</p>
+                <p className="text-white/50 text-sm">{c.name}</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function PaymentsAccounting() {
@@ -228,6 +334,7 @@ export default function PaymentsAccounting() {
   const [filterMonth, setFilterMonth] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
   const [exportLoading, setExportLoading] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { data: payments = [], isLoading } = useQuery({
     queryKey: ["payments"],
@@ -309,6 +416,21 @@ export default function PaymentsAccounting() {
 
   return (
     <div className="space-y-6">
+      {/* Tabs: Overview vs Breakdown */}
+      <div className="flex gap-2">
+        {["overview","breakdown"].map(t => (
+          <button key={t} onClick={() => setActiveTab(t)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
+              activeTab === t ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "text-white/50 hover:text-white hover:bg-white/5"
+            }`}>
+            {t === "overview" ? "💳 Transactions" : "📊 Sales Breakdown"}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "breakdown" && <MembershipBreakdown payments={payments} />}
+
+      {activeTab === "overview" && <>
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
@@ -460,6 +582,7 @@ export default function PaymentsAccounting() {
           onSave={data => createMutation.mutate(data)}
         />
       )}
+      </>}
     </div>
   );
 }
