@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,75 @@ export default function BookWebsite() {
     if (email) subscribeMutation.mutate();
   };
 
+  // ── Derived values (computed even if book is null, safe with fallbacks) ──
+  const isComingSoon = book?.website_config?.status !== "live";
+  const bookstores = book?.selected_bookstores || [];
+  const socialLinks = { ...(book?.social_media_links || {}), ...(authorProfile?.social_media || {}) };
+  const authorName = authorProfile?.full_name || book?.created_by?.split("@")[0];
+  const authorPhoto = authorProfile?.author_photo_url || book?.author_photo_url;
+  const authorBio = authorProfile?.biography;
+  const chapters = book?.table_of_contents || book?.outline || [];
+  const detailedOutline = book?.detailed_outline || book?.outline || [];
+  const characters = book?.characters || [];
+  const releaseDate = book?.website_config?.release_date;
+  const branding = book?.website_config?.branding || {};
+  const logoUrl = branding.logo_url || "";
+  const brandName = branding.brand_name || authorName || "";
+  const footerText = branding.footer_text || "";
+  const themeColor = branding.theme_color || "#f59e0b";
+  const themeBg1 = branding.theme_bg1 || "#020617";
+  const themeBg2 = branding.theme_bg2 || "#0f172a";
+  const daysUntil = releaseDate ? Math.ceil((new Date(releaseDate) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+  const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
+  const themeStyle = { '--theme-primary': themeColor, '--theme-bg1': themeBg1, '--theme-bg2': themeBg2 };
+
+  // ── SEO + JSON-LD (must be before any return) ──
+  useEffect(() => {
+    if (!book) return;
+    const schemas = [];
+    const bookSchema = {
+      "@context": "https://schema.org",
+      "@type": "Book",
+      "name": book.title,
+      ...(book.subtitle ? { "alternateName": book.subtitle } : {}),
+      ...(book.book_summary || book.plot_summary ? { "description": book.book_summary || book.plot_summary } : {}),
+      ...(book.front_cover_url ? { "image": book.front_cover_url } : {}),
+      ...(book.category ? { "genre": book.category } : {}),
+      ...(authorName ? { "author": { "@type": "Person", "name": authorName } } : {}),
+      ...(book.amazon_asin ? { "isbn": book.amazon_asin } : {}),
+      "url": window.location.href,
+    };
+    if (avgRating && reviews.length) {
+      bookSchema["aggregateRating"] = { "@type": "AggregateRating", "ratingValue": avgRating, "reviewCount": reviews.length, "bestRating": 5, "worstRating": 1 };
+      bookSchema["review"] = reviews.slice(0, 5).map(r => ({ "@type": "Review", "author": { "@type": "Person", "name": r.author_name }, "reviewRating": { "@type": "Rating", "ratingValue": r.rating, "bestRating": 5 }, ...(r.title ? { "name": r.title } : {}), "reviewBody": r.content }));
+    }
+    schemas.push(bookSchema);
+    if (authorName) schemas.push({ "@context": "https://schema.org", "@type": "Person", "name": authorName, ...(authorPhoto ? { "image": authorPhoto } : {}), ...(authorBio ? { "description": authorBio } : {}) });
+    document.querySelectorAll('script[data-bookwebsite-schema]').forEach(s => s.remove());
+    schemas.forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-bookwebsite-schema', 'true');
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
+    const savedSEO = book.website_config?.seo || {};
+    document.title = savedSEO.meta_title || `${book.title}${book.subtitle ? ' — ' + book.subtitle : ''}${authorName ? ' by ' + authorName : ''}`;
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+    metaDesc.content = savedSEO.meta_description || (book.book_summary || book.plot_summary || '').slice(0, 160) || `${book.title} by ${authorName}. Available now.`;
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
+    ogTitle.content = book.title;
+    const ogImageUrl = savedSEO.og_image || book.front_cover_url;
+    if (ogImageUrl) {
+      let ogImg = document.querySelector('meta[property="og:image"]');
+      if (!ogImg) { ogImg = document.createElement('meta'); ogImg.setAttribute('property', 'og:image'); document.head.appendChild(ogImg); }
+      ogImg.content = ogImageUrl;
+    }
+    return () => { document.querySelectorAll('script[data-bookwebsite-schema]').forEach(s => s.remove()); };
+  }, [book, reviews, authorName, authorPhoto, authorBio, avgRating]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
@@ -151,118 +221,6 @@ export default function BookWebsite() {
       </div>
     );
   }
-
-  const isComingSoon = book.website_config?.status !== "live";
-  const bookstores = book.selected_bookstores || [];
-  const socialLinks = { ...(book.social_media_links || {}), ...(authorProfile?.social_media || {}) };
-  const authorName = authorProfile?.full_name || book.created_by?.split("@")[0];
-  const authorPhoto = authorProfile?.author_photo_url || book.author_photo_url;
-  const authorBio = authorProfile?.biography;
-  const chapters = book.table_of_contents || book.outline || [];
-  const detailedOutline = book.detailed_outline || book.outline || [];
-  const characters = book.characters || [];
-  const releaseDate = book.website_config?.release_date;
-
-  // Branding & theme from website_config
-  const branding = book.website_config?.branding || {};
-  const logoUrl = branding.logo_url || "";
-  const brandName = branding.brand_name || authorName || "";
-  const footerText = branding.footer_text || "";
-  const themeColor = branding.theme_color || "#f59e0b";
-  const themeBg1 = branding.theme_bg1 || "#020617";
-  const themeBg2 = branding.theme_bg2 || "#0f172a";
-
-  // Calculate days until release
-  const daysUntil = releaseDate ? Math.ceil((new Date(releaseDate) - new Date()) / (1000 * 60 * 60 * 24)) : null;
-
-  const avgRating = reviews.length
-    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-    : null;
-
-  const themeStyle = {
-    '--theme-primary': themeColor,
-    '--theme-bg1': themeBg1,
-    '--theme-bg2': themeBg2,
-  };
-
-  useEffect(() => {
-    if (!book) return;
-
-    const schemas = [];
-
-    const bookSchema = {
-      "@context": "https://schema.org",
-      "@type": "Book",
-      "name": book.title,
-      ...(book.subtitle ? { "alternateName": book.subtitle } : {}),
-      ...(book.book_summary || book.plot_summary ? { "description": book.book_summary || book.plot_summary } : {}),
-      ...(book.front_cover_url ? { "image": book.front_cover_url } : {}),
-      ...(book.category ? { "genre": book.category } : {}),
-      ...(authorName ? { "author": { "@type": "Person", "name": authorName } } : {}),
-      ...(book.amazon_asin ? { "isbn": book.amazon_asin } : {}),
-      ...(book.audiobook_url ? { "bookFormat": "AudiobookFormat" } : {}),
-      "url": window.location.href,
-    };
-
-    if (avgRating && reviews.length) {
-      bookSchema["aggregateRating"] = {
-        "@type": "AggregateRating",
-        "ratingValue": avgRating,
-        "reviewCount": reviews.length,
-        "bestRating": 5,
-        "worstRating": 1
-      };
-      bookSchema["review"] = reviews.slice(0, 5).map(r => ({
-        "@type": "Review",
-        "author": { "@type": "Person", "name": r.author_name },
-        "reviewRating": { "@type": "Rating", "ratingValue": r.rating, "bestRating": 5 },
-        ...(r.title ? { "name": r.title } : {}),
-        "reviewBody": r.content
-      }));
-    }
-    schemas.push(bookSchema);
-
-    if (authorName) {
-      schemas.push({
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": authorName,
-        ...(authorPhoto ? { "image": authorPhoto } : {}),
-        ...(authorBio ? { "description": authorBio } : {})
-      });
-    }
-
-    const existing = document.querySelectorAll('script[data-bookwebsite-schema]');
-    existing.forEach(s => s.remove());
-    schemas.forEach(schema => {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.setAttribute('data-bookwebsite-schema', 'true');
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    });
-
-    const savedSEO = book.website_config?.seo || {};
-    document.title = savedSEO.meta_title || `${book.title}${book.subtitle ? ' — ' + book.subtitle : ''}${authorName ? ' by ' + authorName : ''}`;
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
-    metaDesc.content = savedSEO.meta_description || (book.book_summary || book.plot_summary || '').slice(0, 160) || `${book.title} by ${authorName}. Available now.`;
-
-    let ogTitle = document.querySelector('meta[property="og:title"]');
-    if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
-    ogTitle.content = book.title;
-
-    const ogImageUrl = savedSEO.og_image || book.front_cover_url;
-    if (ogImageUrl) {
-      let ogImage = document.querySelector('meta[property="og:image"]');
-      if (!ogImage) { ogImage = document.createElement('meta'); ogImage.setAttribute('property', 'og:image'); document.head.appendChild(ogImage); }
-      ogImage.content = ogImageUrl;
-    }
-
-    return () => {
-      document.querySelectorAll('script[data-bookwebsite-schema]').forEach(s => s.remove());
-    };
-  }, [book, reviews, authorName, authorPhoto, authorBio, avgRating]);
 
   return (
     <div className="min-h-screen text-white" style={{ background: `linear-gradient(135deg, ${themeBg1} 0%, ${themeBg2} 50%, ${themeBg1} 100%)`, ...themeStyle }}>
@@ -433,7 +391,8 @@ export default function BookWebsite() {
       </section>
 
       {/* ── ABOUT THE BOOK ── */}
-      {(book.book_summary || book.plot_summary) && (<span id="about" />) && (
+      <span id="about" />
+      {(book.book_summary || book.plot_summary) && (
         <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950">
           <div className="max-w-4xl mx-auto">
             <motion.div
