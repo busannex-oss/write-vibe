@@ -82,6 +82,7 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
     return links;
   };
 
+  const [selectedBookstores, setSelectedBookstores] = useState(book.selected_bookstores || []);
   const [bookstoreLinks, setBookstoreLinks] = useState(normalizeLinks(book.website_config?.bookstore_links));
   const [socialLinks, setSocialLinks] = useState(book.social_media_links || {});
 
