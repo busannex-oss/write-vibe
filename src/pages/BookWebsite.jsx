@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -137,6 +137,83 @@ export default function BookWebsite() {
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null;
+
+  useEffect(() => {
+    if (!book) return;
+
+    const schemas = [];
+
+    const bookSchema = {
+      "@context": "https://schema.org",
+      "@type": "Book",
+      "name": book.title,
+      ...(book.subtitle ? { "alternateName": book.subtitle } : {}),
+      ...(book.book_summary || book.plot_summary ? { "description": book.book_summary || book.plot_summary } : {}),
+      ...(book.front_cover_url ? { "image": book.front_cover_url } : {}),
+      ...(book.category ? { "genre": book.category } : {}),
+      ...(authorName ? { "author": { "@type": "Person", "name": authorName } } : {}),
+      ...(book.amazon_asin ? { "isbn": book.amazon_asin } : {}),
+      ...(book.audiobook_url ? { "bookFormat": "AudiobookFormat" } : {}),
+      "url": window.location.href,
+    };
+
+    if (avgRating && reviews.length) {
+      bookSchema["aggregateRating"] = {
+        "@type": "AggregateRating",
+        "ratingValue": avgRating,
+        "reviewCount": reviews.length,
+        "bestRating": 5,
+        "worstRating": 1
+      };
+      bookSchema["review"] = reviews.slice(0, 5).map(r => ({
+        "@type": "Review",
+        "author": { "@type": "Person", "name": r.author_name },
+        "reviewRating": { "@type": "Rating", "ratingValue": r.rating, "bestRating": 5 },
+        ...(r.title ? { "name": r.title } : {}),
+        "reviewBody": r.content
+      }));
+    }
+    schemas.push(bookSchema);
+
+    if (authorName) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": authorName,
+        ...(authorPhoto ? { "image": authorPhoto } : {}),
+        ...(authorBio ? { "description": authorBio } : {})
+      });
+    }
+
+    const existing = document.querySelectorAll('script[data-bookwebsite-schema]');
+    existing.forEach(s => s.remove());
+    schemas.forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-bookwebsite-schema', 'true');
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
+
+    document.title = `${book.title}${book.subtitle ? ' — ' + book.subtitle : ''}${authorName ? ' by ' + authorName : ''}`;
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+    metaDesc.content = (book.book_summary || book.plot_summary || '').slice(0, 160) || `${book.title} by ${authorName}. Available now.`;
+
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
+    ogTitle.content = book.title;
+
+    if (book.front_cover_url) {
+      let ogImage = document.querySelector('meta[property="og:image"]');
+      if (!ogImage) { ogImage = document.createElement('meta'); ogImage.setAttribute('property', 'og:image'); document.head.appendChild(ogImage); }
+      ogImage.content = book.front_cover_url;
+    }
+
+    return () => {
+      document.querySelectorAll('script[data-bookwebsite-schema]').forEach(s => s.remove());
+    };
+  }, [book, reviews, authorName, authorPhoto, authorBio, avgRating]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">

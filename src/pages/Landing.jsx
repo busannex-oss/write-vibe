@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -21,6 +21,106 @@ import DemoVideoModal from "@/components/DemoVideoModal";
 
 export default function Landing() {
   const [showDemoModal, setShowDemoModal] = useState(false);
+
+  useEffect(() => {
+    const schemas = [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "AuthorForge",
+        "url": window.location.origin,
+        "description": "AI-powered book creation platform helping authors write, design, and publish books with intelligent AI agents.",
+        "logo": window.location.origin + "/favicon.ico",
+        "sameAs": []
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "AuthorForge",
+        "applicationCategory": "BusinessApplication",
+        "description": "AI-powered book creation suite that handles character creation, outlining, cover design, video commercials, book websites, and team collaboration for authors.",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "7-day free trial, no credit card required"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "50000",
+          "bestRating": "5"
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is AuthorForge?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AuthorForge is an AI-powered book creation suite that helps authors write, design, and publish books. It uses intelligent AI agents to handle character creation, outlining, cover design, video commercials, book websites, and team collaboration."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does AuthorForge help authors?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AuthorForge automates the entire book production process. AI agents create rich characters with backstories, generate chapter-by-chapter outlines, design professional book covers, produce video trailers, build book landing pages with newsletter integration, and manage team collaboration with role-based access."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is AuthorForge free to try?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. AuthorForge offers a 7-day free trial with no credit card required. You can cancel anytime."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I publish my book directly from AuthorForge?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. AuthorForge integrates with Amazon KDP and other major bookstores so you can submit your manuscript and publish directly from the platform."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does AuthorForge support team collaboration?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. You can invite editors, publishers, and marketing team members with role-based access control so everyone can collaborate on the same book project."
+            }
+          }
+        ]
+      }
+    ];
+
+    const existingScripts = document.querySelectorAll('script[data-authorforge-schema]');
+    existingScripts.forEach(s => s.remove());
+
+    schemas.forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-authorforge-schema', 'true');
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
+
+    document.title = 'AuthorForge — Write Your Book with AI Agents';
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+    metaDesc.content = 'AuthorForge is an AI-powered book creation suite. Write, design, and publish your book with intelligent AI agents handling characters, outlines, covers, video trailers, and marketing. Start your 7-day free trial.';
+
+    return () => {
+      document.querySelectorAll('script[data-authorforge-schema]').forEach(s => s.remove());
+    };
+  }, []);
 
   const features = [
     {
@@ -263,6 +363,33 @@ export default function Landing() {
                   </div>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 px-6" itemScope itemType="https://schema.org/FAQPage">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Frequently Asked <span className="text-amber-400">Questions</span>
+            </h2>
+          </div>
+          <div className="space-y-4">
+            {[
+              { q: "What is AuthorForge?", a: "AuthorForge is an AI-powered book creation suite that helps authors write, design, and publish books. AI agents handle character creation, outlining, cover design, video trailers, book websites, and team collaboration — all in one place." },
+              { q: "Is AuthorForge free to try?", a: "Yes. AuthorForge offers a 7-day free trial with no credit card required. You can cancel anytime." },
+              { q: "Can I publish my book directly from AuthorForge?", a: "Yes. AuthorForge integrates with Amazon KDP and major bookstores so you can submit and publish directly from the platform." },
+              { q: "Does AuthorForge support team collaboration?", a: "Absolutely. Invite editors, publishers, and marketing teams with role-based access so everyone works together on the same project." },
+              { q: "What kinds of books can I create with AuthorForge?", a: "Any genre — fiction, non-fiction, self-help, children's books, and more. The AI adapts to your book's category, tone, and target audience." }
+            ].map(({ q, a }, i) => (
+              <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                <h3 className="text-lg font-semibold text-white mb-3" itemProp="name">{q}</h3>
+                <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                  <p className="text-white/60" itemProp="text">{a}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
