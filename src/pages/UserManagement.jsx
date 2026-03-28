@@ -27,7 +27,7 @@ import {
   DollarSign
 } from "lucide-react";
 import { motion } from "framer-motion";
-import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
+import IntegrationSettings from "@/components/admin/IntegrationSettings";
 import AIBusinessPlan from "@/components/admin/AIBusinessPlan";
 import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
@@ -407,7 +407,7 @@ export default function UserManagement() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <AmazonAdwizarSettings user={currentUser} />
+          <IntegrationSettings user={currentUser} />
         </TabsContent>
 
         <TabsContent value="confidential">
