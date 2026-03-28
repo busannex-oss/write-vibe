@@ -43,6 +43,7 @@ import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
 import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
+import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -106,6 +107,7 @@ export default function BookEditor() {
     { id: "audiobook", label: "Audiobook", icon: Volume2, status: book?.audiobook_url ? "complete" : "pending" },
     { id: "viewer", label: "View & Export", icon: Download, status: book?.formatted_manuscript ? "complete" : "pending" },
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
+    { id: "seo", label: "SEO", icon: Sparkles, status: book?.website_config?.seo?.meta_title ? "complete" : "pending" },
     { id: "team", label: "Team", icon: Users, status: "available" },
   ];
 
@@ -304,6 +306,13 @@ export default function BookEditor() {
         {activeTab === "website" && (
           <WebsiteBuilder 
             book={book} 
+            onUpdate={handleUpdate}
+            isUpdating={updateBookMutation.isPending}
+          />
+        )}
+        {activeTab === "seo" && (
+          <SEOMetadataEditor
+            book={book}
             onUpdate={handleUpdate}
             isUpdating={updateBookMutation.isPending}
           />

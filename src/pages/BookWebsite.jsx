@@ -195,19 +195,21 @@ export default function BookWebsite() {
       document.head.appendChild(script);
     });
 
-    document.title = `${book.title}${book.subtitle ? ' — ' + book.subtitle : ''}${authorName ? ' by ' + authorName : ''}`;
+    const savedSEO = book.website_config?.seo || {};
+    document.title = savedSEO.meta_title || `${book.title}${book.subtitle ? ' — ' + book.subtitle : ''}${authorName ? ' by ' + authorName : ''}`;
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
-    metaDesc.content = (book.book_summary || book.plot_summary || '').slice(0, 160) || `${book.title} by ${authorName}. Available now.`;
+    metaDesc.content = savedSEO.meta_description || (book.book_summary || book.plot_summary || '').slice(0, 160) || `${book.title} by ${authorName}. Available now.`;
 
     let ogTitle = document.querySelector('meta[property="og:title"]');
     if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
     ogTitle.content = book.title;
 
-    if (book.front_cover_url) {
+    const ogImageUrl = savedSEO.og_image || book.front_cover_url;
+    if (ogImageUrl) {
       let ogImage = document.querySelector('meta[property="og:image"]');
       if (!ogImage) { ogImage = document.createElement('meta'); ogImage.setAttribute('property', 'og:image'); document.head.appendChild(ogImage); }
-      ogImage.content = book.front_cover_url;
+      ogImage.content = ogImageUrl;
     }
 
     return () => {
