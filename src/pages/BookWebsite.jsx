@@ -51,9 +51,11 @@ export default function BookWebsite() {
   const urlParams = new URLSearchParams(window.location.search);
   const bookId = urlParams.get("id");
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [expandedChapter, setExpandedChapter] = useState(null);
   const [showAllChars, setShowAllChars] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState(null);
 
   const { data: pageData, isLoading, error } = useQuery({
     queryKey: ['public-book', bookId],
@@ -87,10 +89,40 @@ export default function BookWebsite() {
     mutationFn: () => base44.entities.NewsletterSubscriber.create({
       book_id: bookId,
       email,
+      name,
       subscribed_at: new Date().toISOString()
     }),
     onSuccess: () => setSubscribed(true)
   });
+
+  // Auto-subscribe logged-in members
+  useEffect(() => {
+    if (!bookId || !book) return;
+    base44.auth.isAuthenticated().then(async (authed) => {
+      if (!authed) return;
+      const me = await base44.auth.me();
+      if (!me?.email) return;
+      // Check if already subscribed
+      try {
+        const existing = await base44.entities.NewsletterSubscriber.filter({ book_id: bookId, email: me.email });
+        if (existing?.length > 0) { setSubscribed(true); return; }
+        // Auto-subscribe
+        await base44.entities.NewsletterSubscriber.create({
+          book_id: bookId,
+          email: me.email,
+          name: me.full_name || "",
+          subscribed_at: new Date().toISOString()
+        });
+        setSubscribed(true);
+      } catch (_) {}
+    });
+    // Load subscriber count for social proof
+    try {
+      base44.entities.NewsletterSubscriber.filter({ book_id: bookId }).then(subs => {
+        if (subs?.length > 0) setSubscriberCount(subs.length);
+      });
+    } catch (_) {}
+  }, [bookId, book]);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -131,12 +163,27 @@ export default function BookWebsite() {
   const characters = book.characters || [];
   const releaseDate = book.website_config?.release_date;
 
+  // Branding & theme from website_config
+  const branding = book.website_config?.branding || {};
+  const logoUrl = branding.logo_url || "";
+  const brandName = branding.brand_name || authorName || "";
+  const footerText = branding.footer_text || "";
+  const themeColor = branding.theme_color || "#f59e0b";
+  const themeBg1 = branding.theme_bg1 || "#020617";
+  const themeBg2 = branding.theme_bg2 || "#0f172a";
+
   // Calculate days until release
   const daysUntil = releaseDate ? Math.ceil((new Date(releaseDate) - new Date()) / (1000 * 60 * 60 * 24)) : null;
 
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null;
+
+  const themeStyle = {
+    '--theme-primary': themeColor,
+    '--theme-bg1': themeBg1,
+    '--theme-bg2': themeBg2,
+  };
 
   useEffect(() => {
     if (!book) return;
@@ -218,10 +265,39 @@ export default function BookWebsite() {
   }, [book, reviews, authorName, authorPhoto, authorBio, avgRating]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen text-white" style={{ background: `linear-gradient(135deg, ${themeBg1} 0%, ${themeBg2} 50%, ${themeBg1} 100%)`, ...themeStyle }}>
+      <style>{`
+        .theme-accent { color: ${themeColor} !important; }
+        .theme-accent-bg { background-color: ${themeColor} !important; }
+        .theme-accent-border { border-color: ${themeColor}66 !important; }
+        .theme-gradient-text { background: linear-gradient(90deg, ${themeColor}, ${themeColor}cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .theme-gradient-bg { background: linear-gradient(90deg, ${themeColor}, ${themeColor}bb) !important; }
+        .theme-glow { box-shadow: 0 10px 40px ${themeColor}40; }
+        .theme-divider { background: linear-gradient(90deg, ${themeColor}, ${themeColor}88); }
+      `}</style>
+
+      {/* ── BRANDED HEADER ── */}
+      {(logoUrl || brandName) && (
+        <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between" style={{ background: `${themeBg1}e8`, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${themeColor}22` }}>
+          <div className="flex items-center gap-3">
+            {logoUrl && (
+              <img src={logoUrl} alt={brandName} className="h-9 w-auto object-contain" />
+            )}
+            {brandName && (
+              <span className="font-bold text-lg text-white">{brandName}</span>
+            )}
+          </div>
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            {(book.book_summary || book.plot_summary) && <a href="#about" className="text-white/60 hover:text-white transition-colors">About</a>}
+            {characters.length > 0 && <a href="#characters" className="text-white/60 hover:text-white transition-colors">Characters</a>}
+            {chapters.length > 0 && <a href="#contents" className="text-white/60 hover:text-white transition-colors">Contents</a>}
+            <a href="#newsletter" className="px-4 py-1.5 rounded-full text-white font-semibold text-xs" style={{ background: themeColor }}>Subscribe</a>
+          </nav>
+        </header>
+      )}
 
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-24">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-24" style={{ paddingTop: (logoUrl || brandName) ? '7rem' : '6rem' }}>
         {/* Background glow */}
         <div className="absolute inset-0 pointer-events-none">
           {book.front_cover_url && (
@@ -230,7 +306,7 @@ export default function BookWebsite() {
               style={{ backgroundImage: `url(${book.front_cover_url})` }}
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40" style={{ background: `linear-gradient(to bottom, ${themeBg1}99, ${themeBg1}60, ${themeBg1})` }} />
         </div>
 
         <div className="max-w-6xl mx-auto relative w-full">
@@ -285,10 +361,10 @@ export default function BookWebsite() {
               {/* Title */}
               <div>
                 <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white">
-                  {book.title}
-                </h1>
-                {book.subtitle && (
-                  <p className="text-xl md:text-2xl text-amber-400 font-light mt-2">{book.subtitle}</p>
+                {book.title}
+              </h1>
+              {book.subtitle && (
+                <p className="text-xl md:text-2xl font-light mt-2 theme-accent">{book.subtitle}</p>
                 )}
                 {authorName && (
                   <p className="text-white/50 text-lg mt-2">by <span className="text-white/80 font-medium">{authorName}</span></p>
@@ -298,7 +374,7 @@ export default function BookWebsite() {
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {book.category && (
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 px-3 py-1 text-sm">
+                  <Badge className="px-3 py-1 text-sm" style={{ background: `${themeColor}22`, color: themeColor, borderColor: `${themeColor}44` }}>
                     {book.category}
                   </Badge>
                 )}
@@ -324,7 +400,7 @@ export default function BookWebsite() {
                   <span className="flex items-center gap-1.5"><Headphones className="w-4 h-4" /> Audiobook</span>
                 )}
                 {avgRating && (
-                  <span className="flex items-center gap-1.5"><Star className="w-4 h-4 text-amber-400 fill-amber-400" /> {avgRating} ({reviews.length})</span>
+                  <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-current" style={{ color: themeColor }} /> {avgRating} ({reviews.length})</span>
                 )}
               </div>
 
@@ -345,10 +421,10 @@ export default function BookWebsite() {
                   </a>
                 )}
                 <a href="#newsletter">
-                  <Button variant="outline" className="w-full h-12 border-white/20 text-white hover:bg-white/10 rounded-xl font-semibold">
-                    <Mail className="w-4 h-4 mr-2" />
-                    {isComingSoon ? "Notify Me on Release" : "Subscribe for Updates"}
-                  </Button>
+                <Button variant="outline" className="w-full h-12 border-white/20 text-white hover:bg-white/10 rounded-xl font-semibold">
+                  <Mail className="w-4 h-4 mr-2" />
+                  {isComingSoon ? "Notify Me on Release" : "Subscribe for Updates"}
+                </Button>
                 </a>
               </div>
             </motion.div>
@@ -357,7 +433,7 @@ export default function BookWebsite() {
       </section>
 
       {/* ── ABOUT THE BOOK ── */}
-      {(book.book_summary || book.plot_summary) && (
+      {(book.book_summary || book.plot_summary) && (<span id="about" />) && (
         <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -368,7 +444,7 @@ export default function BookWebsite() {
               className="space-y-8 text-center"
             >
               <h2 className="text-4xl font-bold text-white">About This Book</h2>
-              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <div className="h-1 w-20 mx-auto rounded-full theme-divider" />
               <p className="text-xl text-white/75 leading-relaxed">
                 {book.book_summary || book.plot_summary}
               </p>
@@ -379,7 +455,7 @@ export default function BookWebsite() {
 
       {/* ── CHARACTERS ── */}
       {characters.length > 0 && (
-        <section className="py-24 px-6">
+        <section className="py-24 px-6" id="characters">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -388,7 +464,7 @@ export default function BookWebsite() {
               className="text-center mb-14"
             >
               <h2 className="text-4xl font-bold text-white mb-3">Meet the Characters</h2>
-              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <div className="h-1 w-20 mx-auto rounded-full theme-divider" />
             </motion.div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -454,7 +530,7 @@ export default function BookWebsite() {
 
       {/* ── TABLE OF CONTENTS ── */}
       {chapters.length > 0 && (
-        <section className="py-24 px-6 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950">
+        <section className="py-24 px-6" id="contents" style={{ background: `linear-gradient(to bottom, ${themeBg1}, ${themeBg2}44, ${themeBg1})` }}>
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -463,7 +539,7 @@ export default function BookWebsite() {
               className="text-center mb-14"
             >
               <h2 className="text-4xl font-bold text-white mb-3">Table of Contents</h2>
-              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <div className="h-1 w-20 mx-auto rounded-full theme-divider" />
               <p className="text-white/50 mt-4">{chapters.length} chapters</p>
             </motion.div>
 
@@ -478,7 +554,7 @@ export default function BookWebsite() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.03 }}
-                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-amber-500/30 transition-all"
+                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all" style={{ '--hover-color': themeColor }}
                   >
                     <button
                       className="w-full flex items-center gap-4 px-6 py-4 text-left"
@@ -606,7 +682,7 @@ export default function BookWebsite() {
               className="text-center mb-14"
             >
               <h2 className="text-4xl font-bold text-white mb-3">⭐ Reader Reviews</h2>
-              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <div className="h-1 w-20 mx-auto rounded-full theme-divider" />
               {avgRating && (
                 <div className="mt-6 inline-flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl px-6 py-3">
                   <span className="text-4xl font-bold text-amber-400">{avgRating}</span>
@@ -657,7 +733,7 @@ export default function BookWebsite() {
               className="text-center space-y-6"
             >
               <h2 className="text-4xl font-bold text-white">About the Author</h2>
-              <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto rounded-full" />
+              <div className="h-1 w-20 mx-auto rounded-full theme-divider" />
               {authorPhoto && (
                 <img
                   src={authorPhoto}
@@ -666,7 +742,7 @@ export default function BookWebsite() {
                 />
               )}
               {authorName && (
-                <p className="text-2xl font-bold text-amber-400">{authorName}</p>
+                <p className="text-2xl font-bold theme-accent">{authorName}</p>
               )}
               {authorBio && (
                 <p className="text-white/65 text-lg leading-relaxed max-w-xl mx-auto">{authorBio}</p>
@@ -683,9 +759,18 @@ export default function BookWebsite() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-900/60 border border-amber-500/40 p-12 space-y-6 text-center shadow-2xl shadow-amber-500/10"
+            className="rounded-3xl border p-12 space-y-6 text-center shadow-2xl"
+            style={{ background: `linear-gradient(135deg, ${themeColor}22, ${themeColor}0a, ${themeBg2}99)`, borderColor: `${themeColor}44` }}
           >
-            <Mail className="w-14 h-14 text-amber-400 mx-auto" />
+            <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center" style={{ background: `${themeColor}22` }}>
+              <Mail className="w-7 h-7" style={{ color: themeColor }} />
+            </div>
+            {subscriberCount && subscriberCount > 5 && (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium" style={{ background: `${themeColor}15`, color: themeColor }}>
+                <Users className="w-4 h-4" />
+                {subscriberCount.toLocaleString()} readers already subscribed
+              </div>
+            )}
             <h2 className="text-3xl font-bold text-white">
               {isComingSoon ? "Be First to Know" : "Stay in the Loop"}
             </h2>
@@ -696,32 +781,47 @@ export default function BookWebsite() {
             </p>
 
             {subscribed ? (
-              <div className="flex items-center justify-center gap-3 text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-4 px-6">
-                <Check className="w-6 h-6" />
-                <span className="font-semibold">You're subscribed! Check your email.</span>
+              <div className="flex flex-col items-center gap-3 rounded-xl py-6 px-6" style={{ background: '#10b98120', border: '1px solid #10b98140' }}>
+                <Check className="w-10 h-10 text-emerald-400" />
+                <p className="font-bold text-white text-xl">You're on the list!</p>
+                <p className="text-white/60 text-sm">We'll notify you about updates, exclusive content, and release news.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="space-y-3">
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-14 rounded-xl text-base"
-                  required
-                />
+              <form onSubmit={handleSubscribe} className="space-y-3 text-left">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-12 rounded-xl"
+                  />
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-12 rounded-xl"
+                    required
+                  />
+                </div>
                 <Button
                   type="submit"
                   disabled={subscribeMutation.isPending}
-                  className="w-full h-14 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30"
+                  className="w-full h-12 text-white border-0 rounded-xl font-bold text-base theme-glow"
+                  style={{ background: `linear-gradient(90deg, ${themeColor}, ${themeColor}cc)` }}
                 >
                   {subscribeMutation.isPending ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    isComingSoon ? "Notify Me on Release →" : "Subscribe for Updates →"
+                    isComingSoon ? "🔔 Notify Me on Release →" : "✉️ Subscribe for Updates →"
                   )}
                 </Button>
-                <p className="text-white/40 text-xs">No spam. Just updates about this book.</p>
+                <div className="flex items-center justify-center gap-4 text-white/40 text-xs pt-1">
+                  <span>✓ No spam, ever</span>
+                  <span>✓ Unsubscribe anytime</span>
+                  <span>✓ Free updates</span>
+                </div>
               </form>
             )}
           </motion.div>
@@ -729,8 +829,19 @@ export default function BookWebsite() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-12 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <footer className="py-16 px-6" style={{ borderTop: `1px solid ${themeColor}22`, background: `${themeBg1}ee` }}>
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Logo + Brand */}
+          <div className="flex flex-col items-center gap-3">
+            {logoUrl && (
+              <img src={logoUrl} alt={brandName} className="h-12 w-auto object-contain opacity-80" />
+            )}
+            {brandName && (
+              <p className="font-bold text-lg text-white">{brandName}</p>
+            )}
+          </div>
+
+          {/* Social Icons */}
           {Object.entries(socialLinks).filter(([, v]) => v).length > 0 && (
             <div className="flex justify-center gap-4">
               {Object.entries(socialLinks).filter(([, url]) => url).map(([id, url]) => {
@@ -741,7 +852,8 @@ export default function BookWebsite() {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-all"
+                    className="w-11 h-11 rounded-full flex items-center justify-center text-white/60 hover:text-white transition-all"
+                    style={{ background: `${themeColor}22` }}
                   >
                     {Icon ? <Icon className="w-5 h-5" /> : <span className="text-sm">{id.charAt(0).toUpperCase()}</span>}
                   </a>
@@ -749,10 +861,16 @@ export default function BookWebsite() {
               })}
             </div>
           )}
-          <div className="text-center space-y-1">
+
+          <div className="text-center space-y-2">
             <p className="text-lg font-semibold text-white">{book.title}</p>
             {authorName && <p className="text-white/40 text-sm">by {authorName}</p>}
-            <p className="text-white/25 text-xs">© {new Date().getFullYear()} All rights reserved.</p>
+            {footerText && <p className="text-white/50 text-sm max-w-md mx-auto">{footerText}</p>}
+            <div className="flex items-center justify-center gap-4 text-white/25 text-xs pt-2">
+              <span>© {new Date().getFullYear()} All rights reserved.</span>
+              {subscriberCount && <span>·</span>}
+              {subscriberCount && <span>{subscriberCount} subscribers</span>}
+            </div>
           </div>
         </div>
       </footer>

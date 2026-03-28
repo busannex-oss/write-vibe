@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,7 +17,10 @@ import {
   Linkedin,
   Youtube,
   Calendar,
-  Clock
+  Clock,
+  Upload,
+  Palette,
+  Image as ImageIcon
 } from "lucide-react";
 import AIWebsiteContent from "./AIWebsiteContent";
 import LeadMagnetHub from "./LeadMagnetHub";
@@ -50,10 +53,26 @@ const SOCIAL_PLATFORMS = [
   { id: "goodreads", name: "Goodreads", icon: null }
 ];
 
+const COLOR_THEMES = [
+  { id: "amber",   label: "Golden Amber",   primary: "#f59e0b", bg1: "#020617", bg2: "#0f172a" },
+  { id: "blue",    label: "Ocean Blue",     primary: "#3b82f6", bg1: "#030712", bg2: "#1e3a5f" },
+  { id: "purple",  label: "Royal Purple",   primary: "#a855f7", bg1: "#09090b", bg2: "#2e1065" },
+  { id: "emerald", label: "Forest Green",   primary: "#10b981", bg1: "#022c22", bg2: "#064e3b" },
+  { id: "rose",    label: "Crimson Rose",   primary: "#f43f5e", bg1: "#0c0a09", bg2: "#4c0519" },
+  { id: "teal",    label: "Ocean Teal",     primary: "#14b8a6", bg1: "#042f2e", bg2: "#0f766e" },
+  { id: "gold",    label: "Luxury Gold",    primary: "#eab308", bg1: "#0c0a00", bg2: "#1c1500" },
+  { id: "indigo",  label: "Deep Indigo",    primary: "#6366f1", bg1: "#030712", bg2: "#1e1b4b" },
+];
+
 export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
   const [websiteStatus, setWebsiteStatus] = useState(book.website_config?.status || "coming_soon");
   const [releaseDate, setReleaseDate] = useState(book.website_config?.release_date || "");
-  const [selectedBookstores, setSelectedBookstores] = useState(book.selected_bookstores || []);
+  const existingBranding = book.website_config?.branding || {};
+  const [logoUrl, setLogoUrl] = useState(existingBranding.logo_url || "");
+  const [brandName, setBrandName] = useState(existingBranding.brand_name || "");
+  const [footerText, setFooterText] = useState(existingBranding.footer_text || "");
+  const [selectedTheme, setSelectedTheme] = useState(existingBranding.theme_id || "amber");
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const normalizeLinks = (links) => {
     if (!links) return {};
@@ -80,16 +99,36 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
     setSocialLinks(prev => ({ ...prev, [id]: url }));
   };
 
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setLogoUrl(file_url);
+    setLogoUploading(false);
+  };
+
   const saveWebsite = () => {
     const bookstoreLinksArray = Object.entries(bookstoreLinks)
       .filter(([_, url]) => url)
       .map(([id, url]) => ({ id, url }));
 
+    const theme = COLOR_THEMES.find(t => t.id === selectedTheme) || COLOR_THEMES[0];
+
     onUpdate({
       website_config: {
         status: websiteStatus,
         release_date: releaseDate,
-        bookstore_links: bookstoreLinksArray
+        bookstore_links: bookstoreLinksArray,
+        branding: {
+          logo_url: logoUrl,
+          brand_name: brandName,
+          footer_text: footerText,
+          theme_id: selectedTheme,
+          theme_color: theme.primary,
+          theme_bg1: theme.bg1,
+          theme_bg2: theme.bg2,
+        }
       },
       selected_bookstores: selectedBookstores,
       social_media_links: socialLinks
@@ -113,6 +152,95 @@ export default function WebsiteBuilder({ book, onUpdate, isUpdating }) {
 
   return (
     <div className="space-y-6">
+
+      {/* ── BRANDING & THEME ── */}
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Palette className="w-5 h-5 text-amber-400" />
+            Branding & Theme
+          </CardTitle>
+          <CardDescription className="text-white/50">
+            Set your brand identity and color scheme for the book website
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+
+          {/* Logo */}
+          <div>
+            <Label className="text-white/70 mb-2 block">Logo</Label>
+            <div className="flex items-center gap-4">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="h-14 w-auto object-contain bg-white/5 rounded-lg p-2" />
+              ) : (
+                <div className="h-14 w-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-white/30" />
+                </div>
+              )}
+              <div className="flex gap-2">
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                  <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10 pointer-events-none">
+                    {logoUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
+                    Upload Logo
+                  </Button>
+                </label>
+                {logoUrl && (
+                  <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300" onClick={() => setLogoUrl("")}>Remove</Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Brand Name */}
+          <div>
+            <Label className="text-white/70 mb-2 block">Brand / Author Name in Header</Label>
+            <Input
+              value={brandName}
+              onChange={e => setBrandName(e.target.value)}
+              placeholder="e.g. Jane Smith Books"
+              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+            />
+          </div>
+
+          {/* Footer Text */}
+          <div>
+            <Label className="text-white/70 mb-2 block">Footer Tagline / Copyright Text</Label>
+            <Input
+              value={footerText}
+              onChange={e => setFooterText(e.target.value)}
+              placeholder="e.g. Inspiring readers one page at a time."
+              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+            />
+          </div>
+
+          {/* Color Theme */}
+          <div>
+            <Label className="text-white/70 mb-3 block">Color Theme</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {COLOR_THEMES.map(theme => (
+                <button
+                  key={theme.id}
+                  onClick={() => setSelectedTheme(theme.id)}
+                  className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-left transition-all ${
+                    selectedTheme === theme.id ? 'border-white/50 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="w-6 h-6 rounded-full flex-shrink-0 ring-2 ring-white/20" style={{ background: theme.primary }} />
+                  <span className="text-xs text-white/80 font-medium">{theme.label}</span>
+                  {selectedTheme === theme.id && <Check className="w-3 h-3 text-white ml-auto" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Button onClick={saveWebsite} disabled={isUpdating} className="bg-emerald-500 hover:bg-emerald-600 text-white border-0">
+            {isUpdating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Check className="w-4 h-4 mr-2" />}
+            Save Branding
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Lead Magnet Designer */}
       {book.back_cover_url && <LeadMagnetHub bookId={book.id} />}
 
