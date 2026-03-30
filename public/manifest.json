@@ -1,0 +1,56 @@
+{
+  "name": "AuthorForge – AI-Powered Book Creation Suite",
+  "short_name": "AuthorForge",
+  "description": "Write, publish, and market your book with AI agents.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0f1a",
+  "theme_color": "#f59e0b",
+  "categories": ["productivity", "education", "business"],
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1280&h=720&fit=crop&q=80",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "AuthorForge Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Books",
+      "short_name": "Books",
+      "description": "View all your books",
+      "url": "/Books",
+      "icons": [{ "src": "https://base44.com/logo_v2.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Create Book",
+      "short_name": "New Book",
+      "description": "Start a new book project",
+      "url": "/CreateBook",
+      "icons": [{ "src": "https://base44.com/logo_v2.svg", "sizes": "any" }]
+    }
+  ]
+}
