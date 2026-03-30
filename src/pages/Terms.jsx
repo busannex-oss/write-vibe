@@ -8,11 +8,11 @@ export default function Terms() {
   const sections = [
     {
       title: "Acceptance of Terms",
-      description: "By accessing and using AuthorForge, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our service."
+      description: "By accessing and using Write Vibe, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our service."
     },
     {
       title: "Use of Service",
-      description: "You agree to use AuthorForge only for lawful purposes. You agree not to:",
+      description: "You agree to use Write Vibe only for lawful purposes. You agree not to:",
       items: [
         "Violate any laws or regulations",
         "Infringe on intellectual property rights",
@@ -23,7 +23,7 @@ export default function Terms() {
     },
     {
       title: "Intellectual Property",
-      description: "You retain all rights to the content you create using AuthorForge. We claim no ownership over your books, manuscripts, or generated content. The AuthorForge platform, software, and trademarks remain our property."
+      description: "You retain all rights to the content you create using Write Vibe. We claim no ownership over your books, manuscripts, or generated content. The Write Vibe platform, software, and trademarks remain our property."
     },
     {
       title: "AI-Generated Content",
@@ -35,7 +35,7 @@ export default function Terms() {
     },
     {
       title: "Limitation of Liability",
-      description: "AuthorForge is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service."
+      description: "Write Vibe is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service."
     },
     {
       title: "Changes to Terms",
@@ -43,7 +43,7 @@ export default function Terms() {
     },
     {
       title: "Contact",
-      description: "For questions about these Terms of Service, contact us at legal@authorforge.ai"
+      description: "For questions about these Terms of Service, contact us at legal@writevibe.ai"
     }
   ];
 

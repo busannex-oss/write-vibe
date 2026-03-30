@@ -12,7 +12,7 @@ export default function CookiePolicy() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </Link>
         </div>
       </nav>
@@ -33,7 +33,7 @@ export default function CookiePolicy() {
             {[
               {
                 title: "1. What Are Cookies?",
-                content: "Cookies are small text files placed on your device when you visit AuthorForge. They help us remember your preferences, keep you logged in, and understand how you use our platform to make it better."
+                content: "Cookies are small text files placed on your device when you visit Write Vibe. They help us remember your preferences, keep you logged in, and understand how you use our platform to make it better."
               },
               {
                 title: "2. Types of Cookies We Use",
@@ -63,7 +63,7 @@ export default function CookiePolicy() {
               },
               {
                 title: "7. Contact Us",
-                content: "If you have questions about our use of cookies, please contact us at privacy@authorforge.com."
+                content: "If you have questions about our use of cookies, please contact us at privacy@writevibe.com."
               }
             ].map((section) => (
               <div key={section.title} className="p-6 rounded-2xl bg-white/5 border border-white/10">
@@ -90,7 +90,7 @@ export default function CookiePolicy() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-semibold text-white">AuthorForge</span>
+            <span className="font-semibold text-white">Write Vibe</span>
           </Link>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
             <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -101,7 +101,7 @@ export default function CookiePolicy() {
             <Link to={createPageUrl("HowItWorks")} className="hover:text-white transition-colors">How It Works</Link>
             <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
           </div>
-          <div className="text-sm text-white/40">© 2026 AuthorForge. All rights reserved.</div>
+          <div className="text-sm text-white/40">© 2026 Write Vibe. All rights reserved.</div>
         </div>
       </footer>
     </div>

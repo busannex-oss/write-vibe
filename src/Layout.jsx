@@ -73,7 +73,7 @@ export default function Layout({ children, currentPageName }) {
   const isWhiteLabel = user?.subscription_tier === "white_label";
   const brandName = isWhiteLabel && user?.white_label_config?.brand_name 
     ? user.white_label_config.brand_name 
-    : "AuthorForge";
+    : "Write Vibe";
   const brandColor = isWhiteLabel && user?.white_label_config?.primary_color 
     ? user.white_label_config.primary_color 
     : "#f59e0b";

@@ -114,7 +114,7 @@ export default function Pricing() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </Link>
           <Link to={createPageUrl("Dashboard")}>
             <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
@@ -207,7 +207,7 @@ export default function Pricing() {
       {/* Features Comparison */}
       <section className="py-12 px-4 sm:px-6 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">Why Choose AuthorForge?</h2>
+          <h2 className="text-2xl font-bold text-white text-center mb-8">Why Choose Write Vibe?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: Sparkles, title: "AI-Powered", description: "8 specialized AI agents work together to create your book" },
@@ -292,7 +292,7 @@ export default function Pricing() {
       {/* Footer */}
       <footer className="py-8 px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto text-center text-sm text-white/40">
-          © 2026 AuthorForge. All rights reserved.
+          © 2026 Write Vibe. All rights reserved.
         </div>
       </footer>
     </div>

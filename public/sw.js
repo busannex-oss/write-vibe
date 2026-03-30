@@ -1,13 +1,11 @@
-const CACHE_NAME = 'authorforge-v1';
+const CACHE_NAME = 'writevibe-v1';
 const OFFLINE_URL = '/offline.html';
 
-// Assets to pre-cache on install
 const PRECACHE_ASSETS = [
   '/',
   '/offline.html',
 ];
 
-// Install: pre-cache shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
@@ -15,7 +13,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate: clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -25,16 +22,13 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: network-first for API/auth, cache-first for static assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET and cross-origin API requests
   if (request.method !== 'GET') return;
   if (url.origin !== location.origin && !url.hostname.includes('unsplash.com')) return;
 
-  // For navigation requests — network first, fall back to offline page
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).catch(() =>
@@ -44,10 +38,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets (JS/CSS/fonts/images) — cache first, then network
-  if (
-    url.pathname.match(/\.(js|css|woff2?|ttf|png|jpg|jpeg|svg|webp|ico)$/)
-  ) {
+  if (url.pathname.match(/\.(js|css|woff2?|ttf|png|jpg|jpeg|svg|webp|ico)$/)) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached;
@@ -62,16 +53,13 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
-
-  // Default: network only
 });
 
-// Push notifications
 self.addEventListener('push', (event) => {
   if (!event.data) return;
   const data = event.data.json();
   event.waitUntil(
-    self.registration.showNotification(data.title || 'AuthorForge', {
+    self.registration.showNotification(data.title || 'Write Vibe', {
       body: data.body || '',
       icon: 'https://base44.com/logo_v2.svg',
       badge: 'https://base44.com/logo_v2.svg',

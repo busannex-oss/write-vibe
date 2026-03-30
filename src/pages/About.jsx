@@ -10,7 +10,7 @@ export default function About() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-6">About AuthorForge</h1>
+          <h1 className="text-5xl font-bold text-white mb-6">About Write Vibe</h1>
           <p className="text-xl text-white/60 max-w-3xl mx-auto">
             Empowering authors worldwide with AI-powered tools to bring their stories to life
           </p>
@@ -41,7 +41,7 @@ export default function About() {
         </div>
 
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-8">Why Choose AuthorForge?</h2>
+          <h2 className="text-3xl font-bold text-white mb-8">Why Choose Write Vibe?</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
               { icon: Award, title: "Professional Quality", desc: "Industry-standard tools and AI assistance" },

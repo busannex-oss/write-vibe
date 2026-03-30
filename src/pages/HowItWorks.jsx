@@ -14,7 +14,7 @@ const steps = [
     step: "01",
     icon: UserPlus,
     title: "Create Your Account",
-    description: "Sign up free — no credit card required. Get instant access to all AuthorForge tools for 7 days.",
+    description: "Sign up free — no credit card required. Get instant access to all Write Vibe tools for 7 days.",
     details: ["Set up your author profile", "Add your biography and photo", "Choose your subscription tier", "Invite team members (optional)"]
   },
   {
@@ -77,7 +77,7 @@ export default function HowItWorks() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <Link to={createPageUrl("Pricing")} className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
@@ -102,7 +102,7 @@ export default function HowItWorks() {
               <span className="text-sm text-amber-300">Your complete publishing workflow</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              How AuthorForge <span className="text-amber-400">Works</span>
+              How Write Vibe <span className="text-amber-400">Works</span>
             </h1>
             <p className="text-xl text-white/60 max-w-2xl mx-auto">
               From blank page to published book — follow these 8 steps to bring your story to life using AI.
@@ -160,7 +160,7 @@ export default function HowItWorks() {
             <TrendingUp className="w-12 h-12 text-amber-400 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-white mb-4">Ready to Write Your Book?</h2>
             <p className="text-white/60 mb-8 max-w-xl mx-auto">
-              Join 50,000+ authors using AuthorForge to publish their stories. Start for free — no credit card required.
+              Join 50,000+ authors using Write Vibe to publish their stories. Start for free — no credit card required.
             </p>
             <Button
               size="lg"
@@ -181,7 +181,7 @@ export default function HowItWorks() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-semibold text-white">AuthorForge</span>
+            <span className="font-semibold text-white">Write Vibe</span>
           </Link>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
             <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -192,7 +192,7 @@ export default function HowItWorks() {
             <Link to={createPageUrl("HowItWorks")} className="hover:text-white transition-colors">How It Works</Link>
             <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
           </div>
-          <div className="text-sm text-white/40">© 2026 AuthorForge. All rights reserved.</div>
+          <div className="text-sm text-white/40">© 2026 Write Vibe. All rights reserved.</div>
         </div>
       </footer>
     </div>

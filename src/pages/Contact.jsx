@@ -19,7 +19,7 @@ export default function Contact() {
 
     try {
       await base44.integrations.Core.SendEmail({
-        to: "support@authorforge.ai",
+        to: "support@writevibe.ai",
         subject: `Contact Form: ${formData.name}`,
         body: `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
       });
@@ -119,7 +119,7 @@ export default function Contact() {
               <CardContent className="p-6">
                 <Mail className="w-8 h-8 text-amber-400 mb-4" />
                 <h3 className="font-semibold text-white mb-2">Email Us</h3>
-                <p className="text-white/60 text-sm">support@authorforge.ai</p>
+                <p className="text-white/60 text-sm">support@writevibe.ai</p>
               </CardContent>
             </Card>
 

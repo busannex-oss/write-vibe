@@ -9,8 +9,8 @@ const faqs = [
   {
     category: "Getting Started",
     items: [
-      { q: "What is AuthorForge?", a: "AuthorForge is an AI-powered book creation platform that helps authors, publishers, and creators write, design, and market their books from start to finish — using intelligent AI agents for every step of the journey." },
-      { q: "Do I need writing experience to use AuthorForge?", a: "Not at all! AuthorForge is designed for everyone from first-time writers to seasoned professionals. Our AI agents guide you through character creation, outlining, writing, cover design, and marketing." },
+      { q: "What is Write Vibe?", a: "Write Vibe is an AI-powered book creation platform that helps authors, publishers, and creators write, design, and market their books from start to finish — using intelligent AI agents for every step of the journey." },
+      { q: "Do I need writing experience to use Write Vibe?", a: "Not at all! Write Vibe is designed for everyone from first-time writers to seasoned professionals. Our AI agents guide you through character creation, outlining, writing, cover design, and marketing." },
       { q: "How do I get started?", a: "Simply click 'Start Free Trial' to create your account. No credit card is required. You'll get full access to all features for 7 days." },
       { q: "What types of books can I create?", a: "You can create virtually any genre — fiction, non-fiction, self-help, children's books, memoirs, business books, thrillers, romance, and more." }
     ]
@@ -30,7 +30,7 @@ const faqs = [
       { q: "Is there a free trial?", a: "Yes! Every new account gets a 7-day free trial with full access to all features. No credit card required to start." },
       { q: "What happens after the trial ends?", a: "After 7 days, you can choose a paid plan to continue. If you don't subscribe, your account moves to a limited free tier. Your work is always saved." },
       { q: "Can I cancel anytime?", a: "Absolutely. You can cancel your subscription at any time from your Settings page. There are no cancellation fees or commitments." },
-      { q: "Do you offer white-label plans for businesses?", a: "Yes! Our White Label plan lets publishing houses, agencies, and enterprises customize AuthorForge with their own branding, domain, and client management tools. Contact us to learn more." }
+      { q: "Do you offer white-label plans for businesses?", a: "Yes! Our White Label plan lets publishing houses, agencies, and enterprises customize Write Vibe with their own branding, domain, and client management tools. Contact us to learn more." }
     ]
   },
   {
@@ -72,7 +72,7 @@ export default function FAQ() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </Link>
           <div className="flex items-center gap-6 text-sm text-white/50">
             <Link to={createPageUrl("Landing")} className="hover:text-white transition-colors">Home</Link>
@@ -87,7 +87,7 @@ export default function FAQ() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-white mb-4">Frequently Asked <span className="text-amber-400">Questions</span></h1>
-            <p className="text-white/60 text-lg mb-8">Everything you need to know about AuthorForge.</p>
+            <p className="text-white/60 text-lg mb-8">Everything you need to know about Write Vibe.</p>
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               <Input
@@ -164,7 +164,7 @@ export default function FAQ() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-semibold text-white">AuthorForge</span>
+            <span className="font-semibold text-white">Write Vibe</span>
           </Link>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
             <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -175,7 +175,7 @@ export default function FAQ() {
             <Link to={createPageUrl("HowItWorks")} className="hover:text-white transition-colors">How It Works</Link>
             <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
           </div>
-          <div className="text-sm text-white/40">© 2026 AuthorForge. All rights reserved.</div>
+          <div className="text-sm text-white/40">© 2026 Write Vibe. All rights reserved.</div>
         </div>
       </footer>
     </div>

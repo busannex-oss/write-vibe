@@ -1,6 +1,6 @@
 {
-  "name": "AuthorForge – AI-Powered Book Creation Suite",
-  "short_name": "AuthorForge",
+  "name": "Write Vibe – AI-Powered Book Creation Suite",
+  "short_name": "Write Vibe",
   "description": "Write, publish, and market your book with AI agents.",
   "start_url": "/",
   "display": "standalone",
@@ -34,7 +34,7 @@
       "sizes": "1280x720",
       "type": "image/jpeg",
       "form_factor": "wide",
-      "label": "AuthorForge Dashboard"
+      "label": "Write Vibe Dashboard"
     }
   ],
   "shortcuts": [

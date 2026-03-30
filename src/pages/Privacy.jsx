@@ -41,7 +41,7 @@ export default function Privacy() {
     },
     {
       title: "Contact Us",
-      description: "If you have questions about this Privacy Policy, please contact us at privacy@authorforge.ai"
+      description: "If you have questions about this Privacy Policy, please contact us at privacy@writevibe.ai"
     }
   ];
 
