@@ -180,7 +180,7 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
@@ -192,19 +192,20 @@ export default function Landing() {
             <a href="#testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Testimonials</a>
             <Link to={createPageUrl("Pricing")} className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
           </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
               onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
-              className="text-white/70 hover:text-white hover:bg-white/10"
+              className="hidden sm:inline-flex text-white/70 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
-            <Button 
+            <Button
               onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 text-sm px-3 sm:px-4"
             >
-              Start Free Trial
+              <span className="hidden sm:inline">Start Free Trial</span>
+              <span className="sm:hidden">Try Free</span>
             </Button>
           </div>
         </div>
@@ -223,11 +224,11 @@ export default function Landing() {
               <Zap className="w-4 h-4 text-amber-400" />
               <span className="text-sm text-amber-300">AI-Powered Book Creation Suite</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
               Write Your Book with
               <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> AI Agents</span>
             </h1>
-            <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
               From character creation to marketing, our intelligent AI agents handle every aspect of your book journey on autopilot.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -271,7 +272,7 @@ export default function Landing() {
               <img 
                 src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80" 
                 alt="Diverse Authors Proudly Holding Their Published Books"
-                className="w-full h-[500px] object-cover"
+                className="w-full h-[220px] sm:h-[360px] md:h-[500px] object-cover"
               />
             </div>
           </motion.div>
@@ -396,9 +397,9 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20">
+          <div className="p-6 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Write Your Masterpiece?
             </h2>
@@ -421,7 +422,7 @@ export default function Landing() {
       <DemoVideoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-white/5">
+      <footer className="py-10 px-4 sm:px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">

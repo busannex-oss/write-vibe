@@ -145,9 +145,9 @@ export default function Pricing() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-12 px-6">
+      <section className="py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {tiers.map((tier, index) => (
               <motion.div
                 key={tier.id}
@@ -205,7 +205,7 @@ export default function Pricing() {
       </section>
 
       {/* Features Comparison */}
-      <section className="py-16 px-6 border-t border-white/5">
+      <section className="py-12 px-4 sm:px-6 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-white text-center mb-8">Why Choose AuthorForge?</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -227,7 +227,7 @@ export default function Pricing() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 px-6">
+      <section className="py-12 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
           <div className="space-y-4">
@@ -244,7 +244,7 @@ export default function Pricing() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-6">
+      <section className="py-12 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Start Writing Today</h2>
           <p className="text-white/60 mb-8">

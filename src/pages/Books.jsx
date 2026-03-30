@@ -144,7 +144,7 @@ export default function Books() {
       </div>
 
       {/* Filters & Actions */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <Input
@@ -154,9 +154,9 @@ export default function Books() {
             className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
           />
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="w-36 sm:w-40 bg-white/5 border-white/10 text-white">
               <Filter className="w-4 h-4 mr-2 text-white/50" />
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -172,7 +172,7 @@ export default function Books() {
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="w-36 sm:w-40 bg-white/5 border-white/10 text-white">
               <SortAsc className="w-4 h-4 mr-2 text-white/50" />
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
@@ -221,10 +221,10 @@ export default function Books() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between"
+          className="mb-4 p-3 sm:p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between"
         >
           <span className="text-amber-300 font-medium">{selectedBooks.length} selected</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={selectAll} size="sm" variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
               Select All ({filteredBooks.length})
             </Button>
