@@ -221,7 +221,7 @@ export default function ConfidentialWhitePapers() {
     pdf.setFillColor(239, 68, 68);
     pdf.roundedRect(pw - 59, 13, 6, 15, 1, 1, "F");
     pdf.setFontSize(8.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
-    pdf.text("AUTHORFORGE", pw - 51, 21.5);
+    pdf.text("WRITE VIBE", pw - 51, 21.5);
     pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(100, 116, 139);
     pdf.text("AI BOOK CREATION PLATFORM", pw - 51, 26);
 
@@ -238,7 +238,7 @@ export default function ConfidentialWhitePapers() {
 
     // Document subtitle
     pdf.setFontSize(11); pdf.setFont("helvetica", "normal"); pdf.setTextColor(100, 116, 139);
-    pdf.text("AuthorForge  ·  Investment Research & Industry Analysis", margin, 55 + titleLines.length * 12 + 5);
+    pdf.text("Write Vibe  ·  Investment Research & Industry Analysis", margin, 55 + titleLines.length * 12 + 5);
 
     // Rule
     const ruleY = 82;
@@ -277,7 +277,7 @@ export default function ConfidentialWhitePapers() {
     const snapY = metaY + 60;
     pdf.setFillColor(15, 23, 42); pdf.roundedRect(margin, snapY, contentW, 30, 3, 3, "F");
     pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(100, 116, 139);
-    pdf.text("AUTHORFORGE AT A GLANCE", margin + 4, snapY + 7);
+    pdf.text("WRITE VIBE AT A GLANCE", margin + 4, snapY + 7);
     const snap = [
       { k: "Founded", v: "2025" }, { k: "HQ", v: "Chicago, IL" }, { k: "TAM", v: "$47B" },
       { k: "Target ARR Yr5", v: "$24M" }, { k: "Gross Margin", v: "78%+" }, { k: "AI Features", v: "12+" }
@@ -303,7 +303,7 @@ export default function ConfidentialWhitePapers() {
       pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, pw, 14, "F");
       pdf.setFillColor(220, 38, 38); pdf.rect(0, 13.5, pw, 0.5, "F");
       pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
-      pdf.text("AUTHORFORGE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
+      pdf.text("WRITE VIBE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
       pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
       pdf.text(doc.title.slice(0, 55), pw - margin, 9, { align: "right" });
     };
@@ -313,11 +313,11 @@ export default function ConfidentialWhitePapers() {
     pdf.text("MARKET INTELLIGENCE OVERVIEW", margin, 25);
     pdf.setFillColor(239, 68, 68); pdf.rect(margin, 28, 35, 0.7, "F");
     pdf.setFontSize(7); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
-    pdf.text("AuthorForge Platform — Financial & Market Data", margin, 33);
+    pdf.text("Write Vibe Platform — Financial & Market Data", margin, 33);
 
     // Revenue projection chart
     pdf.setFontSize(8); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
-    pdf.text("AUTHORFORGE PROJECTED ARR ($USD MILLIONS)", margin, 42);
+    pdf.text("WRITE VIBE PROJECTED ARR ($USD MILLIONS)", margin, 42);
     const arrData = [
       { yr: "Yr 1", v: 0.18, label: "$180K" }, { yr: "Yr 2", v: 1.2, label: "$1.2M" },
       { yr: "Yr 3", v: 5.8, label: "$5.8M" }, { yr: "Yr 5", v: 24, label: "$24M" },
@@ -348,7 +348,7 @@ export default function ConfidentialWhitePapers() {
     drawHorizBar(pdf, barStartX, 114, barMaxW, 8.2, 47, "SAM", "$8.2B Self-Publishing Tools", [245, 158, 11]);
     drawHorizBar(pdf, barStartX, 124, barMaxW, 0.85, 47, "SOM", "$850M AI-Assisted Authoring", [16, 185, 129]);
     pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal"); pdf.setTextColor(71, 85, 105);
-    pdf.text("CAGR 34% through 2030 · Source: AuthorForge Strategic Research, 2025", margin, 133);
+    pdf.text("CAGR 34% through 2030 · Source: Write Vibe Strategic Research, 2025", margin, 133);
 
     // SaaS metrics
     const smY2 = 138;
@@ -375,7 +375,7 @@ export default function ConfidentialWhitePapers() {
     pdf.setFillColor(239, 68, 68); pdf.rect(margin, compY + 2.5, 26, 0.6, "F");
     const compHeaders = ["Platform", "AI Writing", "AI Cover", "AI Audio", "Distribution", "White-Label", "Pricing"];
     const compRows = [
-      ["AuthorForge", "✓", "✓", "✓", "✓", "✓", "$29-$999/mo"],
+      ["Write Vibe", "✓", "✓", "✓", "✓", "✓", "$29-$999/mo"],
       ["Scrivener", "✗", "✗", "✗", "✗", "✗", "$59 one-time"],
       ["Jasper AI", "✓", "✗", "✗", "✗", "✗", "$49-$125/mo"],
       ["Reedsy", "✗", "✓", "✗", "✓", "✗", "Project fees"],
@@ -413,7 +413,7 @@ export default function ConfidentialWhitePapers() {
       pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, pw, 14, "F");
       pdf.setFillColor(220, 38, 38); pdf.rect(0, 13.5, pw, 0.5, "F");
       pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(239, 68, 68);
-      pdf.text("AUTHORFORGE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
+      pdf.text("WRITE VIBE  ·  CONFIDENTIAL WHITE PAPER", margin, 9);
       pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
       pdf.text(doc.title.slice(0, 55), pw - margin, 9, { align: "right" });
       y = 22;
@@ -423,7 +423,7 @@ export default function ConfidentialWhitePapers() {
       pdf.setFillColor(220, 38, 38); pdf.rect(0, ph - 10, pw, 0.5, "F");
       pdf.setFontSize(6.5); pdf.setTextColor(71, 85, 105);
       pdf.text(`Page ${pn}`, pw / 2, ph - 4, { align: "center" });
-      pdf.text("© AuthorForge " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
+      pdf.text("© Write Vibe " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
     };
     addPageHeader();
 
@@ -465,7 +465,7 @@ export default function ConfidentialWhitePapers() {
       }
     });
     addPageFooter(pageNum);
-    pdf.save(`${doc.title.replace(/\s+/g, "-")}-CONFIDENTIAL-AuthorForge.pdf`);
+    pdf.save(`${doc.title.replace(/\s+/g, "-")}-CONFIDENTIAL-WriteVibe.pdf`);
   };
 
   const extractDate = (content) => {

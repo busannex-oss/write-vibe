@@ -34,7 +34,7 @@ ${focus ? `Focus area: ${focus}` : ''}
 Date: ${today}
 
 ABOUT THE PLATFORM THIS DOCUMENT IS FOR:
-AuthorForge is an AI-powered book creation and publishing platform that enables authors to write, design, market, and publish professional books using artificial intelligence. The platform offers: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing campaigns, Amazon KDP/ACX direct publishing integration, white-label licensing, and team collaboration tools. Founded 2025, Chicago IL. Target market: 11M+ self-publishing authors globally.
+Write Vibe is an AI-powered book creation and publishing platform that enables authors to write, design, market, and publish professional books using artificial intelligence. The platform offers: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing campaigns, Amazon KDP/ACX direct publishing integration, white-label licensing, and team collaboration tools. Founded 2025, Chicago IL. Target market: 11M+ self-publishing authors globally.
 
 This white paper must read like a Goldman Sachs or Morgan Stanley investment research document. Use formal financial language throughout. Include:
 
@@ -51,7 +51,7 @@ FINANCIAL MODEL & REVENUE PROJECTIONS
 Detailed revenue model: SaaS subscription tiers (Starter $29/mo, Professional $79/mo, Enterprise $199/mo, White Label $999/mo). Projected ARR for Year 1-5. Projected users. LTV/CAC analysis. Gross margin targets (target 78%+). EBITDA timeline.
 
 COMPETITIVE LANDSCAPE
-Matrix comparing AuthorForge vs. Scrivener, Vellum, Reedsy, Jasper AI, and traditional publishers on 6+ dimensions. Why AuthorForge wins.
+Matrix comparing Write Vibe vs. Scrivener, Vellum, Reedsy, Jasper AI, and traditional publishers on 6+ dimensions. Why AuthorForge wins.
 
 TECHNOLOGY & AI INFRASTRUCTURE
 AI models powering the platform, infrastructure costs, scalability, proprietary advantages.
@@ -174,7 +174,7 @@ Company: ${company_name} | Industry: ${industry || 'AI SaaS / Publishing Technol
 Tagline: ${tagline || 'AI-Powered Book Creation Platform'} | Mission: ${mission || 'Democratize professional book publishing through artificial intelligence'}
 Date: ${today}
 
-This is AuthorForge — an AI book creation platform. Include specific capabilities: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing, Amazon KDP/ACX integration, white-label B2B licensing.
+This is Write Vibe — an AI book creation platform. Include specific capabilities: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing, Amazon KDP/ACX integration, white-label B2B licensing.
 
 Write each section with a clear ALL CAPS header. Use specific dollar amounts, headcount, percentages, and dates. This must read like a document prepared for a Series A/B board meeting.
 
