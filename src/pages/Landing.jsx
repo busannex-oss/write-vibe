@@ -27,7 +27,7 @@ export default function Landing() {
       {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "AuthorForge",
+        "name": "Write Vibe",
         "url": window.location.origin,
         "description": "AI-powered book creation platform helping authors write, design, and publish books with intelligent AI agents.",
         "logo": window.location.origin + "/favicon.ico",
@@ -36,7 +36,7 @@ export default function Landing() {
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "AuthorForge",
+        "name": "Write Vibe",
         "applicationCategory": "BusinessApplication",
         "description": "AI-powered book creation suite that handles character creation, outlining, cover design, video commercials, book websites, and team collaboration for authors.",
         "operatingSystem": "Web",
@@ -59,39 +59,39 @@ export default function Landing() {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "What is AuthorForge?",
+            "name": "What is Write Vibe?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AuthorForge is an AI-powered book creation suite that helps authors write, design, and publish books. It uses intelligent AI agents to handle character creation, outlining, cover design, video commercials, book websites, and team collaboration."
+              "text": "Write Vibe is an AI-powered book creation suite that helps authors write, design, and publish books. It uses intelligent AI agents to handle character creation, outlining, cover design, video commercials, book websites, and team collaboration."
             }
           },
           {
             "@type": "Question",
-            "name": "How does AuthorForge help authors?",
+            "name": "How does Write Vibe help authors?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AuthorForge automates the entire book production process. AI agents create rich characters with backstories, generate chapter-by-chapter outlines, design professional book covers, produce video trailers, build book landing pages with newsletter integration, and manage team collaboration with role-based access."
+              "text": "Write Vibe automates the entire book production process. AI agents create rich characters with backstories, generate chapter-by-chapter outlines, design professional book covers, produce video trailers, build book landing pages with newsletter integration, and manage team collaboration with role-based access."
             }
           },
           {
             "@type": "Question",
-            "name": "Is AuthorForge free to try?",
+            "name": "Is Write Vibe free to try?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. AuthorForge offers a 7-day free trial with no credit card required. You can cancel anytime."
+              "text": "Yes. Write Vibe offers a 7-day free trial with no credit card required. You can cancel anytime."
             }
           },
           {
             "@type": "Question",
-            "name": "Can I publish my book directly from AuthorForge?",
+            "name": "Can I publish my book directly from Write Vibe?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. AuthorForge integrates with Amazon KDP and other major bookstores so you can submit your manuscript and publish directly from the platform."
+              "text": "Yes. Write Vibe integrates with Amazon KDP and other major bookstores so you can submit your manuscript and publish directly from the platform."
             }
           },
           {
             "@type": "Question",
-            "name": "Does AuthorForge support team collaboration?",
+            "name": "Does Write Vibe support team collaboration?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Yes. You can invite editors, publishers, and marketing team members with role-based access control so everyone can collaborate on the same book project."
@@ -101,24 +101,24 @@ export default function Landing() {
       }
     ];
 
-    const existingScripts = document.querySelectorAll('script[data-authorforge-schema]');
+    const existingScripts = document.querySelectorAll('script[data-writevibe-schema]');
     existingScripts.forEach(s => s.remove());
 
     schemas.forEach(schema => {
       const script = document.createElement('script');
       script.type = 'application/ld+json';
-      script.setAttribute('data-authorforge-schema', 'true');
+      script.setAttribute('data-writevibe-schema', 'true');
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
     });
 
-    document.title = 'AuthorForge — Write Your Book with AI Agents';
+    document.title = 'Write Vibe — Write Your Book with AI Agents';
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
-    metaDesc.content = 'AuthorForge is an AI-powered book creation suite. Write, design, and publish your book with intelligent AI agents handling characters, outlines, covers, video trailers, and marketing. Start your 7-day free trial.';
+    metaDesc.content = 'Write Vibe is an AI-powered book creation suite. Write, design, and publish your book with intelligent AI agents handling characters, outlines, covers, video trailers, and marketing. Start your 7-day free trial.';
 
     return () => {
-      document.querySelectorAll('script[data-authorforge-schema]').forEach(s => s.remove());
+      document.querySelectorAll('script[data-writevibe-schema]').forEach(s => s.remove());
     };
   }, []);
 
@@ -159,7 +159,7 @@ export default function Landing() {
     {
       name: "Sarah Mitchell",
       role: "Bestselling Author",
-      content: "AuthorForge transformed my writing process. The AI agents handle everything from outlining to marketing.",
+      content: "Write Vibe transformed my writing process. The AI agents handle everything from outlining to marketing.",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
     },
     {
@@ -171,7 +171,7 @@ export default function Landing() {
     {
       name: "Emily Rodriguez",
       role: "Publishing House Editor",
-      content: "We use AuthorForge for our entire catalog. The white-label option is perfect for our brand.",
+      content: "We use Write Vibe for our entire catalog. The white-label option is perfect for our brand.",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
     }
   ];
@@ -185,7 +185,7 @@ export default function Landing() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
@@ -379,11 +379,11 @@ export default function Landing() {
           </div>
           <div className="space-y-4">
             {[
-              { q: "What is AuthorForge?", a: "AuthorForge is an AI-powered book creation suite that helps authors write, design, and publish books. AI agents handle character creation, outlining, cover design, video trailers, book websites, and team collaboration — all in one place." },
-              { q: "Is AuthorForge free to try?", a: "Yes. AuthorForge offers a 7-day free trial with no credit card required. You can cancel anytime." },
-              { q: "Can I publish my book directly from AuthorForge?", a: "Yes. AuthorForge integrates with Amazon KDP and major bookstores so you can submit and publish directly from the platform." },
-              { q: "Does AuthorForge support team collaboration?", a: "Absolutely. Invite editors, publishers, and marketing teams with role-based access so everyone works together on the same project." },
-              { q: "What kinds of books can I create with AuthorForge?", a: "Any genre — fiction, non-fiction, self-help, children's books, and more. The AI adapts to your book's category, tone, and target audience." }
+              { q: "What is Write Vibe?", a: "Write Vibe is an AI-powered book creation suite that helps authors write, design, and publish books. AI agents handle character creation, outlining, cover design, video trailers, book websites, and team collaboration — all in one place." },
+              { q: "Is Write Vibe free to try?", a: "Yes. Write Vibe offers a 7-day free trial with no credit card required. You can cancel anytime." },
+              { q: "Can I publish my book directly from Write Vibe?", a: "Yes. Write Vibe integrates with Amazon KDP and major bookstores so you can submit and publish directly from the platform." },
+              { q: "Does Write Vibe support team collaboration?", a: "Absolutely. Invite editors, publishers, and marketing teams with role-based access so everyone works together on the same project." },
+              { q: "What kinds of books can I create with Write Vibe?", a: "Any genre — fiction, non-fiction, self-help, children's books, and more. The AI adapts to your book's category, tone, and target audience." }
             ].map(({ q, a }, i) => (
               <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
                 <h3 className="text-lg font-semibold text-white mb-3" itemProp="name">{q}</h3>
@@ -429,7 +429,7 @@ export default function Landing() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-white">AuthorForge</span>
+              <span className="font-semibold text-white">Write Vibe</span>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/40">
               <Link to={createPageUrl("About")} className="hover:text-white transition-colors">About</Link>
@@ -442,7 +442,7 @@ export default function Landing() {
               <Link to={createPageUrl("CookiePolicy")} className="hover:text-white transition-colors">Cookie Policy</Link>
             </div>
             <div className="text-sm text-white/40">
-              © 2026 AuthorForge. All rights reserved.
+              © 2026 Write Vibe. All rights reserved.
             </div>
           </div>
         </div>

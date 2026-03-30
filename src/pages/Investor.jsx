@@ -56,27 +56,27 @@ export default function Investor() {
     {
       icon: Building2,
       title: "Strategic Partnership",
-      description: "Co-brand AuthorForge tools with your publishing house, literary agency, or education platform. Revenue share available."
+      description: "Co-brand Write Vibe tools with your publishing house, literary agency, or education platform. Revenue share available."
     },
     {
       icon: Globe,
       title: "Enterprise Licensing",
-      description: "White-label the entire AuthorForge suite for your organization. Custom branding, dedicated support, and full API access."
+      description: "White-label the entire Write Vibe suite for your organization. Custom branding, dedicated support, and full API access."
     },
     {
       icon: BookOpen,
       title: "Content Distribution",
-      description: "Partner to distribute books created on AuthorForge to your platform, bookstore network, or library system."
+      description: "Partner to distribute books created on Write Vibe to your platform, bookstore network, or library system."
     },
     {
       icon: Users,
       title: "Affiliate & Co-Marketing",
-      description: "Earn revenue by promoting AuthorForge to your audience of authors, creators, educators, or readers."
+      description: "Earn revenue by promoting Write Vibe to your audience of authors, creators, educators, or readers."
     },
     {
       icon: Zap,
       title: "Technology Integration",
-      description: "Embed AuthorForge AI capabilities into your existing writing tools, LMS, or publishing workflow via our API."
+      description: "Embed Write Vibe AI capabilities into your existing writing tools, LMS, or publishing workflow via our API."
     }
   ];
 
@@ -98,7 +98,7 @@ export default function Investor() {
     setLoading(true);
     try {
       await base44.integrations.Core.SendEmail({
-        to: "partnerships@authorforge.com",
+        to: "partnerships@writevibe.com",
         subject: `New Investor/Partner Inquiry from ${form.firstName} ${form.lastName} - ${form.company}`,
         body: `
 Name: ${form.firstName} ${form.lastName}
@@ -130,7 +130,7 @@ ${form.goals}
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">AuthorForge</span>
+            <span className="font-bold text-lg text-white">Write Vibe</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#opportunities" className="text-sm text-white/60 hover:text-white transition-colors">Opportunities</a>
@@ -160,7 +160,7 @@ ${form.goals}
               —Together
             </h1>
             <p className="text-xl text-white/60 mb-8 max-w-lg">
-              AuthorForge is transforming how books are written, designed, and marketed. We're looking for mission-aligned partners and investors ready to grow with us.
+              Write Vibe is transforming how books are written, designed, and marketed. We're looking for mission-aligned partners and investors ready to grow with us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -225,7 +225,7 @@ ${form.goals}
               <div className="text-xs text-amber-400 uppercase tracking-widest font-semibold mb-4">Who We Are</div>
               <h2 className="text-4xl font-bold text-white mb-6">Driven by Purpose. Built for Authors.</h2>
               <p className="text-white/60 text-lg mb-6">
-                AuthorForge (Empower + Forge) is an AI-powered book creation platform helping authors, publishers, and creators take their stories from concept to published masterpiece — with intelligent tools for every step of the journey.
+                Write Vibe is an AI-powered book creation platform helping authors, publishers, and creators take their stories from concept to published masterpiece — with intelligent tools for every step of the journey.
               </p>
               <p className="text-white/50 mb-8">
                 We've helped over 50,000 authors across 120+ countries publish their books, generate revenue, and build their brands. Our platform combines cutting-edge AI with an intuitive workflow trusted by bestselling authors, indie publishers, and major literary agencies.
@@ -501,7 +501,7 @@ ${form.goals}
                   rows={4}
                   value={form.goals}
                   onChange={e => setForm({...form, goals: e.target.value})}
-                  placeholder="Tell us about your organization and what you hope to achieve through partnering with AuthorForge..."
+                  placeholder="Tell us about your organization and what you hope to achieve through partnering with Write Vibe..."
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/30 resize-none"
                 />
               </div>
@@ -519,7 +519,7 @@ ${form.goals}
                   <option value="exploring" className="bg-slate-900">Just exploring for now</option>
                 </select>
               </div>
-              <p className="text-xs text-white/30">By submitting this form, you consent to AuthorForge storing your information to respond to your inquiry.</p>
+              <p className="text-xs text-white/30">By submitting this form, you consent to Write Vibe storing your information to respond to your inquiry.</p>
               <Button
                 type="submit"
                 disabled={loading}
@@ -540,7 +540,7 @@ ${form.goals}
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-white">AuthorForge</span>
+              <span className="font-semibold text-white">Write Vibe</span>
             </Link>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
               <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -548,7 +548,7 @@ ${form.goals}
               <Link to={createPageUrl("Contact")} className="hover:text-white transition-colors">Contact</Link>
               <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
             </div>
-            <div className="text-sm text-white/40">© 2026 AuthorForge. All rights reserved.</div>
+            <div className="text-sm text-white/40">© 2026 Write Vibe. All rights reserved.</div>
           </div>
         </div>
       </footer>
