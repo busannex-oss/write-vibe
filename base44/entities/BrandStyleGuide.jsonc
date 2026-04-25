@@ -1,0 +1,85 @@
+{
+  "name": "BrandStyleGuide",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Guide version"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full guide as rich HTML"
+    },
+    "brand_data": {
+      "type": "object",
+      "description": "Structured brand data for JSON export",
+      "properties": {
+        "identity": {
+          "type": "object"
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "typography": {
+          "type": "object"
+        },
+        "spacing": {
+          "type": "object"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
