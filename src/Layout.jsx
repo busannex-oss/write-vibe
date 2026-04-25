@@ -86,7 +86,9 @@ export default function Layout({ children, currentPageName }) {
         { name: "Master Registry", href: "MasterRegistry", icon: BookOpen },
         { name: "Map Legend", href: "MapLegend", icon: Map },
         { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid },
-        { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette }
+        { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette },
+        { name: "Sitemap", href: "Sitemap", icon: Map },
+        { name: "Sitemap", href: "Sitemap", icon: Map }
       ]
     : [];
 

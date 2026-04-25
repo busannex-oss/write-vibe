@@ -1,0 +1,86 @@
+{
+  "name": "Sitemap",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Sitemap version"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full sitemap as rich HTML"
+    },
+    "sitemap_data": {
+      "type": "object",
+      "description": "Structured sitemap data for Mermaid/JSON export",
+      "properties": {
+        "public_pages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "dashboard_pages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "legal_pages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "admin_pages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "mermaid_syntax": {
+      "type": "string",
+      "description": "Mermaid diagram syntax for visual rendering"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

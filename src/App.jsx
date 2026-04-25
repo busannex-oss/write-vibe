@@ -13,6 +13,7 @@ import MasterRegistry from './pages/MasterRegistry';
 import MapLegend from './pages/MapLegend';
 import PillarAlignment from './pages/PillarAlignment';
 import BrandStyleGuide from './pages/BrandStyleGuide';
+import Sitemap from './pages/Sitemap';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/MapLegend" element={<LayoutWrapper currentPageName="MapLegend"><MapLegend /></LayoutWrapper>} />
       <Route path="/PillarAlignment" element={<LayoutWrapper currentPageName="PillarAlignment"><PillarAlignment /></LayoutWrapper>} />
       <Route path="/BrandStyleGuide" element={<LayoutWrapper currentPageName="BrandStyleGuide"><BrandStyleGuide /></LayoutWrapper>} />
+      <Route path="/Sitemap" element={<LayoutWrapper currentPageName="Sitemap"><Sitemap /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
