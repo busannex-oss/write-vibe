@@ -111,84 +111,67 @@ Deno.serve(async (req) => {
     if (action === 'generate') {
       const { sops = [], mission = null } = body;
 
-      const sopList = sops.map(s => `- ${s.title} (v${s.version}, ${s.status}): ${s.purpose || ''}`).join('\n');
       const missionText = mission?.text || 'Empowering authors to create, publish, and market their stories with AI.';
 
-      const prompt = `You are a senior technology strategist and investor relations expert. 
-Your task: generate a complete, professional Master Element Registry for "The Write Vibe" — an AI-powered book creation, publishing, and marketing platform.
+      const platformContext = `Platform: The Write Vibe — AI-powered book creation, publishing, and marketing platform.
+Mission: "${missionText}"
+Brand Pillars: ${PLATFORM_DATA.pillars.join(', ')}.
+Write in the voice of a Series A pitch deck.`;
 
-PLATFORM MISSION: "${missionText}"
-
-BRAND PILLARS: ${PLATFORM_DATA.pillars.join(', ')}
-
-PLATFORM DATA TO ANALYZE AND DOCUMENT:
-
-PAGES (${PLATFORM_DATA.pages.length}):
-${PLATFORM_DATA.pages.join(', ')}
-
-AI AGENTS (${PLATFORM_DATA.aiAgents.length}):
-${PLATFORM_DATA.aiAgents.join(', ')}
-
-AI TOOLS & FEATURES (${PLATFORM_DATA.aiTools.length}):
-${PLATFORM_DATA.aiTools.join(', ')}
-
-DISTRIBUTION INTEGRATIONS (${PLATFORM_DATA.integrations.length}):
-${PLATFORM_DATA.integrations.join(', ')}
-
-AUTOMATIONS (${PLATFORM_DATA.automations.length}):
-${PLATFORM_DATA.automations.join(', ')}
-
-FOUNDATIONAL DOCUMENTS (${PLATFORM_DATA.documents.length}):
-${PLATFORM_DATA.documents.join(', ')}
-
-STANDARD OPERATING PROCEDURES:
-${sopList || 'None recorded yet.'}
-
-Generate a Master Element Registry as a structured JSON array. For EACH element above, produce:
-- id: unique slug (e.g. "page-dashboard")
-- name: element name
-- category: one of "Page", "AI Tool", "AI Agent", "Integration", "Automation", "Document", "Process"
-- pillar_alignment: array of relevant brand pillars from [${PLATFORM_DATA.pillars.join(', ')}]
-- purpose: 1-2 sentences in professional investor language explaining business purpose
-- inputs: what data/inputs this element consumes
-- outputs: what it produces or enables
-- dependencies: key technical or content dependencies
-- status: one of "Active", "In Development", "Planned"
-- strategic_value: 1 sentence on competitive or strategic significance
-
-Group elements logically. Write in the voice of a Series A pitch deck.
-
-Return ONLY valid JSON: an array of element objects. No markdown, no explanation.`;
-
-      const elements = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        model: 'claude_sonnet_4_6',
-        response_json_schema: {
-          type: "object",
-          properties: {
-            elements: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  category: { type: "string" },
-                  pillar_alignment: { type: "array", items: { type: "string" } },
-                  purpose: { type: "string" },
-                  inputs: { type: "string" },
-                  outputs: { type: "string" },
-                  dependencies: { type: "string" },
-                  status: { type: "string" },
-                  strategic_value: { type: "string" }
-                }
+      const elementSchema = {
+        type: "object",
+        properties: {
+          elements: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+                category: { type: "string" },
+                pillar_alignment: { type: "array", items: { type: "string" } },
+                purpose: { type: "string" },
+                inputs: { type: "string" },
+                outputs: { type: "string" },
+                dependencies: { type: "string" },
+                status: { type: "string" },
+                strategic_value: { type: "string" }
               }
             }
           }
         }
-      });
+      };
 
-      const elementList = elements?.elements || [];
+      const makePrompt = (category, items) =>
+        `You are a technology strategist for "The Write Vibe". ${platformContext}
+
+Document the following ${category} elements as a Master Element Registry.
+Elements: ${items.join(', ')}
+
+For EACH element produce:
+- id: unique slug (e.g. "${category.toLowerCase().replace(' ','-')}-name")
+- name: element name
+- category: "${category}"
+- pillar_alignment: array of relevant pillars from [${PLATFORM_DATA.pillars.join(', ')}]
+- purpose: 1-2 sentences investor-facing business purpose
+- inputs: what data/inputs it consumes
+- outputs: what it produces or enables
+- dependencies: key technical or content dependencies
+- status: one of "Active", "In Development", "Planned"
+- strategic_value: 1 sentence on competitive significance
+
+Return JSON with an "elements" array.`;
+
+      // Fire all category batches in parallel to avoid timeout
+      const batches = await Promise.all([
+        base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: makePrompt('Page', PLATFORM_DATA.pages), response_json_schema: elementSchema }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: makePrompt('AI Agent', PLATFORM_DATA.aiAgents), response_json_schema: elementSchema }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: makePrompt('AI Tool', PLATFORM_DATA.aiTools), response_json_schema: elementSchema }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: makePrompt('Integration', [...PLATFORM_DATA.integrations, ...PLATFORM_DATA.automations]), response_json_schema: elementSchema }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: makePrompt('Document', PLATFORM_DATA.documents), response_json_schema: elementSchema }),
+      ]);
+
+      const elementList = batches.flatMap(b => b?.elements || []);
 
       // Build HTML document
       const categories = [...new Set(elementList.map(e => e.category))];
