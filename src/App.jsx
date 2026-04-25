@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import AgentMemoryLog from './pages/AgentMemoryLog';
 import BookEditor from './pages/BookEditor';
+import MissionStatement from './pages/MissionStatement';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
       ))}
       <Route path="/AgentMemoryLog" element={<LayoutWrapper currentPageName="AgentMemoryLog"><AgentMemoryLog /></LayoutWrapper>} />
       <Route path="/BookEditor" element={<LayoutWrapper currentPageName="BookEditor"><BookEditor /></LayoutWrapper>} />
+      <Route path="/MissionStatement" element={<LayoutWrapper currentPageName="MissionStatement"><MissionStatement /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
