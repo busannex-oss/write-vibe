@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -84,7 +84,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "Mission Statement", href: "MissionStatement", icon: Target },
         { name: "SOPs", href: "SOPs", icon: ClipboardList },
         { name: "Master Registry", href: "MasterRegistry", icon: BookOpen },
-        { name: "Map Legend", href: "MapLegend", icon: Map }
+        { name: "Map Legend", href: "MapLegend", icon: Map },
+        { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid }
       ]
     : [];
 

@@ -1,0 +1,100 @@
+{
+  "name": "PillarAlignment",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Report version"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full report as rich HTML"
+    },
+    "pillar_data": {
+      "type": "array",
+      "description": "Structured per-pillar analysis",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pillar": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string"
+          },
+          "alignment_score": {
+            "type": "number"
+          },
+          "platform_elements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "gaps": {
+            "type": "string"
+          },
+          "roadmap": {
+            "type": "string"
+          },
+          "investor_insight": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "overall_score": {
+      "type": "number"
+    },
+    "executive_summary": {
+      "type": "string"
+    },
+    "top_priorities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
