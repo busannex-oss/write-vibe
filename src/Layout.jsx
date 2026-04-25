@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -94,7 +94,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "KPI Framework", href: "KPIFramework", icon: BarChart2 },
         { name: "Onboarding Experience", href: "OnboardingExperience", icon: UserCheck },
         { name: "Version Roadmap", href: "VersionRoadmap", icon: GitBranch },
-        { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers }
+        { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers },
+        { name: "AI Agent Audit", href: "AgentAudit", icon: Bot }
       ]
     : [];
 

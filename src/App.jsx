@@ -23,6 +23,7 @@ import KPIFramework from './pages/KPIFramework';
 import OnboardingExperience from './pages/OnboardingExperience';
 import VersionRoadmap from './pages/VersionRoadmap';
 import PillarsArchitecture from './pages/PillarsArchitecture';
+import AgentAudit from './pages/AgentAudit';
 import DistributionDashboard from './pages/DistributionDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -95,6 +96,7 @@ const AuthenticatedApp = () => {
       <Route path="/OnboardingExperience" element={<LayoutWrapper currentPageName="OnboardingExperience"><OnboardingExperience /></LayoutWrapper>} />
       <Route path="/VersionRoadmap" element={<LayoutWrapper currentPageName="VersionRoadmap"><VersionRoadmap /></LayoutWrapper>} />
       <Route path="/PillarsArchitecture" element={<LayoutWrapper currentPageName="PillarsArchitecture"><PillarsArchitecture /></LayoutWrapper>} />
+      <Route path="/AgentAudit" element={<LayoutWrapper currentPageName="AgentAudit"><AgentAudit /></LayoutWrapper>} />
       <Route path="/DistributionDashboard" element={<LayoutWrapper currentPageName="DistributionDashboard"><DistributionDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
