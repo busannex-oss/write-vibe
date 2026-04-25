@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FileText, Download, Sparkles, CheckCircle2, Loader2, Book, Globe, FileCode } from "lucide-react";
 import AIGenerateButton from "../AIGenerateButton";
 
-export default function ManuscriptFormatter({ book, onUpdate }) {
+export default function ManuscriptFormatter({ book, onUpdate, isUpdating }) {
   const [formatting, setFormatting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [manuscript, setManuscript] = useState(book.formatted_manuscript || "");
   const [platform, setPlatform] = useState("ebook");
   const [format, setFormat] = useState("standard");
@@ -96,6 +97,7 @@ Provide the fully formatted manuscript with a Table of Contents at the top, foll
   const saveFormatted = async () => {
     if (!formattedOutput) return;
 
+    setIsSaving(true);
     try {
       await onUpdate({
         formatted_manuscript: formattedOutput,
@@ -106,6 +108,8 @@ Provide the fully formatted manuscript with a Table of Contents at the top, foll
     } catch (error) {
       console.error("Save error:", error);
       alert("Failed to save formatted manuscript");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -212,10 +216,15 @@ Provide the fully formatted manuscript with a Table of Contents at the top, foll
                   </Button>
                   <Button
                     onClick={saveFormatted}
+                    disabled={isSaving || isUpdating}
                     size="sm"
                     className="bg-amber-500 hover:bg-amber-600"
                   >
-                    Save to Book
+                    {isSaving || isUpdating ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+                    ) : (
+                      <>Save to Book</>
+                    )}
                   </Button>
                 </div>
               </div>

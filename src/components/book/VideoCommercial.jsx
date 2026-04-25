@@ -18,6 +18,7 @@ export default function VideoCommercial({ book, onUpdate }) {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState("60");
+  const [showTextOverlay, setShowTextOverlay] = useState(true);
   const [script, setScript] = useState(null);
   const [storyboardImages, setStoryboardImages] = useState([]);
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -361,8 +362,19 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
           </CardHeader>
 
           {hasImages && (
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showTextOverlay}
+                    onChange={(e) => setShowTextOverlay(e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/10 cursor-pointer"
+                  />
+                  <span className="text-sm text-white/70">Show text overlay</span>
+                </label>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {storyboardImages.map((img, i) => (
                   <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-black">
                     <img src={img.url} alt={`Scene ${img.scene}`} className="w-full h-full object-cover" />
@@ -370,9 +382,11 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
                       <Badge className="bg-black/60 text-white border-0 text-xs">Scene {img.scene}</Badge>
                       {img.duration_seconds && <Badge className="bg-black/60 text-white border-0 text-xs">{img.duration_seconds}s</Badge>}
                     </div>
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                      <p className="text-white text-xs italic line-clamp-2">"{img.narration}"</p>
-                    </div>
+                    {showTextOverlay && (
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-xs italic line-clamp-2">"{img.narration}"</p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

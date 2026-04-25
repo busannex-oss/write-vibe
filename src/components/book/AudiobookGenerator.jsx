@@ -5,12 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Music, Loader2, Play, Pause, Download, CheckCircle2, Volume2 } from "lucide-react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 
 export default function AudiobookGenerator({ book, onUpdate, isUpdating }) {
   const [voiceStyle, setVoiceStyle] = useState("professional");
   const [generating, setGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [progress, setProgress] = useState(0);
   const [audioUrl, setAudioUrl] = useState(book?.audiobook_url || null);
   const [playing, setPlaying] = useState(false);
@@ -86,6 +88,23 @@ Return the narration script with chapter markers in a format ready for text-to-s
   const handleDownload = () => {
     if (audioUrl) {
       window.open(audioUrl, '_blank');
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onUpdate({
+        audiobook_url: audioUrl,
+        audiobook_voice_style: voiceStyle,
+        audiobook_script: book?.audiobook_script || ""
+      });
+      alert("Audiobook saved successfully!");
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Failed to save audiobook");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -185,6 +204,17 @@ Return the narration script with chapter markers in a format ready for text-to-s
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving || isUpdating}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-white border-0"
+                >
+                  {isSaving || isUpdating ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+                  ) : (
+                    <>Save to Book</>
+                  )}
                 </Button>
                 <Button
                   onClick={handleGenerate}
