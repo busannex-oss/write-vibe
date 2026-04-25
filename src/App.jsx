@@ -8,6 +8,7 @@ import PageNotFound from './lib/PageNotFound';
 import AgentMemoryLog from './pages/AgentMemoryLog';
 import BookEditor from './pages/BookEditor';
 import MissionStatement from './pages/MissionStatement';
+import SOPs from './pages/SOPs';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
       <Route path="/AgentMemoryLog" element={<LayoutWrapper currentPageName="AgentMemoryLog"><AgentMemoryLog /></LayoutWrapper>} />
       <Route path="/BookEditor" element={<LayoutWrapper currentPageName="BookEditor"><BookEditor /></LayoutWrapper>} />
       <Route path="/MissionStatement" element={<LayoutWrapper currentPageName="MissionStatement"><MissionStatement /></LayoutWrapper>} />
+      <Route path="/SOPs" element={<LayoutWrapper currentPageName="SOPs"><SOPs /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

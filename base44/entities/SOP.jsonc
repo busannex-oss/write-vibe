@@ -1,0 +1,110 @@
+{
+  "name": "SOP",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "SOP title"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Why this SOP exists"
+    },
+    "scope": {
+      "type": "string",
+      "description": "What this SOP covers"
+    },
+    "pillar_alignment": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Aligned brand pillars"
+    },
+    "trigger": {
+      "type": "string",
+      "description": "What triggers this SOP"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Owner email or name"
+    },
+    "review_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Next review due date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "under_review",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Version number"
+    },
+    "category_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Associated SOPCategory IDs"
+    },
+    "steps": {
+      "type": "array",
+      "description": "Ordered list of steps",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number"
+          },
+          "step_name": {
+            "type": "string"
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "responsible_role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
