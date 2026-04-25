@@ -17,6 +17,7 @@ import Sitemap from './pages/Sitemap';
 import SystemArchitecture from './pages/SystemArchitecture';
 import LegalDocuments from './pages/LegalDocuments';
 import BookHealthCheck from './pages/BookHealthCheck';
+import LicensingTerms from './pages/LicensingTerms';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
       <Route path="/SystemArchitecture" element={<LayoutWrapper currentPageName="SystemArchitecture"><SystemArchitecture /></LayoutWrapper>} />
       <Route path="/LegalDocuments" element={<LayoutWrapper currentPageName="LegalDocuments"><LegalDocuments /></LayoutWrapper>} />
       <Route path="/BookHealthCheck" element={<LayoutWrapper currentPageName="BookHealthCheck"><BookHealthCheck /></LayoutWrapper>} />
+      <Route path="/LicensingTerms" element={<LayoutWrapper currentPageName="LicensingTerms"><LicensingTerms /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
