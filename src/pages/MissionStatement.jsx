@@ -43,6 +43,12 @@ export default function MissionStatementPage() {
   const [editRationale, setEditRationale] = useState("");
   const [editPublic, setEditPublic] = useState(false);
 
+  // AI generation state
+  const [genContext, setGenContext] = useState("");
+  const [genTone, setGenTone] = useState("");
+  const [genFocus, setGenFocus] = useState([]);
+  const [generating, setGenerating] = useState(false);
+
   // Scores state
   const [scores, setScores] = useState(defaultScores());
   const [savingScores, setSavingScores] = useState(false);
@@ -85,6 +91,21 @@ export default function MissionStatementPage() {
     }, 3000);
     return () => clearInterval(timer);
   }, [mission?.analysis_status]);
+
+  const handleGenerate = async () => {
+    setGenerating(true);
+    const res = await invoke("generate", {
+      context: genContext,
+      tone: genTone,
+      focus_areas: genFocus
+    });
+    setEditText(res.data.text || "");
+    setGenerating(false);
+  };
+
+  const toggleFocus = (pillar) => {
+    setGenFocus(prev => prev.includes(pillar) ? prev.filter(p => p !== pillar) : [...prev, pillar]);
+  };
 
   const handleSaveVersion = async () => {
     if (!editText.trim()) return;
@@ -236,10 +257,58 @@ export default function MissionStatementPage() {
                   <CardTitle className="text-white text-base">Create New Version</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* AI Generation Panel */}
+                  <div className="bg-slate-800/60 border border-amber-500/20 rounded-xl p-4 space-y-3">
+                    <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" /> AI Generator
+                    </p>
+                    <Input
+                      value={genContext}
+                      onChange={e => setGenContext(e.target.value)}
+                      placeholder="Optional context (e.g. 'focus on indie authors', 'emphasize community')"
+                      className="bg-slate-900 border-white/10 text-white text-sm"
+                    />
+                    <Input
+                      value={genTone}
+                      onChange={e => setGenTone(e.target.value)}
+                      placeholder="Desired tone (e.g. 'bold and inspiring', 'warm and approachable')"
+                      className="bg-slate-900 border-white/10 text-white text-sm"
+                    />
+                    <div>
+                      <p className="text-white/40 text-xs mb-2">Focus pillars (optional):</p>
+                      <div className="flex flex-wrap gap-2">
+                        {PILLARS.map(p => (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() => toggleFocus(p)}
+                            className={cn(
+                              "text-xs px-2.5 py-1 rounded-full border transition-all",
+                              genFocus.includes(p)
+                                ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
+                                : "bg-slate-900 border-white/10 text-white/50 hover:text-white"
+                            )}
+                          >{p}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleGenerate}
+                      disabled={generating}
+                      variant="outline"
+                      size="sm"
+                      className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                    >
+                      {generating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Sparkles className="w-4 h-4 mr-1" />}
+                      {generating ? "Generating..." : "Generate with AI"}
+                    </Button>
+                  </div>
+
                   <Textarea
                     value={editText}
                     onChange={e => setEditText(e.target.value)}
-                    placeholder="Write your mission statement..."
+                    placeholder="AI-generated text will appear here, or write your own..."
                     className="bg-slate-800 border-white/10 text-white min-h-[140px] resize-none"
                   />
                   <Input

@@ -47,6 +47,30 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
+    // ── generate — AI-generate a mission statement draft ──────────────────
+    if (action === 'generate') {
+      const { context, tone, focus_areas } = body;
+
+      const prompt = `You are a brand strategist for Write Vibe, an AI-powered book creation platform that helps authors write, publish, and market their books using AI.
+
+Generate a compelling, authentic mission statement for Write Vibe based on the following inputs:
+
+${context ? `Context / additional notes: ${context}` : ''}
+${tone ? `Desired tone: ${tone}` : ''}
+${focus_areas?.length ? `Key focus areas: ${focus_areas.join(', ')}` : ''}
+
+The mission statement should:
+- Be 1-3 sentences, clear and inspiring
+- Reflect Write Vibe's commitment to empowering authors with AI
+- Feel genuine, not corporate or cliché
+- Align with pillars: Authenticity, Creativity, Empowerment, Innovation, Community, Excellence, Integrity, Growth
+
+Return ONLY the mission statement text, no preamble or explanation.`;
+
+      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt });
+      return Response.json({ success: true, text: generated.trim() });
+    }
+
     // ── PUT /mission — create new version ─────────────────────────────────
     if (action === 'update') {
       const { text, change_rationale, is_public, pillar_scores } = body;
