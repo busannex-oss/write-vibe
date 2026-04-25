@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Music, Loader2, Play, Pause, Download, CheckCircle2, Volume2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
