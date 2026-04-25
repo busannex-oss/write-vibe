@@ -152,81 +152,85 @@ Return a JSON object:
       return Response.json({ success: true, updated_pillar: { ...pillar, ...result } });
     }
 
-    // ── GENERATE FULL REPORT ─────────────────────────────────────────────────
+    // ── GENERATE FULL REPORT (split into parallel pillar calls to avoid timeout) ──
     if (action === 'generate') {
-      // Pull live mission statement if available
       const missionAll = await base44.asServiceRole.entities.MissionStatement.list('-version_number', 1);
       const mission = missionAll.find(m => m.is_current) || missionAll[0];
       const missionText = mission?.text || 'Empowering authors to create, publish, and market their stories with AI.';
 
-      const docList = PLATFORM_SNAPSHOT.foundationalDocuments.map(d => `  • ${d.name} (${d.status})`).join('\n');
+      const platformContext = `Platform: The Write Vibe — full-stack AI self-publishing platform.
+Mission: "${missionText}"
+${PLATFORM_SNAPSHOT.aiAgents.length} AI agents: ${PLATFORM_SNAPSHOT.aiAgents.join(', ')}.
+${PLATFORM_SNAPSHOT.aiTools.length} AI tools: ${PLATFORM_SNAPSHOT.aiTools.join(', ')}.
+Integrations: ${PLATFORM_SNAPSHOT.integrations.join(', ')}.
+Documents: ${PLATFORM_SNAPSHOT.foundationalDocuments.map(d => d.name).join(', ')}.`;
 
-      const prompt = `You are a senior strategy consultant and investor relations expert for "The Write Vibe" — a full-stack AI-powered self-publishing platform.
+      // Generate each pillar in parallel — much faster and avoids timeout
+      const pillarResults = await Promise.all(PILLARS.map(pillarDef =>
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `You are an investor relations strategist for "The Write Vibe".
+${platformContext}
 
-PLATFORM MISSION: "${missionText}"
+Analyze the "${pillarDef.name}" pillar in the context of self-publishing and author empowerment.
 
-PLATFORM SCALE:
-- ${PLATFORM_SNAPSHOT.pages.length} pages/views
-- ${PLATFORM_SNAPSHOT.aiAgents.length} specialized AI agents: ${PLATFORM_SNAPSHOT.aiAgents.join(', ')}
-- ${PLATFORM_SNAPSHOT.aiTools.length} AI tools: ${PLATFORM_SNAPSHOT.aiTools.join(', ')}
-- ${PLATFORM_SNAPSHOT.integrations.length} integrations: ${PLATFORM_SNAPSHOT.integrations.join(', ')}
-- Foundational documents:
-${docList}
+Return JSON with exactly these fields:
+- pillar: "${pillarDef.name}"
+- definition: 2-3 sentences defining this pillar specifically in self-publishing context
+- platform_elements: array of 5-8 specific tools, agents, or features from the platform that serve this pillar
+- alignment_score: integer 1-10 reflecting current implementation depth
+- gaps: 2-3 sentences on genuine gaps or underserved aspects
+- roadmap: 2-3 sentences on features that would advance this pillar to full alignment
+- investor_insight: 2-3 sentences on competitive moat or defensibility this pillar creates
 
-THE 8 BRAND PILLARS (in self-publishing context):
-Authenticity, Creativity, Empowerment, Innovation, Community, Excellence, Integrity, Growth
+Be specific. Write with Series A pitch deck authority.`,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              pillar: { type: "string" },
+              definition: { type: "string" },
+              platform_elements: { type: "array", items: { type: "string" } },
+              alignment_score: { type: "number" },
+              gaps: { type: "string" },
+              roadmap: { type: "string" },
+              investor_insight: { type: "string" }
+            }
+          }
+        }).then(r => ({ ...r, color: pillarDef.color }))
+      ));
 
-Generate a complete Pillar Alignment Report as structured JSON.
+      // Generate summary separately
+      const scores = pillarResults.map(p => p.alignment_score || 7);
+      const overall_score = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10;
 
-For EACH of the 8 pillars produce:
-- pillar: pillar name (exact string from above)
-- definition: 2-3 sentence definition of this pillar specifically in the context of self-publishing and author empowerment — not generic
-- platform_elements: array of 5-10 specific platform elements, tools, agents, or features from the platform data above that serve this pillar
-- alignment_score: integer 1-10 reflecting current depth of implementation
-- gaps: 2-3 sentences identifying genuine gaps or underserved aspects of this pillar in the current platform
-- roadmap: 2-3 sentences on specific features or capabilities that would advance this pillar to full alignment
-- investor_insight: 2-3 sentences explaining why this pillar creates competitive moat, differentiation, or defensibility in the self-publishing market
+      const summaryResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: `You are writing an investor-facing executive summary for "The Write Vibe" Pillar Alignment Report.
 
-Then produce:
-- overall_score: weighted average of all pillar scores (number)
-- executive_summary: 3-4 sentences summarizing the platform's overall pillar health, strongest areas, and strategic direction for investor consumption
+Pillar scores: ${pillarResults.map(p => `${p.pillar}: ${p.alignment_score}/10`).join(', ')}.
+Overall score: ${overall_score}/10.
+
+Return JSON:
+- executive_summary: 3-4 sentences summarizing platform pillar health, strongest areas, and strategic direction for investors
 - top_priorities: array of exactly 5 strings — the highest-leverage strategic actions to improve pillar alignment
 
-Write with the authority and precision of a Series A pitch deck. Be specific, not generic.`;
-
-      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        model: 'claude_sonnet_4_6',
+Write with authority and precision.`,
         response_json_schema: {
           type: "object",
           properties: {
-            pillars: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  pillar: { type: "string" },
-                  definition: { type: "string" },
-                  platform_elements: { type: "array", items: { type: "string" } },
-                  alignment_score: { type: "number" },
-                  gaps: { type: "string" },
-                  roadmap: { type: "string" },
-                  investor_insight: { type: "string" }
-                }
-              }
-            },
-            overall_score: { type: "number" },
             executive_summary: { type: "string" },
             top_priorities: { type: "array", items: { type: "string" } }
           }
         }
       });
 
-      const pillarColors = Object.fromEntries(PILLARS.map(p => [p.name, p.color]));
-      const pillar_data = (result.pillars || []).map(p => ({ ...p, color: pillarColors[p.pillar] || '#64748b' }));
-      const html = buildReportHTML({ pillar_data, overall_score: result.overall_score, executive_summary: result.executive_summary, top_priorities: result.top_priorities, missionText });
+      const pillar_data = pillarResults;
+      const html = buildReportHTML({
+        pillar_data,
+        overall_score,
+        executive_summary: summaryResult.executive_summary,
+        top_priorities: summaryResult.top_priorities,
+        missionText
+      });
 
-      // Save as new version
       const allVersions = await base44.asServiceRole.entities.PillarAlignment.list('-version_number', 50);
       const latestVersion = allVersions[0]?.version_number || 0;
       await Promise.all(allVersions.map(r => base44.asServiceRole.entities.PillarAlignment.update(r.id, { is_current: false })));
@@ -236,9 +240,9 @@ Write with the authority and precision of a Series A pitch deck. Be specific, no
         title: "Write Vibe Pillar Alignment Report",
         content_html: html,
         pillar_data,
-        overall_score: result.overall_score,
-        executive_summary: result.executive_summary,
-        top_priorities: result.top_priorities,
+        overall_score,
+        executive_summary: summaryResult.executive_summary,
+        top_priorities: summaryResult.top_priorities,
         generated_at: new Date().toISOString(),
         is_current: true,
         generation_notes: `Generated ${new Date().toLocaleDateString()} · ${pillar_data.length} pillars analyzed`
