@@ -1,0 +1,108 @@
+{
+  "name": "AgentAccess",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "Book this agent has access to"
+    },
+    "agent_email": {
+      "type": "string",
+      "description": "Literary agent's email address"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Agent's full name"
+    },
+    "agency_name": {
+      "type": "string",
+      "description": "Agency or firm name"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Secure random token for portal access"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Allowed views: metadata, manuscript_preview, milestones, comments"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date",
+      "description": "Access expiry date"
+    },
+    "last_accessed": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "book_id",
+    "agent_email",
+    "access_token"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

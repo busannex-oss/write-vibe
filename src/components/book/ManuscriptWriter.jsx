@@ -16,12 +16,14 @@ import {
   Image as ImageIcon,
   Users,
   Save,
-  Wand2 } from
+  Wand2,
+  Zap } from
 "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIEditorPanel from "./AIEditorPanel";
 import ManuscriptAnalytics from "./ManuscriptAnalytics";
 import ChapterVersionHistory from "./ChapterVersionHistory";
+import AIFeedbackSidebar from "./AIFeedbackSidebar";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -31,6 +33,7 @@ export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [coAuthorMode, setCoAuthorMode] = useState(false);
   const [coAuthorPrompt, setCoAuthorPrompt] = useState("");
   const [chapterVersions, setChapterVersions] = useState(book.chapter_versions || {});
+  const [feedbackChapterIndex, setFeedbackChapterIndex] = useState(null);
 
   const chapters = book.industry_outline || book.detailed_outline || book.table_of_contents || [];
 
@@ -200,6 +203,8 @@ High quality, professional book illustration, suitable for print publication.`,
 
   const totalWords = manuscript.reduce((sum, ch) => sum + (ch?.word_count || 0), 0);
 
+  const feedbackChapter = feedbackChapterIndex !== null ? manuscript[feedbackChapterIndex] : null;
+
   return (
     <div className="space-y-6">
       {/* Analytics */}
@@ -287,6 +292,16 @@ High quality, professional book illustration, suitable for print publication.`,
         </CardContent>
       </Card>
 
+      {feedbackChapter && (
+        <div className="fixed inset-y-0 right-0 z-50 flex items-stretch">
+          <AIFeedbackSidebar
+            chapter={feedbackChapter}
+            book={book}
+            onClose={() => setFeedbackChapterIndex(null)}
+          />
+        </div>
+      )}
+
       {chapters.length > 0 ?
       <div className="space-y-3">
           <AnimatePresence>
@@ -331,6 +346,14 @@ High quality, professional book illustration, suitable for print publication.`,
                         }
                         </div>
                         <div className="flex items-center gap-2">
+                          {hasContent && (
+                            <Button
+                              onClick={(e) => { e.stopPropagation(); setFeedbackChapterIndex(feedbackChapterIndex === index ? null : index); }}
+                              size="sm" variant="outline"
+                              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10">
+                              <Zap className="w-3 h-3 mr-1" /> AI Feedback
+                            </Button>
+                          )}
                           <Button
                           onClick={(e) => {
                             e.stopPropagation();

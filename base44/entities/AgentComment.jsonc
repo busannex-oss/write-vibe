@@ -1,0 +1,105 @@
+{
+  "name": "AgentComment",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string"
+    },
+    "agent_access_id": {
+      "type": "string",
+      "description": "AgentAccess record ID"
+    },
+    "agent_name": {
+      "type": "string"
+    },
+    "agent_email": {
+      "type": "string"
+    },
+    "chapter_number": {
+      "type": "number",
+      "description": "Chapter this comment refers to (0 = general)"
+    },
+    "comment_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "pacing",
+        "dialogue",
+        "character",
+        "plot",
+        "commercial",
+        "revision_request"
+      ],
+      "default": "general"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "addressed",
+        "dismissed"
+      ],
+      "default": "open"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "author_reply": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "book_id",
+    "agent_access_id",
+    "content"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

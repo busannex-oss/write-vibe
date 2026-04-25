@@ -26,7 +26,9 @@ import {
   RefreshCw,
   Download,
   ExternalLink,
-  BarChart2
+  BarChart2,
+  Package,
+  ShieldCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -45,6 +47,7 @@ import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
 import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
+import AgentAccessPanel from "@/components/book/AgentAccessPanel.jsx";
 
 export default function BookEditor() {
   const navigate = useNavigate();
@@ -110,6 +113,7 @@ export default function BookEditor() {
     { id: "website", label: "Website", icon: Globe, status: book?.website_config?.status ? "complete" : "pending" },
     { id: "seo", label: "SEO", icon: Sparkles, status: book?.website_config?.seo?.meta_title ? "complete" : "pending" },
     { id: "team", label: "Team", icon: Users, status: "available" },
+    { id: "agents", label: "Agents", icon: ShieldCheck, status: "available" },
   ];
 
   const isProductionComplete = productionStages.every(s => s.status === "complete");
@@ -168,6 +172,9 @@ export default function BookEditor() {
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/BookHealthCheck?id=${bookId}`)}>
                 <BarChart2 className="w-4 h-4 mr-1" /> Health Check
+              </Button>
+            <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/DistributionDashboard?id=${bookId}`)}>
+                <Package className="w-4 h-4 mr-1" /> Distribution
               </Button>
             <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}>
                 <ExternalLink className="w-4 h-4 mr-1" /> View Website
@@ -323,6 +330,9 @@ export default function BookEditor() {
         )}
         {activeTab === "team" && (
           <CollaborationPanel book={book} />
+        )}
+        {activeTab === "agents" && (
+          <AgentAccessPanel book={book} />
         )}
       </motion.div>
     </div>

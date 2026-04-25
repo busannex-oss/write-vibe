@@ -18,6 +18,8 @@ import SystemArchitecture from './pages/SystemArchitecture';
 import LegalDocuments from './pages/LegalDocuments';
 import BookHealthCheck from './pages/BookHealthCheck';
 import LicensingTerms from './pages/LicensingTerms';
+import AgentPortal from './pages/AgentPortal';
+import DistributionDashboard from './pages/DistributionDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -84,6 +86,8 @@ const AuthenticatedApp = () => {
       <Route path="/LegalDocuments" element={<LayoutWrapper currentPageName="LegalDocuments"><LegalDocuments /></LayoutWrapper>} />
       <Route path="/BookHealthCheck" element={<LayoutWrapper currentPageName="BookHealthCheck"><BookHealthCheck /></LayoutWrapper>} />
       <Route path="/LicensingTerms" element={<LayoutWrapper currentPageName="LicensingTerms"><LicensingTerms /></LayoutWrapper>} />
+      <Route path="/AgentPortal" element={<AgentPortal />} />
+      <Route path="/DistributionDashboard" element={<LayoutWrapper currentPageName="DistributionDashboard"><DistributionDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
