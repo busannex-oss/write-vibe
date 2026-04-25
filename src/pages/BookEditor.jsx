@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -30,6 +30,7 @@ import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGener
 import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
 import AgentAccessPanel from "@/components/book/AgentAccessPanel.jsx";
+import BookLogoGenerator from "@/components/book/BookLogoGenerator.jsx";
 
 // ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
@@ -81,6 +82,15 @@ const STEPS = [
     description: "Design your front and back cover",
     hint: "Generate multiple cover options and vote on your favourite",
     isDone: (b) => !!b?.front_cover_url,
+  },
+  {
+    id: "logo",
+    label: "Book Logo",
+    icon: Sparkles,
+    description: "Generate or upload your book logo",
+    hint: "AI creates logos with your real name or pen name",
+    isDone: (b) => !!b?.front_cover_url,
+    optional: true,
   },
   {
     id: "format",
@@ -308,6 +318,12 @@ export default function BookEditor() {
   const bookId = urlParams.get("id");
 
   const [activeTab, setActiveTab] = useState("title");
+  const [user, setUser] = useState(null);
+
+  // Load current user
+  useEffect(() => {
+    base44.auth.me().then(u => setUser(u)).catch(() => setUser(null));
+  }, []);
 
   const { data: bookRaw, isLoading } = useQuery({
     queryKey: ['book', bookId],
@@ -491,6 +507,7 @@ export default function BookEditor() {
                 {activeTab === "summary"    && <SummaryGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "manuscript" && <ManuscriptWriter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "cover"      && <CoverDesigner book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "logo"       && user && <BookLogoGenerator book={book} user={user} onUpdate={handleUpdate} />}
                 {activeTab === "format"     && <ManuscriptFormatter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "audiobook"  && <AudiobookGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "video"      && <VideoCommercial book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
