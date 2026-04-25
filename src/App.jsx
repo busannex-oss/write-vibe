@@ -10,6 +10,7 @@ import BookEditor from './pages/BookEditor';
 import MissionStatement from './pages/MissionStatement';
 import SOPs from './pages/SOPs';
 import MasterRegistry from './pages/MasterRegistry';
+import MapLegend from './pages/MapLegend';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -68,6 +69,7 @@ const AuthenticatedApp = () => {
       <Route path="/MissionStatement" element={<LayoutWrapper currentPageName="MissionStatement"><MissionStatement /></LayoutWrapper>} />
       <Route path="/SOPs" element={<LayoutWrapper currentPageName="SOPs"><SOPs /></LayoutWrapper>} />
       <Route path="/MasterRegistry" element={<LayoutWrapper currentPageName="MasterRegistry"><MasterRegistry /></LayoutWrapper>} />
+      <Route path="/MapLegend" element={<LayoutWrapper currentPageName="MapLegend"><MapLegend /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

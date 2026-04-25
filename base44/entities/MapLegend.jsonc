@@ -1,0 +1,89 @@
+{
+  "name": "MapLegend",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Legend version"
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full legend content as rich HTML"
+    },
+    "legend_data": {
+      "type": "object",
+      "description": "Structured legend data for JSON export / Mermaid rendering",
+      "properties": {
+        "element_types": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "relationship_types": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "status_indicators": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "pillar_colors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "hierarchy_levels": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
