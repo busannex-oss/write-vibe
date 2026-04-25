@@ -6,14 +6,16 @@
       "entity_name": "Book",
       "allowed_operations": [
         "read",
-        "update"
+        "update",
+        "create"
       ]
     },
     {
       "entity_name": "Document",
       "allowed_operations": [
         "read",
-        "update"
+        "update",
+        "create"
       ]
     },
     {
@@ -29,10 +31,20 @@
       ]
     }
   ],
+  "backend_function_tools": [
+    {
+      "name": "generateProjectReport",
+      "description": "Generate comprehensive project performance report"
+    },
+    {
+      "name": "fixError",
+      "description": "Analyze and fix errors in book projects"
+    }
+  ],
   "model": "automatic",
   "whatsapp_greeting": "",
   "memory_config": {
-    "enabled": false,
+    "enabled": true,
     "scope": "both",
     "instructions": null
   },
