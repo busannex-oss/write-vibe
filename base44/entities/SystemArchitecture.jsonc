@@ -1,0 +1,80 @@
+{
+  "name": "SystemArchitecture",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Document version"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full document as rich HTML"
+    },
+    "mermaid_syntax": {
+      "type": "string",
+      "description": "Mermaid diagram syntax"
+    },
+    "arch_data": {
+      "type": "object",
+      "description": "Structured architecture data",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "overall_score": {
+          "type": "number"
+        },
+        "priority_roadmap": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "overall_score": {
+      "type": "number"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
