@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Sparkles, Check, Loader2, Video, Film, Music, Clock, Download, RefreshCw, Save,
-  Youtube, ExternalLink, Copy
+  Youtube, ExternalLink, Copy, Zap, Settings2
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 
 export default function VideoCommercial({ book, onUpdate }) {
@@ -23,6 +24,8 @@ export default function VideoCommercial({ book, onUpdate }) {
   const [generatingVideo, setGeneratingVideo] = useState(false);
   const [videoUrlInput, setVideoUrlInput] = useState("");
   const [videoGuideStep, setVideoGuideStep] = useState(null);
+  const [videoMethod, setVideoMethod] = useState("google"); // google | runway | kling | gemini
+  const [publishMethod, setPublishMethod] = useState("auto"); // auto | manual
 
   // ── Load saved data on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -170,7 +173,7 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
     });
   };
 
-  // ── Step 3: Generate video with Google API & auto-publish to YouTube ──────
+  // ── Step 3: Generate video with selected method & publish to YouTube ──────
   const generateVideo = async () => {
     setGeneratingVideo(true);
     try {
@@ -179,19 +182,24 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
         selectedDuration,
         storyboardImages,
         bookTitle: book.title,
-        bookId: book.id
+        bookId: book.id,
+        videoMethod,
+        publishMethod
       });
 
       if (response.data?.success) {
-        if (response.data.youtubeUrl) {
+        if (response.data.youtubeUrl && publishMethod === 'auto') {
           // Video was auto-published to YouTube
           setYoutubeUrl(response.data.youtubeUrl);
           await persist(script, selectedDuration, storyboardImages, response.data.youtubeUrl);
-          alert(`🎉 Video generated and published to YouTube! Video ID: ${response.data.videoId}`);
+          alert(`🎉 Video generated and published to YouTube!\nVideo ID: ${response.data.videoId}`);
+        } else if (response.data.videoUrl && publishMethod === 'manual') {
+          // Video generated, link provided for manual publishing
+          alert(`✅ Video generated! Download or upload it yourself.\nVideo link: ${response.data.videoUrl}`);
         } else {
-          // YouTube auth not available, need manual upload
+          // Fallback: need manual upload
           setVideoGuideStep('upload');
-          alert('Video generated! Please authorize YouTube in settings to auto-publish, or paste the YouTube link below.');
+          alert('Video generated! Please paste the YouTube link below or authorize YouTube in settings for auto-publishing.');
         }
       } else {
         alert('Video generation failed. Please try again.');
@@ -402,33 +410,73 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
                     {generatingVideo ? (
                       <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating…</>
                     ) : (
-                      <><Video className="w-4 h-4 mr-1" />Generate {selectedDuration}s Video</>
+                      <><Zap className="w-4 h-4 mr-1" />Generate {selectedDuration}s Video</>
                     )}
                   </Button>
                 )}
               </div>
-              <p className="text-sm text-white/50 mt-1">Google AI generates a professional {selectedDuration}-second video from your script and storyboard images.</p>
+              <p className="text-sm text-white/50 mt-1">Choose your video generation method and publishing strategy.</p>
             </CardHeader>
 
             <CardContent className="space-y-4">
-              {/* Generate video step */}
+              {/* Video generation method selector */}
               {!hasVideo && (
-                <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-3">
+                <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-4">
                   <div className="flex items-start gap-3">
-                    <Sparkles className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-white font-semibold text-sm mb-1">AI-Powered Video Generation</h4>
-                      <p className="text-white/60 text-xs">
-                        Google's text-to-video AI will create a cinematic {selectedDuration}-second trailer using:
-                      </p>
-                      <ul className="text-white/60 text-xs space-y-0.5 list-disc ml-4 mt-1.5">
-                        <li>Your script narration and scene descriptions</li>
-                        <li>Storyboard images as visual references</li>
-                        <li>Professional color grading and transitions</li>
-                        <li>Music mood: <span className="italic">"{currentVersion.music_mood}"</span></li>
-                        <li>Text overlays with title and call-to-action</li>
-                      </ul>
+                    <Settings2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="text-white font-semibold text-sm mb-3">Video Generation Method</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {[
+                          { value: "google", label: "Google Text-to-Video", desc: "Google's Veo API" },
+                          { value: "runway", label: "Runway Gen-3", desc: "Advanced AI video" },
+                          { value: "kling", label: "Kling Video", desc: "Chinese state-of-art" },
+                          { value: "gemini", label: "Gemini Veo", desc: "Google's Gemini API" }
+                        ].map(opt => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setVideoMethod(opt.value)}
+                            className={`p-3 rounded-lg border text-left transition-all ${
+                              videoMethod === opt.value
+                                ? "bg-blue-500/20 border-blue-400 text-white"
+                                : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8"
+                            }`}
+                          >
+                            <p className="font-medium text-sm">{opt.label}</p>
+                            <p className="text-xs text-white/50">{opt.desc}</p>
+                          </button>
+                        ))}
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="h-px bg-white/10"></div>
+
+                  <div>
+                    <h4 className="text-white font-semibold text-sm mb-3">YouTube Publishing</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {[
+                        { value: "auto", label: "Auto-Publish", desc: "Direct to YouTube via API" },
+                        { value: "manual", label: "Manual Upload", desc: "Download & upload yourself" }
+                      ].map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => setPublishMethod(opt.value)}
+                          className={`p-3 rounded-lg border text-left transition-all ${
+                            publishMethod === opt.value
+                              ? "bg-blue-500/20 border-blue-400 text-white"
+                              : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8"
+                          }`}
+                        >
+                          <p className="font-medium text-sm">{opt.label}</p>
+                          <p className="text-xs text-white/50">{opt.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-blue-200/70 pt-2">
+                    <p><strong>Note:</strong> Auto-publish requires YouTube OAuth authorization. Manual uploads give you full control over video details and scheduling.</p>
                   </div>
                 </div>
               )}
