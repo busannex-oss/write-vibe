@@ -1,0 +1,95 @@
+{
+  "name": "MasterRegistry",
+  "type": "object",
+  "properties": {
+    "version_number": {
+      "type": "number",
+      "description": "Registry version"
+    },
+    "title": {
+      "type": "string",
+      "description": "Registry document title"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full registry content as rich HTML"
+    },
+    "elements": {
+      "type": "array",
+      "description": "Structured element list",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "pillar_alignment": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "string"
+          },
+          "outputs": {
+            "type": "string"
+          },
+          "dependencies": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "strategic_value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

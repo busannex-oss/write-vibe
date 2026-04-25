@@ -97,7 +97,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain },
         { name: "Mission Statement", href: "MissionStatement", icon: Target },
-        { name: "SOPs", href: "SOPs", icon: ClipboardList }
+        { name: "SOPs", href: "SOPs", icon: ClipboardList },
+        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen }
       ]
     : [];
 
