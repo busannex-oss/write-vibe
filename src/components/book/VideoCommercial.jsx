@@ -170,27 +170,35 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
     });
   };
 
-  // ── Step 3: Generate video using Google text-to-video ──────────────────────
+  // ── Step 3: Generate video with Google API & auto-publish to YouTube ──────
   const generateVideo = async () => {
     setGeneratingVideo(true);
     try {
-      const response = await base44.functions.invoke('generateBookTrailer', {
+      const response = await base44.functions.invoke('generateAndPublishTrailer', {
         script,
         selectedDuration,
         storyboardImages,
-        bookTitle: book.title
+        bookTitle: book.title,
+        bookId: book.id
       });
 
       if (response.data?.success) {
-        // After generation, guide user to upload to YouTube
-        setVideoGuideStep('upload');
-        alert('Video generation complete! Now upload it to YouTube and paste the link below.');
+        if (response.data.youtubeUrl) {
+          // Video was auto-published to YouTube
+          setYoutubeUrl(response.data.youtubeUrl);
+          await persist(script, selectedDuration, storyboardImages, response.data.youtubeUrl);
+          alert(`🎉 Video generated and published to YouTube! Video ID: ${response.data.videoId}`);
+        } else {
+          // YouTube auth not available, need manual upload
+          setVideoGuideStep('upload');
+          alert('Video generated! Please authorize YouTube in settings to auto-publish, or paste the YouTube link below.');
+        }
       } else {
         alert('Video generation failed. Please try again.');
       }
     } catch (error) {
       console.error('Video generation error:', error);
-      alert('Error generating video: ' + error.message);
+      alert('Error: ' + error.message);
     } finally {
       setGeneratingVideo(false);
     }
