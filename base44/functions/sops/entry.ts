@@ -178,6 +178,74 @@ Generate 4-8 clear, actionable steps. Be specific to a book publishing / author 
       return Response.json({ success: true, generated: result });
     }
 
+    // ── GENERATE FROM DOCUMENT ───────────────────────────────────────────────
+    if (action === 'generate_from_doc') {
+      const { document, doc_type, pillars, owner, review_months } = body;
+      if (!document) return Response.json({ error: 'document required' }, { status: 400 });
+
+      const pillarCtx = pillars?.length ? `Focus especially on these brand pillars: ${pillars.join(', ')}.` : `Align with relevant pillars from: ${PILLARS.join(', ')}.`;
+
+      const prompt = `You are a senior operations architect for The Write Vibe — an AI-powered book creation and self-publishing platform. 
+
+A team member has submitted the following ${doc_type?.replace(/_/g, ' ')} for SOP extraction:
+
+---
+${document}
+---
+
+Your task: Analyze this documentation and extract 3–6 distinct Standard Operating Procedures that would help the team operate more consistently and effectively. Each SOP should be a standalone operational unit.
+
+${pillarCtx}
+
+Return JSON with a "sops" array. Each SOP must have:
+- title: clear, action-oriented SOP name
+- purpose: 1-2 sentences — why this SOP exists
+- scope: what this SOP covers and who it applies to
+- trigger: what event or condition initiates this SOP
+- pillar_alignment: array of 1-3 relevant pillars from [${PILLARS.join(', ')}]
+- steps: array of 4-8 steps, each with: step_number, step_name (short), instruction (detailed, actionable), responsible_role
+- notes: any exceptions, edge cases, or important caveats
+
+Be specific to the Write Vibe book publishing platform context. Make instructions actionable and unambiguous.`;
+
+      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            sops: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  purpose: { type: "string" },
+                  scope: { type: "string" },
+                  trigger: { type: "string" },
+                  pillar_alignment: { type: "array", items: { type: "string" } },
+                  steps: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        step_number: { type: "number" },
+                        step_name: { type: "string" },
+                        instruction: { type: "string" },
+                        responsible_role: { type: "string" }
+                      }
+                    }
+                  },
+                  notes: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return Response.json({ success: true, sops: result.sops || [] });
+    }
+
     // ── NOTIFY OWNER ─────────────────────────────────────────────────────────
     if (action === 'notify_owner') {
       const { id } = body;

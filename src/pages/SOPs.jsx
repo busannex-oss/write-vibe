@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import SOPEditor from "@/components/sops/SOPEditor";
 import SOPDetail from "@/components/sops/SOPDetail";
+import SOPGenerator from "@/components/sops/SOPGenerator";
 
 const PILLARS = ["Authenticity", "Creativity", "Empowerment", "Innovation", "Community", "Excellence", "Integrity", "Growth"];
 
@@ -27,7 +28,7 @@ export default function SOPsPage() {
   const [sops, setSops] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("list"); // list | editor | detail
+  const [view, setView] = useState("list"); // list | editor | detail | generator
   const [selectedSop, setSelectedSop] = useState(null);
   const [reviewDue, setReviewDue] = useState([]);
 
@@ -78,6 +79,9 @@ export default function SOPsPage() {
     URL.revokeObjectURL(url);
   };
 
+  if (view === "generator") {
+    return <SOPGenerator categories={categories} onBack={() => setView("list")} onSopsSaved={load} />;
+  }
   if (view === "editor") {
     return <SOPEditor sop={selectedSop} categories={categories} onSaved={handleSaved} onCancel={() => setView("list")} />;
   }
@@ -100,6 +104,9 @@ export default function SOPsPage() {
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" onClick={handleExportAll}>
               <Download className="w-4 h-4 mr-1" /> Export All
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setView("generator")} className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10">
+              <Sparkles className="w-4 h-4 mr-1" /> Generate from Doc
             </Button>
             <Button onClick={handleNew} className="bg-amber-500 hover:bg-amber-600 text-black">
               <Plus className="w-4 h-4 mr-1" /> New SOP
