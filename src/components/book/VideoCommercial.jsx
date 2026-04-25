@@ -170,7 +170,32 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
     });
   };
 
-  // ── Step 3: Generate video from text-to-video or save YouTube URL ────────
+  // ── Step 3: Generate video using Google text-to-video ──────────────────────
+  const generateVideo = async () => {
+    setGeneratingVideo(true);
+    try {
+      const response = await base44.functions.invoke('generateBookTrailer', {
+        script,
+        selectedDuration,
+        storyboardImages,
+        bookTitle: book.title
+      });
+
+      if (response.data?.success) {
+        // After generation, guide user to upload to YouTube
+        setVideoGuideStep('upload');
+        alert('Video generation complete! Now upload it to YouTube and paste the link below.');
+      } else {
+        alert('Video generation failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Video generation error:', error);
+      alert('Error generating video: ' + error.message);
+    } finally {
+      setGeneratingVideo(false);
+    }
+  };
+
   const extractYoutubeId = (url) => {
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
     return match ? match[1] : null;
@@ -343,7 +368,7 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
         </Card>
       )}
 
-      {/* Step 3: Upload or Generate Video */}
+      {/* Step 3: Generate Video with AI */}
       {hasScript && hasImages && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -357,26 +382,44 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
                   <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${hasVideo ? "bg-emerald-500 text-white" : "bg-white/20 text-white/60"}`}>
                     {hasVideo ? <Check className="w-4 h-4" /> : "3"}
                   </span>
-                  Publish to YouTube & Embed
+                  Generate & Publish Video
                 </CardTitle>
+                {!hasVideo && (
+                  <Button
+                    onClick={generateVideo}
+                    disabled={generatingVideo}
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0"
+                  >
+                    {generatingVideo ? (
+                      <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating…</>
+                    ) : (
+                      <><Video className="w-4 h-4 mr-1" />Generate {selectedDuration}s Video</>
+                    )}
+                  </Button>
+                )}
               </div>
-              <p className="text-sm text-white/50 mt-1">Generate a full video using your storyboard images, upload to YouTube, and embed it here.</p>
+              <p className="text-sm text-white/50 mt-1">Google AI generates a professional {selectedDuration}-second video from your script and storyboard images.</p>
             </CardHeader>
 
             <CardContent className="space-y-4">
-              {/* Option: Use storyboard to create video */}
+              {/* Generate video step */}
               {!hasVideo && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+                <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-3">
                   <div className="flex items-start gap-3">
-                    <Film className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                    <Sparkles className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-white font-semibold text-sm mb-1">Create video from storyboard</h4>
-                      <ol className="text-white/60 text-xs space-y-1 list-decimal ml-4">
-                        <li><strong>Import images:</strong> Download the {storyboardImages.length} storyboard images above</li>
-                        <li><strong>Use video editor:</strong> Import into CapCut, iMovie, or Adobe Premiere</li>
-                        <li><strong>Add audio:</strong> Use the narration text and music mood: <span className="italic">"{currentVersion.music_mood}"</span></li>
-                        <li><strong>Upload to YouTube:</strong> Paste the YouTube link below</li>
-                      </ol>
+                      <h4 className="text-white font-semibold text-sm mb-1">AI-Powered Video Generation</h4>
+                      <p className="text-white/60 text-xs">
+                        Google's text-to-video AI will create a cinematic {selectedDuration}-second trailer using:
+                      </p>
+                      <ul className="text-white/60 text-xs space-y-0.5 list-disc ml-4 mt-1.5">
+                        <li>Your script narration and scene descriptions</li>
+                        <li>Storyboard images as visual references</li>
+                        <li>Professional color grading and transitions</li>
+                        <li>Music mood: <span className="italic">"{currentVersion.music_mood}"</span></li>
+                        <li>Text overlays with title and call-to-action</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
