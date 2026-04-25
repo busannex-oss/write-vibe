@@ -4,11 +4,114 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2, Sparkles, Edit3, Download, History, Save, X, RefreshCw,
-  ChevronDown, ChevronUp, CheckCircle2, BookOpen, RotateCcw, Clock
+  ChevronDown, ChevronUp, CheckCircle2, BookOpen, RotateCcw, Clock, Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RegistryVersionHistory from "@/components/registry/RegistryVersionHistory";
 import RegistryEditor from "@/components/registry/RegistryEditor";
+
+const STATUS_COLORS = {
+  "Active": { bg: "bg-green-500/10", border: "border-green-500/30", text: "text-green-400", dot: "bg-green-400" },
+  "In Development": { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", dot: "bg-amber-400" },
+  "Planned": { bg: "bg-slate-500/10", border: "border-slate-500/30", text: "text-slate-400", dot: "bg-slate-400" },
+};
+
+const CATEGORIES = ["All", "Page", "AI Agent", "AI Tool", "Integration", "Automation", "Document", "Process"];
+const STATUSES = ["All", "Active", "In Development", "Planned"];
+
+function ElementCard({ el }) {
+  const s = STATUS_COLORS[el.status] || STATUS_COLORS["Planned"];
+  return (
+    <div className="bg-white/[0.03] border border-white/8 rounded-xl p-5 hover:border-white/15 transition-colors">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <h3 className="text-white font-semibold text-sm">{el.name}</h3>
+          <span className="text-white/30 text-xs">{el.category}</span>
+        </div>
+        <span className={cn("shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border", s.bg, s.border, s.text)}>
+          <span className={cn("w-1.5 h-1.5 rounded-full", s.dot)} />
+          {el.status}
+        </span>
+      </div>
+      {el.pillar_alignment?.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {el.pillar_alignment.map(p => (
+            <span key={p} className="bg-amber-500/8 border border-amber-500/18 text-amber-500/80 text-xs px-2 py-0.5 rounded-full">{p}</span>
+          ))}
+        </div>
+      )}
+      <p className="text-white/50 text-xs leading-relaxed mb-3">{el.purpose}</p>
+      {el.strategic_value && (
+        <div className="border-l-2 border-amber-500/30 pl-3">
+          <p className="text-amber-400/70 text-xs italic">{el.strategic_value}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FilterBar({ elements, categoryFilter, setCategoryFilter, statusFilter, setStatusFilter }) {
+  const categoryCounts = {};
+  CATEGORIES.forEach(c => {
+    categoryCounts[c] = c === "All" ? elements.length : elements.filter(e => e.category === c).length;
+  });
+  const statusCounts = {};
+  STATUSES.forEach(s => {
+    statusCounts[s] = s === "All" ? elements.length : elements.filter(e => e.status === s).length;
+  });
+
+  return (
+    <div className="bg-slate-900/60 border border-white/5 rounded-xl p-4 mb-6 space-y-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Filter className="w-3.5 h-3.5 text-amber-400" />
+        <span className="text-white/50 text-xs uppercase tracking-wider font-medium">Filter</span>
+      </div>
+
+      {/* Category pills */}
+      <div className="flex flex-wrap gap-2">
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoryFilter(cat)}
+            className={cn(
+              "px-3 py-1 rounded-full text-xs font-medium transition-all border",
+              categoryFilter === cat
+                ? "bg-amber-500 border-amber-500 text-black"
+                : "bg-white/5 border-white/10 text-white/50 hover:text-white hover:border-white/20"
+            )}
+          >
+            {cat} {categoryCounts[cat] > 0 && <span className="opacity-60">({categoryCounts[cat]})</span>}
+          </button>
+        ))}
+      </div>
+
+      {/* Status pills */}
+      <div className="flex flex-wrap gap-2">
+        {STATUSES.map(st => {
+          const s = STATUS_COLORS[st];
+          const isActive = statusFilter === st;
+          return (
+            <button
+              key={st}
+              onClick={() => setStatusFilter(st)}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all border",
+                isActive && st !== "All"
+                  ? cn(s.bg, s.border, s.text)
+                  : isActive
+                  ? "bg-white/10 border-white/20 text-white"
+                  : "bg-white/5 border-white/10 text-white/50 hover:text-white hover:border-white/20"
+              )}
+            >
+              {st !== "All" && s && <span className={cn("w-1.5 h-1.5 rounded-full", s.dot)} />}
+              {st} <span className="opacity-60">({statusCounts[st]})</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 const invoke = (action, extra = {}) => base44.functions.invoke("masterRegistry", { action, ...extra });
 
@@ -20,6 +123,8 @@ export default function MasterRegistryPage() {
   const [lastSaved, setLastSaved] = useState(null);
   const [autoSaving, setAutoSaving] = useState(false);
   const [genProgress, setGenProgress] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const autoSaveRef = useRef(null);
   const editorContentRef = useRef(null);
 
@@ -197,13 +302,59 @@ export default function MasterRegistryPage() {
               <Sparkles className="w-4 h-4 mr-2" /> Generate Master Element Registry
             </Button>
           </div>
-        ) : (
-          /* Render the HTML registry document */
-          <div
-            className="registry-document"
-            dangerouslySetInnerHTML={{ __html: registry.content_html }}
-          />
-        )}
+        ) : (() => {
+          // Deduplicate by name (case-insensitive)
+          const seen = new Set();
+          const allElements = (registry.elements || []).filter(el => {
+            const key = el.name?.toLowerCase().trim();
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+
+          const filtered = allElements.filter(el =>
+            (categoryFilter === "All" || el.category === categoryFilter) &&
+            (statusFilter === "All" || el.status === statusFilter)
+          );
+
+          const isFiltered = categoryFilter !== "All" || statusFilter !== "All";
+
+          return (
+            <>
+              {allElements.length > 0 && (
+                <FilterBar
+                  elements={allElements}
+                  categoryFilter={categoryFilter}
+                  setCategoryFilter={setCategoryFilter}
+                  statusFilter={statusFilter}
+                  setStatusFilter={setStatusFilter}
+                />
+              )}
+
+              {isFiltered ? (
+                <div>
+                  <p className="text-white/30 text-xs mb-4">
+                    Showing {filtered.length} of {allElements.length} elements
+                    {categoryFilter !== "All" && <span> · {categoryFilter}</span>}
+                    {statusFilter !== "All" && <span> · {statusFilter}</span>}
+                  </p>
+                  {filtered.length === 0 ? (
+                    <div className="text-center py-20 text-white/30">No elements match the selected filters.</div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {filtered.map((el, i) => <ElementCard key={el.id || i} el={el} />)}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="registry-document"
+                  dangerouslySetInnerHTML={{ __html: registry.content_html }}
+                />
+              )}
+            </>
+          );
+        })()}
       </div>
     </div>
   );
