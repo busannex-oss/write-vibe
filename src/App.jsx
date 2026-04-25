@@ -19,6 +19,7 @@ import LegalDocuments from './pages/LegalDocuments';
 import BookHealthCheck from './pages/BookHealthCheck';
 import LicensingTerms from './pages/LicensingTerms';
 import AgentPortal from './pages/AgentPortal';
+import KPIFramework from './pages/KPIFramework';
 import DistributionDashboard from './pages/DistributionDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -87,6 +88,7 @@ const AuthenticatedApp = () => {
       <Route path="/BookHealthCheck" element={<LayoutWrapper currentPageName="BookHealthCheck"><BookHealthCheck /></LayoutWrapper>} />
       <Route path="/LicensingTerms" element={<LayoutWrapper currentPageName="LicensingTerms"><LicensingTerms /></LayoutWrapper>} />
       <Route path="/AgentPortal" element={<AgentPortal />} />
+      <Route path="/KPIFramework" element={<LayoutWrapper currentPageName="KPIFramework"><KPIFramework /></LayoutWrapper>} />
       <Route path="/DistributionDashboard" element={<LayoutWrapper currentPageName="DistributionDashboard"><DistributionDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
