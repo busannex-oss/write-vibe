@@ -58,15 +58,18 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const isWhiteLabel = user?.subscription_tier === "white_label";
-  const brandName = isWhiteLabel && user?.white_label_config?.brand_name 
+  
+  // Website branding (applies to all users)
+  const brandName = user?.website_title || "Write Vibe";
+  const brandLogo = user?.website_logo_url || (isWhiteLabel && user?.white_label_config?.logo_url ? user.white_label_config.logo_url : null);
+  
+  // White label specific overrides
+  const finalBrandName = isWhiteLabel && user?.white_label_config?.brand_name 
     ? user.white_label_config.brand_name 
-    : "Write Vibe";
+    : brandName;
   const brandColor = isWhiteLabel && user?.white_label_config?.primary_color 
     ? user.white_label_config.primary_color 
     : "#f59e0b";
-  const brandLogo = isWhiteLabel && user?.white_label_config?.logo_url 
-    ? user.white_label_config.logo_url 
-    : null;
 
   const memberNav = [
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
@@ -134,7 +137,7 @@ export default function Layout({ children, currentPageName }) {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
             )}
-            <span className="font-semibold text-white tracking-tight">{brandName}</span>
+            <span className="font-semibold text-white tracking-tight">{finalBrandName}</span>
           </div>
           <Button
             variant="ghost"
@@ -175,7 +178,7 @@ export default function Layout({ children, currentPageName }) {
                 </div>
               )}
               <div>
-                <h1 className="font-bold text-lg text-white tracking-tight">{brandName}</h1>
+                <h1 className="font-bold text-lg text-white tracking-tight">{finalBrandName}</h1>
                 <p className="text-xs text-white/40">AI Book Studio</p>
               </div>
             </div>

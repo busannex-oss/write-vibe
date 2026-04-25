@@ -32,6 +32,7 @@ import { createPageUrl } from "@/utils";
 import AIGenerateButton from "@/components/AIGenerateButton";
 import HeroImageManager from "@/components/HeroImageManager";
 import WhiteLabelBranding from "@/components/WhiteLabelBranding";
+import WebsiteBranding from "@/components/WebsiteBranding";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
@@ -192,6 +193,10 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
           <TabsTrigger value="appearance" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <Palette className="w-4 h-4 mr-2" />
             Appearance
+          </TabsTrigger>
+          <TabsTrigger value="website" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Website
           </TabsTrigger>
           {user?.subscription_tier === "white_label" && (
             <TabsTrigger value="branding" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
@@ -438,6 +443,11 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
         {/* Appearance Tab */}
         <TabsContent value="appearance" className="space-y-6">
           <HeroImageManager />
+        </TabsContent>
+
+        {/* Website Tab */}
+        <TabsContent value="website" className="space-y-6">
+          <WebsiteBranding user={user} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['user'] })} />
         </TabsContent>
 
         {/* White Label Branding Tab */}
