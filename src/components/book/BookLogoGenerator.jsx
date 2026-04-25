@@ -15,6 +15,8 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
   const [penName, setPenName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [uploadedLogo, setUploadedLogo] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [logoAnalysis, setLogoAnalysis] = useState(null);
 
   // Load saved logo data on mount
   useEffect(() => {
@@ -22,6 +24,21 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
       setUploadedLogo(book.front_cover_url);
     }
   }, [book.front_cover_url]);
+
+  // Process uploaded logo with LLM
+  const processLogoWithLLM = async (logoUrl) => {
+    setProcessing(true);
+    try {
+      const response = await base44.functions.invoke('processLogoImage', {
+        logo_url: logoUrl
+      });
+      setLogoAnalysis(response.data);
+    } catch (error) {
+      console.error('Logo processing error:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const authorName = usePenName && penName ? penName : user?.full_name || "Author";
 
@@ -66,6 +83,8 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
       const res = await base44.integrations.Core.UploadFile({ file });
       setUploadedLogo(res.file_url);
       await onUpdate({ front_cover_url: res.file_url }, true);
+      // Automatically process with LLM
+      await processLogoWithLLM(res.file_url);
     } catch (error) {
       console.error("Upload error:", error);
       alert("Error uploading logo: " + error.message);
@@ -79,6 +98,8 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
       setSelectedLogo(logo.url);
       setUploadedLogo(logo.url);
       await onUpdate({ front_cover_url: logo.url }, true);
+      // Automatically process with LLM
+      await processLogoWithLLM(logo.url);
       alert("Logo saved to book!");
     } catch (error) {
       console.error("Save error:", error);
@@ -278,10 +299,10 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
           <CardHeader>
             <CardTitle className="text-white text-base">Logo Preview</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-32 h-32 rounded-lg bg-black flex items-center justify-center overflow-hidden border border-white/10">
-                <img src={uploadedLogo} alt="Logo Preview" className="w-full h-full object-cover" />
+              <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-slate-800 to-black flex items-center justify-center overflow-hidden border border-white/10">
+                <img src={uploadedLogo} alt="Logo Preview" className="w-full h-full object-contain p-2" />
               </div>
               <div className="flex-1">
                 <p className="text-white font-medium mb-1">{book.title}</p>
@@ -289,6 +310,53 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
                 <Badge className="mt-2">{book.category || "Book"}</Badge>
               </div>
             </div>
+            
+            {/* Logo Analysis */}
+            {logoAnalysis && (
+              <div className="space-y-3 mt-4 pt-4 border-t border-white/10">
+                <p className="text-sm font-semibold text-white">AI Logo Analysis</p>
+                {logoAnalysis.optimization_guide && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div className="bg-white/5 p-2 rounded">
+                        <p className="text-white/60">Crop Level</p>
+                        <p className="text-white capitalize">{logoAnalysis.optimization_guide.crop_level}</p>
+                      </div>
+                      <div className="bg-white/5 p-2 rounded">
+                        <p className="text-white/60">Padding</p>
+                        <p className="text-white">{logoAnalysis.optimization_guide.padding_px}px</p>
+                      </div>
+                      <div className="bg-white/5 p-2 rounded">
+                        <p className="text-white/60">Target Size</p>
+                        <p className="text-white">{logoAnalysis.optimization_guide.final_size}</p>
+                      </div>
+                      <div className="bg-white/5 p-2 rounded">
+                        <p className="text-white/60">Colors</p>
+                        <p className="text-white">{logoAnalysis.optimization_guide.colors?.length || 0} colors</p>
+                      </div>
+                    </div>
+                    {logoAnalysis.optimization_guide.use_cases && logoAnalysis.optimization_guide.use_cases.length > 0 && (
+                      <div className="bg-white/5 p-2 rounded">
+                        <p className="text-white/60 text-xs mb-1">Best For</p>
+                        <div className="flex flex-wrap gap-1">
+                          {logoAnalysis.optimization_guide.use_cases.map((use, idx) => (
+                            <Badge key={idx} className="bg-amber-500/20 text-amber-300 border-0 text-xs capitalize">
+                              {use}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+            {processing && (
+              <div className="flex items-center gap-2 text-sm text-white/60">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Analyzing logo with AI...
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

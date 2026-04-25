@@ -13,6 +13,8 @@ export default function WebsiteBranding({ user, onUpdate }) {
   });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [logoAnalysis, setLogoAnalysis] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -22,6 +24,20 @@ export default function WebsiteBranding({ user, onUpdate }) {
       });
     }
   }, [user]);
+
+  const processLogoWithLLM = async (logoUrl) => {
+    setProcessing(true);
+    try {
+      const response = await base44.functions.invoke('processLogoImage', {
+        logo_url: logoUrl
+      });
+      setLogoAnalysis(response.data);
+    } catch (error) {
+      console.error('Logo processing error:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -33,6 +49,8 @@ export default function WebsiteBranding({ user, onUpdate }) {
         
         // Auto-save logo
         await base44.auth.updateMe({ website_logo_url: file_url });
+        // Automatically process with LLM
+        await processLogoWithLLM(file_url);
         if (onUpdate) onUpdate();
       } catch (error) {
         console.error("Error uploading logo:", error);
@@ -92,6 +110,18 @@ export default function WebsiteBranding({ user, onUpdate }) {
               />
               <p className="text-xs text-white/40">PNG or JPG • Recommended: 200x200px or square</p>
               <p className="text-xs text-white/40 mt-1">Updates instantly on all websites</p>
+              {processing && (
+                <div className="flex items-center gap-2 text-xs text-white/60 mt-2">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Analyzing logo with AI...
+                </div>
+              )}
+              {logoAnalysis?.optimization_guide && (
+                <div className="mt-3 p-2 bg-white/5 rounded text-xs space-y-1 border border-white/10">
+                  <p className="text-white/60">✓ Logo analyzed and optimized for web</p>
+                  <p className="text-white/60">Size: {logoAnalysis.optimization_guide.final_size}</p>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
