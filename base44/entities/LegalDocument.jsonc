@@ -1,0 +1,103 @@
+{
+  "name": "LegalDocument",
+  "type": "object",
+  "properties": {
+    "doc_type": {
+      "type": "string",
+      "enum": [
+        "privacy_policy",
+        "terms_of_service"
+      ],
+      "description": "Type of legal document"
+    },
+    "version_number": {
+      "type": "number",
+      "description": "Document version"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_html": {
+      "type": "string",
+      "description": "Full document as rich HTML"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this version becomes effective"
+    },
+    "risk_analysis": {
+      "type": "object",
+      "description": "AI legal risk analysis",
+      "properties": {
+        "overall_risk": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "section": {
+                "type": "string"
+              },
+              "risk_level": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "recommendation": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false
+    },
+    "generation_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "doc_type",
+    "version_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
