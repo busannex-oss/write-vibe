@@ -3,9 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Sparkles, Check, Loader2, Video, Film, Music, Clock, Download, RefreshCw, Save
+  Sparkles, Check, Loader2, Video, Film, Music, Clock, Download, RefreshCw, Save,
+  Youtube, ExternalLink, Copy
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function VideoCommercial({ book, onUpdate }) {
   const [generating, setGenerating] = useState(false);
@@ -15,6 +19,10 @@ export default function VideoCommercial({ book, onUpdate }) {
   const [selectedDuration, setSelectedDuration] = useState("60");
   const [script, setScript] = useState(null);
   const [storyboardImages, setStoryboardImages] = useState([]);
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [generatingVideo, setGeneratingVideo] = useState(false);
+  const [videoUrlInput, setVideoUrlInput] = useState("");
+  const [videoGuideStep, setVideoGuideStep] = useState(null);
 
   // ── Load saved data on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -25,17 +33,19 @@ export default function VideoCommercial({ book, onUpdate }) {
       if (saved.script) setScript(saved.script);
       if (saved.duration) setSelectedDuration(saved.duration);
       if (saved.storyboardImages?.length) setStoryboardImages(saved.storyboardImages);
+      if (saved.youtubeUrl) setYoutubeUrl(saved.youtubeUrl);
     } catch {
       // not JSON — ignore
     }
   }, [book.video_commercial_url]);
 
   // ── Persist helper ────────────────────────────────────────────────────────
-  const persist = async (scriptData, duration, images) => {
+  const persist = async (scriptData, duration, images, url) => {
     const payload = JSON.stringify({
       script: scriptData,
       duration,
       storyboardImages: images,
+      youtubeUrl: url || youtubeUrl,
       savedAt: new Date().toISOString()
     });
     await onUpdate({ video_commercial_url: payload }, true);
@@ -160,9 +170,36 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
     });
   };
 
+  // ── Step 3: Generate video from text-to-video or save YouTube URL ────────
+  const extractYoutubeId = (url) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
+    return match ? match[1] : null;
+  };
+
+  const handleYoutubeUrlSubmit = async () => {
+    const youtubeId = extractYoutubeId(videoUrlInput);
+    if (!youtubeId) {
+      alert("Invalid YouTube URL. Please paste a valid YouTube link.");
+      return;
+    }
+    const fullUrl = `https://www.youtube.com/embed/${youtubeId}`;
+    setYoutubeUrl(fullUrl);
+    await persist(script, selectedDuration, storyboardImages, fullUrl);
+    setVideoUrlInput("");
+    setVideoGuideStep(null);
+  };
+
+  const copyEmbedCode = () => {
+    if (!youtubeUrl) return;
+    const embedCode = `<iframe width="100%" height="600" src="${youtubeUrl}" title="Book Trailer" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>`;
+    navigator.clipboard.writeText(embedCode);
+    alert("Embed code copied to clipboard!");
+  };
+
   const currentVersion = script?.versions?.[selectedDuration + "s"];
   const hasScript = !!script;
   const hasImages = storyboardImages.length > 0;
+  const hasVideo = !!youtubeUrl;
 
   return (
     <div className="space-y-6">
@@ -306,13 +343,117 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
         </Card>
       )}
 
+      {/* Step 3: Upload or Generate Video */}
+      {hasScript && hasImages && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white text-base flex items-center gap-2">
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${hasVideo ? "bg-emerald-500 text-white" : "bg-white/20 text-white/60"}`}>
+                    {hasVideo ? <Check className="w-4 h-4" /> : "3"}
+                  </span>
+                  Publish to YouTube & Embed
+                </CardTitle>
+              </div>
+              <p className="text-sm text-white/50 mt-1">Generate a full video using your storyboard images, upload to YouTube, and embed it here.</p>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              {/* Option: Use storyboard to create video */}
+              {!hasVideo && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Film className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-white font-semibold text-sm mb-1">Create video from storyboard</h4>
+                      <ol className="text-white/60 text-xs space-y-1 list-decimal ml-4">
+                        <li><strong>Import images:</strong> Download the {storyboardImages.length} storyboard images above</li>
+                        <li><strong>Use video editor:</strong> Import into CapCut, iMovie, or Adobe Premiere</li>
+                        <li><strong>Add audio:</strong> Use the narration text and music mood: <span className="italic">"{currentVersion.music_mood}"</span></li>
+                        <li><strong>Upload to YouTube:</strong> Paste the YouTube link below</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* YouTube URL Input */}
+              <div className="space-y-2">
+                <label className="text-sm text-white/60 font-medium">YouTube Video URL</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                    value={videoUrlInput}
+                    onChange={(e) => setVideoUrlInput(e.target.value)}
+                    className="bg-white/8 border-white/15 text-white placeholder:text-white/25"
+                  />
+                  <Button
+                    onClick={handleYoutubeUrlSubmit}
+                    disabled={!videoUrlInput.trim()}
+                    className="bg-blue-500 hover:bg-blue-600 text-white border-0 shrink-0"
+                  >
+                    <Youtube className="w-4 h-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-white/40">Paste your YouTube video link to embed it on your book website</p>
+              </div>
+
+              {/* YouTube Preview */}
+              {hasVideo && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="space-y-3"
+                >
+                  <div className="aspect-video bg-black rounded-xl overflow-hidden border border-white/10">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={youtubeUrl}
+                      title="Book Trailer"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={copyEmbedCode}
+                      className="flex-1 border-white/15 text-white hover:bg-white/8 gap-2">
+                      <Copy className="w-4 h-4" />
+                      Copy Embed Code
+                    </Button>
+                    <Button variant="ghost" onClick={() => window.open(youtubeUrl.replace("/embed/", "/watch?v="), "_blank")}
+                      className="text-white/50 hover:text-white hover:bg-white/8 gap-2">
+                      <ExternalLink className="w-4 h-4" />
+                      View on YouTube
+                    </Button>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <p className="text-emerald-300 text-sm">Video ready to embed on your book website</p>
+                  </div>
+                </motion.div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
       {/* Save to Book */}
       {hasScript && (
         <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p className="text-emerald-300 font-semibold">Save Trailer to Book</p>
-              <p className="text-xs text-white/50 mt-0.5">Saves your {selectedDuration}s trailer script{hasImages ? " + storyboard images" : ""} to the book's landing page.</p>
+              <p className="text-xs text-white/50 mt-0.5">Saves your {selectedDuration}s trailer script{hasImages ? " + storyboard images" : ""}{hasVideo ? " + YouTube video" : ""} to the book's landing page.</p>
               {lastSaved && <p className="text-xs text-emerald-400 mt-1">✓ Last saved {lastSaved.toLocaleTimeString()}</p>}
             </div>
             <Button
