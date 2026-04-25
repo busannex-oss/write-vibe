@@ -34,7 +34,8 @@ import {
   SortAsc,
   Users as UsersIcon,
   User,
-  Trash2
+  Trash2,
+  BarChart2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -135,12 +136,20 @@ export default function Books() {
           <h1 className="text-2xl lg:text-3xl font-bold text-white">My Books</h1>
           <p className="text-white/50 mt-1">Manage all your book projects</p>
         </div>
-        <Link to={createPageUrl("CreateBook")}>
-          <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
-            <Plus className="w-4 h-4 mr-2" />
-            New Book
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/BookHealthCheck">
+            <Button variant="outline" className="border-white/15 text-white/60 hover:text-white hover:bg-white/10">
+              <BarChart2 className="w-4 h-4 mr-2" />
+              Health Check
+            </Button>
+          </Link>
+          <Link to={createPageUrl("CreateBook")}>
+            <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+              <Plus className="w-4 h-4 mr-2" />
+              New Book
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters & Actions */}

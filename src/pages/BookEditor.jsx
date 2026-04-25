@@ -25,7 +25,8 @@ import {
   Edit3,
   RefreshCw,
   Download,
-  ExternalLink
+  ExternalLink,
+  BarChart2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -165,6 +166,9 @@ export default function BookEditor() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/BookHealthCheck?id=${bookId}`)}>
+                <BarChart2 className="w-4 h-4 mr-1" /> Health Check
+              </Button>
             <Button variant="outline" size="sm" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}>
                 <ExternalLink className="w-4 h-4 mr-1" /> View Website
               </Button>
