@@ -10,7 +10,8 @@ import {
   ArrowLeft, ArrowRight, Sparkles, BookOpen, FileText, Image,
   Video, Volume2, Globe, Users, Loader2, Check, Edit3,
   RefreshCw, Download, ExternalLink, BarChart2, Package,
-  ShieldCheck, ChevronRight, BookMarked, AlignLeft
+  ShieldCheck, BookMarked, AlignLeft, Settings2, ChevronRight,
+  Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -30,14 +31,14 @@ import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
 import AgentAccessPanel from "@/components/book/AgentAccessPanel.jsx";
 
-// ── Step definitions ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
   {
     id: "title",
     label: "Title",
     icon: Edit3,
     description: "Give your book a compelling, marketable title",
-    hint: "AI will suggest 8 options — or type your own",
+    hint: "AI suggests 8 options — or type your own",
     isDone: (b) => !!b?.title && b.title !== "Untitled Book",
   },
   {
@@ -45,7 +46,7 @@ const STEPS = [
     label: "Characters",
     icon: Users,
     description: "Define the people who drive your story",
-    hint: "Add main and supporting characters with backstory and traits",
+    hint: "Add characters with backstory, traits, and appearance",
     isDone: (b) => (b?.characters?.length || 0) > 0,
     optional: true,
   },
@@ -54,7 +55,7 @@ const STEPS = [
     label: "Outline",
     icon: FileText,
     description: "Build your chapter-by-chapter roadmap",
-    hint: "AI generates a complete story structure — edit to match your vision",
+    hint: "AI generates full story structure — edit to match your vision",
     isDone: (b) => (b?.table_of_contents?.length || 0) > 0,
   },
   {
@@ -62,7 +63,7 @@ const STEPS = [
     label: "Summary",
     icon: AlignLeft,
     description: "Write your back cover and marketing copy",
-    hint: "Three versions: social teaser, back cover (150 words), extended synopsis",
+    hint: "Teaser, back cover (150 words), and extended synopsis",
     isDone: (b) => !!b?.book_summary,
   },
   {
@@ -70,7 +71,7 @@ const STEPS = [
     label: "Manuscript",
     icon: BookOpen,
     description: "Write your book, chapter by chapter",
-    hint: "AI writes each chapter from your outline — edit in real time",
+    hint: "AI writes from your outline — edit chapters in real time",
     isDone: (b) => (b?.manuscript_chapters?.length || 0) > 0,
   },
   {
@@ -78,7 +79,7 @@ const STEPS = [
     label: "Cover Design",
     icon: Image,
     description: "Design your front and back cover",
-    hint: "Generate multiple options — vote on your favourite",
+    hint: "Generate multiple cover options and vote on your favourite",
     isDone: (b) => !!b?.front_cover_url,
   },
   {
@@ -100,10 +101,10 @@ const STEPS = [
   },
   {
     id: "video",
-    label: "Book Promo Video",
+    label: "Promo Video",
     icon: Video,
-    description: "Create a promotional video for your book",
-    hint: "AI produces a cinematic trailer for social and your website",
+    description: "Create a cinematic promotional video",
+    hint: "AI produces a book trailer for social and your website",
     isDone: (b) => !!b?.video_commercial_url,
     optional: true,
   },
@@ -111,27 +112,40 @@ const STEPS = [
     id: "website",
     label: "Book Website",
     icon: Globe,
-    description: "Launch your author website with promo video embedded",
-    hint: "Full book site with cover, summary, links, video, and reader reviews",
+    description: "Launch your author website",
+    hint: "Full site with cover, summary, promo video, and reader reviews",
     isDone: (b) => !!b?.website_config?.status,
   },
 ];
 
 const STEP_IDS = STEPS.map(s => s.id);
 
-// Steps that are "utility" tabs — accessible anytime via the header
 const UTILITY_TABS = [
-  { id: "seo", label: "SEO", icon: Sparkles },
-  { id: "team", label: "Team", icon: Users },
-  { id: "agents", label: "Agent Access", icon: ShieldCheck },
-  { id: "viewer", label: "View & Export", icon: Download },
-  { id: "marketing", label: "Marketing", icon: BookMarked },
+  { id: "seo",       label: "SEO",         icon: Sparkles   },
+  { id: "viewer",    label: "Read",         icon: Download   },
+  { id: "marketing", label: "Marketing",    icon: BookMarked },
+  { id: "team",      label: "Team",         icon: Users      },
+  { id: "agents",    label: "Agent Access", icon: ShieldCheck },
 ];
 
-// ── Step Progress Rail ────────────────────────────────────────────────────────
-function StepRail({ steps, book, activeStep, onStepClick }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Sidebar stepper
+// ─────────────────────────────────────────────────────────────────────────────
+function Stepper({ steps, book, activeStep, onStepClick }) {
+  const completedCount = steps.filter(s => s.isDone(book)).length;
+  const progress = (completedCount / steps.length) * 100;
+
   return (
-    <div className="flex items-center gap-0 overflow-x-auto pb-1 scrollbar-none">
+    <aside className="w-56 shrink-0 flex flex-col gap-1">
+      {/* Mini progress summary */}
+      <div className="mb-3 px-1">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-white/30 text-xs font-medium uppercase tracking-wider">Progress</span>
+          <span className="text-white/40 text-xs">{completedCount}/{steps.length}</span>
+        </div>
+        <Progress value={progress} className="h-1 bg-white/8" />
+      </div>
+
       {steps.map((step, idx) => {
         const done = step.isDone(book);
         const active = activeStep === step.id;
@@ -139,112 +153,154 @@ function StepRail({ steps, book, activeStep, onStepClick }) {
         const accessible = idx === 0 || prevsDone || step.optional || done;
 
         return (
-          <React.Fragment key={step.id}>
-            <button
-              onClick={() => accessible && onStepClick(step.id)}
-              disabled={!accessible}
-              title={!accessible ? "Complete previous steps first" : step.description}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all whitespace-nowrap shrink-0 text-sm font-medium ${
-                active
-                  ? "bg-amber-500/15 border-amber-500/50 text-white"
-                  : done
-                  ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15"
-                  : accessible
-                  ? "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white"
-                  : "bg-white/3 border-white/5 text-white/20 cursor-not-allowed"
-              }`}
-            >
+          <button
+            key={step.id}
+            onClick={() => accessible && onStepClick(step.id)}
+            disabled={!accessible}
+            className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full ${
+              active
+                ? "bg-amber-500/12 text-white"
+                : done
+                ? "text-emerald-400/80 hover:bg-emerald-500/8 hover:text-emerald-300"
+                : accessible
+                ? "text-white/40 hover:text-white/70 hover:bg-white/5"
+                : "text-white/15 cursor-not-allowed"
+            }`}
+          >
+            {/* Step indicator circle */}
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all ${
+              active
+                ? "bg-amber-500 shadow-lg shadow-amber-500/30"
+                : done
+                ? "bg-emerald-500/20 border border-emerald-500/40"
+                : accessible
+                ? "bg-white/8 border border-white/15"
+                : "bg-white/4 border border-white/8"
+            }`}>
               {done && !active ? (
-                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : !accessible ? (
+                <Lock className="w-3 h-3 text-white/20" />
+              ) : active ? (
+                <step.icon className="w-3.5 h-3.5 text-white" />
               ) : (
-                <step.icon className={`w-3.5 h-3.5 shrink-0 ${active ? "text-amber-400" : ""}`} />
+                <span className="text-xs font-semibold text-white/40">{idx + 1}</span>
               )}
-              <span>{step.label}</span>
-              {step.optional && !done && (
-                <span className="text-[9px] text-white/25 font-normal">(opt)</span>
-              )}
-            </button>
-            {idx < steps.length - 1 && (
-              <ChevronRight className="w-3 h-3 text-white/15 shrink-0 mx-0.5" />
+            </div>
+
+            {/* Label */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium truncate">{step.label}</span>
+                {step.optional && !done && (
+                  <span className="text-[9px] text-white/20 font-normal shrink-0">opt</span>
+                )}
+              </div>
+            </div>
+
+            {/* Active indicator bar */}
+            {active && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-amber-500 rounded-full" />
             )}
-          </React.Fragment>
+          </button>
         );
       })}
+    </aside>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step content header (shown above each step's component)
+// ─────────────────────────────────────────────────────────────────────────────
+function StepBanner({ step, stepNumber, totalSteps }) {
+  return (
+    <div className="mb-6 pb-5 border-b border-white/6">
+      <div className="flex items-center gap-2 text-white/25 text-xs mb-2 font-medium uppercase tracking-wider">
+        <span>Step {stepNumber} of {totalSteps}</span>
+        {step.optional && (
+          <>
+            <span>·</span>
+            <span className="text-amber-400/40">Optional</span>
+          </>
+        )}
+      </div>
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+          <step.icon className="w-4 h-4 text-amber-400" />
+        </div>
+        <div>
+          <h2 className="text-white font-bold text-xl leading-tight">{step.label}</h2>
+          <p className="text-white/40 text-sm mt-0.5">{step.description}</p>
+          {step.hint && (
+            <p className="text-amber-400/50 text-xs mt-1.5 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 shrink-0" />
+              {step.hint}
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-// ── Step Footer — Next / Prev navigation ─────────────────────────────────────
-function StepFooter({ currentStepId, book, onNavigate }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Step footer nav
+// ─────────────────────────────────────────────────────────────────────────────
+function StepNav({ currentStepId, book, onNavigate }) {
   const idx = STEP_IDS.indexOf(currentStepId);
   if (idx < 0) return null;
 
   const currentStep = STEPS[idx];
   const isDone = currentStep.isDone(book);
-  const nextStep = idx < STEPS.length - 1 ? STEPS[idx + 1] : null;
-  const prevStep = idx > 0 ? STEPS[idx - 1] : null;
+  const nextStep = STEPS[idx + 1] || null;
+  const prevStep = STEPS[idx - 1] || null;
+
+  // Can go next if current is done, or if next is optional, or current is optional
+  const canGoNext = isDone || currentStep.optional;
 
   return (
-    <div className="mt-8 pt-6 border-t border-white/8 flex items-center justify-between gap-4">
+    <div className="mt-10 pt-6 border-t border-white/6 flex items-center justify-between gap-4">
       <div>
         {prevStep && (
           <Button variant="ghost" onClick={() => onNavigate(prevStep.id)}
-            className="text-white/40 hover:text-white hover:bg-white/8">
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> {prevStep.label}
+            className="text-white/30 hover:text-white hover:bg-white/6 gap-1.5 px-3">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="text-sm">{prevStep.label}</span>
           </Button>
         )}
       </div>
+
       <div className="flex items-center gap-3">
-        {!isDone && (
-          <p className="text-white/30 text-xs hidden sm:block">
-            {currentStep.optional ? "This step is optional — skip if not needed" : "Complete this step to continue"}
-          </p>
+        {!isDone && !currentStep.optional && (
+          <p className="text-white/20 text-xs hidden sm:block">Complete this step to continue</p>
         )}
-        {nextStep && (
+        {!isDone && currentStep.optional && (
+          <p className="text-white/20 text-xs hidden sm:block">Optional — skip if not needed</p>
+        )}
+
+        {nextStep ? (
           <Button
             onClick={() => onNavigate(nextStep.id)}
-            disabled={!isDone && !nextStep.optional && !STEPS.slice(0, STEP_IDS.indexOf(nextStep.id)).filter(s => !s.optional).every(s => s.isDone(book))}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold border-0"
+            disabled={!canGoNext}
+            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold border-0 gap-2 shadow-lg shadow-amber-500/20"
           >
-            Next: {nextStep.label}
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            {nextStep.label}
+            <ArrowRight className="w-3.5 h-3.5" />
           </Button>
-        )}
-        {!nextStep && isDone && (
-          <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-            <Check className="w-4 h-4" /> All steps complete — your book is ready to publish!
+        ) : isDone ? (
+          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-sm font-medium px-4 py-2 rounded-lg">
+            <Check className="w-4 h-4" />
+            Production complete!
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
 }
 
-// ── Step Header — context banner ──────────────────────────────────────────────
-function StepHeader({ step, stepNumber, totalSteps }) {
-  return (
-    <div className="mb-6 flex items-start gap-4">
-      <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-        <span className="text-amber-400 font-bold text-sm">{stepNumber}</span>
-      </div>
-      <div>
-        <div className="flex items-center gap-2 mb-0.5">
-          <h2 className="text-white font-bold text-lg">{step.label}</h2>
-          <span className="text-white/20 text-sm">· Step {stepNumber} of {totalSteps}</span>
-          {step.optional && <Badge className="bg-white/8 text-white/30 border-0 text-xs">Optional</Badge>}
-        </div>
-        <p className="text-white/50 text-sm">{step.description}</p>
-        {step.hint && (
-          <p className="text-amber-400/60 text-xs mt-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3" /> {step.hint}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Main BookEditor ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Main
+// ─────────────────────────────────────────────────────────────────────────────
 export default function BookEditor() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -253,7 +309,7 @@ export default function BookEditor() {
 
   const [activeTab, setActiveTab] = useState("title");
 
-  const { data: bookRaw, isLoading, error } = useQuery({
+  const { data: bookRaw, isLoading } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
       if (!bookId) return null;
@@ -276,16 +332,8 @@ export default function BookEditor() {
     await updateBookMutation.mutateAsync(data);
   };
 
-  // Progress calculation
-  const completedRequired = STEPS.filter(s => !s.optional && s.isDone(book)).length;
-  const totalRequired = STEPS.filter(s => !s.optional).length;
-  const completedOptional = STEPS.filter(s => s.optional && s.isDone(book)).length;
-  const totalCompleted = STEPS.filter(s => s.isDone(book)).length;
-  const progress = (totalCompleted / STEPS.length) * 100;
-
   const currentStepDef = STEPS.find(s => s.id === activeTab) || null;
   const currentStepIdx = STEP_IDS.indexOf(activeTab);
-  const isUtilityTab = UTILITY_TABS.some(u => u.id === activeTab);
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -294,9 +342,9 @@ export default function BookEditor() {
   );
 
   if ((!book || !book.id) && !isLoading) return (
-    <div className="p-6 lg:p-8 text-center">
+    <div className="p-8 text-center">
       <h2 className="text-xl font-semibold text-white mb-2">Book not found</h2>
-      <p className="text-white/50 mb-4">This book may have been deleted or you don't have access.</p>
+      <p className="text-white/40 mb-5">This book may have been deleted or you don't have access.</p>
       <Button onClick={() => navigate(createPageUrl("Books"))}
         className="bg-gradient-to-r from-amber-500 to-orange-500 text-black border-0 font-semibold">
         Back to Books
@@ -305,140 +353,165 @@ export default function BookEditor() {
   );
 
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto">
+    <div className="min-h-screen flex flex-col">
 
-      {/* ── Header ────────────────────────────────────────────────── */}
-      <div className="mb-5">
-        <Button variant="ghost" onClick={() => navigate(createPageUrl("Books"))}
-          className="text-white/40 hover:text-white hover:bg-white/8 mb-3 -ml-2">
-          <ArrowLeft className="w-4 h-4 mr-1.5" /> My Books
-        </Button>
+      {/* ── Top bar ───────────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between px-6 h-14 border-b border-white/6 bg-slate-900/40 backdrop-blur-sm sticky top-0 z-20">
+        <div className="flex items-center gap-4 min-w-0">
+          <button onClick={() => navigate(createPageUrl("Books"))}
+            className="flex items-center gap-1.5 text-white/35 hover:text-white transition-colors text-sm shrink-0">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">My Books</span>
+          </button>
+          <div className="w-px h-4 bg-white/10 shrink-0" />
+          <h1 className="text-white font-semibold text-sm truncate">{book.title || "Untitled Book"}</h1>
+          {book.category && (
+            <Badge className="bg-white/8 text-white/40 border-0 text-xs shrink-0 hidden md:flex">{book.category}</Badge>
+          )}
+        </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-xl lg:text-2xl font-bold text-white truncate">
-              {book.title || "Untitled Book"}
-            </h1>
-            <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
-              {book.category && (
-                <Badge className="bg-amber-500/15 text-amber-300 border-amber-500/25 text-xs">{book.category}</Badge>
-              )}
-              <span className="text-white/30 text-xs">{totalCompleted}/{STEPS.length} steps complete</span>
-              <div className="flex items-center gap-2">
-                <Progress value={progress} className="w-20 h-1.5 bg-white/10" />
-                <span className="text-white/40 text-xs">{Math.round(progress)}%</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick-access utility tools */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Button variant="outline" size="sm" onClick={() => navigate(`/BookHealthCheck?id=${bookId}`)}
-              className="border-white/15 text-white/50 hover:text-white hover:bg-white/8 text-xs h-8">
-              <BarChart2 className="w-3.5 h-3.5 mr-1" /> Health
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate(`/DistributionDashboard?id=${bookId}`)}
-              className="border-white/15 text-white/50 hover:text-white hover:bg-white/8 text-xs h-8">
-              <Package className="w-3.5 h-3.5 mr-1" /> Distribute
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}
-              className="border-white/15 text-white/50 hover:text-white hover:bg-white/8 text-xs h-8">
-              <ExternalLink className="w-3.5 h-3.5 mr-1" /> View Site
-            </Button>
-          </div>
+        {/* Header actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => navigate(`/BookHealthCheck?id=${bookId}`)}
+            className="flex items-center gap-1.5 text-white/30 hover:text-white/60 transition-colors text-xs px-2 py-1.5 rounded-lg hover:bg-white/5">
+            <BarChart2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Health</span>
+          </button>
+          <button onClick={() => navigate(`/DistributionDashboard?id=${bookId}`)}
+            className="flex items-center gap-1.5 text-white/30 hover:text-white/60 transition-colors text-xs px-2 py-1.5 rounded-lg hover:bg-white/5">
+            <Package className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Distribute</span>
+          </button>
+          <Button size="sm" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}
+            className="bg-white/8 hover:bg-white/12 text-white border-0 text-xs h-8 gap-1.5">
+            <ExternalLink className="w-3.5 h-3.5" />
+            View Site
+          </Button>
         </div>
       </div>
 
-      {/* ── Step Rail ──────────────────────────────────────────────── */}
-      <div className="mb-5 space-y-3">
-        <StepRail steps={STEPS} book={book} activeStep={activeTab} onStepClick={setActiveTab} />
+      {/* ── Body ──────────────────────────────────────────────────────────── */}
+      <div className="flex flex-1">
 
-        {/* Utility tabs row */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-white/20 text-xs font-medium shrink-0">Tools:</span>
+        {/* ── Sidebar ─────────────────────────────────────────────────────── */}
+        <div className="w-56 shrink-0 border-r border-white/6 bg-slate-900/20 flex flex-col pt-6 pb-6 px-3 hidden lg:flex sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+          <Stepper
+            steps={STEPS}
+            book={book}
+            activeStep={activeTab}
+            onStepClick={setActiveTab}
+          />
+
+          {/* Divider */}
+          <div className="my-4 flex items-center gap-2 px-1">
+            <div className="flex-1 h-px bg-white/6" />
+            <span className="text-white/20 text-[10px] uppercase tracking-wider font-medium">Tools</span>
+            <div className="flex-1 h-px bg-white/6" />
+          </div>
+
+          {/* Utility tools */}
+          <div className="flex flex-col gap-0.5">
+            {UTILITY_TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left w-full text-sm ${
+                  activeTab === tab.id
+                    ? "bg-slate-700/50 text-white"
+                    : "text-white/30 hover:text-white/60 hover:bg-white/4"
+                }`}
+              >
+                <tab.icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Mobile step selector (top scroll row) ───────────────────────── */}
+        <div className="lg:hidden w-full border-b border-white/6 overflow-x-auto flex items-center gap-1 px-4 py-2 bg-slate-900/30 sticky top-14 z-10">
+          {STEPS.map((step, idx) => {
+            const done = step.isDone(book);
+            const active = activeTab === step.id;
+            const prevsDone = STEPS.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
+            const accessible = idx === 0 || prevsDone || step.optional || done;
+            return (
+              <button
+                key={step.id}
+                onClick={() => accessible && setActiveTab(step.id)}
+                disabled={!accessible}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shrink-0 text-xs font-medium transition-all border ${
+                  active ? "bg-amber-500/15 border-amber-500/40 text-white"
+                  : done ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
+                  : accessible ? "bg-white/5 border-white/10 text-white/50"
+                  : "bg-transparent border-transparent text-white/15 cursor-not-allowed"
+                }`}
+              >
+                {done && !active ? <Check className="w-3 h-3" /> : <step.icon className="w-3 h-3" />}
+                <span>{step.label}</span>
+              </button>
+            );
+          })}
+          <div className="w-px h-4 bg-white/10 shrink-0 mx-1" />
           {UTILITY_TABS.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                activeTab === tab.id
-                  ? "bg-slate-700/60 border-white/25 text-white"
-                  : "bg-white/3 border-white/8 text-white/35 hover:text-white/60 hover:bg-white/6"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shrink-0 text-xs border transition-all ${
+                activeTab === tab.id ? "bg-slate-700/60 border-white/20 text-white" : "bg-transparent border-transparent text-white/25 hover:text-white/50"
               }`}>
               <tab.icon className="w-3 h-3" />
-              {tab.label}
+              <span>{tab.label}</span>
             </button>
           ))}
         </div>
+
+        {/* ── Main content ─────────────────────────────────────────────────── */}
+        <main className="flex-1 min-w-0 overflow-auto">
+          <div className="max-w-3xl mx-auto px-6 py-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16 }}
+              >
+                {/* Banner for main steps */}
+                {currentStepDef && (
+                  <StepBanner
+                    step={currentStepDef}
+                    stepNumber={currentStepIdx + 1}
+                    totalSteps={STEPS.length}
+                  />
+                )}
+
+                {/* Step content */}
+                {activeTab === "title"      && <TitleGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "characters" && <EnhancedCharacterCreator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "outline"    && <UnifiedOutlineGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "summary"    && <SummaryGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "manuscript" && <ManuscriptWriter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "cover"      && <CoverDesigner book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "format"     && <ManuscriptFormatter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "audiobook"  && <AudiobookGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "video"      && <VideoCommercial book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "website"    && <WebsiteBuilder book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+
+                {/* Utility tabs */}
+                {activeTab === "seo"       && <SEOMetadataEditor book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "viewer"    && <ManuscriptViewer book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "marketing" && <MarketingCampaignGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "team"      && <CollaborationPanel book={book} />}
+                {activeTab === "agents"    && <AgentAccessPanel book={book} />}
+
+                {/* Next / prev footer — only for main pipeline steps */}
+                {currentStepDef && (
+                  <StepNav currentStepId={activeTab} book={book} onNavigate={setActiveTab} />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
-
-      {/* ── Step Content ───────────────────────────────────────────── */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.18 }}
-        >
-          {/* Step context banner for main steps */}
-          {currentStepDef && (
-            <StepHeader
-              step={currentStepDef}
-              stepNumber={currentStepIdx + 1}
-              totalSteps={STEPS.length}
-            />
-          )}
-
-          {/* Step content */}
-          {activeTab === "title" && (
-            <TitleGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "characters" && (
-            <EnhancedCharacterCreator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "outline" && (
-            <UnifiedOutlineGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "summary" && (
-            <SummaryGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "manuscript" && (
-            <ManuscriptWriter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "cover" && (
-            <CoverDesigner book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "format" && (
-            <ManuscriptFormatter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "audiobook" && (
-            <AudiobookGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "video" && (
-            <VideoCommercial book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "website" && (
-            <WebsiteBuilder book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-
-          {/* Utility tabs */}
-          {activeTab === "seo" && (
-            <SEOMetadataEditor book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "viewer" && (
-            <ManuscriptViewer book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "marketing" && (
-            <MarketingCampaignGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
-          )}
-          {activeTab === "team" && <CollaborationPanel book={book} />}
-          {activeTab === "agents" && <AgentAccessPanel book={book} />}
-
-          {/* Step navigation footer */}
-          {currentStepDef && (
-            <StepFooter currentStepId={activeTab} book={book} onNavigate={setActiveTab} />
-          )}
-        </motion.div>
-      </AnimatePresence>
     </div>
   );
 }
