@@ -45,6 +45,7 @@
   .book-editor-body {
     display: flex;
     flex: 1;
+    gap: 0;
   }
 
   /* Sidebar */
@@ -63,6 +64,7 @@
     top: 3.5rem;
     height: calc(100vh - 3.5rem);
     overflow-y: auto;
+    z-index: 10;
   }
 
   .book-editor-sidebar-stepper {
@@ -112,6 +114,8 @@
     min-width: 0;
     overflow-y: auto;
     flex-direction: column;
+    position: relative;
+    z-index: 5;
   }
 
   .book-editor-main-content {
@@ -119,6 +123,7 @@
     margin: 0 auto;
     padding: 2rem 1.5rem;
     width: 100%;
+    position: relative;
   }
 
   /* Responsive Text Sizing */
