@@ -316,75 +316,69 @@ Deno.serve(async (req) => {
       const mermaidSyntax = buildMermaidSyntax(PLATFORM_CONTEXT.pillars);
       const avgScore = Math.round(PLATFORM_CONTEXT.pillars.reduce((s, p) => s + p.coverage_score, 0) / PLATFORM_CONTEXT.pillars.length);
 
-      const contextBlock = `
-PLATFORM: ${PLATFORM_CONTEXT.name}
+      const pillarSummary = PLATFORM_CONTEXT.pillars.map(p =>
+        `${p.name} (${p.coverage_score}/100): ${p.definition.substring(0, 120)}...`
+      ).join('\n');
 
-8 PILLARS WITH FULL DATA:
-${PLATFORM_CONTEXT.pillars.map(p => `
+      // Generate intro + closing sections first, then all 8 pillars in parallel
+      const [introResult, closingResult, ...pillarResults] = await Promise.all([
+        // Section 1: Executive Summary
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `You are a senior platform architect and investor relations strategist for The Write Vibe — an AI-powered self-publishing platform with 8 brand pillars.
+
+Pillars overview:
+${pillarSummary}
+
+Generate SECTION 1: EXECUTIVE SUMMARY — THE 8-PILLAR ARCHITECTURE PHILOSOPHY
+Write 2-3 paragraphs: What the 8-pillar framework is, why it is the strategic backbone of The Write Vibe, how it differs from a typical product feature list, and what it tells investors about long-term defensibility. Be authoritative and investor-facing.
+
+Return JSON: { "title": "Executive Summary — The 8-Pillar Architecture Philosophy", "content": "HTML using <p><strong><em><ul><li> only, no inline styles" }`,
+          response_json_schema: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } }
+        }),
+        // Sections 10+11: Health + Investor Insight
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `You are a senior platform architect for The Write Vibe — an AI-powered self-publishing platform.
+
+Pillar coverage scores:
+${PLATFORM_CONTEXT.pillars.map(p => `${p.name}: ${p.coverage_score}/100`).join('\n')}
+Overall average: ${avgScore}/100
+
+Generate TWO sections as a JSON array:
+1. OVERALL PILLAR HEALTH ASSESSMENT: weighted health score table, top 3-4 platform strengths, top 3-4 priority development areas, pillar interdependencies.
+2. INVESTOR INSIGHT SUMMARY: 2-3 paragraphs for investors on why the 8-pillar architecture is a defensible moat, how scores evolve V2-V5, connection between pillar maturity and author LTV and valuation.
+
+Return JSON: { "sections": [ { "title": "...", "content": "HTML using <h3><h4><p><ul><li><table><tr><th><td><strong> only" }, { "title": "...", "content": "..." } ] }`,
+          response_json_schema: { type: "object", properties: { sections: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } } } }
+        }),
+        // All 8 pillars in parallel
+        ...PLATFORM_CONTEXT.pillars.map(p =>
+          base44.asServiceRole.integrations.Core.InvokeLLM({
+            prompt: `You are a senior platform architect writing a pillar section for The Write Vibe's 8 Pillars Architecture investor document.
+
 PILLAR: ${p.name} (Coverage Score: ${p.coverage_score}/100)
 Definition: ${p.definition}
 Core Functions: ${p.core_functions.join(' | ')}
-Active Platform Elements: ${p.platform_elements.join(', ')}
+Platform Elements: ${p.platform_elements.join(', ')}
 AI Agents: ${p.agents.join(', ')}
 Strategic Gaps: ${p.gaps.join('; ')}
 Competitive Advantage: ${p.competitive_advantage}
-`).join('\n')}
 
-MASTER ELEMENTS (${PLATFORM_CONTEXT.master_elements.length} total):
-${PLATFORM_CONTEXT.master_elements.join(', ')}
+Write a complete pillar section including: visual coverage bar (use block chars like ████████░░), definition, three core functions, active platform elements (with brief notes), AI agents and their role, coverage assessment, strategic gaps, and competitive advantage. Be specific, investor-facing, authoritative.
 
-FOUNDATIONAL DOCUMENTS (${PLATFORM_CONTEXT.foundational_docs.length} total, all complete):
-${PLATFORM_CONTEXT.foundational_docs.map(d => `${d.name} [${d.status}]`).join(', ')}
+Return JSON: { "title": "${p.name}", "content": "HTML using <h3><h4><p><ul><li><strong><em> only, no inline styles" }`,
+            response_json_schema: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } }
+          })
+        )
+      ]);
 
-OVERALL HEALTH: ${avgScore}/100 average across all 8 pillars`;
+      // Assemble sections in order: intro, 8 pillars, closing 2
+      const allSections = [
+        introResult,
+        ...pillarResults,
+        ...(closingResult.sections || [])
+      ].filter(Boolean);
 
-      const prompt = `You are a senior platform architect and investor relations strategist. Generate a complete, professional 8 Pillars Architecture document for The Write Vibe — an AI-powered self-publishing platform.
-
-PLATFORM DATA:
-${contextBlock}
-
-Generate ALL sections in this exact order:
-
-SECTION 1: EXECUTIVE SUMMARY — THE 8-PILLAR ARCHITECTURE PHILOSOPHY
-2-3 paragraphs: What the 8-pillar framework is, why it's the strategic backbone of The Write Vibe, how it differs from a typical product feature list, and what it tells investors about the platform's long-term defensibility. Be authoritative and investor-facing.
-
-SECTIONS 2-9: ONE SECTION PER PILLAR (all 8 pillars)
-For EACH pillar, generate a complete block including:
-- Pillar Name and Coverage Score (as a visual indicator: e.g., ████████░░ 82%)
-- Definition in self-publishing context (specific to The Write Vibe, not generic)
-- Three Core Functions (how this pillar specifically operates within the platform)
-- Active Platform Elements Serving This Pillar (with brief notes on each)
-- AI Agents Aligned to This Pillar (and their specific role in serving the pillar)
-- Current Coverage Assessment (honest evaluation of where the platform stands)
-- Strategic Gaps (specific gaps with roadmap context)
-- Competitive Advantage Created (the market moat this pillar builds — write for investors)
-
-SECTION 10: OVERALL PILLAR HEALTH ASSESSMENT
-- Overall weighted health score (with table showing each pillar score and weight)
-- Platform strategic strengths (top 3-4)
-- Priority development areas (top 3-4 with specific actions)
-- Pillar interdependencies (how the pillars reinforce each other)
-
-SECTION 11: INVESTOR INSIGHT SUMMARY
-2-3 paragraphs written directly to investors:
-- Why the 8-pillar architecture is a defensible competitive moat
-- How pillar coverage scores will evolve through V2-V5 releases
-- The connection between pillar maturity and author LTV and platform valuation
-
-Format with clean, professional HTML: <h2>, <h3>, <h4>, <p>, <ul>, <li>, <table>, <tr>, <th>, <td>, <strong>, <em> tags. NO inline styles. Be specific — name actual platform elements. Write with authority and precision.
-
-Return JSON: { "sections": [ { "title": "section title", "content": "full HTML content" } ] }`;
-
-      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        model: 'claude_sonnet_4_6',
-        response_json_schema: {
-          type: "object",
-          properties: {
-            sections: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } }
-          }
-        }
-      });
+      const result = { sections: allSections };
 
       const pillarColors = PLATFORM_CONTEXT.pillars.map(p => p.color);
 
