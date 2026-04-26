@@ -146,78 +146,63 @@ Deno.serve(async (req) => {
       const docTitle = isPrivacy ? 'Privacy Policy' : 'Terms of Service';
       const effectiveDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-      const platformDesc = `
-Platform: ${PLATFORM_CONTEXT.name}
-Description: ${PLATFORM_CONTEXT.description}
-Jurisdiction: ${PLATFORM_CONTEXT.jurisdiction}
-Services: ${PLATFORM_CONTEXT.services.join('; ')}
-Data Collected: ${PLATFORM_CONTEXT.data_collected.join('; ')}
-Payment Processing: ${PLATFORM_CONTEXT.payment_processing}
-Distribution Platforms: ${PLATFORM_CONTEXT.distribution_platforms.join(', ')}
-Subscription Plans: ${PLATFORM_CONTEXT.subscription_tiers.join(', ')}
-AI Tools: ${PLATFORM_CONTEXT.ai_tools.join(', ')}
-Contact: ${PLATFORM_CONTEXT.contact_email}`;
+      const platformDesc = `Platform: ${PLATFORM_CONTEXT.name}. ${PLATFORM_CONTEXT.description}. Jurisdiction: ${PLATFORM_CONTEXT.jurisdiction}. Services: ${PLATFORM_CONTEXT.services.join('; ')}. Data collected: ${PLATFORM_CONTEXT.data_collected.join('; ')}. Payment: ${PLATFORM_CONTEXT.payment_processing}. Distribution: ${PLATFORM_CONTEXT.distribution_platforms.join(', ')}. Plans: ${PLATFORM_CONTEXT.subscription_tiers.join(', ')}. AI tools: ${PLATFORM_CONTEXT.ai_tools.join(', ')}.`;
 
-      const prompt = isPrivacy
-        ? `You are a senior legal counsel drafting a comprehensive, professional Privacy Policy for an AI-powered self-publishing platform.
+      const keyReqs = isPrivacy
+        ? 'GDPR and CCPA compliant. Provisions for AI processing of author manuscripts and IP. Disclosure of data sharing with Amazon KDP/ACX. Author content ownership protections. Stripe payment data disclosures. White-label operator provisions.'
+        : 'Strong author IP ownership and content rights. AI-assisted content usage terms and limitations. Amazon KDP/ACX integration and royalty handling. Stripe payment and subscription billing. White-label licensing. Limitation of liability for AI-generated content. Class action waiver and arbitration clause. DMCA compliance.';
 
-Platform details:
+      // Split sections into two batches for parallel generation
+      const midpoint = Math.ceil(sections.length / 2);
+      const batch1 = sections.slice(0, midpoint);
+      const batch2 = sections.slice(midpoint);
+
+      const sectionSchema = {
+        type: "object",
+        properties: {
+          sections: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } }
+        }
+      };
+
+      const makeBatchPrompt = (batch, batchIndex) =>
+        `You are senior legal counsel drafting part of a ${docTitle} for an AI-powered self-publishing platform.
+
 ${platformDesc}
 
-Draft a complete, legally robust Privacy Policy covering all ${sections.length} sections:
-${sections.map((s, i) => `${i+1}. ${s}`).join('\n')}
+Key requirements: ${keyReqs}
 
-Key requirements:
-- GDPR and CCPA compliant language
-- Specific provisions for AI processing of author manuscripts and intellectual property
-- Clear disclosure of data sharing with Amazon KDP and ACX
-- Author content ownership protections
-- Stripe payment data handling disclosures
-- White-label operator provisions
+Draft ONLY these sections (${batchIndex === 0 ? 'first' : 'second'} half):
+${batch.map((s, i) => `${(batchIndex === 0 ? 0 : midpoint) + i + 1}. ${s}`).join('\n')}
 
-Return JSON: { "sections": [ { "title": "section title", "content": "full HTML content using <p>, <ul>, <li>, <h3> tags, NO inline styles, professional legal prose" } ] }`
-        : `You are a senior legal counsel drafting a comprehensive, professional Terms of Service agreement for an AI-powered self-publishing platform.
+Return JSON: { "sections": [ { "title": "section title", "content": "HTML using <p><ul><li><h3> only, no inline styles, professional legal prose" } ] }`;
 
-Platform details:
-${platformDesc}
-
-Draft a complete, legally robust Terms of Service covering all ${sections.length} sections:
-${sections.map((s, i) => `${i+1}. ${s}`).join('\n')}
-
-Key requirements:
-- Strong author IP ownership and content rights provisions
-- Clear AI-assisted content usage terms and limitations
-- Amazon KDP/ACX integration and royalty handling terms
-- Stripe payment and subscription billing terms
-- White-label licensing provisions
-- Limitation of liability for AI-generated content quality
-- Class action waiver and arbitration clause
-- DMCA compliance provisions
-
-Return JSON: { "sections": [ { "title": "section title", "content": "full HTML content using <p>, <ul>, <li>, <h3> tags, NO inline styles, professional legal prose" } ] }`;
-
-      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        model: 'claude_sonnet_4_6',
-        response_json_schema: {
-          type: "object",
-          properties: {
-            sections: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  content: { type: "string" }
-                }
-              }
+      // Run both batches + risk analysis in parallel
+      const [batch1Result, batch2Result, riskAnalysis] = await Promise.all([
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: makeBatchPrompt(batch1, 0),
+          response_json_schema: sectionSchema
+        }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: makeBatchPrompt(batch2, 1),
+          response_json_schema: sectionSchema
+        }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `You are a legal risk analyst. Identify 4-6 legal risk areas in the ${docTitle} for The Write Vibe (AI self-publishing platform handling author IP, AI-generated content, Amazon KDP/ACX distribution). For each risk: section, risk_level (high/medium/low), description (1-2 sentences), recommendation (1-2 sentences). Also: overall_risk, summary (2-3 sentences). Return JSON.`,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              overall_risk: { type: "string" },
+              summary: { type: "string" },
+              risks: { type: "array", items: { type: "object", properties: { section: { type: "string" }, risk_level: { type: "string" }, description: { type: "string" }, recommendation: { type: "string" } } } }
             }
           }
-        }
-      });
+        })
+      ]);
+
+      const allSections = [...(batch1Result.sections || []), ...(batch2Result.sections || [])];
 
       // Build inner content HTML from sections
-      const innerHtml = (result.sections || []).map((sec, idx) => `
+      const innerHtml = allSections.map((sec, idx) => `
 <div style="margin-bottom:36px;">
   <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #f59e0b;font-family:system-ui,sans-serif;">${idx+1}. ${sec.title}</h2>
   <div style="color:#374151;font-size:14px;line-height:1.85;">${sec.content}</div>
@@ -229,46 +214,6 @@ Return JSON: { "sections": [ { "title": "section title", "content": "full HTML c
       await Promise.all(sameType.map(d => base44.asServiceRole.entities.LegalDocument.update(d.id, { is_current: false })));
 
       const content_html = buildDocHTML(docType, innerHtml, effectiveDate, latestVersion + 1);
-
-      // Risk analysis in parallel
-      const riskPromise = base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a legal risk analyst. Review this ${docTitle} for The Write Vibe (AI-powered self-publishing platform) and identify the top 4-6 legal risk areas specific to a platform handling author intellectual property, AI-generated content, and third-party distribution (Amazon KDP/ACX).
-
-For each risk, provide:
-- section: which section/area
-- risk_level: "high", "medium", or "low"
-- description: what the risk is (1-2 sentences)
-- recommendation: how to mitigate it (1-2 sentences)
-
-Also provide:
-- overall_risk: "high", "medium", or "low"
-- summary: 2-3 sentence executive summary of the document's legal risk profile
-
-Document sections covered: ${sections.join(', ')}
-
-Return as JSON.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            overall_risk: { type: "string" },
-            summary: { type: "string" },
-            risks: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  section: { type: "string" },
-                  risk_level: { type: "string" },
-                  description: { type: "string" },
-                  recommendation: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-
-      const riskAnalysis = await riskPromise;
 
       const saved = await base44.asServiceRole.entities.LegalDocument.create({
         doc_type: docType,
