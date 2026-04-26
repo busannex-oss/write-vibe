@@ -50,6 +50,8 @@
     flex: 1;
     flex-direction: column;
     min-height: 0;
+    width: 100%;
+    position: relative;
   }
 
   /* Sidebar — Hidden on Mobile */
@@ -60,7 +62,7 @@
   /* Mobile Step Selector */
   .book-editor-mobile-selector {
     display: flex !important;
-    width: 100%;
+    width: 100% !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     overflow-x: auto;
     overflow-y: hidden;
@@ -73,6 +75,8 @@
     z-index: 10;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    flex: 0 0 auto;
+    height: 2.75rem;
   }
 
   .book-editor-mobile-selector::-webkit-scrollbar {
@@ -140,14 +144,17 @@
     -webkit-overflow-scrolling: touch;
     display: flex !important;
     flex-direction: column;
+    width: 100%;
+    position: relative;
   }
 
   .book-editor-main-content {
     max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
     padding: 1rem 0.75rem;
     width: 100%;
     min-height: min-content;
+    flex: 1;
   }
 
   /* Responsive Text Sizing */
