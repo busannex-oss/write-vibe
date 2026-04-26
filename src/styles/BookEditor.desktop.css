@@ -2,7 +2,7 @@
 /* BookEditor Desktop Layout — 1280px and above */
 /* ──────────────────────────────────────────────────────────────────────── */
 
-@media (min-width: 1280px) {
+/* NO MEDIA QUERY - Desktop is the base/default layout */
   .book-editor-container {
     display: flex;
     flex-direction: column;
@@ -238,4 +238,3 @@
   .book-editor-hidden-tablet {
     display: block !important;
   }
-}
