@@ -447,7 +447,14 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
 
         {/* Website Tab */}
         <TabsContent value="website" className="space-y-6">
-          <WebsiteBranding user={user} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['user'] })} />
+          <WebsiteBranding 
+            user={user} 
+            onUpdate={() => {
+              queryClient.invalidateQueries({ queryKey: ['user'] });
+              // Force a full page reload to update the logo everywhere
+              window.location.reload();
+            }} 
+          />
         </TabsContent>
 
         {/* White Label Branding Tab */}

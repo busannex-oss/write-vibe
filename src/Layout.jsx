@@ -31,6 +31,14 @@ export default function Layout({ children, currentPageName }) {
     if (!loading) checkAccess();
   }, [currentPageName, loading]);
 
+  // Periodically refetch user to pick up logo changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadUser();
+    }, 3000); // Refetch every 3 seconds when on Settings page
+    return () => clearInterval(interval);
+  }, []);
+
   const loadUser = async () => {
     try {
       const userData = await base44.auth.me();
