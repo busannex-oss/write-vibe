@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,8 +6,11 @@ import {
   CheckCircle2, UserCheck, ArrowLeft, RefreshCw
 } from "lucide-react";
 import ReactQuill from "react-quill";
+import { retryWithBackoff } from "@/lib/retryWithBackoff";
 
-const invoke = (action, extra = {}) => base44.functions.invoke("onboardingExperience", { action, ...extra });
+const invoke = (action, extra = {}) => retryWithBackoff(
+  () => base44.functions.invoke("onboardingExperience", { action, ...extra })
+);
 
 const STEPS = [
   "Welcome & Account Activation",
@@ -29,6 +32,9 @@ function VersionHistory({ onBack, onRestore }) {
   useEffect(() => {
     invoke("versions").then(r => {
       setVersions(r.data.versions || []);
+      setLoading(false);
+    }).catch(error => {
+      console.error("Error loading versions:", error);
       setLoading(false);
     });
   }, []);
@@ -106,9 +112,15 @@ function DocEditor({ initialHtml, onSave, onCancel, editorContentRef }) {
 
   const handleRegenStep = async (step) => {
     setRegenStep(step);
-    await invoke("regenerate_step", { step_name: step });
-    setRegenStep(null);
-    alert(`"${step}" step regenerated. Save your edits then use "Regenerate with AI" to embed all changes into the full document.`);
+    try {
+      await invoke("regenerate_step", { step_name: step });
+      setRegenStep(null);
+      alert(`"${step}" step regenerated. Save your edits then use "Regenerate with AI" to embed all changes into the full document.`);
+    } catch (error) {
+      console.error("Error regenerating step:", error);
+      setRegenStep(null);
+      alert("Error regenerating step. Please try again.");
+    }
   };
 
   return (
@@ -162,8 +174,12 @@ export default function OnboardingExperiencePage() {
 
   const load = async () => {
     setLoading(true);
-    const res = await invoke("get_current");
-    setDoc(res.data.doc || null);
+    try {
+      const res = await invoke("get_current");
+      setDoc(res.data.doc || null);
+    } catch (error) {
+      console.error("Error loading document:", error);
+    }
     setLoading(false);
   };
 
@@ -186,11 +202,21 @@ export default function OnboardingExperiencePage() {
     setGenProgress("Pulling platform data — AI tools, pillars, service standards, publishing workflow...");
     await new Promise(r => setTimeout(r, 600));
     setGenProgress("Designing 8-step onboarding journey with pre & post experience (~45s)...");
-    const res = await invoke("generate");
-    setDoc(res.data.doc);
-    setLastSaved(new Date());
-    setGenerating(false);
-    setGenProgress("");
+    try {
+      const res = await invoke("generate");
+      setDoc(res.data.doc);
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error("Error generating onboarding:", error);
+      if (error?.response?.status === 504 || error?.message?.includes("504")) {
+        alert("Generation service is currently busy. Please try again in a few moments.");
+      } else {
+        alert("Error generating onboarding experience. Please try again.");
+      }
+    } finally {
+      setGenerating(false);
+      setGenProgress("");
+    }
   };
 
   const handleEditorSave = async (html) => {
@@ -201,9 +227,14 @@ export default function OnboardingExperiencePage() {
   };
 
   const handleRestore = async (id) => {
-    const res = await invoke("restore", { id });
-    setDoc(res.data.doc);
-    setView("document");
+    try {
+      const res = await invoke("restore", { id });
+      setDoc(res.data.doc);
+      setView("document");
+    } catch (error) {
+      console.error("Error restoring version:", error);
+      alert("Error restoring version. Please try again.");
+    }
   };
 
   const handleExportPDF = () => {

@@ -6,8 +6,11 @@ import {
   CheckCircle2, GitBranch, ArrowLeft, RefreshCw
 } from "lucide-react";
 import ReactQuill from "react-quill";
+import { retryWithBackoff } from "@/lib/retryWithBackoff";
 
-const invoke = (action, extra = {}) => base44.functions.invoke("versionRoadmap", { action, ...extra });
+const invoke = (action, extra = {}) => retryWithBackoff(
+  () => base44.functions.invoke("versionRoadmap", { action, ...extra })
+);
 
 const VERSIONS = ["V2.0", "V3.0", "V4.0", "V5.0"];
 
