@@ -87,8 +87,10 @@ export default function AgentCard({
             <Zap className="w-10 h-10" style={{ color: brandColors.accent }} />
           </div>
         ) : (
-          <div className="mx-auto w-20 h-20 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-            {loading ? (
+          <div className="mx-auto w-20 h-20 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center border-2" style={{ borderColor: brandColors.accent + "60" }}>
+            {agent.image ? (
+              <img src={agent.image} alt={agent.name} className="w-full h-full object-cover" />
+            ) : loading ? (
               <div
                 className="w-full h-full animate-pulse"
                 style={{ backgroundColor: brandColors.accent + "30" }}

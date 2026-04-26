@@ -14,40 +14,38 @@ const HIERARCHY_STRUCTURE = {
   level1: {
     name: "SYSTEM OWNER",
     agents: [
-      { id: "admin", name: "Administrator", title: "SYSTEM OWNER", age: null, role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Core system governance and oversight" }
+      { id: "admin", name: "Administrator", title: "SYSTEM OWNER", age: null, role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Core system governance and oversight", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" }
     ]
   },
   level2: {
     name: "EXECUTIVE AGENTS",
     agents: [
-      { id: "brand_guardian", name: "Marcus Whitmore", title: "BRAND GUARDIAN", age: 48, role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Ensures brand compliance and consistency across all deployments" },
-      { id: "automation_orchestrator", name: "Sam Johnson", title: "AUTOMATION ORCHESTRATOR", age: 42, role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation and SLA compliance" }
+      { id: "brand_guardian", name: "Preston Prime", title: "EXECUTIVE PROJECT MANAGER", age: 48, role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Ensures brand compliance and consistency", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop" },
+      { id: "automation_orchestrator", name: "Valerie Vance", title: "HUMAN RESOURCES MANAGER", age: 42, role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation and SLA compliance", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" }
     ]
   },
   level3: {
     name: "DEPARTMENT MANAGERS",
     agents: [
-      { id: "character_creator", name: "James Mitchell", title: "CHARACTER CREATOR", age: 35, role: "manager", status: "active", pillars: ["Progressive Development"], description: "Designs complex characters with psychological depth" },
-      { id: "outline_generator", name: "Olivia Rodriguez", title: "OUTLINE GENERATOR", age: 38, role: "manager", status: "active", pillars: ["Strategic Application", "Business Intelligence"], description: "Develops structured story roadmaps and narrative architecture" },
-      { id: "cover_designer", name: "Derek Thompson", title: "COVER DESIGNER", age: 45, role: "manager", status: "active", pillars: ["Strategic Application", "Exemplary Customer Service"], description: "Creates market-driven, visually compelling cover designs" },
-      { id: "marketing_assistant", name: "Priya Patel", title: "MARKETING ASSISTANT", age: 32, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Partnership Alignment"], description: "Orchestrates multi-channel book launches and campaigns" }
+      { id: "character_creator", name: "Nova Sterling", title: "CHIEF AGENTIC ORCHESTRATOR", age: 35, role: "manager", status: "active", pillars: ["Progressive Development"], description: "Designs complex characters with psychological depth", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" },
+      { id: "outline_generator", name: "Atlas Thorne", title: "GEOSPATIAL INTELLIGENCE ANALYST", age: 38, role: "manager", status: "active", pillars: ["Strategic Application", "Business Intelligence"], description: "Develops structured story roadmaps", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop" },
+      { id: "cover_designer", name: "Echo Vance", title: "OMNISYNC SWITCHBOARD LEAD", age: 45, role: "manager", status: "active", pillars: ["Strategic Application", "Exemplary Customer Service"], description: "Creates market-driven cover designs", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" },
+      { id: "marketing_assistant", name: "Kaelen Vane", title: "INTEGRATION GATEWAY GUARDIAN", age: 32, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Partnership Alignment"], description: "Orchestrates multi-channel launches", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" }
     ]
   },
   level4: {
     name: "SYSTEM MAINTENANCE",
     agents: [
-      { id: "ethical_ai_officer", name: "Dr. Samantha Brooks", title: "ETHICAL AI OFFICER & MEMORY GUARDIAN", age: 51, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces safety, compliance, and ethical AI standards" }
+      { id: "ethical_ai_officer", name: "Sage Evergreen", title: "SYSTEM MAINTENANCE & MEMORY GUARDIAN", age: 51, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces safety and ethical AI standards", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" }
     ]
   },
   level5: {
     name: "SPECIALIZED INTELLIGENCE NODES",
     agents: [
-      { id: "title_suggester", name: "Lexie Chen", title: "SEO STRATEGIST", age: 34, role: "specialist", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"], description: "Creates market-ready titles with SEO and emotional resonance" },
-      { id: "summary_writer", name: "Rachel Chen", title: "COPYWRITER", age: 36, role: "specialist", status: "active", pillars: ["Exemplary Customer Service", "Wealth Strategies Trajectory"], description: "Crafts conversion-focused marketing copy" },
-      { id: "video_producer", name: "Chloe Martinez", title: "VIDEO PRODUCER", age: 29, role: "specialist", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Creates high-converting video commercials for social platforms" },
-      { id: "bookstore_advisor", name: "Nathan Brooks", title: "DISTRIBUTION STRATEGIST", age: 47, role: "specialist", status: "active", pillars: ["Partnership Alignment", "Wealth Strategies Trajectory"], description: "Maximizes book sales through data-driven channel planning" },
-      { id: "project_manager", name: "Alexandra Turner", title: "PROJECT MANAGER", age: 40, role: "specialist", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Coordinates cross-functional workflows and timelines" },
-      { id: "audiobook_producer", name: "Michael Chen", title: "AUDIO ENGINEER", age: 38, role: "specialist", status: "active", pillars: ["Progressive Development", "Exemplary Customer Service"], description: "Produces high-quality audiobook narrations and production" }
+      { id: "title_suggester", name: "Lyra Core", title: "COGNITIVE CREATIVE ARCHITECT", age: 34, role: "specialist", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"], description: "Creates market-ready titles", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" },
+      { id: "summary_writer", name: "Aria Vale", title: "EXECUTIVE ADMINISTRATIVE ASSISTANT", age: 36, role: "specialist", status: "active", pillars: ["Exemplary Customer Service", "Wealth Strategies Trajectory"], description: "Crafts conversion-focused copy", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" },
+      { id: "video_producer", name: "Pixel Prism", title: "BRAND IDENTITY ARCHITECT", age: 29, role: "specialist", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Creates high-converting videos", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" },
+      { id: "bookstore_advisor", name: "Scribe Protocol", title: "EXECUTIVE PROTOCOL RECORDER", age: 47, role: "specialist", status: "active", pillars: ["Partnership Alignment", "Wealth Strategies Trajectory"], description: "Maximizes book sales", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop" }
     ]
   }
 };
