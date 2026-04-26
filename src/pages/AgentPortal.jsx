@@ -38,6 +38,9 @@ export default function AgentPortal() {
   const [comments, setComments] = useState([]);
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedChapter, setExpandedChapter] = useState(null);
+  const [isAdminView, setIsAdminView] = useState(false);
+  const [adminBooks, setAdminBooks] = useState([]);
+  const [selectedAdminBookId, setSelectedAdminBookId] = useState(null);
 
   // Comment form
   const [newComment, setNewComment] = useState({ content: "", comment_type: "general", chapter_number: 0, priority: "medium" });
@@ -45,7 +48,24 @@ export default function AgentPortal() {
   const [postSuccess, setPostSuccess] = useState(false);
 
   useEffect(() => {
-    if (!token) { setError("No access token provided."); setLoading(false); return; }
+    if (!token) {
+      // No token — check if admin
+      base44.auth.me().then(user => {
+        if (user?.role === 'admin') {
+          setIsAdminView(true);
+          // Load all books for admin
+          base44.entities.Book.list().then(books => {
+            setAdminBooks(books || []);
+            if (books?.length > 0) setSelectedAdminBookId(books[0].id);
+            setLoading(false);
+          });
+        } else {
+          setError("No access token provided.");
+          setLoading(false);
+        }
+      }).catch(() => { setError("No access token provided."); setLoading(false); });
+      return;
+    }
     invoke("token_login", { token }).then(r => {
       if (r.data.error) { setError(r.data.error); }
       else { setAccess(r.data.access); setBook(r.data.book); setComments(r.data.comments || []); }
@@ -88,9 +108,14 @@ export default function AgentPortal() {
     </div>
   );
 
-  const perms = access?.permissions || [];
-  const chapters = book?.manuscript_chapters || [];
-  const milestones = book?.table_of_contents || [];
+  // Admin view: derive the selected book from adminBooks list
+  const adminBook = isAdminView ? adminBooks.find(b => b.id === selectedAdminBookId) : null;
+  const effectiveBook = isAdminView ? adminBook : book;
+
+  const ALL_PERMS = ['metadata', 'manuscript_preview', 'milestones', 'comments'];
+  const perms = isAdminView ? ALL_PERMS : (access?.permissions || []);
+  const chapters = effectiveBook?.manuscript_chapters || [];
+  const milestones = effectiveBook?.table_of_contents || [];
 
   const TABS = [
     { id: "overview", label: "Overview", show: perms.includes("metadata") },
@@ -110,18 +135,30 @@ export default function AgentPortal() {
             </div>
             <div>
               <h1 className="text-white font-bold">The Write Vibe — Agent Portal</h1>
-              <p className="text-white/40 text-xs">Secure read-only manuscript access</p>
+              <p className="text-white/40 text-xs">{isAdminView ? "Admin view — full access" : "Secure read-only manuscript access"}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm text-white/40">
-            <User className="w-4 h-4" />
-            <span>{access?.agent_name || access?.agent_email}</span>
-            {access?.agency_name && <span>· {access.agency_name}</span>}
-            {access?.expires_at && (
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                Expires {new Date(access.expires_at).toLocaleDateString()}
-              </span>
+            {isAdminView ? (
+              <select
+                value={selectedAdminBookId || ''}
+                onChange={e => setSelectedAdminBookId(e.target.value)}
+                className="bg-slate-800 border border-white/10 text-white rounded-lg px-3 py-1.5 text-sm"
+              >
+                {adminBooks.map(b => <option key={b.id} value={b.id} className="bg-slate-800">{b.title}</option>)}
+              </select>
+            ) : (
+              <>
+                <User className="w-4 h-4" />
+                <span>{access?.agent_name || access?.agent_email}</span>
+                {access?.agency_name && <span>· {access.agency_name}</span>}
+                {access?.expires_at && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    Expires {new Date(access.expires_at).toLocaleDateString()}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -144,40 +181,40 @@ export default function AgentPortal() {
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
         {/* OVERVIEW TAB */}
-        {activeTab === "overview" && book && (
+        {activeTab === "overview" && effectiveBook && (
           <div className="space-y-5">
-            {book.front_cover_url && (
+            {effectiveBook.front_cover_url && (
               <div className="flex gap-6 items-start">
-                <img src={book.front_cover_url} alt="Cover" className="w-32 rounded-xl shadow-2xl border border-white/10 shrink-0" />
+                <img src={effectiveBook.front_cover_url} alt="Cover" className="w-32 rounded-xl shadow-2xl border border-white/10 shrink-0" />
                 <div className="space-y-2">
-                  <h2 className="text-white text-2xl font-bold">{book.title}</h2>
-                  {book.subtitle && <p className="text-white/50">{book.subtitle}</p>}
+                  <h2 className="text-white text-2xl font-bold">{effectiveBook.title}</h2>
+                  {effectiveBook.subtitle && <p className="text-white/50">{effectiveBook.subtitle}</p>}
                   <div className="flex flex-wrap gap-2">
-                    {book.category && <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">{book.category}</Badge>}
-                    {book.status && <Badge className="bg-slate-500/20 text-slate-300 border-slate-500/30 capitalize">{book.status?.replace('_', ' ')}</Badge>}
+                    {effectiveBook.category && <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">{effectiveBook.category}</Badge>}
+                    {effectiveBook.status && <Badge className="bg-slate-500/20 text-slate-300 border-slate-500/30 capitalize">{effectiveBook.status?.replace('_', ' ')}</Badge>}
                   </div>
                 </div>
               </div>
             )}
-            {!book.front_cover_url && (
+            {!effectiveBook.front_cover_url && (
               <div>
-                <h2 className="text-white text-2xl font-bold">{book.title}</h2>
-                {book.subtitle && <p className="text-white/50 mt-1">{book.subtitle}</p>}
+                <h2 className="text-white text-2xl font-bold">{effectiveBook.title}</h2>
+                {effectiveBook.subtitle && <p className="text-white/50 mt-1">{effectiveBook.subtitle}</p>}
               </div>
             )}
 
-            {(book.book_summary || book.plot_summary) && (
+            {(effectiveBook.book_summary || effectiveBook.plot_summary) && (
               <div className="bg-slate-900 border border-white/10 rounded-xl p-5">
                 <h3 className="text-amber-400 font-semibold text-sm uppercase tracking-wide mb-3">Synopsis</h3>
-                <p className="text-white/70 text-sm leading-relaxed">{book.book_summary || book.plot_summary}</p>
+                <p className="text-white/70 text-sm leading-relaxed">{effectiveBook.book_summary || effectiveBook.plot_summary}</p>
               </div>
             )}
 
-            {book.characters?.length > 0 && (
+            {effectiveBook.characters?.length > 0 && (
               <div className="bg-slate-900 border border-white/10 rounded-xl p-5">
                 <h3 className="text-amber-400 font-semibold text-sm uppercase tracking-wide mb-3">Key Characters</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {book.characters.map((c, i) => (
+                  {effectiveBook.characters.map((c, i) => (
                     <div key={i} className="bg-white/5 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-white font-medium text-sm">{c.name}</span>
@@ -190,13 +227,13 @@ export default function AgentPortal() {
               </div>
             )}
 
-            {book.target_audience && (
+            {effectiveBook.target_audience && (
               <div className="bg-slate-900 border border-white/10 rounded-xl p-5">
                 <h3 className="text-amber-400 font-semibold text-sm uppercase tracking-wide mb-2">Target Audience</h3>
-                <p className="text-white/60 text-sm">{book.target_audience.age_range && `Ages: ${book.target_audience.age_range}`}</p>
-                {book.target_audience.interests?.length > 0 && (
+                <p className="text-white/60 text-sm">{effectiveBook.target_audience.age_range && `Ages: ${effectiveBook.target_audience.age_range}`}</p>
+                {effectiveBook.target_audience.interests?.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {book.target_audience.interests.map((i, idx) => (
+                    {effectiveBook.target_audience.interests.map((i, idx) => (
                       <span key={idx} className="text-xs bg-white/5 text-white/50 px-2 py-0.5 rounded-full">{i}</span>
                     ))}
                   </div>
