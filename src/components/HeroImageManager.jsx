@@ -1,16 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Sparkles, RefreshCw, Loader2 } from "lucide-react";
+import { Upload, Sparkles, RefreshCw, Loader2, Save, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HeroImageManager() {
   const [heroImage, setHeroImage] = useState("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80");
+  const [savedImage, setSavedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    loadSavedImage();
+  }, []);
+
+  const loadSavedImage = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (user?.website_hero_image_url) {
+        setHeroImage(user.website_hero_image_url);
+        setSavedImage(user.website_hero_image_url);
+      }
+    } catch (error) {
+      console.error("Error loading saved image:", error);
+    }
+  };
+
+  const saveHeroImage = async () => {
+    setSaving(true);
+    try {
+      await base44.auth.updateMe({ website_hero_image_url: heroImage });
+      setSavedImage(heroImage);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (error) {
+      console.error("Error saving image:", error);
+    }
+    setSaving(false);
+  };
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -64,8 +96,20 @@ export default function HeroImageManager() {
 
         </motion.div>
 
+        {/* Status Message */}
+        {savedImage === heroImage && heroImage !== "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm"
+          >
+            <Check className="w-4 h-4" />
+            <span>Image saved to your profile</span>
+          </motion.div>
+        )}
+
         {/* Action Buttons */}
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-4 gap-4">
           {/* Upload Button */}
           <div>
             <Label htmlFor="hero-upload" className="cursor-pointer">
@@ -78,7 +122,7 @@ export default function HeroImageManager() {
 
                 <>
                     <Upload className="w-4 h-4 text-white" />
-                    <span className="text-white text-sm font-medium">Upload Image</span>
+                    <span className="text-white text-sm font-medium">Upload</span>
                   </>
                 }
               </div>
@@ -90,7 +134,6 @@ export default function HeroImageManager() {
               onChange={handleUpload}
               className="hidden"
               disabled={loading || generating} />
-
           </div>
 
           {/* Generate Button */}
@@ -119,7 +162,6 @@ export default function HeroImageManager() {
             variant="outline"
             className="border-white/20 text-white hover:bg-white/10">
 
-
             {generating ?
             <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -129,6 +171,35 @@ export default function HeroImageManager() {
             <>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Regenerate
+              </>
+            }
+          </Button>
+
+          {/* Save Button */}
+          <Button
+            onClick={saveHeroImage}
+            disabled={saving || heroImage === savedImage}
+            className={`border-0 text-white ${
+              saveSuccess 
+                ? 'bg-emerald-500 hover:bg-emerald-600' 
+                : 'bg-blue-500 hover:bg-blue-600'
+            }`}>
+
+            {saving ?
+            <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </> :
+
+            saveSuccess ?
+            <>
+                <Check className="w-4 h-4 mr-2" />
+                Saved!
+              </> :
+
+            <>
+                <Save className="w-4 h-4 mr-2" />
+                Save
               </>
             }
           </Button>
