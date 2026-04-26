@@ -9,6 +9,7 @@ import {
   CheckCircle2, XCircle, TrendingUp, Users, Layers,
   BarChart2, FileText, ChevronDown, ChevronUp, RefreshCw
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -122,6 +123,7 @@ export default function BookHealthCheck() {
   const [loadingBooks, setLoadingBooks] = useState(true);
   const [progress, setProgress] = useState("");
   const [wordCount, setWordCount] = useState(0);
+  const [targetAge, setTargetAge] = useState("adult");
 
   useEffect(() => {
     base44.entities.Book.list('-updated_date').then(b => {
@@ -144,7 +146,7 @@ export default function BookHealthCheck() {
     setProgress("Analyzing narrative consistency and character arcs...");
     await new Promise(r => setTimeout(r, 600));
     setProgress("Calculating readability scores and structural gaps...");
-    const res = await invoke("bookHealthCheck", { book_id: selectedBookId });
+    const res = await invoke("bookHealthCheck", { book_id: selectedBookId, target_age: targetAge });
     setAnalysis(res.data.analysis);
     setWordCount(res.data.word_count || 0);
     setLoading(false);
@@ -173,11 +175,26 @@ export default function BookHealthCheck() {
               </div>
             </div>
           </div>
-          <Button onClick={runAnalysis} disabled={loading || !selectedBookId}
-            className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" size="sm">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Sparkles className="w-4 h-4 mr-1" />}
-            {loading ? "Analyzing..." : analysis ? "Re-analyze" : "Run Health Check"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={targetAge} onValueChange={setTargetAge}>
+              <SelectTrigger className="h-8 text-xs w-40 bg-slate-800 border-white/10 text-white/70">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="children">Children (5–8)</SelectItem>
+                <SelectItem value="middle_grade">Middle Grade (8–12)</SelectItem>
+                <SelectItem value="young_adult">Young Adult (13–17)</SelectItem>
+                <SelectItem value="new_adult">New Adult (18–25)</SelectItem>
+                <SelectItem value="adult">Adult (25+)</SelectItem>
+                <SelectItem value="all_ages">All Ages</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={runAnalysis} disabled={loading || !selectedBookId}
+              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" size="sm">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Sparkles className="w-4 h-4 mr-1" />}
+              {loading ? "Analyzing..." : analysis ? "Re-analyze" : "Run Health Check"}
+            </Button>
+          </div>
         </div>
       </div>
 

@@ -7,7 +7,17 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    const { book_id } = body;
+    const { book_id, target_age = 'adult' } = body;
+
+    const AGE_LABELS = {
+      children: 'Children (ages 5-8) - simple vocabulary, short sentences, Grade 1-3 reading level expected',
+      middle_grade: 'Middle Grade (ages 8-12) - accessible vocabulary, engaging pacing, Grade 4-6 reading level expected',
+      young_adult: 'Young Adult (ages 13-17) - contemporary vocabulary, faster pacing, Grade 7-10 reading level expected',
+      new_adult: 'New Adult (ages 18-25) - sophisticated vocabulary, Grade 10-12 reading level expected',
+      adult: 'Adult (ages 25+) - complex vocabulary and sentence structure acceptable, College reading level acceptable',
+      all_ages: 'All Ages - prioritize clarity and accessibility across age groups',
+    };
+    const ageContext = AGE_LABELS[target_age] || AGE_LABELS['adult'];
 
     const allBooks = await base44.entities.Book.list();
     const book = allBooks.find(b => b.id === book_id);
@@ -29,6 +39,10 @@ Deno.serve(async (req) => {
     }
 
     const prompt = `You are a professional manuscript editor and literary analyst. Analyze this book project for The Write Vibe self-publishing platform.
+
+TARGET AUDIENCE AGE GROUP: ${ageContext}
+All readability scores, grade level assessments, vocabulary evaluations, and improvement recommendations MUST be calibrated against this target age group. A score of 100 means perfect fit for this age group - not absolute complexity.
+
 
 BOOK METADATA:
 - Title: ${book.title || 'Untitled'}
