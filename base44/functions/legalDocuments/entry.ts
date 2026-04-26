@@ -224,7 +224,7 @@ Return JSON: { "sections": [ { "title": "section title", "content": "HTML using 
         risk_analysis: riskAnalysis,
         generated_at: new Date().toISOString(),
         is_current: true,
-        generation_notes: `AI-generated ${new Date().toLocaleDateString()} · ${(result.sections||[]).length} sections · Effective ${effectiveDate}`
+        generation_notes: `AI-generated ${new Date().toLocaleDateString()} · ${allSections.length} sections · Effective ${effectiveDate}`
       });
 
       return Response.json({ success: true, doc: saved });
