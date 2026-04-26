@@ -1,0 +1,365 @@
+/* ──────────────────────────────────────────────────────────────────────── */
+/* BookEditor Mobile Layout — 320px to 767px */
+/* ──────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .book-editor-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
+  }
+
+  /* Top Bar */
+  .book-editor-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+    height: 2.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(51, 65, 85, 0.4);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .book-editor-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .book-editor-topbar-back {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .book-editor-topbar-back:active {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+  }
+
+  .book-editor-topbar-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  .book-editor-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
+  .book-editor-topbar-action {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .book-editor-topbar-action:active {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Main Layout */
+  .book-editor-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* Sidebar — Hidden on Mobile */
+  .book-editor-sidebar {
+    display: none !important;
+  }
+
+  /* Mobile Step Selector */
+  .book-editor-mobile-selector {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem;
+    background: rgba(51, 65, 85, 0.3);
+    position: sticky;
+    top: 2.75rem;
+    z-index: 10;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .book-editor-mobile-selector::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .book-editor-mobile-selector::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .book-editor-mobile-selector::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+
+  .book-editor-mobile-selector-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .book-editor-mobile-selector-item:active {
+    background: rgba(120, 113, 169, 0.15);
+    border-color: rgba(120, 113, 169, 0.3);
+    color: #ffffff;
+  }
+
+  .book-editor-mobile-selector-item.active {
+    background: rgba(120, 113, 169, 0.15);
+    border-color: rgba(120, 113, 169, 0.4);
+    color: #ffffff;
+  }
+
+  .book-editor-mobile-selector-item.completed {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.25);
+    color: rgba(16, 185, 129, 0.85);
+  }
+
+  /* Main Content */
+  .book-editor-main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-editor-main-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem 0.75rem;
+    width: 100%;
+    min-height: min-content;
+  }
+
+  /* Responsive Text Sizing */
+  .book-editor-heading {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+
+  .book-editor-subheading {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .book-editor-body-text {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  /* Form Elements */
+  .book-editor-input,
+  .book-editor-textarea,
+  .book-editor-select {
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.375rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    font-size: 0.8rem;
+    transition: all 0.15s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .book-editor-input:focus,
+  .book-editor-textarea:focus,
+  .book-editor-select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.08);
+  }
+
+  .book-editor-textarea {
+    resize: vertical;
+    min-height: 6rem;
+    font-family: inherit;
+  }
+
+  /* Cards */
+  .book-editor-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.15s ease;
+  }
+
+  .book-editor-card:active {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(245, 158, 11, 0.25);
+  }
+
+  /* Buttons */
+  .book-editor-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: 2.5rem;
+  }
+
+  .book-editor-button-primary {
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: #000000;
+    box-shadow: 0 6px 10px rgba(245, 158, 11, 0.15);
+  }
+
+  .book-editor-button-primary:active {
+    box-shadow: 0 8px 12px rgba(245, 158, 11, 0.25);
+    transform: scale(0.98);
+  }
+
+  .book-editor-button-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .book-editor-button-secondary:active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  /* Scrollbar Styling */
+  .book-editor-main::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .book-editor-main::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .book-editor-main::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+  }
+
+  .book-editor-main::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Utility */
+  .book-editor-hidden-mobile {
+    display: none !important;
+  }
+
+  .book-editor-hidden-tablet {
+    display: none !important;
+  }
+
+  /* Grid Optimization */
+  .book-editor-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .book-editor-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Spacing */
+  .book-editor-spacer {
+    height: 0.5rem;
+  }
+
+  /* Touch Optimizations */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  a.book-editor-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Safe Area */
+  @supports (padding: max(0px)) {
+    .book-editor-topbar {
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+    }
+
+    .book-editor-main-content {
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+  }
+}

@@ -14,6 +14,9 @@ import {
   Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import "@/styles/BookEditor.desktop.css";
+import "@/styles/BookEditor.tablet.css";
+import "@/styles/BookEditor.mobile.css";
 
 import TitleGenerator from "@/components/book/TitleGenerator.jsx";
 import UnifiedOutlineGenerator from "@/components/book/UnifiedOutlineGenerator.jsx";
@@ -369,48 +372,46 @@ export default function BookEditor() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="book-editor-container">
 
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-6 h-14 border-b border-white/6 bg-slate-900/40 backdrop-blur-sm sticky top-0 z-20">
-        <div className="flex items-center gap-4 min-w-0">
+      <div className="book-editor-topbar">
+        <div className="book-editor-topbar-left">
           <button onClick={() => navigate(createPageUrl("Books"))}
-            className="flex items-center gap-1.5 text-white/35 hover:text-white transition-colors text-sm shrink-0">
+            className="book-editor-topbar-back">
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">My Books</span>
           </button>
-          <div className="w-px h-4 bg-white/10 shrink-0" />
-          <h1 className="text-white font-semibold text-sm truncate">{book.title || "Untitled Book"}</h1>
+          <h1 className="book-editor-topbar-title">{book.title || "Untitled Book"}</h1>
           {book.category && (
-            <Badge className="bg-white/8 text-white/40 border-0 text-xs shrink-0 hidden md:flex">{book.category}</Badge>
+            <Badge className="book-editor-hidden-mobile bg-white/8 text-white/40 border-0 text-xs shrink-0">{book.category}</Badge>
           )}
         </div>
 
         {/* Header actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="book-editor-topbar-right">
           <button onClick={() => navigate(`/BookHealthCheck?id=${bookId}`)}
-            className="flex items-center gap-1.5 text-white/30 hover:text-white/60 transition-colors text-xs px-2 py-1.5 rounded-lg hover:bg-white/5">
-            <BarChart2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Health</span>
+            className="book-editor-topbar-action"
+            title="Health Check">
+            <BarChart2 className="w-4 h-4" />
           </button>
           <button onClick={() => navigate(`/DistributionDashboard?id=${bookId}`)}
-            className="flex items-center gap-1.5 text-white/30 hover:text-white/60 transition-colors text-xs px-2 py-1.5 rounded-lg hover:bg-white/5">
-            <Package className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Distribute</span>
+            className="book-editor-topbar-action"
+            title="Distribute">
+            <Package className="w-4 h-4" />
           </button>
-          <Button size="sm" onClick={() => navigate(`/BookWebsite?id=${bookId}`)}
-            className="bg-white/8 hover:bg-white/12 text-white border-0 text-xs h-8 gap-1.5">
-            <ExternalLink className="w-3.5 h-3.5" />
-            View Site
-          </Button>
+          <button onClick={() => navigate(`/BookWebsite?id=${bookId}`)}
+            className="book-editor-topbar-action"
+            title="View Site">
+            <ExternalLink className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
       {/* ── Body ──────────────────────────────────────────────────────────── */}
-      <div className="flex flex-1">
+      <div className="book-editor-body">
 
         {/* ── Sidebar ─────────────────────────────────────────────────────── */}
-        <div className="w-56 shrink-0 border-r border-white/6 bg-slate-900/20 flex flex-col pt-6 pb-6 px-3 hidden lg:flex sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+        <div className="book-editor-sidebar">
           <Stepper
             steps={STEPS}
             book={book}
@@ -445,7 +446,7 @@ export default function BookEditor() {
         </div>
 
         {/* ── Mobile step selector (top scroll row) ───────────────────────── */}
-        <div className="lg:hidden w-full border-b border-white/6 overflow-x-auto flex items-center gap-1 px-4 py-2 bg-slate-900/30 sticky top-14 z-10">
+        <div className="book-editor-mobile-selector">
           {STEPS.map((step, idx) => {
             const done = step.isDone(book);
             const active = activeTab === step.id;
@@ -456,12 +457,7 @@ export default function BookEditor() {
                 key={step.id}
                 onClick={() => accessible && setActiveTab(step.id)}
                 disabled={!accessible}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shrink-0 text-xs font-medium transition-all border ${
-                  active ? "bg-amber-500/15 border-amber-500/40 text-white"
-                  : done ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
-                  : accessible ? "bg-white/5 border-white/10 text-white/50"
-                  : "bg-transparent border-transparent text-white/15 cursor-not-allowed"
-                }`}
+                className={`book-editor-mobile-selector-item ${active ? 'active' : ''} ${done && !active ? 'completed' : ''}`}
               >
                 {done && !active ? <Check className="w-3 h-3" /> : <step.icon className="w-3 h-3" />}
                 <span>{step.label}</span>
@@ -471,9 +467,7 @@ export default function BookEditor() {
           <div className="w-px h-4 bg-white/10 shrink-0 mx-1" />
           {UTILITY_TABS.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shrink-0 text-xs border transition-all ${
-                activeTab === tab.id ? "bg-slate-700/60 border-white/20 text-white" : "bg-transparent border-transparent text-white/25 hover:text-white/50"
-              }`}>
+              className={`book-editor-mobile-selector-item ${activeTab === tab.id ? 'active' : ''}`}>
               <tab.icon className="w-3 h-3" />
               <span>{tab.label}</span>
             </button>
@@ -481,8 +475,8 @@ export default function BookEditor() {
         </div>
 
         {/* ── Main content ─────────────────────────────────────────────────── */}
-        <main className="flex-1 min-w-0 overflow-auto">
-          <div className="max-w-3xl mx-auto px-6 py-8">
+        <main className="book-editor-main">
+          <div className="book-editor-main-content">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
