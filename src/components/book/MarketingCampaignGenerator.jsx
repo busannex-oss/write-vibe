@@ -167,6 +167,12 @@ Make it actionable, conversion-focused, and genre-appropriate.`,
     setTimeout(() => setCopiedField(null), 2000);
   };
 
+  const saveCampaign = async () => {
+    if (campaign && book.onUpdate) {
+      await book.onUpdate({ marketing_campaign: campaign }, true);
+    }
+  };
+
   return (
     <Card className="bg-gradient-to-br from-pink-500/10 to-rose-500/5 border-pink-500/30">
       <CardHeader>
@@ -203,8 +209,26 @@ Make it actionable, conversion-focused, and genre-appropriate.`,
             </p>
           </div>
         ) : (
-          <Tabs defaultValue="social" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full bg-white/5">
+          <div className="space-y-4">
+            <div className="flex gap-2 justify-end">
+              <Button
+                onClick={generateCampaign}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Regenerate
+              </Button>
+              <Button
+                onClick={saveCampaign}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Save Campaign
+              </Button>
+            </div>
+            <Tabs defaultValue="social" className="w-full">
+              <TabsList className="grid grid-cols-4 w-full bg-white/5">
               <TabsTrigger value="social">Social Ads</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="strategy">Strategy</TabsTrigger>
@@ -423,8 +447,9 @@ Make it actionable, conversion-focused, and genre-appropriate.`,
               </div>
             </TabsContent>
           </Tabs>
-        )}
-      </CardContent>
-    </Card>
-  );
+          </div>
+          )}
+          </CardContent>
+          </Card>
+          );
 }
