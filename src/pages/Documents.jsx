@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
+import SocialContentScheduler from "@/components/SocialContentScheduler";
 
 // Note: Instagram and TikTok don't support web share URLs — copy only.
 // LinkedIn/Facebook don't support pre-filled text — copy first, then open.
@@ -123,11 +124,28 @@ export default function Documents() {
       let prompt = "";
       let title = "";
 
-      switch (type) {
-        case "publisher_letter":
-          title = "Publisher Query Letter";
-          prompt = `Write a professional publisher query letter for:
+      if (type === "social_image") {
+        title = "Social Media Content";
+        prompt = `Create 5 engaging social media posts for promoting this book:
           
+Book: "${book.title}"
+Genre: ${book.category}
+Themes: ${book.subjects?.join(', ')}
+Summary: ${book.book_summary?.slice(0, 200)}
+
+For EACH post create:
+1. A unique, compelling caption (under 280 chars for Twitter)
+2. Include relevant hashtags
+3. Include call to action
+4. Vary tone and messaging across posts
+
+Format as JSON array with structure: [{ caption: "...", hashtags: "..." }, ...]`;
+      } else {
+        switch (type) {
+          case "publisher_letter":
+            title = "Publisher Query Letter";
+            prompt = `Write a professional publisher query letter for:
+            
 Book: "${book.title}"
 Genre: ${book.category}
 Target Audience: ${book.target_audience?.age_range}
@@ -141,11 +159,11 @@ Include:
 5. Closing with call to action
 
 Make it compelling and follow industry standards.`;
-          break;
-        case "press_release":
-          title = "Press Release";
-          prompt = `Write a professional press release for book launch:
-          
+            break;
+          case "press_release":
+            title = "Press Release";
+            prompt = `Write a professional press release for book launch:
+            
 Book: "${book.title}"
 Genre: ${book.category}
 Summary: ${book.book_summary}
@@ -161,24 +179,8 @@ Include:
 8. ### ending
 
 Follow AP style guidelines.`;
-          break;
-        case "social_image":
-          title = "Social Media Caption Pack";
-          prompt = `Create 5 engaging social media captions for promoting:
-          
-Book: "${book.title}"
-Genre: ${book.category}
-Themes: ${book.subjects?.join(', ')}
-Summary: ${book.book_summary?.slice(0, 200)}
-
-For each caption include:
-1. Platform (Instagram/Twitter/Facebook/TikTok/LinkedIn)
-2. Caption text with emojis
-3. Relevant hashtags
-4. Call to action
-
-Make them engaging and shareable.`;
-          break;
+            break;
+        }
       }
 
       const response = await base44.integrations.Core.InvokeLLM({
@@ -418,77 +420,38 @@ Make them engaging and shareable.`;
                           </div>
                         ) : (
                           <>
-                            {/* Social Caption Pack — rich card layout */}
+                            {/* Social Content Scheduler */}
                             {doc.type === "social_image" ? (() => {
-                              const captions = parseCaptions(doc.content);
-                              if (captions) {
+                              try {
+                                const postsData = JSON.parse(doc.content);
+                                const posts = Array.isArray(postsData) ? postsData : [];
+
+                                const formattedPosts = posts.map((post, idx) => ({
+                                  id: `${doc.id}-${idx}`,
+                                  caption: post.caption || post.text || post,
+                                  hashtags: post.hashtags || "",
+                                  platforms: ["facebook", "twitter", "google"],
+                                  scheduled_days: [],
+                                  image_url: null,
+                                  posted: false,
+                                }));
+
                                 return (
-                                  <div className="space-y-3 mb-4">
-                                    {captions.map((cap, ci) => {
-                                      const platInfo = SOCIAL_PLATFORMS.find(p =>
-                                        cap.platform.toLowerCase().includes(p.key)
-                                      );
-                                      const fullText = [cap.caption, cap.hashtags, cap.cta].filter(Boolean).join("\n\n");
-                                      const copyKey = `${doc.id}-${ci}`;
-                                      return (
-                                        <div key={ci} className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
-                                          {/* Platform header */}
-                                          <div className={`flex items-center justify-between px-4 py-2 ${platInfo ? platInfo.color : 'bg-white/10'} bg-opacity-80`}>
-                                            <span className="text-sm font-semibold text-white flex items-center gap-2">
-                                              {platInfo?.icon} {cap.platform}
-                                            </span>
-                                            <div className="flex gap-1">
-                                              <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                onClick={() => copyCaption(fullText, copyKey)}
-                                                className="h-7 px-2 text-white/80 hover:text-white hover:bg-white/20"
-                                              >
-                                                {copiedId === copyKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                <span className="ml-1 text-xs">{copiedId === copyKey ? "Copied!" : "Copy"}</span>
-                                              </Button>
-                                              {platInfo && platInfo.copyOnly ? (
-                                                <span className="h-7 px-2 flex items-center text-xs text-white/50 italic">
-                                                  (copy &amp; paste)
-                                                </span>
-                                              ) : platInfo ? (
-                                                <Button
-                                                  size="sm"
-                                                  variant="ghost"
-                                                  onClick={() => {
-                                                    copyCaption(fullText, copyKey);
-                                                    setTimeout(() => window.open(platInfo.shareUrl(fullText), '_blank'), 300);
-                                                  }}
-                                                  className="h-7 px-2 text-white/80 hover:text-white hover:bg-white/20"
-                                                >
-                                                  <Share2 className="w-3 h-3" />
-                                                  <span className="ml-1 text-xs">Open</span>
-                                                </Button>
-                                              ) : null}
-                                            </div>
-                                          </div>
-                                          {/* Caption body */}
-                                          <div className="px-4 py-3 space-y-2">
-                                            <p className="text-sm text-white/85 whitespace-pre-wrap leading-relaxed">{cap.caption}</p>
-                                            {cap.hashtags && (
-                                              <p className="text-xs text-pink-300 font-medium">{cap.hashtags}</p>
-                                            )}
-                                            {cap.cta && (
-                                              <p className="text-xs text-amber-300 italic">{cap.cta}</p>
-                                            )}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
+                                  <SocialContentScheduler 
+                                    posts={formattedPosts}
+                                    onUpdate={(updatedPosts) => {
+                                      // Handle update if needed
+                                    }}
+                                  />
+                                );
+                              } catch (e) {
+                                // Fallback raw view if not valid JSON
+                                return (
+                                  <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
+                                    <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">{doc.content}</pre>
                                   </div>
                                 );
                               }
-                              // fallback raw view
-                              return (
-                                <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
-                                  <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">{doc.content}</pre>
-                                </div>
-                              );
                             })() : (
                               <div className="bg-white/5 rounded-lg p-4 max-h-48 overflow-y-auto mb-4">
                                 <pre className="text-sm text-white/70 whitespace-pre-wrap font-sans">
