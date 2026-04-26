@@ -149,23 +149,36 @@ export default function Layout({ children, currentPageName }) {
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {sidebarOpen && (
+          <nav className="lg:hidden bg-slate-900/80 backdrop-blur-xl border-b border-white/5 p-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            {memberNav.map((item) => {
+              const isActive = currentPageName === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  to={createPageUrl(item.href)}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                    isActive 
+                      ? "bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400" 
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <item.icon className={cn("w-5 h-5", isActive && "text-amber-400")} />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        )}
       </div>
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
-      <aside className={cn(
-        "fixed top-0 left-0 z-50 h-full w-72 bg-slate-900/95 backdrop-blur-xl border-r border-white/5 transition-transform duration-300 ease-out",
-        "lg:translate-x-0",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="flex flex-col h-full">
+      <aside className="hidden lg:flex fixed top-0 left-0 z-50 h-full w-72 bg-slate-900/95 backdrop-blur-xl border-r border-white/5 flex-col">
+        <div className="flex flex-col h-full pt-16">
           {/* Logo */}
           <div className="p-6 border-b border-white/5">
             <div className="flex items-center gap-3">
