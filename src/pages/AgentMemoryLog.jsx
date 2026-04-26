@@ -25,6 +25,7 @@ import {
   Filter
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const AGENTS = [
   "media_production", "video_producer", "audiobook_producer", "project_manager",
@@ -204,6 +205,12 @@ export default function AgentMemoryLog() {
           </TabsTrigger>
           <TabsTrigger value="stats" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <BarChart3 className="w-4 h-4 mr-2" /> Stats
+          </TabsTrigger>
+          <TabsTrigger value="chain" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Zap className="w-4 h-4 mr-2" /> Chain of Command
+          </TabsTrigger>
+          <TabsTrigger value="agents" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Brain className="w-4 h-4 mr-2" /> AI Agents
           </TabsTrigger>
         </TabsList>
 
@@ -389,6 +396,83 @@ export default function AgentMemoryLog() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        {/* ── CHAIN OF COMMAND TAB ── */}
+        <TabsContent value="chain" className="space-y-4">
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-400" />
+                Organizational Hierarchy
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-white/60">View the complete organizational hierarchy, agent roles, pillar alignment, and chain of command structure.</p>
+              <Link to="/ChainOfCommand">
+                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+                  Go to Chain of Command
+                </Button>
+              </Link>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-xs text-white/40 mb-2">System Levels</p>
+                  <p className="text-2xl font-bold text-amber-400">5</p>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-xs text-white/40 mb-2">Total Agents</p>
+                  <p className="text-2xl font-bold text-amber-400">17+</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── AI AGENTS TAB ── */}
+        <TabsContent value="agents" className="space-y-4">
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Brain className="w-5 h-5 text-amber-400" />
+                AI Agent Ecosystem
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-white/60">Explore all AI agents in the system, their specialized roles, capabilities, and operational status.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {AGENTS.slice(0, 8).map(agent => (
+                  <div key={agent} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <p className="text-sm font-medium text-white">{agent.replace(/_/g, " ")}</p>
+                    </div>
+                    <p className="text-xs text-white/40 mt-1">Active & Operational</p>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-white/10">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-xs text-white/40 mb-1">Total Agents</p>
+                    <p className="text-xl font-bold text-amber-400">{AGENTS.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/40 mb-1">Active</p>
+                    <p className="text-xl font-bold text-green-400">{AGENTS.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/40 mb-1">System Health</p>
+                    <p className="text-xl font-bold text-emerald-400">98%</p>
+                  </div>
+                </div>
+              </div>
+              <Link to="/ChainOfCommand" className="w-full block">
+                <Button variant="outline" className="w-full border-amber-500/30 text-amber-400 hover:bg-amber-500/10">
+                  View Full Agent Profiles
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
