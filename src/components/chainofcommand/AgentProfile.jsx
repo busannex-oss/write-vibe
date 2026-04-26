@@ -85,14 +85,19 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars }) {
             </span>
           </div>
 
-          {/* Name & Title */}
+          {/* Name, Age & Title */}
           <div>
-            <h3
-              className="text-3xl font-bold mb-1"
-              style={{ color: brandColors.text }}
-            >
-              {agent.name}
-            </h3>
+            <div className="flex items-center justify-between mb-1">
+              <h3
+                className="text-3xl font-bold"
+                style={{ color: brandColors.text }}
+              >
+                {agent.name}
+              </h3>
+              {agent.age && (
+                <p className="text-sm text-white/50">Age {agent.age}</p>
+              )}
+            </div>
             <p
               className="text-sm font-bold uppercase tracking-wider"
               style={{ color: brandColors.accent }}
@@ -101,13 +106,28 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars }) {
             </p>
           </div>
 
-          {/* Role Description */}
+          {/* Agent Description */}
+          {agent.description && (
+            <div>
+              <h4
+                className="text-sm font-bold uppercase mb-2"
+                style={{ color: brandColors.accent }}
+              >
+                Agent Description
+              </h4>
+              <p style={{ color: brandColors.text + "CC" }}>
+                {agent.description}
+              </p>
+            </div>
+          )}
+
+          {/* Role Context */}
           <div>
             <h4
               className="text-sm font-bold uppercase mb-2"
               style={{ color: brandColors.accent }}
             >
-              Role Description
+              Role Context
             </h4>
             <p style={{ color: brandColors.text + "CC" }}>
               {ROLE_DESCRIPTIONS[agent.role]}

@@ -106,13 +106,18 @@ export default function AgentCard({
           </div>
         )}
 
-        {/* Name */}
+        {/* Name & Age */}
         <h3
           className="text-center font-bold text-lg mb-1"
           style={{ color: brandColors.text }}
         >
           {agent.name}
         </h3>
+        {agent.age && (
+          <p className="text-center text-xs text-white/40 mb-2">
+            Age {agent.age}
+          </p>
+        )}
 
         {/* Title */}
         <p

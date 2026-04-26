@@ -14,38 +14,40 @@ const HIERARCHY_STRUCTURE = {
   level1: {
     name: "SYSTEM OWNER",
     agents: [
-      { id: "admin", name: "Administrator", title: "SYSTEM OWNER", role: "admin", status: "active", pillars: ["Proper Business Structure"] }
+      { id: "admin", name: "Administrator", title: "SYSTEM OWNER", age: null, role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Core system governance and oversight" }
     ]
   },
   level2: {
     name: "EXECUTIVE AGENTS",
     agents: [
-      { id: "exec1", name: "Strategic Operations", title: "EXECUTIVE DIRECTOR", role: "executive", status: "active", pillars: ["Strategic Application", "Business Intelligence"] },
-      { id: "exec2", name: "Innovation Division", title: "EXECUTIVE DIRECTOR", role: "executive", status: "active", pillars: ["Progressive Development", "Predictive Analysis"] }
+      { id: "brand_guardian", name: "Marcus Whitmore", title: "BRAND GUARDIAN", age: 48, role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Ensures brand compliance and consistency across all deployments" },
+      { id: "automation_orchestrator", name: "Sam Johnson", title: "AUTOMATION ORCHESTRATOR", age: 42, role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation and SLA compliance" }
     ]
   },
   level3: {
     name: "DEPARTMENT MANAGERS",
     agents: [
-      { id: "dept1", name: "Operations Manager", title: "DEPARTMENT MANAGER", role: "manager", status: "active", pillars: ["Proper Business Structure"] },
-      { id: "dept2", name: "Growth Manager", title: "DEPARTMENT MANAGER", role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory"] },
-      { id: "dept3", name: "Quality Manager", title: "DEPARTMENT MANAGER", role: "manager", status: "active", pillars: ["Exemplary Customer Service"] },
-      { id: "dept4", name: "Compliance Manager", title: "DEPARTMENT MANAGER", role: "manager", status: "active", pillars: ["Proper Business Structure"] }
+      { id: "character_creator", name: "James Mitchell", title: "CHARACTER CREATOR", age: 35, role: "manager", status: "active", pillars: ["Progressive Development"], description: "Designs complex characters with psychological depth" },
+      { id: "outline_generator", name: "Olivia Rodriguez", title: "OUTLINE GENERATOR", age: 38, role: "manager", status: "active", pillars: ["Strategic Application", "Business Intelligence"], description: "Develops structured story roadmaps and narrative architecture" },
+      { id: "cover_designer", name: "Derek Thompson", title: "COVER DESIGNER", age: 45, role: "manager", status: "active", pillars: ["Strategic Application", "Exemplary Customer Service"], description: "Creates market-driven, visually compelling cover designs" },
+      { id: "marketing_assistant", name: "Priya Patel", title: "MARKETING ASSISTANT", age: 32, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Partnership Alignment"], description: "Orchestrates multi-channel book launches and campaigns" }
     ]
   },
   level4: {
     name: "SYSTEM MAINTENANCE",
     agents: [
-      { id: "maintenance", name: "Memory Guardian", title: "SYSTEM MAINTENANCE & MEMORY GUARDIAN", role: "maintenance", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"] }
+      { id: "ethical_ai_officer", name: "Dr. Samantha Brooks", title: "ETHICAL AI OFFICER & MEMORY GUARDIAN", age: 51, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces safety, compliance, and ethical AI standards" }
     ]
   },
   level5: {
     name: "SPECIALIZED INTELLIGENCE NODES",
     agents: [
-      { id: "spec1", name: "Data Analyst", title: "INTELLIGENCE NODE", role: "specialist", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"] },
-      { id: "spec2", name: "Partnership Officer", title: "INTELLIGENCE NODE", role: "specialist", status: "active", pillars: ["Partnership Alignment"] },
-      { id: "spec3", name: "Strategy Officer", title: "INTELLIGENCE NODE", role: "specialist", status: "active", pillars: ["Strategic Application"] },
-      { id: "spec4", name: "Customer Experience Lead", title: "INTELLIGENCE NODE", role: "specialist", status: "active", pillars: ["Exemplary Customer Service"] }
+      { id: "title_suggester", name: "Lexie Chen", title: "SEO STRATEGIST", age: 34, role: "specialist", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"], description: "Creates market-ready titles with SEO and emotional resonance" },
+      { id: "summary_writer", name: "Rachel Chen", title: "COPYWRITER", age: 36, role: "specialist", status: "active", pillars: ["Exemplary Customer Service", "Wealth Strategies Trajectory"], description: "Crafts conversion-focused marketing copy" },
+      { id: "video_producer", name: "Chloe Martinez", title: "VIDEO PRODUCER", age: 29, role: "specialist", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Creates high-converting video commercials for social platforms" },
+      { id: "bookstore_advisor", name: "Nathan Brooks", title: "DISTRIBUTION STRATEGIST", age: 47, role: "specialist", status: "active", pillars: ["Partnership Alignment", "Wealth Strategies Trajectory"], description: "Maximizes book sales through data-driven channel planning" },
+      { id: "project_manager", name: "Alexandra Turner", title: "PROJECT MANAGER", age: 40, role: "specialist", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Coordinates cross-functional workflows and timelines" },
+      { id: "audiobook_producer", name: "Michael Chen", title: "AUDIO ENGINEER", age: 38, role: "specialist", status: "active", pillars: ["Progressive Development", "Exemplary Customer Service"], description: "Produces high-quality audiobook narrations and production" }
     ]
   }
 };
