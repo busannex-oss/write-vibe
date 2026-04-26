@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,9 @@ function VersionHistory({ onBack, onRestore }) {
   useEffect(() => {
     invoke("versions").then(r => {
       setVersions(r.data.versions || []);
+      setLoading(false);
+    }).catch(error => {
+      console.error("Error loading versions:", error);
       setLoading(false);
     });
   }, []);
@@ -97,9 +100,15 @@ function DocEditor({ initialHtml, onSave, onCancel, editorContentRef }) {
 
   const handleRegenVersion = async (ver) => {
     setRegenVersion(ver);
-    await invoke("regenerate_version", { version_label: ver });
-    setRegenVersion(null);
-    alert(`"${ver}" section regenerated. Save your edits then use "Regenerate with AI" to embed all changes into the full document.`);
+    try {
+      await invoke("regenerate_version", { version_label: ver });
+      setRegenVersion(null);
+      alert(`"${ver}" section regenerated. Save your edits then use "Regenerate with AI" to embed all changes into the full document.`);
+    } catch (error) {
+      console.error("Error regenerating version:", error);
+      setRegenVersion(null);
+      alert("Error regenerating version. Please try again.");
+    }
   };
 
   return (
@@ -152,8 +161,12 @@ export default function VersionRoadmapPage() {
 
   const load = async () => {
     setLoading(true);
-    const res = await invoke("get_current");
-    setDoc(res.data.doc || null);
+    try {
+      const res = await invoke("get_current");
+      setDoc(res.data.doc || null);
+    } catch (error) {
+      console.error("Error loading document:", error);
+    }
     setLoading(false);
   };
 
@@ -176,11 +189,21 @@ export default function VersionRoadmapPage() {
     setGenProgress("Pulling platform data — deployed features, agents, pillar gaps, KPI targets...");
     await new Promise(r => setTimeout(r, 600));
     setGenProgress("Generating V1 → V5 roadmap with 36-month trajectory (~45s)...");
-    const res = await invoke("generate");
-    setDoc(res.data.doc);
-    setLastSaved(new Date());
-    setGenerating(false);
-    setGenProgress("");
+    try {
+      const res = await invoke("generate");
+      setDoc(res.data.doc);
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error("Error generating roadmap:", error);
+      if (error?.response?.status === 504 || error?.message?.includes("504")) {
+        alert("Generation service is currently busy. Please try again in a few moments.");
+      } else {
+        alert("Error generating version roadmap. Please try again.");
+      }
+    } finally {
+      setGenerating(false);
+      setGenProgress("");
+    }
   };
 
   const handleEditorSave = async (html) => {
@@ -191,9 +214,14 @@ export default function VersionRoadmapPage() {
   };
 
   const handleRestore = async (id) => {
-    const res = await invoke("restore", { id });
-    setDoc(res.data.doc);
-    setView("document");
+    try {
+      const res = await invoke("restore", { id });
+      setDoc(res.data.doc);
+      setView("document");
+    } catch (error) {
+      console.error("Error restoring version:", error);
+      alert("Error restoring version. Please try again.");
+    }
   };
 
   const handleExportPDF = () => {
