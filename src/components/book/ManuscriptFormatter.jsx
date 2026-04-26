@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Download, Sparkles, CheckCircle2, Loader2, Book, Globe, FileCode } from "lucide-react";
 import AIGenerateButton from "../AIGenerateButton";
+import BookPDFExporter from "./BookPDFExporter";
 
 export default function ManuscriptFormatter({ book, onUpdate, isUpdating }) {
   const [formatting, setFormatting] = useState(false);
@@ -249,6 +250,9 @@ Provide the fully formatted manuscript with a Table of Contents at the top, foll
           )}
         </CardContent>
       </Card>
+
+      {/* PDF Export */}
+      <BookPDFExporter book={book} />
 
       {/* Info Cards */}
       <div className="grid md:grid-cols-3 gap-4">
