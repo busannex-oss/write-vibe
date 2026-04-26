@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Check, Loader2 } from "lucide-react";
+import { Upload, Check, Loader2, Settings } from "lucide-react";
+import LogoEditor from "./LogoEditor";
 
 export default function WebsiteBranding({ user, onUpdate }) {
   const [branding, setBranding] = useState({
@@ -15,6 +16,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
   const [saving, setSaving] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [logoAnalysis, setLogoAnalysis] = useState(null);
+  const [showLogoEditor, setShowLogoEditor] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -39,24 +41,18 @@ export default function WebsiteBranding({ user, onUpdate }) {
     }
   };
 
-  const handleLogoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploading(true);
-      try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        setBranding(prev => ({ ...prev, website_logo_url: file_url }));
-        
-        // Auto-save logo
-        await base44.auth.updateMe({ website_logo_url: file_url });
-        // Automatically process with LLM
-        await processLogoWithLLM(file_url);
-        if (onUpdate) onUpdate();
-      } catch (error) {
-        console.error("Error uploading logo:", error);
-      }
-      setUploading(false);
+  const handleLogoSave = async (logoUrl) => {
+    setUploading(true);
+    try {
+      setBranding(prev => ({ ...prev, website_logo_url: logoUrl }));
+      await base44.auth.updateMe({ website_logo_url: logoUrl });
+      await processLogoWithLLM(logoUrl);
+      setShowLogoEditor(false);
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error("Error saving logo:", error);
     }
+    setUploading(false);
   };
 
   const handleSave = async () => {
@@ -84,46 +80,50 @@ export default function WebsiteBranding({ user, onUpdate }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Logo Preview */}
-          <div className="flex items-center gap-6">
-            <div className="w-32 h-32 rounded-xl bg-white/10 border border-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center">
-              {branding.website_logo_url ? (
-                <img src={branding.website_logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
-              ) : (
-                <div className="text-center text-white/30 text-sm">No logo</div>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="logo" className="cursor-pointer">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors w-fit mb-2">
-                  <Upload className="w-4 h-4 text-white" />
-                  <span className="text-white">{uploading ? "Uploading..." : "Upload Logo"}</span>
+          {showLogoEditor ? (
+            <LogoEditor 
+              onSave={handleLogoSave}
+              currentLogoUrl={branding.website_logo_url}
+              websiteTitle={branding.website_title}
+            />
+          ) : (
+            <>
+              {/* Logo Preview */}
+              <div className="flex items-center gap-6">
+                <div className="w-32 h-32 rounded-xl bg-white/10 border border-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  {branding.website_logo_url ? (
+                    <img src={branding.website_logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
+                  ) : (
+                    <div className="text-center text-white/30 text-sm">No logo</div>
+                  )}
                 </div>
-              </Label>
-              <Input
-                id="logo"
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                disabled={uploading}
-                className="hidden"
-              />
-              <p className="text-xs text-white/40">PNG or JPG • Recommended: 200x200px or square</p>
-              <p className="text-xs text-white/40 mt-1">Updates instantly on all websites</p>
-              {processing && (
-                <div className="flex items-center gap-2 text-xs text-white/60 mt-2">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Analyzing logo with AI...
+                <div className="flex-1">
+                  <Button
+                    onClick={() => setShowLogoEditor(true)}
+                    disabled={uploading}
+                    className="mb-2 bg-white/10 hover:bg-white/20 text-white border-white/20 border"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    {uploading ? "Uploading..." : "Upload & Edit Logo"}
+                  </Button>
+                  <p className="text-xs text-white/40">PNG or JPG • Zoom, crop, remove background, or generate with AI</p>
+                  <p className="text-xs text-white/40 mt-1">Updates instantly on all websites</p>
+                  {processing && (
+                    <div className="flex items-center gap-2 text-xs text-white/60 mt-2">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Analyzing logo with AI...
+                    </div>
+                  )}
+                  {logoAnalysis?.optimization_guide && (
+                    <div className="mt-3 p-2 bg-white/5 rounded text-xs space-y-1 border border-white/10">
+                      <p className="text-white/60">✓ Logo analyzed and optimized for web</p>
+                      <p className="text-white/60">Size: {logoAnalysis.optimization_guide.final_size}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-              {logoAnalysis?.optimization_guide && (
-                <div className="mt-3 p-2 bg-white/5 rounded text-xs space-y-1 border border-white/10">
-                  <p className="text-white/60">✓ Logo analyzed and optimized for web</p>
-                  <p className="text-white/60">Size: {logoAnalysis.optimization_guide.final_size}</p>
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
