@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Sparkles, Crown, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import AdminNavTabs from "@/components/layout/AdminNavTabs";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
@@ -79,30 +80,9 @@ export default function Layout({ children, currentPageName }) {
     { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
-  const adminNav = user?.role === "admin"
-    ? [
-        { name: "User Management", href: "UserManagement", icon: Crown },
-        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert },
-        { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain },
-        { name: "Mission Statement", href: "MissionStatement", icon: Target },
-        { name: "SOPs", href: "SOPs", icon: ClipboardList },
-        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen },
-        { name: "Map Legend", href: "MapLegend", icon: Map },
-        { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid },
-        { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette },
-        { name: "Sitemap", href: "Sitemap", icon: Map },
-        { name: "System Architecture", href: "SystemArchitecture", icon: Building2 },
-        { name: "Legal Documents", href: "LegalDocuments", icon: Scale },
-        { name: "Licensing Terms", href: "LicensingTerms", icon: FileKey },
-        { name: "KPI Framework", href: "KPIFramework", icon: BarChart2 },
-        { name: "Onboarding Experience", href: "OnboardingExperience", icon: UserCheck },
-        { name: "Version Roadmap", href: "VersionRoadmap", icon: GitBranch },
-        { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers },
-        { name: "AI Agent Audit", href: "AgentAudit", icon: Bot }
-      ]
-    : [];
+  const showAdminNav = user?.role === "admin";
 
-  const navigation = [...memberNav, ...adminNav];
+  const navigation = memberNav;
 
   // Public pages — no sidebar/header
   if (PUBLIC_PAGES.includes(currentPageName)) {
@@ -206,36 +186,11 @@ export default function Layout({ children, currentPageName }) {
               );
             })}
 
-            {/* Admin-only section */}
-            {adminNav.length > 0 && (
-              <>
-                <div className="pt-3 pb-1 px-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-[10px] uppercase tracking-widest text-amber-400/60 font-semibold">Admin</span>
-                    <div className="flex-1 h-px bg-white/10" />
-                  </div>
-                </div>
-                {adminNav.map((item) => {
-                  const isActive = currentPageName === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      to={createPageUrl(item.href)}
-                      onClick={() => setSidebarOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                        isActive
-                          ? "bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400 shadow-lg shadow-amber-500/5"
-                          : "text-amber-400/60 hover:text-amber-400 hover:bg-amber-500/5"
-                      )}
-                    >
-                      <item.icon className={cn("w-5 h-5", isActive ? "text-amber-400" : "text-amber-400/60")} />
-                      <span className="font-medium">{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </>
+            {/* Admin-only section with tabs */}
+            {showAdminNav && (
+              <div className="pt-3 pb-1">
+                <AdminNavTabs currentPageName={currentPageName} onItemClick={() => setSidebarOpen(false)} />
+              </div>
             )}
           </nav>
 
