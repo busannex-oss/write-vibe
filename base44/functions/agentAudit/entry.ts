@@ -3,18 +3,16 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 const AGENT_MANIFEST = [
   { name: "Project Manager", type: "orchestration", description: "Master AI overseeing all agents, enforcing zero-error policy, brand standards, daily reports", pillars: ["Innovation Leadership", "Brand Integrity", "Sustainable Business"], tools: ["Book(read,update)", "Document(read,update)", "TeamMember(read)"], memory: true, status: "active" },
   { name: "Brand Strategist", type: "brand", description: "Maintains brand standards, visual identity, white-label enforcement across all user touchpoints", pillars: ["Brand Integrity", "Authentic Voice"], tools: [], memory: true, status: "active" },
-  { name: "Brand Sentinel", type: "monitoring", description: "Continuous brand consistency guardian monitoring all platform outputs", pillars: ["Brand Integrity", "Authentic Voice"], tools: [], memory: true, status: "active" },
-  { name: "Brand Guardian", type: "monitoring", description: "Author content brand protection across marketing materials", pillars: ["Brand Integrity", "Authentic Voice"], tools: [], memory: true, status: "active" },
+  { name: "Brand Guardian", type: "monitoring", description: "Unified brand identity enforcer, consistency monitor, compliance auditor & autonomous repair agent — merged Brand Sentinel + Brand Guardian", pillars: ["Brand Integrity", "Authentic Voice", "Professional Quality"], tools: ["Book(read,update)", "Document(read,update)"], memory: true, status: "active" },
   { name: "Structure Sentinel", type: "monitoring", description: "Manuscript structure and narrative arc monitor", pillars: ["Authentic Voice", "Professional Quality"], tools: [], memory: true, status: "active" },
   { name: "Marketing Assistant", type: "content", description: "Creates publisher letters, press releases, social media content, email newsletters", pillars: ["Community & Legacy", "Accessible Empowerment"], tools: ["Book(read)", "Document(create,read,update)"], memory: true, status: "active" },
-  { name: "SEO Growth Engine", type: "optimization", description: "Continuous keyword optimization and Amazon discoverability enhancement", pillars: ["Professional Quality", "Sustainable Business"], tools: [], memory: true, status: "active" },
+  { name: "Title & SEO Strategist", type: "optimization", description: "Unified title generation + full-stack SEO strategy — keyword research, metadata, on-page, off-page, traffic optimization", pillars: ["Professional Quality", "Sustainable Business", "Accessible Empowerment"], tools: ["Book(read,update)", "NewsletterSubscriber(read)"], memory: true, status: "active" },
   { name: "Outline Generator", type: "content", description: "Creates comprehensive chapter-by-chapter book outlines with story architecture", pillars: ["Authentic Voice", "Professional Quality"], tools: ["Book(read,update)"], memory: true, status: "active" },
   { name: "Character Creator", type: "content", description: "AI-driven deep character profiles with backstory, traits, appearance", pillars: ["Authentic Voice"], tools: [], memory: true, status: "active" },
-  { name: "Title Suggester", type: "content", description: "Market-aware, commercially viable title generation", pillars: ["Professional Quality", "Accessible Empowerment"], tools: [], memory: true, status: "active" },
   { name: "Summary Writer", type: "content", description: "Back-cover book description and Amazon blurb generation", pillars: ["Professional Quality", "Accessible Empowerment"], tools: [], memory: true, status: "active" },
   { name: "Cover Designer", type: "creative", description: "AI front and back cover generation with style selection and voting", pillars: ["Professional Quality", "Authentic Voice"], tools: [], memory: true, status: "active" },
   { name: "Audiobook Producer", type: "production", description: "AI voice narration with style selection and script review", pillars: ["Professional Quality", "Innovation Leadership"], tools: [], memory: true, status: "active" },
-  { name: "Video Producer", type: "production", description: "Book commercial video creation pipeline", pillars: ["Innovation Leadership", "Community & Legacy"], tools: [], memory: true, status: "active" },
+  { name: "Video Producer", type: "production", description: "Full-cycle book video commercial production — strategy, scripting, storyboarding, FFmpeg rendering, multi-channel distribution (YouTube, Instagram, TikTok, Facebook)", pillars: ["Innovation Leadership", "Community & Legacy", "Professional Quality"], tools: ["Book(read,update)", "Document(read,update)", "ErrorLog(create)"], memory: true, status: "active" },
   { name: "Website Builder", type: "production", description: "Author site content, structure, and storefront integration", pillars: ["Community & Legacy", "Accessible Empowerment"], tools: [], memory: true, status: "active" },
   { name: "Bookstore Advisor", type: "distribution", description: "Distribution channel strategy and retailer optimization", pillars: ["Professional Quality", "Sustainable Business"], tools: [], memory: true, status: "active" },
   { name: "Lead Magnet Designer", type: "marketing", description: "Reader acquisition asset creation and lead funnel design", pillars: ["Community & Legacy", "Sustainable Business"], tools: [], memory: true, status: "active" },
@@ -22,6 +20,8 @@ const AGENT_MANIFEST = [
   { name: "Seasonal Newsletter Strategist", type: "marketing", description: "Author marketing calendar and seasonal campaign management", pillars: ["Community & Legacy", "Sustainable Business"], tools: [], memory: true, status: "active" },
   { name: "Diagnostics Agent", type: "monitoring", description: "Platform and workflow issue detection and resolution", pillars: ["Innovation Leadership", "Brand Integrity"], tools: [], memory: true, status: "active" },
   { name: "Membership Manager", type: "business", description: "Subscription and access tier management", pillars: ["Sustainable Business", "Accessible Empowerment"], tools: [], memory: true, status: "active" },
+  { name: "Ethical AI & Compliance Officer", type: "compliance", description: "Critical-urgency agent: policy/bias/safety checks, consent verification, IP protection across all AI outputs", pillars: ["Ethical AI", "Brand Integrity", "Professional Quality"], tools: ["Book(read)", "Document(read)", "AgentMemory(create,read)", "ErrorLog(create,read)"], memory: true, status: "active" },
+  { name: "Automation Orchestrator", type: "orchestration", description: "High-urgency agent: schedules, monitors, retries, and escalates all automations with 4-tier SLA enforcement", pillars: ["Innovation Leadership", "Professional Quality", "Sustainable Business"], tools: ["Book(read)", "AgentMemory(create,read,update)", "ErrorLog(create,read,update)"], memory: true, status: "active" },
   { name: "Media Production Monitor", type: "monitoring", description: "Automated daily health check for video/audio jobs and ElevenLabs quota", pillars: ["Professional Quality", "Innovation Leadership"], tools: [], memory: false, status: "degraded", notes: "6/6 consecutive failures — automation inactive" }
 ];
 
@@ -195,22 +195,35 @@ Format with clean, professional HTML: <h2>, <h3>, <h4>, <p>, <ul>, <li>, <table>
 
 Return JSON: { "sections": [{ "title": "section title", "content": "full HTML" }], "health_score": number, "red_flags": ["flag1", "flag2"], "active_count": number, "degraded_count": number }`;
 
-      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        model: 'gpt_5',
-        response_json_schema: {
-          type: "object",
-          properties: {
-            sections: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } },
-            health_score: { type: "number" },
-            red_flags: { type: "array", items: { type: "string" } },
-            active_count: { type: "number" },
-            degraded_count: { type: "number" }
-          }
-        }
-      });
+      // Run 3 parallel LLM calls to avoid timeout
+      const sectionSchema = { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } };
+      const baseCtx = `Platform: The Write Vibe (${AGENT_MANIFEST.length} agents). Manifest:\n${agentContext}\nPillar map:\n${PILLARS.map(p => `${p}: [${pillarMap[p].join(', ')}]`).join('\n')}\nAutomation: Media Production Monitor has 6/6 consecutive failures — inactive.\nErrors on record: ${errorLogs.length}.`;
 
-      const healthScore = result.health_score || 74;
+      const [part1, part2, part3] = await Promise.all([
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `${baseCtx}\n\nGenerate SECTION 1: AUDIT SUMMARY and SECTION 2: DIAGNOSTICS REPORT — PER-AGENT ASSESSMENT.\nSection 1: Executive HTML table (total/active/degraded/overlapping/no-tools agents + critical flags) + 2-3 narrative paragraphs.\nSection 2: For EACH of ${AGENT_MANIFEST.length} agents: status, role clarity, pillar fit, tool access, conflict detection, risk flag, recommendation. Flag Brand Guardian consolidation (was Brand Sentinel+Brand Guardian). Flag Media Production Monitor as DEGRADED.\nProfessional investor-grade HTML. No inline styles.\nReturn JSON: { "sections": [{ "title": string, "content": string }, { "title": string, "content": string }] }`,
+          response_json_schema: { type: "object", properties: { sections: { type: "array", items: sectionSchema } } }
+        }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `${baseCtx}\n\nGenerate SECTION 3: MANAGEMENT RECOMMENDATIONS and SECTION 4: ALIGNMENT REPORT.\nSection 3: For each agent a management action (active/monitor/consolidate/upgrade/retire) grouped in a clean table.\nSection 4: Pillar Coverage Map table (pillar, agents, coverage strength Strong/Adequate/Weak); Agent Cohesion Score; Platform Standard Alignment; Harmful Agent Detection; Recommended New Agents (3-5, name/function/pillar/urgency).\nProfessional HTML. No inline styles.\nReturn JSON: { "sections": [{ "title": string, "content": string }, { "title": string, "content": string }] }`,
+          response_json_schema: { type: "object", properties: { sections: { type: "array", items: sectionSchema } } }
+        }),
+        base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `${baseCtx}\n\nGenerate SECTION 5: OVERALL PLATFORM AGENT HEALTH SCORE.\nInclude: composite score out of 100 (be realistic ~76 given automation failures and recent consolidations), score breakdown table (Audit completeness/Diagnostics health/Alignment coverage/Conflict risk/Gap risk), trend assessment, top 5 priority actions ranked by urgency, investor confidence statement paragraph.\nAlso output: health_score (number), red_flags (array of strings for critical issues), active_count (${activeAgents}), degraded_count (${degradedAgents}).\nProfessional HTML. No inline styles.\nReturn JSON: { "sections": [{ "title": string, "content": string }], "health_score": number, "red_flags": [string], "active_count": number, "degraded_count": number }`,
+          response_json_schema: { type: "object", properties: { sections: { type: "array", items: sectionSchema }, health_score: { type: "number" }, red_flags: { type: "array", items: { type: "string" } }, active_count: { type: "number" }, degraded_count: { type: "number" } } }
+        })
+      ]);
+
+      const allSections = [...(part1.sections || []), ...(part2.sections || []), ...(part3.sections || [])];
+      const result = {
+        sections: allSections,
+        health_score: part3.health_score || 76,
+        red_flags: part3.red_flags || [],
+        active_count: part3.active_count || activeAgents,
+        degraded_count: part3.degraded_count || degradedAgents
+      };
+
+      const healthScore = result.health_score || 76;
       const sectionColors = ['#f59e0b','#ef4444','#3b82f6','#8b5cf6','#10b981'];
 
       const innerHtml = (result.sections || []).map((sec, idx) => {
