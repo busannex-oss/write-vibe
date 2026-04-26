@@ -25,6 +25,7 @@ import VersionRoadmap from './pages/VersionRoadmap';
 import PillarsArchitecture from './pages/PillarsArchitecture';
 import AgentAudit from './pages/AgentAudit';
 import DistributionDashboard from './pages/DistributionDashboard';
+import ChainOfCommand from './pages/ChainOfCommand';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -98,6 +99,7 @@ const AuthenticatedApp = () => {
       <Route path="/PillarsArchitecture" element={<LayoutWrapper currentPageName="PillarsArchitecture"><PillarsArchitecture /></LayoutWrapper>} />
       <Route path="/AgentAudit" element={<LayoutWrapper currentPageName="AgentAudit"><AgentAudit /></LayoutWrapper>} />
       <Route path="/DistributionDashboard" element={<LayoutWrapper currentPageName="DistributionDashboard"><DistributionDashboard /></LayoutWrapper>} />
+      <Route path="/ChainOfCommand" element={<LayoutWrapper currentPageName="ChainOfCommand"><ChainOfCommand /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
