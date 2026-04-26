@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Check, Loader2, Settings } from "lucide-react";
+import { Upload, Check, Loader2, Settings, Trash2, Edit2 } from "lucide-react";
 import LogoEditor from "./LogoEditor";
 
 export default function WebsiteBranding({ user, onUpdate }) {
@@ -69,6 +69,21 @@ export default function WebsiteBranding({ user, onUpdate }) {
     setSaving(false);
   };
 
+  const handleDeleteLogo = async () => {
+    if (window.confirm("Delete this logo? This cannot be undone.")) {
+      setSaving(true);
+      try {
+        await base44.auth.updateMe({ website_logo_url: "" });
+        setBranding(prev => ({ ...prev, website_logo_url: "" }));
+        setLogoAnalysis(null);
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        console.error("Error deleting logo:", error);
+      }
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Website Logo */}
@@ -97,17 +112,30 @@ export default function WebsiteBranding({ user, onUpdate }) {
                     <div className="text-center text-white/30 text-sm">No logo</div>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 space-y-2">
                   <Button
                     onClick={() => setShowLogoEditor(true)}
                     disabled={uploading}
-                    className="mb-2 bg-white/10 hover:bg-white/20 text-white border-white/20 border"
+                    className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20 border"
                   >
                     <Settings className="w-4 h-4 mr-2" />
-                    {uploading ? "Uploading..." : "Upload & Edit Logo"}
+                    {uploading ? "Uploading..." : branding.website_logo_url ? "Edit Logo" : "Upload Logo"}
                   </Button>
+                  
+                  {branding.website_logo_url && (
+                    <Button
+                      onClick={handleDeleteLogo}
+                      disabled={saving || uploading}
+                      variant="outline"
+                      className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Logo
+                    </Button>
+                  )}
+                  
                   <p className="text-xs text-white/40">PNG or JPG • Zoom, crop, remove background, or generate with AI</p>
-                  <p className="text-xs text-white/40 mt-1">Updates instantly on all websites</p>
+                  <p className="text-xs text-white/40">Updates instantly on all websites</p>
                   {processing && (
                     <div className="flex items-center gap-2 text-xs text-white/60 mt-2">
                       <Loader2 className="w-3 h-3 animate-spin" />
