@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -185,9 +185,14 @@ export default function LicensingTermsPage() {
     setGenProgress("Loading platform context — IP framework, licensing model, pillar standards...");
     await new Promise(r => setTimeout(r, 500));
     setGenProgress("Drafting 22-section Licensing Agreement with AI legal model (~45s)...");
-    const res = await invoke("generate");
-    setDoc(res.data.doc);
-    setLastSaved(new Date());
+    try {
+      const res = await invoke("generate");
+      setDoc(res.data.doc);
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error("Error generating licensing terms:", error);
+      alert("Error generating licensing terms. Please try again.");
+    }
     setGenerating(false);
     setGenProgress("");
   };
@@ -200,9 +205,14 @@ export default function LicensingTermsPage() {
   };
 
   const handleRestore = async (id) => {
-    const res = await invoke("restore", { id });
-    setDoc(res.data.doc);
-    setView("document");
+    try {
+      const res = await invoke("restore", { id });
+      setDoc(res.data.doc);
+      setView("document");
+    } catch (error) {
+      console.error("Error restoring version:", error);
+      alert("Error restoring version. Please try again.");
+    }
   };
 
   const handleExportPDF = () => {
