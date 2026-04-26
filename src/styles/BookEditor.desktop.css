@@ -3,238 +3,238 @@
 /* ──────────────────────────────────────────────────────────────────────── */
 
 /* NO MEDIA QUERY - Desktop is the base/default layout */
-  .book-editor-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
-  }
+.book-editor-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
+}
 
-  /* Top Bar */
-  .book-editor-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
-    height: 3.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(51, 65, 85, 0.4);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    gap: 1rem;
-  }
+/* Top Bar */
+.book-editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 3.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(51, 65, 85, 0.4);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  gap: 1rem;
+}
 
-  .book-editor-topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    min-width: 0;
-    flex: 1;
-  }
+.book-editor-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  flex: 1;
+}
 
-  .book-editor-topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-  }
+.book-editor-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
 
-  /* Main Layout */
-  .book-editor-body {
-    display: flex;
-    flex: 1;
-  }
+/* Main Layout */
+.book-editor-body {
+  display: flex;
+  flex: 1;
+}
 
-  /* Sidebar */
-  .book-editor-sidebar {
-    width: 14rem;
-    flex-shrink: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(51, 65, 85, 0.2);
-    display: flex;
-    flex-direction: column;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    position: sticky;
-    top: 3.5rem;
-    height: calc(100vh - 3.5rem);
-    overflow-y: auto;
-  }
+/* Sidebar */
+.book-editor-sidebar {
+  width: 14rem;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(51, 65, 85, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  position: sticky;
+  top: 3.5rem;
+  height: calc(100vh - 3.5rem);
+  overflow-y: auto;
+}
 
-  .book-editor-sidebar-stepper {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
+.book-editor-sidebar-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
 
-  .book-editor-sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 0.75rem;
-    border-radius: 0.75rem;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
-    text-align: left;
-    width: 100%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-  }
+.book-editor-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  text-align: left;
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
 
-  .book-editor-sidebar-item.active {
-    background: rgba(120, 113, 169, 0.1);
-    color: #ffffff;
-  }
+.book-editor-sidebar-item.active {
+  background: rgba(120, 113, 169, 0.1);
+  color: #ffffff;
+}
 
-  .book-editor-sidebar-item.completed {
-    color: rgba(16, 185, 129, 0.8);
-  }
+.book-editor-sidebar-item.completed {
+  color: rgba(16, 185, 129, 0.8);
+}
 
-  .book-editor-sidebar-item.completed:hover {
-    background: rgba(16, 185, 129, 0.08);
-    color: rgba(16, 185, 129, 1);
-  }
+.book-editor-sidebar-item.completed:hover {
+  background: rgba(16, 185, 129, 0.08);
+  color: rgba(16, 185, 129, 1);
+}
 
-  .book-editor-sidebar-item:disabled {
-    color: rgba(255, 255, 255, 0.15);
-    cursor: not-allowed;
-  }
+.book-editor-sidebar-item:disabled {
+  color: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
+}
 
-  /* Main Content */
-  .book-editor-main {
-    flex: 1;
-    min-width: 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
+/* Main Content */
+.book-editor-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
 
-  .book-editor-main-content {
-    max-width: 48rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-    width: 100%;
-  }
+.book-editor-main-content {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  width: 100%;
+}
 
-  /* Responsive Text Sizing */
-  .book-editor-heading {
-    font-size: 1.875rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
+/* Responsive Text Sizing */
+.book-editor-heading {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
 
-  .book-editor-subheading {
-    font-size: 1rem;
-    font-weight: 600;
-  }
+.book-editor-subheading {
+  font-size: 1rem;
+  font-weight: 600;
+}
 
-  .book-editor-body-text {
-    font-size: 0.875rem;
-    line-height: 1.5;
-  }
+.book-editor-body-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
 
-  /* Form Elements */
-  .book-editor-input,
-  .book-editor-textarea,
-  .book-editor-select {
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-  }
+/* Form Elements */
+.book-editor-input,
+.book-editor-textarea,
+.book-editor-select {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
 
-  .book-editor-input:focus,
-  .book-editor-textarea:focus,
-  .book-editor-select:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-  }
+.book-editor-input:focus,
+.book-editor-textarea:focus,
+.book-editor-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
 
-  /* Cards */
-  .book-editor-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    transition: all 0.2s ease;
-  }
+/* Cards */
+.book-editor-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
 
-  .book-editor-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(245, 158, 11, 0.3);
-  }
+.book-editor-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+}
 
-  /* Buttons */
-  .book-editor-button {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
+/* Buttons */
+.book-editor-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  .book-editor-button-primary {
-    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-    color: #000000;
-    box-shadow: 0 10px 15px rgba(245, 158, 11, 0.2);
-  }
+.book-editor-button-primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: #000000;
+  box-shadow: 0 10px 15px rgba(245, 158, 11, 0.2);
+}
 
-  .book-editor-button-primary:hover {
-    box-shadow: 0 12px 20px rgba(245, 158, 11, 0.3);
-    transform: translateY(-2px);
-  }
+.book-editor-button-primary:hover {
+  box-shadow: 0 12px 20px rgba(245, 158, 11, 0.3);
+  transform: translateY(-2px);
+}
 
-  .book-editor-button-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.book-editor-button-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-  .book-editor-button-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-  }
+.book-editor-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
 
-  /* Scrollbar Styling */
-  .book-editor-sidebar::-webkit-scrollbar,
-  .book-editor-main::-webkit-scrollbar {
-    width: 6px;
-  }
+/* Scrollbar Styling */
+.book-editor-sidebar::-webkit-scrollbar,
+.book-editor-main::-webkit-scrollbar {
+  width: 6px;
+}
 
-  .book-editor-sidebar::-webkit-scrollbar-track,
-  .book-editor-main::-webkit-scrollbar-track {
-    background: transparent;
-  }
+.book-editor-sidebar::-webkit-scrollbar-track,
+.book-editor-main::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-  .book-editor-sidebar::-webkit-scrollbar-thumb,
-  .book-editor-main::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-  }
+.book-editor-sidebar::-webkit-scrollbar-thumb,
+.book-editor-main::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
 
-  .book-editor-sidebar::-webkit-scrollbar-thumb:hover,
-  .book-editor-main::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
+.book-editor-sidebar::-webkit-scrollbar-thumb:hover,
+.book-editor-main::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
 
-  /* Utility */
-  .book-editor-hidden-mobile {
-    display: block !important;
-  }
+/* Utility */
+.book-editor-hidden-mobile {
+  display: block !important;
+}
 
-  .book-editor-hidden-tablet {
-    display: block !important;
-  }
+.book-editor-hidden-tablet {
+  display: block !important;
+}
