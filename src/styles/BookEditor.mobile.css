@@ -54,7 +54,7 @@
     flex-direction: column;
     min-height: 0;
     width: 100%;
-    position: relative;
+    overflow: hidden;
   }
 
   /* Sidebar — Hidden on Mobile */
@@ -230,32 +230,19 @@
     border-color: rgba(245, 158, 11, 0.25);
   }
 
-  /* ALL Buttons - Aggressive Mobile Sizing */
-  button,
-  [role="button"],
-  input[type="button"],
-  input[type="submit"] {
-    padding: 0.375rem 0.75rem !important;
-    height: auto !important;
-    min-height: 1.75rem !important;
-    font-size: 0.7rem !important;
-    line-height: 1 !important;
-  }
-
-  /* Prevent full-width forcing for inline/flex buttons */
+  /* Scoped Button Sizing — only inside the editor, not site-wide */
   .book-editor-main button {
     max-width: 100%;
   }
 
   .book-editor-button {
-    padding: 0.375rem 0.75rem !important;
+    padding: 0.375rem 0.75rem;
     border-radius: 0.25rem;
     font-weight: 500;
-    font-size: 0.7rem !important;
+    font-size: 0.8rem;
     border: none;
     cursor: pointer;
     transition: all 0.15s ease;
-    min-height: 1.75rem !important;
   }
 
   .book-editor-button-primary {
@@ -320,15 +307,10 @@
     gap: 0.75rem;
   }
 
-  /* Touch Optimizations */
-  button:not(.book-editor-mobile-selector-item):not([class*="ui-button"]),
-  input[type="button"],
-  input[type="submit"],
-  a.book-editor-button {
-    min-height: 1.75rem !important;
+  /* Touch Optimizations — scoped only to editor buttons */
+  .book-editor-button {
+    min-height: 2rem;
     min-width: auto;
-    padding: 0.375rem 0.75rem !important;
-    font-size: 0.7rem !important;
   }
 
   /* Safe Area */
