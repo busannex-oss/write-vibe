@@ -131,9 +131,9 @@
   }
 
   .book-editor-main-content {
-    max-width: 56rem;
+    max-width: 90rem;
     margin: 0 auto;
-    padding: 2rem 2rem;
+    padding: 2rem 3rem;
     width: 100%;
   }
 
