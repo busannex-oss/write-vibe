@@ -420,17 +420,6 @@ export default function BookEditor() {
       {/* ── Body ──────────────────────────────────────────────────────────── */}
       <div className="book-editor-body">
 
-        {/* ── Sidebar — icon rail ──────────────────────────────────────────── */}
-        <div className="book-editor-sidebar">
-          <Stepper
-            steps={STEPS}
-            book={book}
-            activeStep={activeTab}
-            onStepClick={setActiveTab}
-            utilityTabs={UTILITY_TABS}
-          />
-        </div>
-
         {/* ── Mobile step selector (top scroll row) ───────────────────────── */}
         <div className="book-editor-mobile-selector">
           {STEPS.map((step, idx) => {
@@ -508,6 +497,18 @@ export default function BookEditor() {
             </AnimatePresence>
           </div>
         </main>
+
+        {/* ── Sidebar — icon rail (right side) ────────────────────────────── */}
+        <div className="book-editor-sidebar">
+          <Stepper
+            steps={STEPS}
+            book={book}
+            activeStep={activeTab}
+            onStepClick={setActiveTab}
+            utilityTabs={UTILITY_TABS}
+          />
+        </div>
+
       </div>
     </div>
   );
