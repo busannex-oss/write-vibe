@@ -80,7 +80,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/AgentMemoryLog" element={<LayoutWrapper currentPageName="AgentMemoryLog"><AgentMemoryLog /></LayoutWrapper>} />
-      <Route path="/BookEditor" element={<BookEditor />} />
+      <Route path="/BookEditor" element={<LayoutWrapper currentPageName="BookEditor"><BookEditor /></LayoutWrapper>} />
       <Route path="/MissionStatement" element={<LayoutWrapper currentPageName="MissionStatement"><MissionStatement /></LayoutWrapper>} />
       <Route path="/SOPs" element={<LayoutWrapper currentPageName="SOPs"><SOPs /></LayoutWrapper>} />
       <Route path="/MasterRegistry" element={<LayoutWrapper currentPageName="MasterRegistry"><MasterRegistry /></LayoutWrapper>} />
