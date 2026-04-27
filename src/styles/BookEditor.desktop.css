@@ -43,6 +43,55 @@
     flex-shrink: 0;
   }
 
+  .book-editor-topbar-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.5);
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .book-editor-topbar-back:hover {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+  }
+
+  .book-editor-topbar-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 28rem;
+  }
+
+  .book-editor-topbar-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.4);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .book-editor-topbar-action:hover {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+  }
+
   /* Body — horizontal split: sidebar + main */
   .book-editor-body {
     display: flex !important;
