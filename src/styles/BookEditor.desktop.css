@@ -51,16 +51,18 @@
     overflow: hidden !important;
   }
 
-  /* Sidebar */
+  /* Sidebar — icon-only compact rail */
   .book-editor-sidebar {
     display: flex !important;
-    width: 14rem;
+    width: 4rem;
     flex-shrink: 0;
     flex-direction: column;
+    align-items: center;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(51, 65, 85, 0.2);
-    padding: 1.5rem 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 1rem 0.5rem;
     overflow-y: auto;
+    gap: 0.125rem;
   }
 
   /* Mobile step selector — hidden on desktop */
@@ -79,9 +81,9 @@
   }
 
   .book-editor-main-content {
-    max-width: 48rem;
+    max-width: 56rem;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem 2rem;
     width: 100%;
   }
 

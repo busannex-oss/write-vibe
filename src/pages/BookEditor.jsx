@@ -142,23 +142,25 @@ const UTILITY_TABS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sidebar stepper
+// Sidebar stepper — icon-only rail with tooltips
 // ─────────────────────────────────────────────────────────────────────────────
-function Stepper({ steps, book, activeStep, onStepClick }) {
+function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
   const completedCount = steps.filter(s => s.isDone(book)).length;
   const progress = (completedCount / steps.length) * 100;
 
   return (
-    <aside className="w-56 shrink-0 flex flex-col gap-1">
-      {/* Mini progress summary */}
-      <div className="mb-3 px-1">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-white/30 text-xs font-medium uppercase tracking-wider">Progress</span>
-          <span className="text-white/40 text-xs">{completedCount}/{steps.length}</span>
+    <div className="flex flex-col items-center w-full gap-0.5">
+      {/* Progress arc */}
+      <div className="mb-2 w-full flex flex-col items-center gap-1">
+        <span className="text-white/25 text-[9px] font-medium uppercase tracking-wider">
+          {completedCount}/{steps.length}
+        </span>
+        <div className="w-8 h-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${progress}%` }} />
         </div>
-        <Progress value={progress} className="h-1 bg-white/8" />
       </div>
 
+      {/* Step icons */}
       {steps.map((step, idx) => {
         const done = step.isDone(book);
         const active = activeStep === step.id;
@@ -166,59 +168,67 @@ function Stepper({ steps, book, activeStep, onStepClick }) {
         const accessible = idx === 0 || prevsDone || step.optional || done;
 
         return (
-          <button
-            key={step.id}
-            onClick={() => accessible && onStepClick(step.id)}
-            disabled={!accessible}
-            className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full ${
-              active
-                ? "bg-amber-500/12 text-white"
-                : done
-                ? "text-emerald-400/80 hover:bg-emerald-500/8 hover:text-emerald-300"
-                : accessible
-                ? "text-white/40 hover:text-white/70 hover:bg-white/5"
-                : "text-white/15 cursor-not-allowed"
-            }`}
-          >
-            {/* Step indicator circle */}
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all ${
-              active
-                ? "bg-amber-500 shadow-lg shadow-amber-500/30"
-                : done
-                ? "bg-emerald-500/20 border border-emerald-500/40"
-                : accessible
-                ? "bg-white/8 border border-white/15"
-                : "bg-white/4 border border-white/8"
-            }`}>
+          <div key={step.id} className="relative group/tip w-full flex justify-center">
+            <button
+              onClick={() => accessible && onStepClick(step.id)}
+              disabled={!accessible}
+              title={step.label}
+              className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                active
+                  ? "bg-amber-500 shadow-lg shadow-amber-500/40 text-black"
+                  : done
+                  ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                  : accessible
+                  ? "bg-white/5 text-white/35 hover:bg-white/10 hover:text-white/70"
+                  : "text-white/12 cursor-not-allowed"
+              }`}
+            >
               {done && !active ? (
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <Check className="w-4 h-4" />
               ) : !accessible ? (
-                <Lock className="w-3 h-3 text-white/20" />
-              ) : active ? (
-                <step.icon className="w-3.5 h-3.5 text-white" />
+                <Lock className="w-3 h-3" />
               ) : (
-                <span className="text-xs font-semibold text-white/40">{idx + 1}</span>
+                <step.icon className="w-4 h-4" />
               )}
+              {active && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
+              )}
+            </button>
+            {/* Tooltip */}
+            <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50
+              bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
+              whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity shadow-xl">
+              {step.label}{step.optional ? " (optional)" : ""}
             </div>
-
-            {/* Label */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium truncate">{step.label}</span>
-                {step.optional && !done && (
-                  <span className="text-[9px] text-white/20 font-normal shrink-0">opt</span>
-                )}
-              </div>
-            </div>
-
-            {/* Active indicator bar */}
-            {active && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-amber-500 rounded-full" />
-            )}
-          </button>
+          </div>
         );
       })}
-    </aside>
+
+      {/* Divider */}
+      <div className="my-2 w-6 h-px bg-white/10" />
+
+      {/* Utility tab icons */}
+      {utilityTabs.map(tab => (
+        <div key={tab.id} className="relative group/tip w-full flex justify-center">
+          <button
+            onClick={() => onStepClick(tab.id)}
+            title={tab.label}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+              activeStep === tab.id
+                ? "bg-slate-600/60 text-white"
+                : "bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/60"
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+          </button>
+          <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50
+            bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
+            whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity shadow-xl">
+            {tab.label}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -410,39 +420,15 @@ export default function BookEditor() {
       {/* ── Body ──────────────────────────────────────────────────────────── */}
       <div className="book-editor-body">
 
-        {/* ── Sidebar ─────────────────────────────────────────────────────── */}
+        {/* ── Sidebar — icon rail ──────────────────────────────────────────── */}
         <div className="book-editor-sidebar">
           <Stepper
             steps={STEPS}
             book={book}
             activeStep={activeTab}
             onStepClick={setActiveTab}
+            utilityTabs={UTILITY_TABS}
           />
-
-          {/* Divider */}
-          <div className="my-4 flex items-center gap-2 px-1">
-            <div className="flex-1 h-px bg-white/6" />
-            <span className="text-white/20 text-[10px] uppercase tracking-wider font-medium">Tools</span>
-            <div className="flex-1 h-px bg-white/6" />
-          </div>
-
-          {/* Utility tools */}
-          <div className="flex flex-col gap-0.5">
-            {UTILITY_TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left w-full text-sm ${
-                  activeTab === tab.id
-                    ? "bg-slate-700/50 text-white"
-                    : "text-white/30 hover:text-white/60 hover:bg-white/4"
-                }`}
-              >
-                <tab.icon className="w-3.5 h-3.5 shrink-0" />
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* ── Mobile step selector (top scroll row) ───────────────────────── */}
