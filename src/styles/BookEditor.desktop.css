@@ -3,26 +3,28 @@
 /* ──────────────────────────────────────────────────────────────────────── */
 
 @media (min-width: 1280px) {
+  /* Full-screen takeover — escapes the app's sidebar layout entirely */
   .book-editor-container {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    inset: 0;
-    z-index: 100;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
     background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
   }
 
   /* Top Bar */
   .book-editor-topbar {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
     height: 3.5rem;
+    flex-shrink: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(51, 65, 85, 0.4);
     backdrop-filter: blur(10px);
-    flex-shrink: 0;
     gap: 1rem;
   }
 
@@ -41,13 +43,12 @@
     flex-shrink: 0;
   }
 
-  /* Main Layout */
+  /* Body — horizontal split: sidebar + main */
   .book-editor-body {
-    display: flex;
-    flex: 1;
-    gap: 0;
-    min-height: 0;
-    overflow: hidden;
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
   }
 
   /* Sidebar */
@@ -55,22 +56,36 @@
     display: flex !important;
     width: 14rem;
     flex-shrink: 0;
+    flex-direction: column;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(51, 65, 85, 0.2);
-    flex-direction: column;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding: 1.5rem 0.75rem;
     overflow-y: auto;
   }
 
-  .book-editor-sidebar-stepper {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  /* Mobile step selector — hidden on desktop */
+  .book-editor-mobile-selector {
+    display: none !important;
   }
 
+  /* Main scrollable content area */
+  .book-editor-main {
+    display: flex !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    flex-direction: column;
+  }
+
+  .book-editor-main-content {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    width: 100%;
+  }
+
+  /* Sidebar stepper items */
   .book-editor-sidebar-item {
     display: flex;
     align-items: center;
@@ -105,26 +120,7 @@
     cursor: not-allowed;
   }
 
-  /* Main Content */
-  .book-editor-main {
-    display: flex !important;
-    flex: 1;
-    min-width: 0;
-    overflow-y: auto;
-    flex-direction: column;
-    position: relative;
-    z-index: 5;
-  }
-
-  .book-editor-main-content {
-    max-width: 48rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-    width: 100%;
-    position: relative;
-  }
-
-  /* Responsive Text Sizing */
+  /* Typography */
   .book-editor-heading {
     font-size: 1.875rem;
     font-weight: bold;
@@ -211,7 +207,7 @@
     color: #ffffff;
   }
 
-  /* Scrollbar Styling */
+  /* Scrollbars */
   .book-editor-sidebar::-webkit-scrollbar,
   .book-editor-main::-webkit-scrollbar {
     width: 6px;
