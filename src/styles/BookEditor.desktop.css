@@ -3,14 +3,11 @@
 /* ──────────────────────────────────────────────────────────────────────── */
 
 @media (min-width: 1280px) {
-  /* Full-screen takeover — escapes the app's sidebar layout entirely */
+  /* Flow within the app layout — respects the sidebar */
   .book-editor-container {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 100 !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: hidden !important;
+    min-height: calc(100vh - 3.5rem);
     background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
   }
 
@@ -98,6 +95,7 @@
     flex: 1 !important;
     min-height: 0 !important;
     overflow: hidden !important;
+    height: calc(100vh - 3.5rem - 3.5rem);
   }
 
   /* Sidebar — icon-only compact rail (right side) */
@@ -129,6 +127,7 @@
     overflow-y: auto !important;
     flex-direction: column;
     order: 1;
+    height: 100%;
   }
 
   .book-editor-main-content {
