@@ -191,11 +191,11 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
                 <step.icon className="w-4 h-4" />
               )}
               {active && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
+                <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
               )}
             </button>
             {/* Tooltip */}
-            <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50
+            <div className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 z-50
               bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
               whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity shadow-xl">
               {step.label}{step.optional ? " (optional)" : ""}
@@ -221,7 +221,7 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
           >
             <tab.icon className="w-4 h-4" />
           </button>
-          <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50
+          <div className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 z-50
             bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
             whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity shadow-xl">
             {tab.label}
