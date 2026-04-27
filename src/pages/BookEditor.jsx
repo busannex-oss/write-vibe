@@ -162,38 +162,41 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
 
       {/* Step icons */}
       {steps.map((step, idx) => {
-        const done = step.isDone(book);
-        const active = activeStep === step.id;
-        const prevsDone = steps.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
-        const accessible = idx === 0 || prevsDone || step.optional || done;
+      const done = step.isDone(book);
+      const active = activeStep === step.id;
+      const prevsDone = steps.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
+      const accessible = idx === 0 || prevsDone || step.optional || done;
 
-        return (
-          <div key={step.id} className="relative group/tip w-full flex justify-center">
-            <button
-              onClick={() => accessible && onStepClick(step.id)}
-              disabled={!accessible}
-              title={step.label}
-              className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                active
-                  ? "bg-amber-500 shadow-lg shadow-amber-500/40 text-black"
-                  : done
-                  ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
-                  : accessible
-                  ? "bg-white/5 text-white/35 hover:bg-white/10 hover:text-white/70"
-                  : "text-white/12 cursor-not-allowed"
-              }`}
-            >
-              {done && !active ? (
-                <Check className="w-5 h-5" />
-              ) : !accessible ? (
-                <Lock className="w-4 h-4" />
-              ) : (
-                <step.icon className="w-5 h-5" />
-              )}
-              {active && (
-                <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
-              )}
-            </button>
+      return (
+        <div key={step.id} className="relative group/tip w-full flex flex-col items-center gap-0.5">
+          <button
+            onClick={() => accessible && onStepClick(step.id)}
+            disabled={!accessible}
+            title={step.label}
+            className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+              active
+                ? "bg-amber-500 shadow-lg shadow-amber-500/40 text-black"
+                : done
+                ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                : accessible
+                ? "bg-white/5 text-white/35 hover:bg-white/10 hover:text-white/70"
+                : "text-white/12 cursor-not-allowed"
+            }`}
+          >
+            {done && !active ? (
+              <Check className="w-5 h-5" />
+            ) : !accessible ? (
+              <Lock className="w-4 h-4" />
+            ) : (
+              <step.icon className="w-5 h-5" />
+            )}
+            {active && (
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
+            )}
+          </button>
+          <span className={`text-[9px] font-semibold tabular-nums ${active ? "text-amber-400" : done ? "text-emerald-500/60" : accessible ? "text-white/20" : "text-white/10"}`}>
+            {idx + 1}
+          </span>
             {/* Tooltip */}
             <div className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 z-50
               bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
