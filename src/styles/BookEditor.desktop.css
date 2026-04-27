@@ -101,7 +101,7 @@
   /* Sidebar — icon-only compact rail (right side) */
   .book-editor-sidebar {
     display: flex !important;
-    width: 4rem;
+    width: 5rem;
     flex-shrink: 0;
     flex-direction: column;
     align-items: center;

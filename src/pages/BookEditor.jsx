@@ -173,7 +173,7 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
               onClick={() => accessible && onStepClick(step.id)}
               disabled={!accessible}
               title={step.label}
-              className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+              className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                 active
                   ? "bg-amber-500 shadow-lg shadow-amber-500/40 text-black"
                   : done
@@ -184,11 +184,11 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
               }`}
             >
               {done && !active ? (
-                <Check className="w-4 h-4" />
+                <Check className="w-5 h-5" />
               ) : !accessible ? (
-                <Lock className="w-3 h-3" />
+                <Lock className="w-4 h-4" />
               ) : (
-                <step.icon className="w-4 h-4" />
+                <step.icon className="w-5 h-5" />
               )}
               {active && (
                 <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0.5 h-5 bg-amber-500 rounded-full" />
@@ -213,13 +213,13 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
           <button
             onClick={() => onStepClick(tab.id)}
             title={tab.label}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
               activeStep === tab.id
                 ? "bg-slate-600/60 text-white"
                 : "bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/60"
             }`}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="w-5 h-5" />
           </button>
           <div className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 z-50
             bg-slate-800 border border-white/10 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg
