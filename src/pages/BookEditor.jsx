@@ -30,6 +30,7 @@ import AudiobookGenerator from "@/components/book/AudiobookGenerator.jsx";
 import WebsiteBuilder from "@/components/book/WebsiteBuilder.jsx";
 import EnhancedCharacterCreator from "@/components/book/EnhancedCharacterCreator.jsx";
 import MarketingCampaignGenerator from "@/components/book/MarketingCampaignGenerator.jsx";
+import MarketingLaunchPlan from "@/components/book/MarketingLaunchPlan.jsx";
 import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
 import AgentAccessPanel from "@/components/book/AgentAccessPanel.jsx";
@@ -488,7 +489,12 @@ export default function BookEditor() {
                 {/* Utility tabs */}
                 {activeTab === "seo"       && <SEOMetadataEditor book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "viewer"    && <ManuscriptViewer book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
-                {activeTab === "marketing" && <MarketingCampaignGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "marketing" && (
+                  <div className="space-y-6">
+                    <MarketingLaunchPlan book={book} />
+                    <MarketingCampaignGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
+                  </div>
+                )}
                 {activeTab === "team"      && <CollaborationPanel book={book} />}
                 {activeTab === "agents"    && <AgentAccessPanel book={book} />}
 
