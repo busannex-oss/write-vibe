@@ -317,6 +317,19 @@ export default function ChainOfCommand() {
             brandColors={brandColors}
             deploymentMode={deploymentMode}
             pillars={PILLARS}
+            onAgentUpdate={(agentId, updates) => {
+              setAgents(prev => {
+                const updated = JSON.parse(JSON.stringify(prev));
+                Object.values(updated).forEach(level => {
+                  level.agents.forEach(a => {
+                    if (a.id === agentId) Object.assign(a, updates);
+                  });
+                });
+                return updated;
+              });
+              // If selected agent is being updated, update it too
+              setSelectedAgent(prev => prev?.id === agentId ? { ...prev, ...updates } : prev);
+            }}
           />
         </TabsContent>
 

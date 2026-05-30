@@ -1,37 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 
-export default function AgentCard({
-  agent,
-  brandColors,
-  isSelected,
-  pillars
-}) {
-  const [avatar, setAvatar] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    generateAvatar();
-  }, [agent.id]);
-
-  const generateAvatar = async () => {
-    try {
-      setLoading(true);
-      const prompt = `Create a professional cinematic portrait of an AI operative named ${agent.name} who works as a ${agent.title}. 
-      Style: clean, modern, professional, high-tech aesthetic. 
-      Keep the avatar professional and appropriate for an organizational hierarchy system.
-      Return a single portrait image.`;
-
-      const { url } = await window.base44?.integrations?.Core?.GenerateImage?.({ prompt });
-      setAvatar(url);
-    } catch (error) {
-      console.error("Error generating avatar:", error);
-      setAvatar(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function AgentCard({ agent, brandColors, isSelected, pillars }) {
 
   const getStatusColor = () => {
     switch (agent.status) {
@@ -50,7 +21,6 @@ export default function AgentCard({
     <motion.div
       whileHover={{ y: -4 }}
       className="h-full cursor-pointer"
-      onClick={(e) => e.stopPropagation()}
     >
       <div
         className={`relative rounded-xl p-6 backdrop-blur-xl border-2 transition-all h-full ${
@@ -90,13 +60,6 @@ export default function AgentCard({
           <div className="mx-auto w-20 h-20 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center border-2" style={{ borderColor: brandColors.accent + "60" }}>
             {agent.image ? (
               <img src={agent.image} alt={agent.name} className="w-full h-full object-cover" />
-            ) : loading ? (
-              <div
-                className="w-full h-full animate-pulse"
-                style={{ backgroundColor: brandColors.accent + "30" }}
-              />
-            ) : avatar ? (
-              <img src={avatar} alt={agent.name} className="w-full h-full object-cover" />
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center text-sm font-bold"

@@ -9,7 +9,8 @@ export default function HierarchyVisualization({
   onSelectAgent,
   brandColors,
   deploymentMode,
-  pillars
+  pillars,
+  onAgentUpdate
 }) {
   const levelLabels = {
     level1: "SYSTEM OWNER",
@@ -99,6 +100,7 @@ export default function HierarchyVisualization({
           onClose={() => onSelectAgent(null)}
           brandColors={brandColors}
           pillars={pillars}
+          onAgentUpdate={onAgentUpdate}
         />
       )}
     </div>

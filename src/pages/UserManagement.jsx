@@ -31,7 +31,6 @@ import IntegrationSettings from "@/components/admin/IntegrationSettings";
 import AIBusinessPlan from "@/components/admin/AIBusinessPlan";
 import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
-import ClickgrowSettings from "@/components/admin/ClickgrowSettings";
 import AIVideoProduction from "@/components/admin/AIVideoProduction";
 import PaymentsAccounting from "@/components/admin/PaymentsAccounting";
 
@@ -182,10 +181,6 @@ export default function UserManagement() {
           <TabsTrigger value="video" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
             <Film className="w-4 h-4 mr-2" />
             Video AI
-          </TabsTrigger>
-          <TabsTrigger value="clickgrow" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">
-            <Zap className="w-4 h-4 mr-2" />
-            Clickgrow.AI
           </TabsTrigger>
           <TabsTrigger value="payments" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">
             <DollarSign className="w-4 h-4 mr-2" />
@@ -420,10 +415,6 @@ export default function UserManagement() {
 
         <TabsContent value="video">
           <AIVideoProduction user={currentUser} />
-        </TabsContent>
-
-        <TabsContent value="clickgrow">
-          <ClickgrowSettings user={currentUser} />
         </TabsContent>
 
         <TabsContent value="payments">
