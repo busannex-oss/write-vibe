@@ -7,7 +7,8 @@
   .book-editor-container {
     display: flex !important;
     flex-direction: column !important;
-    min-height: calc(100vh - 3.5rem);
+    height: 100vh;
+    overflow: hidden;
     background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
   }
 
@@ -95,7 +96,6 @@
     flex: 1 !important;
     min-height: 0 !important;
     overflow: hidden !important;
-    height: calc(100vh - 3.5rem - 3.5rem);
   }
 
   /* Sidebar — icon-only compact rail (right side) */
@@ -127,7 +127,6 @@
     overflow-y: auto !important;
     flex-direction: column;
     order: 1;
-    height: 100%;
   }
 
   .book-editor-main-content {
