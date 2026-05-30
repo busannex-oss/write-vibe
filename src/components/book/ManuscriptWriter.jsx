@@ -5,6 +5,7 @@ import { sanitizeText } from "@/utils/sanitizeText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Sparkles,
   Check,
@@ -389,6 +390,29 @@ High quality, professional book illustration, suitable for print publication.`,
                         className="mt-4 pt-4 border-t border-white/10 space-y-4">
 
                             <div>
+                              {/* Chapter Progress Bar */}
+                              {(() => {
+                                const target = chapter.word_count_target || 2500;
+                                const current = manuscriptChapter?.word_count || 0;
+                                const pct = Math.min(100, Math.round((current / target) * 100));
+                                const color = pct >= 100 ? "bg-emerald-500" : pct >= 60 ? "bg-amber-400" : "bg-white/30";
+                                return (
+                                  <div className="mb-4 p-3 rounded-lg bg-white/5 border border-white/10">
+                                    <div className="flex items-center justify-between mb-1.5">
+                                      <span className="text-xs text-white/50">Chapter Progress</span>
+                                      <span className={`text-xs font-semibold ${pct >= 100 ? "text-emerald-400" : "text-amber-400"}`}>
+                                        {current.toLocaleString()} / {target.toLocaleString()} words ({pct}%)
+                                      </span>
+                                    </div>
+                                    <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full transition-all duration-500 ${color}`}
+                                        style={{ width: `${pct}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                   <label className="text-sm text-white/50">Chapter Content</label>
