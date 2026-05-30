@@ -71,6 +71,81 @@ Return ONLY the mission statement text, no preamble or explanation.`;
       return Response.json({ success: true, text: generated.trim() });
     }
 
+    // ── generate_deep — AI-generate from source materials (white papers, agents, biz plan) ──
+    if (action === 'generate_deep') {
+      const { refinement_notes } = body;
+
+      // Gather source materials
+      const [documents, agentMemories] = await Promise.all([
+        base44.asServiceRole.entities.Document.list(),
+        base44.asServiceRole.entities.AgentMemory.list()
+      ]);
+
+      // White papers & business plans
+      const whitePapers = documents.filter(d => d.type === 'white_paper' || d.type === 'publisher_letter');
+      const wpSummary = whitePapers.slice(0, 3).map(d =>
+        `[${d.title}]\n${(d.content || '').slice(0, 800)}`
+      ).join('\n\n---\n\n');
+
+      // Agent profiles — read from the known agent roster
+      const agentRoster = [
+        { name: 'Marcus Whitmore', title: 'Brand Guardian', mission: 'Enforce unwavering brand consistency and compliance across all outputs' },
+        { name: 'Sam Johnson', title: 'Automation Orchestrator', mission: 'Schedule, monitor, and optimize all platform automations with SLA enforcement' },
+        { name: 'Sam Thompson', title: 'Project Manager', mission: 'Oversee all book projects from conception to publication' },
+        { name: 'James Mitchell', title: 'Character Creator', mission: 'Craft vivid, psychologically complex characters with compelling backstories' },
+        { name: 'Olivia Rodriguez', title: 'Outline Generator', mission: 'Create comprehensive, emotionally resonant story outlines' },
+        { name: 'Derek Thompson', title: 'Cover Designer', mission: 'Design visually stunning, strategically positioned book covers' },
+        { name: 'Rachel Chen', title: 'Summary Writer', mission: 'Craft compelling book summaries that convert browsers into buyers' },
+        { name: 'Lexie Chen', title: 'Title & SEO Strategist', mission: 'Generate compelling market-winning book titles with integrated SEO strategy' },
+        { name: 'Priya Patel', title: 'Marketing Assistant', mission: 'Execute multi-channel marketing campaigns driving book awareness and sales' },
+        { name: 'Nathan Brooks', title: 'Bookstore Advisor', mission: 'Strategically position books in the most profitable distribution channels' },
+        { name: 'Chloe Martinez', title: 'Video Producer', mission: 'Create visually compelling book video commercials' },
+        { name: 'David Chen', title: 'Audiobook Producer', mission: 'Generate professional-quality audiobook narrations via AI voice technology' },
+        { name: 'Victoria Lopez', title: 'Brand Strategist', mission: 'Build and evolve author brands that drive long-term reader loyalty' },
+        { name: 'Dr. Samantha Brooks', title: 'Ethical AI Officer', mission: 'Enforce ethical standards, regulatory compliance, and AI safety protocols' },
+        { name: 'Dr. Aisha Morgan', title: 'Diagnostics Agent', mission: 'Identify, analyze, and resolve application errors with precision' },
+        { name: 'Angela Kim', title: 'Membership Manager', mission: 'Manage user memberships and feature access across all subscription tiers' },
+        { name: 'Michael Torres', title: 'Lead Magnet Designer', mission: 'Design high-conversion lead magnets that build sustainable audience growth' },
+        { name: 'Isabella Santos', title: 'Seasonal Newsletter Strategist', mission: 'Plan and execute year-round newsletter campaigns for audience engagement' },
+        { name: 'Kevin Murphy', title: 'Website Builder', mission: 'Create professional, conversion-optimized author and book websites' },
+        { name: 'Emma Lewis', title: 'Text Formatter', mission: 'Transform raw text into professionally formatted, highly readable content' },
+        { name: 'Thomas Wright', title: 'Structure Sentinel', mission: 'Enforce organizational consistency and structural integrity across documentation' },
+        { name: 'Luis Garcia', title: 'Media Production Agent', mission: 'Orchestrate and optimize all audio and video production pipelines' }
+      ];
+      const agentsSummary = agentRoster.map(a => `- ${a.name} (${a.title}): ${a.mission}`).join('\n');
+
+      const prompt = `You are a senior brand strategist tasked with crafting the definitive mission statement for Write Vibe.
+
+WRITE VIBE PLATFORM OVERVIEW:
+Write Vibe is an AI-powered book creation and publishing platform. It enables authors to write, design, market, and publish professional books using a full team of specialized AI agents — from character creation and outlining through manuscript writing, cover design, audiobooks, marketing campaigns, and Amazon publishing.
+
+ADVISORY BOARD OF AI AGENTS (22 specialists):
+${agentsSummary}
+
+BUSINESS INTELLIGENCE FROM SOURCE DOCUMENTS:
+${wpSummary || 'Write Vibe empowers authors with AI tools across the full publishing lifecycle: writing, design, marketing, and distribution. Founded 2025, Chicago IL. Target: 11M+ self-publishing authors globally. Subscription tiers: Starter, Professional, Enterprise, White Label.'}
+
+BRAND PILLARS: Authenticity, Creativity, Empowerment, Innovation, Community, Excellence, Integrity, Growth
+
+${refinement_notes ? `REFINEMENT NOTES FROM REVIEWER:\n${refinement_notes}\n\nUse these notes to improve upon the previous version.` : 'Generate the most comprehensive and authentic mission statement possible.'}
+
+INSTRUCTIONS:
+- Write a 2-4 sentence mission statement that:
+  * Reflects the full scope of what Write Vibe does (AI-powered, full lifecycle, community)
+  * Honors the collective purpose of all 22 specialized agents
+  * Resonates with authors at all levels (debut to professional)
+  * Feels authentic, inspiring, and differentiated — not generic SaaS copy
+  * Embeds at least 3 of the 8 brand pillars naturally
+
+Return ONLY the mission statement text. No preamble, no explanation, no quotes.`;
+
+      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt,
+        model: 'claude_sonnet_4_6'
+      });
+      return Response.json({ success: true, text: generated.trim() });
+    }
+
     // ── PUT /mission — create new version ─────────────────────────────────
     if (action === 'update') {
       const { text, change_rationale, is_public, pillar_scores } = body;

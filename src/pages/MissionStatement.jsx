@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Target, History, BarChart3, Edit3, Save, RotateCcw,
-  Eye, EyeOff, Sparkles, CheckCircle2, Loader2, AlertCircle, ChevronDown, ChevronUp
+  Eye, EyeOff, Sparkles, CheckCircle2, Loader2, AlertCircle, ChevronDown, ChevronUp,
+  BookOpen, Bot, FileText, Check, X, RefreshCw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,12 @@ export default function MissionStatementPage() {
   const [genTone, setGenTone] = useState("");
   const [genFocus, setGenFocus] = useState([]);
   const [generating, setGenerating] = useState(false);
+
+  // Deep AI generation (from source materials)
+  const [deepGenerating, setDeepGenerating] = useState(false);
+  const [deepDraft, setDeepDraft] = useState(null); // pending review
+  const [refinementNotes, setRefinementNotes] = useState("");
+  const [showRefineInput, setShowRefineInput] = useState(false);
 
   // Scores state
   const [scores, setScores] = useState(defaultScores());
@@ -101,6 +108,31 @@ export default function MissionStatementPage() {
     });
     setEditText(res.data.text || "");
     setGenerating(false);
+  };
+
+  const handleDeepGenerate = async (refine = false) => {
+    setDeepGenerating(true);
+    setDeepDraft(null);
+    const res = await invoke("generate_deep", {
+      refinement_notes: refine ? refinementNotes : undefined
+    });
+    setDeepDraft(res.data.text || "");
+    setDeepGenerating(false);
+    setShowRefineInput(false);
+    setRefinementNotes("");
+  };
+
+  const handleAcceptDraft = async () => {
+    setEditText(deepDraft);
+    setDeepDraft(null);
+    setEditing(true);
+    setTab("current");
+  };
+
+  const handleRejectDraft = () => {
+    setDeepDraft(null);
+    setRefinementNotes("");
+    setShowRefineInput(false);
   };
 
   const toggleFocus = (pillar) => {
@@ -195,6 +227,93 @@ export default function MissionStatementPage() {
             </Button>
           </div>
         </div>
+
+        {/* AI Deep Generate Panel */}
+        <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-amber-500/30">
+          <CardContent className="pt-5 pb-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm">AI-Powered Mission Generation</p>
+                  <p className="text-white/40 text-xs mt-0.5 flex items-center gap-2">
+                    <Bot className="w-3 h-3" /> Reviews all 22 agents &nbsp;·&nbsp;
+                    <FileText className="w-3 h-3" /> White papers &nbsp;·&nbsp;
+                    <BookOpen className="w-3 h-3" /> Business plan
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={() => handleDeepGenerate(false)}
+                disabled={deepGenerating}
+                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold shrink-0"
+              >
+                {deepGenerating
+                  ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing Sources...</>
+                  : <><Sparkles className="w-4 h-4 mr-2" />Generate from Source Materials</>
+                }
+              </Button>
+            </div>
+
+            {/* Draft Review Panel */}
+            {deepDraft && (
+              <div className="mt-5 border-t border-white/10 pt-5 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-400" />
+                  <span className="text-green-400 text-sm font-semibold">AI Draft Ready — Review Before Saving</span>
+                </div>
+                <blockquote className="text-white/90 text-base leading-relaxed border-l-4 border-amber-500 pl-5 italic bg-white/5 p-4 rounded-r-xl">
+                  {deepDraft}
+                </blockquote>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={handleAcceptDraft}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                    size="sm"
+                  >
+                    <Check className="w-4 h-4 mr-1" /> Accept & Save This Version
+                  </Button>
+                  <Button
+                    onClick={() => setShowRefineInput(p => !p)}
+                    variant="outline"
+                    size="sm"
+                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-1" /> Refine
+                  </Button>
+                  <Button
+                    onClick={handleRejectDraft}
+                    variant="outline"
+                    size="sm"
+                    className="border-white/10 text-white/50 hover:text-white"
+                  >
+                    <X className="w-4 h-4 mr-1" /> Discard
+                  </Button>
+                </div>
+                {showRefineInput && (
+                  <div className="flex gap-2">
+                    <Input
+                      value={refinementNotes}
+                      onChange={e => setRefinementNotes(e.target.value)}
+                      placeholder="What should change? e.g. 'More emphasis on community', 'Shorter and bolder', 'Mention AI agents'..."
+                      className="bg-slate-800 border-white/10 text-white text-sm flex-1"
+                    />
+                    <Button
+                      onClick={() => handleDeepGenerate(true)}
+                      disabled={deepGenerating || !refinementNotes.trim()}
+                      size="sm"
+                      className="bg-amber-500 hover:bg-amber-600 text-black shrink-0"
+                    >
+                      {deepGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Regenerate"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Overall Score Banner */}
         {mission && (
