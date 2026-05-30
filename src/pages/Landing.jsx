@@ -19,8 +19,19 @@ import {
 import { motion } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 
+const DEFAULT_HERO = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80";
+
 export default function Landing() {
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [heroImage, setHeroImage] = useState(DEFAULT_HERO);
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(async (authed) => {
+      if (!authed) return;
+      const user = await base44.auth.me().catch(() => null);
+      if (user?.website_hero_image_url) setHeroImage(user.website_hero_image_url);
+    });
+  }, []);
 
   useEffect(() => {
     const schemas = [
@@ -270,7 +281,7 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10">
               <img 
-                src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80" 
+                src={heroImage} 
                 alt="Diverse Authors Proudly Holding Their Published Books"
                 className="w-full h-[220px] sm:h-[360px] md:h-[500px] object-cover"
               />
