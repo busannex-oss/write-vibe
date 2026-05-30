@@ -786,6 +786,81 @@ export default function BookWebsite() {
         </div>
       </section>
 
+      {/* ── SEO TEXT BLOCK — full copy for crawlers, visually hidden ── */}
+      <div
+        aria-hidden="false"
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+          whiteSpace: 'nowrap',
+          border: 0,
+          left: '-9999px'
+        }}
+      >
+        <h1>{book.title}{book.subtitle ? ` — ${book.subtitle}` : ''}</h1>
+        {authorName && <p>By {authorName}</p>}
+        {book.category && <p>Genre: {book.category}</p>}
+        {book.subcategory && <p>Sub-genre: {book.subcategory}</p>}
+        {(book.subjects || []).length > 0 && <p>Subjects: {book.subjects.join(', ')}</p>}
+        {(book.book_summary || book.plot_summary) && (
+          <>
+            <h2>About {book.title}</h2>
+            <p>{book.book_summary || book.plot_summary}</p>
+          </>
+        )}
+        {characters.length > 0 && (
+          <>
+            <h2>Characters in {book.title}</h2>
+            {characters.map((char, i) => (
+              <div key={i}>
+                <h3>{char.name}{char.role ? ` — ${char.role}` : ''}</h3>
+                {char.description && <p>{char.description}</p>}
+                {char.backstory && <p>{char.backstory}</p>}
+                {char.traits?.length > 0 && <p>Traits: {char.traits.join(', ')}</p>}
+              </div>
+            ))}
+          </>
+        )}
+        {chapters.length > 0 && (
+          <>
+            <h2>Table of Contents — {book.title}</h2>
+            {chapters.map((ch, i) => {
+              const detail = detailedOutline.find(d => d.chapter_number === ch.chapter_number);
+              return (
+                <div key={i}>
+                  <h3>Chapter {ch.chapter_number || i + 1}: {ch.chapter_title}</h3>
+                  {detail?.summary && <p>{detail.summary}</p>}
+                  {detail?.key_events?.length > 0 && (
+                    <ul>{detail.key_events.map((ev, j) => <li key={j}>{ev}</li>)}</ul>
+                  )}
+                </div>
+              );
+            })}
+          </>
+        )}
+        {authorBio && (
+          <>
+            <h2>About the Author{authorName ? ` — ${authorName}` : ''}</h2>
+            <p>{authorBio}</p>
+          </>
+        )}
+        {reviews.length > 0 && (
+          <>
+            <h2>Reader Reviews for {book.title}</h2>
+            {reviews.map((r, i) => (
+              <div key={i}>
+                {r.title && <h3>{r.title}</h3>}
+                <p>Rating: {r.rating}/5 — {r.author_name}</p>
+                <p>{r.content}</p>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
       {/* ── FOOTER ── */}
       <footer className="py-16 px-6" style={{ borderTop: `1px solid ${themeColor}22`, background: `${themeBg1}ee` }}>
         <div className="max-w-4xl mx-auto space-y-8">
