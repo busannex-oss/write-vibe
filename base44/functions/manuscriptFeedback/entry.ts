@@ -85,6 +85,48 @@ Return JSON with this exact structure:
       }
     });
 
+    // Send email summary to the author
+    const priorities = (result.top_priorities || []).map((p, i) => `${i + 1}. ${p}`).join('\n');
+    const scoreBar = (score) => '█'.repeat(Math.round(score / 10)) + '░'.repeat(10 - Math.round(score / 10));
+
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to: user.email,
+      subject: `AI Feedback: Chapter ${chapter_number} of "${book_title}" — Score ${result.overall_score}/100`,
+      body: `Hi ${user.full_name || 'Author'},
+
+Your AI editorial review for Chapter ${chapter_number}: "${chapter_title}" is ready.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+OVERALL SCORE: ${result.overall_score}/100
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+${result.overall_summary}
+
+─── DIMENSION SCORES ───
+
+Pacing             ${scoreBar(result.pacing?.score || 0)}  ${result.pacing?.score || '–'}/100  (${result.pacing?.grade || '–'})
+${result.pacing?.summary || ''}
+
+Dialogue           ${scoreBar(result.dialogue?.score || 0)}  ${result.dialogue?.score || '–'}/100  (${result.dialogue?.grade || '–'})
+${result.dialogue?.summary || ''}
+
+Show vs. Tell      ${scoreBar(result.show_vs_tell?.score || 0)}  ${result.show_vs_tell?.score || '–'}/100  (${result.show_vs_tell?.grade || '–'})
+${result.show_vs_tell?.summary || ''}
+
+Character          ${scoreBar(result.character_consistency?.score || 0)}  ${result.character_consistency?.score || '–'}/100  (${result.character_consistency?.grade || '–'})
+${result.character_consistency?.summary || ''}
+
+─── TOP PRIORITIES ───
+
+${priorities}
+
+─────────────────────────
+Open the Book Editor to view the full inline feedback with specific excerpts and suggested rewrites.
+
+— Write Vibe AI Editorial Team
+`
+    });
+
     return Response.json({ success: true, feedback: result });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
