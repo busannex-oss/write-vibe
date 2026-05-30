@@ -20,32 +20,48 @@ const HIERARCHY_STRUCTURE = {
   level2: {
     name: "EXECUTIVE AGENTS",
     agents: [
-      { id: "brand_guardian", name: "Preston Prime", title: "EXECUTIVE PROJECT MANAGER", age: 48, role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Ensures brand compliance and consistency", image: null },
-      { id: "automation_orchestrator", name: "Valerie Vance", title: "HUMAN RESOURCES MANAGER", age: 42, role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation and SLA compliance", image: null }
+      { id: "brand_guardian", name: "Marcus Whitmore", title: "BRAND GUARDIAN", age: 41, role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Enforces brand compliance and consistency across all outputs", image: null },
+      { id: "automation_orchestrator", name: "Sam Johnson", title: "AUTOMATION ORCHESTRATOR", age: 38, role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation, SLA enforcement, and failure recovery", image: null },
+      { id: "project_manager", name: "Sam Thompson", title: "PROJECT MANAGER", age: 42, role: "executive", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Oversees all book projects from conception to publication", image: null }
     ]
   },
   level3: {
-    name: "DEPARTMENT MANAGERS",
+    name: "CREATIVE PRODUCTION",
     agents: [
-      { id: "character_creator", name: "Nova Sterling", title: "CHIEF AGENTIC ORCHESTRATOR", age: 35, role: "manager", status: "active", pillars: ["Progressive Development"], description: "Designs complex characters with psychological depth", image: null },
-      { id: "outline_generator", name: "Atlas Thorne", title: "GEOSPATIAL INTELLIGENCE ANALYST", age: 38, role: "manager", status: "active", pillars: ["Strategic Application", "Business Intelligence"], description: "Develops structured story roadmaps", image: null },
-      { id: "cover_designer", name: "Echo Vance", title: "OMNISYNC SWITCHBOARD LEAD", age: 45, role: "manager", status: "active", pillars: ["Strategic Application", "Exemplary Customer Service"], description: "Creates market-driven cover designs", image: null },
-      { id: "marketing_assistant", name: "Kaelen Vane", title: "INTEGRATION GATEWAY GUARDIAN", age: 32, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Partnership Alignment"], description: "Orchestrates multi-channel launches", image: null }
+      { id: "character_creator", name: "James Mitchell", title: "CHARACTER CREATOR", age: 35, role: "manager", status: "active", pillars: ["Progressive Development"], description: "Crafts vivid, psychologically complex characters with compelling backstories", image: null },
+      { id: "outline_generator", name: "Olivia Rodriguez", title: "OUTLINE GENERATOR", age: 32, role: "manager", status: "active", pillars: ["Strategic Application", "Business Intelligence"], description: "Creates comprehensive, emotionally resonant story outlines", image: null },
+      { id: "cover_designer", name: "Derek Thompson", title: "COVER DESIGNER", age: 40, role: "manager", status: "active", pillars: ["Strategic Application", "Exemplary Customer Service"], description: "Designs visually stunning, strategically positioned book covers", image: null },
+      { id: "summary_writer", name: "Rachel Chen", title: "SUMMARY WRITER", age: 28, role: "manager", status: "active", pillars: ["Exemplary Customer Service", "Wealth Strategies Trajectory"], description: "Crafts compelling book summaries that convert browsers into buyers", image: null },
+      { id: "text_formatter", name: "Emma Lewis", title: "TEXT FORMATTER", age: 31, role: "manager", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Transforms raw text into professionally formatted, highly readable content", image: null }
     ]
   },
   level4: {
-    name: "SYSTEM MAINTENANCE",
+    name: "MARKETING & GROWTH",
     agents: [
-      { id: "ethical_ai_officer", name: "Sage Evergreen", title: "SYSTEM MAINTENANCE & MEMORY GUARDIAN", age: 51, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces safety and ethical AI standards", image: null }
+      { id: "title_suggester", name: "Alexandra 'Lexie' Chen", title: "TITLE & SEO STRATEGIST", age: 34, role: "manager", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"], description: "Generates compelling, market-winning book titles with integrated SEO strategy", image: null },
+      { id: "marketing_assistant", name: "Priya Patel", title: "MARKETING ASSISTANT", age: 26, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Partnership Alignment"], description: "Executes multi-channel marketing campaigns driving awareness and sales", image: null },
+      { id: "bookstore_advisor", name: "Nathan Brooks", title: "BOOKSTORE ADVISOR", age: 44, role: "manager", status: "active", pillars: ["Partnership Alignment", "Wealth Strategies Trajectory"], description: "Strategically positions books in the most profitable distribution channels", image: null },
+      { id: "lead_magnet_designer", name: "Michael Torres", title: "LEAD MAGNET DESIGNER", age: 37, role: "manager", status: "active", pillars: ["Wealth Strategies Trajectory", "Exemplary Customer Service"], description: "Designs high-conversion lead magnets to build sustainable audience growth", image: null },
+      { id: "seasonal_newsletter_strategist", name: "Isabella Santos", title: "SEASONAL NEWSLETTER STRATEGIST", age: 33, role: "manager", status: "active", pillars: ["Partnership Alignment", "Exemplary Customer Service"], description: "Plans and executes year-round newsletter campaigns for audience engagement", image: null },
+      { id: "website_builder", name: "Kevin Murphy", title: "WEBSITE BUILDER", age: 41, role: "manager", status: "active", pillars: ["Strategic Application", "Wealth Strategies Trajectory"], description: "Creates professional, conversion-optimized author and book websites", image: null },
+      { id: "brand_strategist", name: "Victoria Lopez", title: "BRAND STRATEGIST", age: 43, role: "manager", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Builds and evolves author brands that drive long-term reader loyalty", image: null }
     ]
   },
   level5: {
-    name: "SPECIALIZED INTELLIGENCE NODES",
+    name: "MEDIA PRODUCTION",
     agents: [
-      { id: "title_suggester", name: "Lyra Core", title: "COGNITIVE CREATIVE ARCHITECT", age: 34, role: "specialist", status: "active", pillars: ["Predictive Analysis", "Business Intelligence"], description: "Creates market-ready titles", image: null },
-      { id: "summary_writer", name: "Aria Vale", title: "EXECUTIVE ADMINISTRATIVE ASSISTANT", age: 36, role: "specialist", status: "active", pillars: ["Exemplary Customer Service", "Wealth Strategies Trajectory"], description: "Crafts conversion-focused copy", image: null },
-      { id: "video_producer", name: "Pixel Prism", title: "BRAND IDENTITY ARCHITECT", age: 29, role: "specialist", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Creates high-converting videos", image: null },
-      { id: "bookstore_advisor", name: "Scribe Protocol", title: "EXECUTIVE PROTOCOL RECORDER", age: 47, role: "specialist", status: "active", pillars: ["Partnership Alignment", "Wealth Strategies Trajectory"], description: "Maximizes book sales", image: null }
+      { id: "video_producer", name: "Chloe Martinez", title: "VIDEO PRODUCER", age: 29, role: "specialist", status: "active", pillars: ["Progressive Development", "Strategic Application"], description: "Creates visually compelling, emotionally resonant book video commercials", image: null },
+      { id: "audiobook_producer", name: "David Chen", title: "AUDIOBOOK PRODUCER", age: 36, role: "specialist", status: "active", pillars: ["Progressive Development", "Exemplary Customer Service"], description: "Generates professional-quality audiobook narrations via AI voice technology", image: null },
+      { id: "media_production", name: "Luis Garcia", title: "MEDIA PRODUCTION AGENT", age: 39, role: "specialist", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Orchestrates all audio and video production pipelines and API quotas", image: null }
+    ]
+  },
+  level6: {
+    name: "SYSTEM MAINTENANCE & COMPLIANCE",
+    agents: [
+      { id: "ethical_ai_officer", name: "Dr. Samantha Brooks", title: "ETHICAL AI & COMPLIANCE OFFICER", age: 47, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces ethical standards, regulatory compliance, and safety protocols", image: null },
+      { id: "diagnostics_agent", name: "Dr. Aisha Morgan", title: "DIAGNOSTICS AGENT", age: 38, role: "maintenance", status: "active", pillars: ["Business Intelligence", "Predictive Analysis"], description: "Identifies, analyzes, and resolves application errors with precision", image: null },
+      { id: "membership_manager", name: "Angela Kim", title: "MEMBERSHIP MANAGER", age: 39, role: "maintenance", status: "active", pillars: ["Exemplary Customer Service", "Proper Business Structure"], description: "Manages user memberships, feature access, and subscription tiers", image: null },
+      { id: "structure_sentinel", name: "Thomas Wright", title: "STRUCTURE SENTINEL", age: 45, role: "maintenance", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Enforces organizational consistency and structural integrity across documentation", image: null }
     ]
   }
 };

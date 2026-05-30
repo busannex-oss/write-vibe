@@ -14,9 +14,10 @@ export default function HierarchyVisualization({
   const levelLabels = {
     level1: "SYSTEM OWNER",
     level2: "EXECUTIVE AGENTS",
-    level3: "DEPARTMENT MANAGERS",
-    level4: "SYSTEM MAINTENANCE",
-    level5: "SPECIALIZED INTELLIGENCE NODES"
+    level3: "CREATIVE PRODUCTION",
+    level4: "MARKETING & GROWTH",
+    level5: "MEDIA PRODUCTION",
+    level6: "SYSTEM MAINTENANCE & COMPLIANCE"
   };
 
   return (
