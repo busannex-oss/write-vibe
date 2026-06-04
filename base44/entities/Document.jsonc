@@ -1,0 +1,84 @@
+{
+  "name": "Document",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "Associated book ID"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "publisher_letter",
+        "press_release",
+        "social_image",
+        "promotional_material",
+        "white_paper"
+      ],
+      "description": "Document type"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string",
+      "description": "Document content or description"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "final",
+        "sent"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "book_id",
+    "type",
+    "title"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

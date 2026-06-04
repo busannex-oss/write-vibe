@@ -15,11 +15,11 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
 
-        // Auth: allow admins and scheduled/agent calls (no user context)
+        // Auth: admins get full access; any authenticated user can read/write memories; unauthenticated blocked
         let user = null;
         try { user = await base44.auth.me(); } catch (_) {}
-        if (user && user.role !== 'admin') {
-            return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+        if (!user) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const body = await req.json().catch(() => ({}));

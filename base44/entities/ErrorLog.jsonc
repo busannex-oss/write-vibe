@@ -1,0 +1,67 @@
+{
+  "name": "ErrorLog",
+  "type": "object",
+  "properties": {
+    "error_type": {
+      "type": "string",
+      "enum": [
+        "runtime",
+        "network",
+        "auth_403",
+        "not_found_404",
+        "query",
+        "render",
+        "unknown"
+      ],
+      "description": "Category of the error"
+    },
+    "message": {
+      "type": "string",
+      "description": "Error message"
+    },
+    "stack": {
+      "type": "string",
+      "description": "Stack trace if available"
+    },
+    "page": {
+      "type": "string",
+      "description": "Page/route where the error occurred"
+    },
+    "component": {
+      "type": "string",
+      "description": "Component name if applicable"
+    },
+    "status_code": {
+      "type": "number",
+      "description": "HTTP status code if network error"
+    },
+    "context": {
+      "type": "string",
+      "description": "Additional context JSON string"
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "resolution_notes": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "error_type",
+    "message"
+  ]
+}

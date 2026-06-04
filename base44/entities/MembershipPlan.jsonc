@@ -1,0 +1,90 @@
+{
+  "name": "MembershipPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "professional",
+        "enterprise",
+        "white_label"
+      ],
+      "description": "Plan name"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable plan name"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly price in USD"
+    },
+    "price_yearly": {
+      "type": "number",
+      "description": "Yearly price in USD"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of feature keys this plan unlocks"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "max_books": {
+          "type": "number"
+        },
+        "max_team_members": {
+          "type": "number"
+        },
+        "max_covers_per_book": {
+          "type": "number"
+        },
+        "ai_requests_per_month": {
+          "type": "number"
+        },
+        "storage_gb": {
+          "type": "number"
+        }
+      },
+      "description": "Usage limits for this plan"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Feature list shown on pricing page"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this plan is currently offered"
+    }
+  },
+  "required": [
+    "name",
+    "display_name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

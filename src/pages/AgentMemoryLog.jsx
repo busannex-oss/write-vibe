@@ -22,10 +22,12 @@ import {
   MessageSquare,
   Target,
   Clock,
-  Filter
+  Filter,
+  BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import AgentBookInsights from "@/components/chainofcommand/AgentBookInsights";
 
 const AGENTS = [
   "media_production", "video_producer", "audiobook_producer", "project_manager",
@@ -127,6 +129,9 @@ export default function AgentMemoryLog() {
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const [activeTab, setActiveTab] = useState("logs");
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [books, setBooks] = useState([]);
+  const [booksLoaded, setBooksLoaded] = useState(false);
 
   // Fetch memories
   const { data: memoriesData, isLoading } = useQuery({
@@ -182,6 +187,16 @@ export default function AgentMemoryLog() {
   const stats = statsData?.stats || {};
   const totalMemories = statsData?.total_memories || 0;
 
+  const loadBooks = async () => {
+    if (booksLoaded) return;
+    try {
+      const res = await base44.entities.Book.list('-updated_date', 20);
+      setBooks(res || []);
+      if (res?.length) setSelectedBook(res[0]);
+    } catch (_) {}
+    setBooksLoaded(true);
+  };
+
   return (
     <div className="p-6 lg:p-8">
       {/* Header */}
@@ -196,9 +211,12 @@ export default function AgentMemoryLog() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white/5 border border-white/10 mb-6">
+        <TabsList className="bg-white/5 border border-white/10 mb-6 flex flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="logs" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <MessageSquare className="w-4 h-4 mr-2" /> Memory Logs
+          </TabsTrigger>
+          <TabsTrigger value="book_insights" onClick={loadBooks} className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <BookOpen className="w-4 h-4 mr-2" /> Book Insights
           </TabsTrigger>
           <TabsTrigger value="search" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <Search className="w-4 h-4 mr-2" /> Semantic Recall
@@ -289,6 +307,47 @@ export default function AgentMemoryLog() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        {/* ── BOOK INSIGHTS TAB ── */}
+        <TabsContent value="book_insights" className="space-y-4">
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white flex items-center gap-2 text-base">
+                <BookOpen className="w-5 h-5 text-amber-400" />
+                Agent Insights on Your Books
+              </CardTitle>
+              <p className="text-sm text-white/40">View what each agent has learned about your book's characters, plot, themes, and world-building.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Book Selector */}
+              {books.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {books.map(book => (
+                    <button
+                      key={book.id}
+                      onClick={() => setSelectedBook(book)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${selectedBook?.id === book.id
+                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                        : "bg-white/5 text-white/50 border-white/10 hover:text-white hover:bg-white/10"
+                      }`}
+                    >
+                      {book.title}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-white/40">No books found. Create a book first.</p>
+              )}
+              {selectedBook && (
+                <AgentBookInsights
+                  book={selectedBook}
+                  brandColors={{ accent: "#f59e0b", text: "#ffffff" }}
+                  maxHeight="600px"
+                />
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ── SEARCH TAB ── */}

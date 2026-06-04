@@ -1,0 +1,116 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Customer email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Customer full name"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "professional",
+        "enterprise",
+        "white_label"
+      ],
+      "description": "Membership plan purchased"
+    },
+    "billing_cycle": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "default": "monthly"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount in USD"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "paid",
+        "pending",
+        "failed",
+        "refunded",
+        "disputed"
+      ],
+      "default": "paid"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "card",
+        "apple_pay",
+        "google_pay",
+        "bank_transfer"
+      ],
+      "default": "card"
+    },
+    "payment_method_last4": {
+      "type": "string",
+      "description": "Last 4 digits of card"
+    },
+    "stripe_payment_id": {
+      "type": "string"
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "refund_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email",
+    "plan",
+    "amount",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

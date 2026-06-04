@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus } from "lucide-react";
+import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
+import AgentBookInsights from "@/components/chainofcommand/AgentBookInsights";
 
 const ROLE_DESCRIPTIONS = {
   admin: "System Owner — oversees the entire organizational intelligence network and ensures all agents operate within established protocols.",
@@ -14,10 +15,11 @@ const ROLE_DESCRIPTIONS = {
 };
 
 const TABS = [
-  { id: "profile", label: "Profile", icon: Zap },
-  { id: "chat", label: "Chat", icon: MessageSquare },
-  { id: "memory", label: "Memory", icon: Brain },
-  { id: "photo", label: "Photo", icon: Camera },
+  { id: "profile",   label: "Profile",   icon: Zap },
+  { id: "chat",      label: "Chat",      icon: MessageSquare },
+  { id: "memory",    label: "Memory",    icon: Brain },
+  { id: "insights",  label: "Insights",  icon: BookOpen },
+  { id: "photo",     label: "Photo",     icon: Camera },
 ];
 
 export default function AgentProfile({ agent, onClose, brandColors, pillars, onAgentUpdate }) {
@@ -37,6 +39,11 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
   const [newMemory, setNewMemory] = useState("");
   const [savingMemory, setSavingMemory] = useState(false);
 
+  // Book Insights
+  const [books, setBooks] = useState([]);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [booksLoading, setBooksLoading] = useState(false);
+
   // Photo
   const [photoUrl, setPhotoUrl] = useState(agent.image || null);
   const [generatingPhoto, setGeneratingPhoto] = useState(false);
@@ -45,7 +52,18 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
 
   useEffect(() => {
     if (activeTab === "memory") loadMemories();
+    if (activeTab === "insights" && !books.length) loadBooks();
   }, [activeTab]);
+
+  const loadBooks = async () => {
+    setBooksLoading(true);
+    try {
+      const res = await base44.entities.Book.list('-updated_date', 20);
+      setBooks(res || []);
+      if (res?.length) setSelectedBook(res[0]);
+    } catch (_) {}
+    setBooksLoading(false);
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -428,6 +446,59 @@ The person looks intelligent, confident and approachable. Ultra-detailed face, 4
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* ── INSIGHTS TAB ───────────────────────────────────────────────── */}
+          {activeTab === "insights" && (
+            <div className="p-5 space-y-4">
+              <div>
+                <h4 className="text-xs font-bold uppercase mb-1" style={{ color: brandColors.accent }}>
+                  Book Intelligence
+                </h4>
+                <p className="text-xs mb-3" style={{ color: brandColors.text + "60" }}>
+                  Insights {agent.name} has gathered about characters, plot, themes, and world-building.
+                </p>
+              </div>
+
+              {/* Book Selector */}
+              {booksLoading ? (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="w-5 h-5 animate-spin" style={{ color: brandColors.accent }} />
+                </div>
+              ) : books.length === 0 ? (
+                <p className="text-xs text-center py-6" style={{ color: brandColors.text + "40" }}>
+                  No books found. Create a book in the Books section first.
+                </p>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-2">
+                    {books.map(book => (
+                      <button
+                        key={book.id}
+                        onClick={() => setSelectedBook(book)}
+                        className="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
+                        style={{
+                          backgroundColor: selectedBook?.id === book.id ? brandColors.accent + "30" : "transparent",
+                          borderColor: selectedBook?.id === book.id ? brandColors.accent + "60" : brandColors.accent + "20",
+                          color: selectedBook?.id === book.id ? brandColors.accent : brandColors.text + "60"
+                        }}
+                      >
+                        {book.title}
+                      </button>
+                    ))}
+                  </div>
+
+                  {selectedBook && (
+                    <AgentBookInsights
+                      book={selectedBook}
+                      agentId={agent.id}
+                      brandColors={brandColors}
+                      maxHeight="350px"
+                    />
+                  )}
+                </>
+              )}
             </div>
           )}
 

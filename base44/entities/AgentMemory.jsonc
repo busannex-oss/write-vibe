@@ -1,0 +1,97 @@
+{
+  "name": "AgentMemory",
+  "type": "object",
+  "properties": {
+    "agent_name": {
+      "type": "string",
+      "description": "Name of the AI agent this memory belongs to"
+    },
+    "memory_type": {
+      "type": "string",
+      "enum": [
+        "observation",
+        "decision",
+        "error",
+        "optimization",
+        "task_completed",
+        "escalation",
+        "context"
+      ],
+      "description": "Category of memory entry"
+    },
+    "content": {
+      "type": "string",
+      "description": "The memory content / log entry"
+    },
+    "embedding_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Extracted keywords for semantic search (simulated vector index)"
+    },
+    "related_entity_id": {
+      "type": "string",
+      "description": "Optional: ID of the book, document, or entity this memory relates to"
+    },
+    "related_entity_type": {
+      "type": "string",
+      "description": "Optional: Type of related entity (Book, Document, User, etc.)"
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium",
+      "description": "Importance/priority of this memory"
+    },
+    "recalled_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times this memory has been recalled/retrieved"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session or run ID this memory was created in"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Free-form tags for filtering"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Soft-delete / archive flag"
+    }
+  },
+  "required": [
+    "agent_name",
+    "memory_type",
+    "content"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

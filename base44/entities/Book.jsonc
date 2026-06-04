@@ -1,0 +1,408 @@
+{
+  "name": "Book",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Book title"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "outline",
+        "writing",
+        "editing",
+        "cover_design",
+        "marketing",
+        "published"
+      ],
+      "default": "draft"
+    },
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "backstory": {
+            "type": "string"
+          },
+          "traits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "appearance": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "target_audience": {
+      "type": "object",
+      "properties": {
+        "age_range": {
+          "type": "string"
+        },
+        "demographics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reading_level": {
+          "type": "string"
+        }
+      }
+    },
+    "category": {
+      "type": "string",
+      "description": "Book genre/category"
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "plot_summary": {
+      "type": "string"
+    },
+    "table_of_contents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "detailed_outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "key_events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "industry_outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          },
+          "scene_breakdown": {
+            "type": "string"
+          },
+          "narrative_arc": {
+            "type": "string"
+          },
+          "word_count_target": {
+            "type": "number"
+          },
+          "pacing": {
+            "type": "string"
+          },
+          "character_focus": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "plot_threads": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "manuscript_chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "word_count": {
+            "type": "number"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "key_events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "book_summary": {
+      "type": "string"
+    },
+    "formatted_manuscript": {
+      "type": "string"
+    },
+    "manuscript_platform": {
+      "type": "string"
+    },
+    "manuscript_format": {
+      "type": "string"
+    },
+    "front_cover_url": {
+      "type": "string"
+    },
+    "back_cover_url": {
+      "type": "string"
+    },
+    "cover_generations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "front",
+              "back"
+            ]
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "votes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "user_email": {
+                  "type": "string"
+                },
+                "rating": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "author_photo_url": {
+      "type": "string"
+    },
+    "video_commercial_url": {
+      "type": "string"
+    },
+    "audiobook_url": {
+      "type": "string"
+    },
+    "audiobook_voice_style": {
+      "type": "string"
+    },
+    "audiobook_script": {
+      "type": "string"
+    },
+    "website_config": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "coming_soon",
+            "live"
+          ]
+        },
+        "release_date": {
+          "type": "string"
+        },
+        "bookstore_links": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "custom_domain": {
+          "type": "string"
+        },
+        "theme": {
+          "type": "string"
+        }
+      }
+    },
+    "selected_bookstores": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "social_media_links": {
+      "type": "object"
+    },
+    "amazon_asin": {
+      "type": "string",
+      "description": "Amazon Standard Identification Number"
+    },
+    "amazon_kdp_status": {
+      "type": "string",
+      "enum": [
+        "not_submitted",
+        "submitted",
+        "under_review",
+        "published",
+        "rejected"
+      ],
+      "default": "not_submitted"
+    },
+    "amazon_kdp_submitted_at": {
+      "type": "string"
+    },
+    "amazon_acx_status": {
+      "type": "string",
+      "enum": [
+        "not_submitted",
+        "submitted",
+        "under_review",
+        "published",
+        "rejected"
+      ],
+      "default": "not_submitted"
+    },
+    "amazon_acx_submitted_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

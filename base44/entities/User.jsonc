@@ -1,0 +1,81 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": [
+        "trial",
+        "starter",
+        "professional",
+        "enterprise",
+        "white_label"
+      ],
+      "default": "trial",
+      "description": "User's current membership plan"
+    },
+    "membership_plan_id": {
+      "type": "string",
+      "description": "Reference to MembershipPlan entity ID"
+    },
+    "membership_assigned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the membership was last assigned or changed"
+    },
+    "membership_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current membership expires"
+    },
+    "trial_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user started their free trial"
+    },
+    "author_photo_url": {
+      "type": "string",
+      "description": "Author profile photo"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Author bio"
+    },
+    "website": {
+      "type": "string"
+    },
+    "white_label_config": {
+      "type": "object",
+      "properties": {
+        "brand_name": {
+          "type": "string"
+        },
+        "primary_color": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        }
+      },
+      "description": "White label branding config (enterprise+ only)"
+    }
+  },
+  "required": [
+    "membership_plan_id",
+    "membership_assigned_at",
+    "membership_expires_at",
+    "trial_started_at",
+    "author_photo_url",
+    "bio",
+    "website",
+    "white_label_config"
+  ]
+}
