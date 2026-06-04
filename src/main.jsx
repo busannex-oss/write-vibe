@@ -13,14 +13,16 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
-        // Check for updates every 60s when the app is open
-        setInterval(() => reg.update(), 60_000);
+        // Poll for updates — guard against InvalidStateError when newestWorker is null
+        setInterval(() => {
+          try { reg.update(); } catch (_) {}
+        }, 60_000);
 
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
-          newWorker?.addEventListener('statechange', () => {
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available — dispatch an event the UI can pick up
               window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
             }
           });
