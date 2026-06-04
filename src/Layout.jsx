@@ -31,13 +31,14 @@ export default function Layout({ children, currentPageName }) {
     if (!loading) checkAccess();
   }, [currentPageName, loading]);
 
-  // Periodically refetch user to pick up logo changes
+  // Refetch user only when on the Settings page to pick up logo/branding changes
   useEffect(() => {
+    if (currentPageName !== 'Settings') return;
     const interval = setInterval(() => {
       loadUser();
-    }, 3000); // Refetch every 3 seconds when on Settings page
+    }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentPageName]);
 
   const loadUser = async () => {
     try {

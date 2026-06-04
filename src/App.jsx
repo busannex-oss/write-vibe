@@ -28,6 +28,7 @@ import DistributionDashboard from './pages/DistributionDashboard';
 import ChainOfCommand from './pages/ChainOfCommand';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import SWUpdateBanner from '@/components/SWUpdateBanner';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -116,6 +117,7 @@ function App() {
           <AuthenticatedApp />
         </Router>
         <Toaster />
+        <SWUpdateBanner />
       </QueryClientProvider>
     </AuthProvider>
   )

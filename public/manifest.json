@@ -1,15 +1,15 @@
 {
-  "name": "Write Vibe – AI-Powered Book Creation Suite",
+  "name": "Write Vibe – AI Book Creation Suite",
   "short_name": "Write Vibe",
-  "description": "Write, publish, and market your book with AI agents.",
+  "description": "Write, design, and publish your book with intelligent AI agents. From character creation to cover design, video trailers, and book marketing — all in one platform.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0a0f1a",
   "theme_color": "#f59e0b",
-  "categories": ["productivity", "education", "business"],
   "lang": "en",
-  "scope": "/",
+  "categories": ["productivity", "education", "business"],
   "icons": [
     {
       "src": "https://base44.com/logo_v2.svg",
@@ -18,14 +18,38 @@
       "purpose": "any maskable"
     },
     {
-      "src": "https://base44.com/logo_v2.svg",
+      "src": "https://ui-avatars.com/api/?name=WV&background=f59e0b&color=fff&size=192&bold=true&font-size=0.45",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://base44.com/logo_v2.svg",
+      "src": "https://ui-avatars.com/api/?name=WV&background=f59e0b&color=fff&size=512&bold=true&font-size=0.45",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=WV&background=f59e0b&color=fff&size=512&bold=true&font-size=0.45",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Books",
+      "short_name": "Books",
+      "description": "Go to your book library",
+      "url": "/Books",
+      "icons": [{ "src": "https://ui-avatars.com/api/?name=B&background=f59e0b&color=fff&size=96", "sizes": "96x96" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open your dashboard",
+      "url": "/Dashboard",
+      "icons": [{ "src": "https://ui-avatars.com/api/?name=D&background=f59e0b&color=fff&size=96", "sizes": "96x96" }]
     }
   ],
   "screenshots": [
@@ -37,20 +61,5 @@
       "label": "Write Vibe Dashboard"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "My Books",
-      "short_name": "Books",
-      "description": "View all your books",
-      "url": "/Books",
-      "icons": [{ "src": "https://base44.com/logo_v2.svg", "sizes": "any" }]
-    },
-    {
-      "name": "Create Book",
-      "short_name": "New Book",
-      "description": "Start a new book project",
-      "url": "/CreateBook",
-      "icons": [{ "src": "https://base44.com/logo_v2.svg", "sizes": "any" }]
-    }
-  ]
+  "prefer_related_applications": false
 }

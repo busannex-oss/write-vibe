@@ -252,10 +252,10 @@ export default function Landing() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                <Button 
-                size="lg" 
-                variant="outline" 
-                onClick={() => setShowDemoModal(true)}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg">
+               size="lg" 
+               variant="outline" 
+               onClick={() => setShowDemoModal(true)}
+               className="h-14 px-8 text-lg border-white/20 text-white/80 hover:bg-white/10 hover:text-white bg-transparent">
                  Watch Demo
                </Button>
              </div>
