@@ -26,8 +26,12 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
   const [activeTab, setActiveTab] = useState("profile");
 
   // Chat
+  const greeting = agent.personality
+    ? `Hi — I'm ${agent.name}. ${agent.mission ? agent.mission.split("—")[0].trim() + "." : `I work as your ${agent.title}.`} What can I help you with today?`
+    : `Hello! I'm ${agent.name}, your ${agent.title}. How can I assist you today?`;
+
   const [messages, setMessages] = useState([
-    { role: "assistant", content: `Hello! I'm ${agent.name}, your ${agent.title}. How can I assist you today?` }
+    { role: "assistant", content: greeting }
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -104,8 +108,13 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `You are ${agent.name}, an AI agent with the role of ${agent.title}.
 Description: ${agent.description}
+${agent.mission ? `Mission: ${agent.mission}` : ""}
+${agent.purpose ? `Purpose: ${agent.purpose}` : ""}
+${agent.personality ? `Personality: ${agent.personality}` : ""}
 Strategic pillars: ${agent.pillars?.join(", ")}
 ${memoryContext}
+
+Respond in character as ${agent.name}. Be helpful, specific, and consistent with your personality and mission.
 
 Conversation:
 ${recentHistory}
@@ -274,42 +283,69 @@ The person looks intelligent, confident and approachable. Ultra-detailed face, 4
                 {agent.age && <span className="ml-auto text-xs" style={{ color: brandColors.text + "60" }}>Age {agent.age}</span>}
               </div>
 
-              {/* Description */}
-              {agent.description && (
+              {/* Mission */}
+              {agent.mission && (
+                <div className="px-4 py-3 rounded-xl" style={{ backgroundColor: brandColors.accent + "12", border: `1px solid ${brandColors.accent}30` }}>
+                  <h4 className="text-xs font-bold uppercase mb-1.5 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <Zap className="w-3.5 h-3.5" /> Mission
+                  </h4>
+                  <p className="text-sm leading-relaxed italic" style={{ color: brandColors.text + "DD" }}>"{agent.mission}"</p>
+                </div>
+              )}
+
+              {/* Purpose */}
+              {agent.purpose && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2" style={{ color: brandColors.accent }}>Why I Exist</h4>
+                  <p className="text-sm leading-relaxed" style={{ color: brandColors.text + "CC" }}>{agent.purpose}</p>
+                </div>
+              )}
+
+              {/* Personality */}
+              {agent.personality && (
+                <div className="px-4 py-3 rounded-xl" style={{ backgroundColor: brandColors.secondary + "60", border: `1px solid ${brandColors.accent}20` }}>
+                  <h4 className="text-xs font-bold uppercase mb-1.5" style={{ color: brandColors.accent }}>Personality</h4>
+                  <p className="text-sm leading-relaxed" style={{ color: brandColors.text + "BB" }}>{agent.personality}</p>
+                </div>
+              )}
+
+              {/* Goals */}
+              {agent.goals?.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-3" style={{ color: brandColors.accent }}>Core Goals</h4>
+                  <ul className="space-y-2">
+                    {agent.goals.map((goal, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm" style={{ color: brandColors.text + "CC" }}>
+                        <span className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                          style={{ backgroundColor: brandColors.accent + "25", color: brandColors.accent }}>
+                          {i + 1}
+                        </span>
+                        {goal}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Description fallback */}
+              {!agent.mission && agent.description && (
                 <div>
                   <h4 className="text-xs font-bold uppercase mb-2" style={{ color: brandColors.accent }}>Description</h4>
                   <p className="text-sm leading-relaxed" style={{ color: brandColors.text + "CC" }}>{agent.description}</p>
                 </div>
               )}
 
-              {/* Role Context */}
-              <div>
-                <h4 className="text-xs font-bold uppercase mb-2" style={{ color: brandColors.accent }}>Role Context</h4>
-                <p className="text-sm leading-relaxed" style={{ color: brandColors.text + "CC" }}>{ROLE_DESCRIPTIONS[agent.role]}</p>
-              </div>
-
               {/* Pillar Alignment */}
               <div>
                 <h4 className="text-xs font-bold uppercase mb-3" style={{ color: brandColors.accent }}>Pillar Alignment</h4>
-                <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
                   {agent.pillars?.map((pillar, idx) => (
-                    <div key={idx} className="px-3 py-2 rounded-lg"
-                      style={{ backgroundColor: brandColors.accent + "15", border: `1px solid ${brandColors.accent}30` }}>
-                      <p className="text-sm font-semibold" style={{ color: brandColors.accent }}>{pillar}</p>
-                      <p className="text-xs mt-0.5" style={{ color: brandColors.text + "70" }}>Strategic alignment with core organizational pillars</p>
-                    </div>
+                    <span key={idx} className="px-3 py-1.5 rounded-full text-xs font-semibold"
+                      style={{ backgroundColor: brandColors.accent + "20", color: brandColors.accent, border: `1px solid ${brandColors.accent}35` }}>
+                      {pillar}
+                    </span>
                   ))}
                 </div>
-              </div>
-
-              {/* Core Capabilities */}
-              <div>
-                <h4 className="text-xs font-bold uppercase mb-3" style={{ color: brandColors.accent }}>Core Capabilities</h4>
-                <ul className="space-y-1.5 text-sm" style={{ color: brandColors.text + "CC" }}>
-                  {["Persistent memory and context awareness", "Cross-agent communication and coordination", "Real-time performance monitoring", "Autonomous task execution and escalation"].map(c => (
-                    <li key={c} className="flex items-center gap-2"><span style={{ color: brandColors.accent }}>✓</span>{c}</li>
-                  ))}
-                </ul>
               </div>
 
               {/* Performance */}
