@@ -23,11 +23,13 @@ import {
   Target,
   Clock,
   Filter,
-  BookOpen
+  BookOpen,
+  GitBranch
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import AgentBookInsights from "@/components/chainofcommand/AgentBookInsights";
+import CharacterJourneyView from "@/components/memory/CharacterJourneyView";
 
 const AGENTS = [
   "media_production", "video_producer", "audiobook_producer", "project_manager",
@@ -218,6 +220,9 @@ export default function AgentMemoryLog() {
           <TabsTrigger value="book_insights" onClick={loadBooks} className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <BookOpen className="w-4 h-4 mr-2" /> Book Insights
           </TabsTrigger>
+          <TabsTrigger value="character_journey" className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-300">
+            <GitBranch className="w-4 h-4 mr-2" /> Character Journey
+          </TabsTrigger>
           <TabsTrigger value="search" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <Search className="w-4 h-4 mr-2" /> Semantic Recall
           </TabsTrigger>
@@ -348,6 +353,11 @@ export default function AgentMemoryLog() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ── CHARACTER JOURNEY TAB ── */}
+        <TabsContent value="character_journey">
+          <CharacterJourneyView />
         </TabsContent>
 
         {/* ── SEARCH TAB ── */}
