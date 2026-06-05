@@ -8,6 +8,7 @@ import {
 import AuditDashboard from "@/components/agentaudit/AuditDashboard";
 import AuditVersionHistory from "@/components/agentaudit/AuditVersionHistory";
 import AuditEditor from "@/components/agentaudit/AuditEditor";
+import InlineRecommendations from "@/components/InlineRecommendations";
 
 const invoke = (action, extra = {}) => base44.functions.invoke("agentAudit", { action, ...extra });
 
@@ -156,6 +157,11 @@ export default function AgentAuditPage() {
 
       {/* Body */}
       <div className="max-w-6xl mx-auto px-6 py-8">
+        <InlineRecommendations
+          context="AI Agent Audit & Alignment"
+          contextData={{ totalAgents: manifest.length, healthScore: doc?.risk_analysis?.health_score, hasAudit: !!doc, agentNames: manifest.map(a => a.name).join(', ') }}
+          storageKey="recs_agent_audit"
+        />
         {loading ? (
           <div className="flex items-center justify-center py-40">
             <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />

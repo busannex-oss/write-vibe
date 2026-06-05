@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Edit3, Download, History, Building2, CheckCircle2, GitBranch } from "lucide-react";
 import ArchEditor from "@/components/arch/ArchEditor";
 import ArchVersionHistory from "@/components/arch/ArchVersionHistory";
+import InlineRecommendations from "@/components/InlineRecommendations";
 
 const invoke = (action, extra = {}) => base44.functions.invoke("systemArchitecture", { action, ...extra });
 
@@ -159,6 +160,11 @@ export default function SystemArchitecturePage() {
 
       {/* Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
+        <InlineRecommendations
+          context="System Architecture"
+          contextData={{ version: doc?.version_number, overallScore: doc?.overall_score, hasDoc: !!doc }}
+          storageKey="recs_system_architecture"
+        />
         {loading ? (
           <div className="flex items-center justify-center py-40">
             <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />

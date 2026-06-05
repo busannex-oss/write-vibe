@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import LegalDocEditor from "@/components/legal/LegalDocEditor";
 import LegalVersionHistory from "@/components/legal/LegalVersionHistory";
 import LegalRiskPanel from "@/components/legal/LegalRiskPanel";
+import InlineRecommendations from "@/components/InlineRecommendations";
 
 const invoke = (action, extra = {}) => base44.functions.invoke("legalDocuments", { action, ...extra });
 
@@ -205,6 +206,11 @@ export default function LegalDocumentsPage() {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
+        <InlineRecommendations
+          context={`Legal Documents — ${activeTab === 'privacy_policy' ? 'Privacy Policy' : 'Terms of Service'}`}
+          contextData={{ docType: activeTab, version: activeDoc?.version_number, hasRiskAnalysis: !!activeDoc?.risk_analysis, overallRisk: activeDoc?.risk_analysis?.overall_risk }}
+          storageKey={`recs_legal_${activeTab}`}
+        />
         {loading ? (
           <div className="flex items-center justify-center py-40">
             <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />

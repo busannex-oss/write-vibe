@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import InlineRecommendations from "@/components/InlineRecommendations";
 
 // Advisory board members and their relevant review stages
 const ADVISORY_REVIEWS = [
@@ -247,6 +248,14 @@ export default function PublicationChecklist() {
               </button>
             ))}
           </div>
+        )}
+
+        {selectedBook && (
+          <InlineRecommendations
+            context="Book Publication Checklist"
+            contextData={{ bookTitle: selectedBook?.title, overallProgress, requiredDone, requiredTotal: requiredItems.length, chaptersWritten: selectedBook?.manuscript_chapters?.length || 0, hasCover: !!selectedBook?.front_cover_url, hasWebsite: selectedBook?.website_config?.status === 'live' }}
+            storageKey={`recs_publication_${selectedBookId}`}
+          />
         )}
 
         {!selectedBook ? (

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import SOPEditor from "@/components/sops/SOPEditor";
 import SOPDetail from "@/components/sops/SOPDetail";
 import SOPGenerator from "@/components/sops/SOPGenerator";
+import InlineRecommendations from "@/components/InlineRecommendations";
 
 const PILLARS = ["Authenticity", "Creativity", "Empowerment", "Innovation", "Community", "Excellence", "Integrity", "Growth"];
 
@@ -113,6 +114,12 @@ export default function SOPsPage() {
             </Button>
           </div>
         </div>
+
+        <InlineRecommendations
+          context="Standard Operating Procedures"
+          contextData={{ totalSOPs: sops.length, reviewDueCount: reviewDue.length, activeCount: sops.filter(s => s.status === 'active').length, draftCount: sops.filter(s => s.status === 'draft').length }}
+          storageKey="recs_sops"
+        />
 
         {/* Review Due Banner */}
         {reviewDue.length > 0 && (
