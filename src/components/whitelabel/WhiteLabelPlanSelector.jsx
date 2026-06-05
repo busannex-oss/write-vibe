@@ -11,7 +11,7 @@ const RESELLER_PLANS = [
     price: "$99",
     period: "/month",
     icon: Zap,
-    color: "from-slate-500/20 to-slate-700/10",
+    color: "from-slate-700 to-slate-800",
     border: "border-white/10",
     features: [
       "Up to 5 white label tenants",
@@ -28,7 +28,7 @@ const RESELLER_PLANS = [
     price: "$299",
     period: "/month",
     icon: Star,
-    color: "from-amber-500/20 to-orange-500/10",
+    color: "from-amber-900/60 to-orange-900/40",
     border: "border-amber-500/30",
     popular: true,
     features: [
@@ -48,7 +48,7 @@ const RESELLER_PLANS = [
     price: "Custom",
     period: "",
     icon: Building2,
-    color: "from-violet-500/20 to-purple-700/10",
+    color: "from-violet-900/60 to-purple-900/40",
     border: "border-violet-500/30",
     features: [
       "Unlimited tenants",
