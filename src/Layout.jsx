@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -85,6 +85,8 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
     { name: "My Books",   href: "Books",       icon: BookOpen },
     { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
+    { name: "Character Timeline", href: "CharacterTimeline", icon: GitBranch },
+    { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
     { name: "Documents",  href: "Documents",   icon: FileText },
     { name: "Team",       href: "Team",        icon: Users },
     { name: "Settings",   href: "Settings",    icon: Settings },

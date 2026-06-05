@@ -1,0 +1,87 @@
+{
+  "name": "CharacterMilestone",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "Associated book ID"
+    },
+    "character_name": {
+      "type": "string",
+      "description": "Character this milestone belongs to"
+    },
+    "chapter_number": {
+      "type": "number",
+      "description": "Chapter where this milestone occurs"
+    },
+    "chapter_title": {
+      "type": "string"
+    },
+    "milestone_type": {
+      "type": "string",
+      "enum": [
+        "introduction",
+        "growth",
+        "conflict",
+        "revelation",
+        "transformation",
+        "resolution",
+        "arc_peak",
+        "advisory_review"
+      ],
+      "default": "growth"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short milestone title"
+    },
+    "description": {
+      "type": "string",
+      "description": "What happens at this milestone"
+    },
+    "emotional_state": {
+      "type": "string",
+      "description": "Character's emotional state"
+    },
+    "advisor_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "advisor_id": {
+            "type": "string"
+          },
+          "advisor_name": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      }
+    },
+    "color": {
+      "type": "string",
+      "description": "Hex color for this character's track"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "position_order": {
+      "type": "number",
+      "description": "Order within the chapter for positioning"
+    }
+  },
+  "required": [
+    "book_id",
+    "character_name",
+    "chapter_number",
+    "title"
+  ]
+}
