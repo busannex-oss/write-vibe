@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 const HUMAN_LEADERSHIP = [
   {
     name: "Slade Kevin Morrison",
-    title: "CEO & FOUNDER",
-    role: "Chief Executive Officer",
-    description: "Visionary founder driving the platform's mission, culture, and long-term strategic direction.",
+    title: "ADVISORY BOARD MEMBER",
+    role: "Advisory Board Member",
+    description: "Visionary platform leader advising on long-term strategic direction, culture-building, and ensuring every decision serves the platform's deepest mission.",
     emoji: "👤"
   }
 ];
