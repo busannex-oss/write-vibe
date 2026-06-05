@@ -29,6 +29,7 @@ import ChainOfCommand from './pages/ChainOfCommand';
 import PublicationChecklist from './pages/PublicationChecklist';
 import WhiteLabelAdmin from './pages/WhiteLabelAdmin';
 import AgentConnectionMap from './pages/AgentConnectionMap';
+import AdvisoryReviewDashboard from './pages/AdvisoryReviewDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -107,6 +108,7 @@ const AuthenticatedApp = () => {
       <Route path="/PublicationChecklist" element={<LayoutWrapper currentPageName="PublicationChecklist"><PublicationChecklist /></LayoutWrapper>} />
       <Route path="/WhiteLabelAdmin" element={<LayoutWrapper currentPageName="WhiteLabelAdmin"><WhiteLabelAdmin /></LayoutWrapper>} />
       <Route path="/AgentConnectionMap" element={<LayoutWrapper currentPageName="AgentConnectionMap"><AgentConnectionMap /></LayoutWrapper>} />
+      <Route path="/AdvisoryReviewDashboard" element={<LayoutWrapper currentPageName="AdvisoryReviewDashboard"><AdvisoryReviewDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
