@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Upload, Loader2, Check, Palette, Wand2, X } from "lucide-react";
+import { Sparkles, Upload, Loader2, Check, Palette, Wand2, X, ImageIcon } from "lucide-react";
 import AIGenerateButton from "@/components/AIGenerateButton";
 
 const COLOR_SCHEMES = [
@@ -139,11 +139,31 @@ export default function WhiteLabelBranding({ user, onUpdate }) {
   const generateColorsFromLogo = async (logoUrl) => {
     setGeneratingColors(true);
     const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `Analyze this brand logo and return the best matching primary hex color for a UI (accessible, professional, works on dark backgrounds).`,
+      prompt: `Analyze this brand logo image and extract a complete color scheme for a professional UI. Return three hex colors:
+- primary_color: the most prominent / dominant brand color from the logo (must be accessible on dark backgrounds, vibrant)
+- secondary_color: a dark background color that complements the primary (deep dark tone, e.g. near-black with a hue from the logo)
+- accent_color: a lighter or brighter variant of the primary for hover states and highlights
+
+Return only valid hex codes (#rrggbb format). Be precise — actually read the logo colors.`,
       file_urls: [logoUrl],
-      response_json_schema: { type: "object", properties: { primary_color: { type: "string" } } }
+      response_json_schema: {
+        type: "object",
+        properties: {
+          primary_color: { type: "string" },
+          secondary_color: { type: "string" },
+          accent_color: { type: "string" }
+        }
+      }
     });
-    setConfig(prev => ({ ...prev, primary: response.primary_color, color_scheme_id: "custom" }));
+    if (response?.primary_color) {
+      setConfig(prev => ({
+        ...prev,
+        primary: response.primary_color,
+        secondary: response.secondary_color || prev.secondary,
+        accent: response.accent_color || response.primary_color,
+        color_scheme_id: "logo",
+      }));
+    }
     setGeneratingColors(false);
   };
 
@@ -222,7 +242,7 @@ export default function WhiteLabelBranding({ user, onUpdate }) {
 
               <AIGenerateButton onClick={generateLogo} loading={generatingLogo} label="Generate AI Logo" icon={Wand2} className="w-full" />
 
-              {generatingColors && (
+              {generatingColors && !config.logo_url && (
                 <div className="flex items-center gap-2 text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Analyzing logo colors…
@@ -241,10 +261,63 @@ export default function WhiteLabelBranding({ user, onUpdate }) {
             Color Scheme
           </CardTitle>
           <CardDescription className="text-white/50">
-            Choose from 8 preset schemes, then fine-tune any color below
+            {config.logo_url ? "Colors auto-extracted from your logo — or choose a preset below" : "Choose from 8 preset schemes, then fine-tune any color below"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Logo-extracted scheme card (shown only after logo upload) */}
+          {config.logo_url && (
+            <div className="mb-2">
+              <p className="text-white/40 text-xs mb-2 flex items-center gap-1.5">
+                <ImageIcon className="w-3 h-3" /> Extracted from your logo
+              </p>
+              <button
+                onClick={() => setConfig(prev => ({ ...prev, color_scheme_id: "logo" }))}
+                disabled={generatingColors}
+                className={`relative w-full rounded-xl overflow-hidden border-2 transition-all hover:scale-[1.02] ${
+                  config.color_scheme_id === "logo" ? "border-white shadow-lg shadow-white/10 scale-[1.02]" : "border-white/10"
+                }`}
+              >
+                <div className="p-4 flex items-center gap-4" style={{ background: config.secondary }}>
+                  {generatingColors ? (
+                    <div className="flex items-center gap-2 text-amber-400 text-sm">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Analyzing logo colors…
+                    </div>
+                  ) : (
+                    <>
+                      <img src={config.logo_url} alt="Logo" className="w-10 h-10 object-contain rounded" />
+                      <div className="flex-1">
+                        <p className="text-white text-xs font-semibold mb-1.5">Logo Colors</p>
+                        <div className="flex gap-2">
+                          <div className="flex items-center gap-1">
+                            <div className="w-5 h-5 rounded-full shadow border border-white/20" style={{ background: config.primary }} />
+                            <span className="text-white/40 text-[10px] font-mono">{config.primary}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-5 h-5 rounded-full shadow border border-white/20" style={{ background: config.accent }} />
+                            <span className="text-white/40 text-[10px] font-mono">{config.accent}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); generateColorsFromLogo(config.logo_url); }}
+                        className="text-white/30 hover:text-amber-400 transition-colors p-1"
+                        title="Re-extract colors from logo"
+                      >
+                        <Wand2 className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                </div>
+                {config.color_scheme_id === "logo" && !generatingColors && (
+                  <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                    <Check className="w-3 h-3 text-black" />
+                  </div>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* 8 scheme cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {COLOR_SCHEMES.map(scheme => {
