@@ -8,6 +8,7 @@ import { Download, Search, Eye, Settings } from "lucide-react";
 import HierarchyVisualization from "@/components/chainofcommand/HierarchyVisualization";
 import BrandCustomizationPanel from "@/components/chainofcommand/BrandCustomizationPanel";
 import BrandBanner from "@/components/chainofcommand/BrandBanner";
+import AdvisoryNotificationsPanel from "@/components/chainofcommand/AdvisoryNotificationsPanel";
 import { motion } from "framer-motion";
 
 const HIERARCHY_STRUCTURE = {
@@ -519,6 +520,13 @@ export default function ChainOfCommand() {
           </Button>
         </div>
       </div>
+
+      {/* Advisory Notifications */}
+      {user?.role === "admin" && (
+        <div className="mb-8">
+          <AdvisoryNotificationsPanel />
+        </div>
+      )}
 
       {/* Status Widget */}
       <Card className="mb-8" style={{ backgroundColor: brandColors.secondary + "60", borderColor: brandColors.accent + "40" }}>
