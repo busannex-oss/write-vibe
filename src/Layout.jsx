@@ -85,7 +85,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
     { name: "My Books",   href: "Books",       icon: BookOpen },
     { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
-    { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
     { name: "Documents",  href: "Documents",   icon: FileText },
     { name: "Team",       href: "Team",        icon: Users },
     { name: "Settings",   href: "Settings",    icon: Settings },
@@ -111,7 +110,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "Version Roadmap", href: "VersionRoadmap", icon: GitBranch },
         { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers },
         { name: "AI Agent Audit", href: "AgentAudit", icon: Bot },
-        { name: "White Label Admin", href: "WhiteLabelAdmin", icon: Store }
+        { name: "White Label Admin", href: "WhiteLabelAdmin", icon: Store },
+        { name: "Agent Map", href: "AgentConnectionMap", icon: Network }
       ]
     : [];
 
