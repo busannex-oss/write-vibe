@@ -85,7 +85,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
     { name: "My Books",   href: "Books",       icon: BookOpen },
     { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
-    { name: "Character Timeline", href: "CharacterTimeline", icon: GitBranch },
     { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
     { name: "Documents",  href: "Documents",   icon: FileText },
     { name: "Team",       href: "Team",        icon: Users },

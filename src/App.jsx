@@ -28,7 +28,6 @@ import DistributionDashboard from './pages/DistributionDashboard';
 import ChainOfCommand from './pages/ChainOfCommand';
 import PublicationChecklist from './pages/PublicationChecklist';
 import WhiteLabelAdmin from './pages/WhiteLabelAdmin';
-import CharacterTimeline from './pages/CharacterTimeline';
 import AgentConnectionMap from './pages/AgentConnectionMap';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -107,7 +106,6 @@ const AuthenticatedApp = () => {
       <Route path="/ChainOfCommand" element={<LayoutWrapper currentPageName="ChainOfCommand"><ChainOfCommand /></LayoutWrapper>} />
       <Route path="/PublicationChecklist" element={<LayoutWrapper currentPageName="PublicationChecklist"><PublicationChecklist /></LayoutWrapper>} />
       <Route path="/WhiteLabelAdmin" element={<LayoutWrapper currentPageName="WhiteLabelAdmin"><WhiteLabelAdmin /></LayoutWrapper>} />
-      <Route path="/CharacterTimeline" element={<LayoutWrapper currentPageName="CharacterTimeline"><CharacterTimeline /></LayoutWrapper>} />
       <Route path="/AgentConnectionMap" element={<LayoutWrapper currentPageName="AgentConnectionMap"><AgentConnectionMap /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
