@@ -21,10 +21,8 @@ export default function AdvisoryNotificationsPanel() {
 
   const loadNotifications = async () => {
     try {
-      const data = await base44.asServiceRole
-        ? base44.entities.AdvisoryNotification.filter({ status: "pending" }, "-created_date", 20)
-        : [];
-      setNotifications(data);
+      const data = await base44.entities.AdvisoryNotification.filter({ status: "pending" }, "-created_date", 20);
+      setNotifications(data || []);
     } catch {
       setNotifications([]);
     }
