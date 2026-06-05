@@ -33,6 +33,7 @@ import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 import AIVideoProduction from "@/components/admin/AIVideoProduction";
 import PaymentsAccounting from "@/components/admin/PaymentsAccounting";
+import WhiteLabelTenantManager from "@/components/whitelabel/WhiteLabelTenantManager";
 
 export default function UserManagement() {
   const queryClient = useQueryClient();
@@ -189,6 +190,10 @@ export default function UserManagement() {
           <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics
+          </TabsTrigger>
+          <TabsTrigger value="whitelabel" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Zap className="w-4 h-4 mr-2" />
+            White Label
           </TabsTrigger>
         </TabsList>
 
@@ -423,6 +428,10 @@ export default function UserManagement() {
 
         <TabsContent value="analytics">
           <ComprehensiveAnalytics />
+        </TabsContent>
+
+        <TabsContent value="whitelabel">
+          <WhiteLabelTenantManager />
         </TabsContent>
       </Tabs>
     </div>

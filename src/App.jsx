@@ -27,6 +27,7 @@ import AgentAudit from './pages/AgentAudit';
 import DistributionDashboard from './pages/DistributionDashboard';
 import ChainOfCommand from './pages/ChainOfCommand';
 import PublicationChecklist from './pages/PublicationChecklist';
+import WhiteLabelAdmin from './pages/WhiteLabelAdmin';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -103,6 +104,7 @@ const AuthenticatedApp = () => {
       <Route path="/DistributionDashboard" element={<LayoutWrapper currentPageName="DistributionDashboard"><DistributionDashboard /></LayoutWrapper>} />
       <Route path="/ChainOfCommand" element={<LayoutWrapper currentPageName="ChainOfCommand"><ChainOfCommand /></LayoutWrapper>} />
       <Route path="/PublicationChecklist" element={<LayoutWrapper currentPageName="PublicationChecklist"><PublicationChecklist /></LayoutWrapper>} />
+      <Route path="/WhiteLabelAdmin" element={<LayoutWrapper currentPageName="WhiteLabelAdmin"><WhiteLabelAdmin /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

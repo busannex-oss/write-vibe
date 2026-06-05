@@ -1,0 +1,136 @@
+{
+  "name": "WhiteLabelTenant",
+  "type": "object",
+  "properties": {
+    "owner_user_id": {
+      "type": "string",
+      "description": "The white label user who owns this tenant"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Owner's email"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Client's brand name"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Client's logo URL"
+    },
+    "custom_domain": {
+      "type": "string",
+      "description": "Custom domain e.g. app.theirclient.com"
+    },
+    "subdomain": {
+      "type": "string",
+      "description": "Subdomain slug e.g. myclient"
+    },
+    "primary_color": {
+      "type": "string",
+      "default": "#f59e0b"
+    },
+    "secondary_color": {
+      "type": "string",
+      "default": "#1e293b"
+    },
+    "accent_color": {
+      "type": "string",
+      "default": "#fbbf24"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "professional",
+        "enterprise"
+      ],
+      "default": "professional"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "trial",
+        "cancelled"
+      ],
+      "default": "trial"
+    },
+    "max_users": {
+      "type": "number",
+      "default": 10,
+      "description": "Max end-users this tenant can have"
+    },
+    "max_books": {
+      "type": "number",
+      "default": 20,
+      "description": "Max books across all this tenant's users"
+    },
+    "monthly_revenue": {
+      "type": "number",
+      "description": "Monthly revenue from this tenant (USD)"
+    },
+    "contact_name": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "features_enabled": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of feature keys enabled for this tenant"
+    },
+    "api_key": {
+      "type": "string",
+      "description": "Auto-generated API key for this tenant"
+    },
+    "trial_ends_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "onboarded_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "dns_verified": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "brand_name",
+    "owner_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
