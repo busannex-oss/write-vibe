@@ -23,6 +23,62 @@ export default function HierarchyVisualization({
 
   return (
     <div className="space-y-16 pb-16">
+
+      {/* Human CEO / Administrator — top of chain, not an AI agent */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="flex items-center gap-4">
+          <div
+            className="px-4 py-2 rounded-full text-sm font-bold tracking-wider uppercase"
+            style={{
+              backgroundColor: brandColors.secondary + "80",
+              color: brandColors.accent,
+              border: `1px solid ${brandColors.accent}40`
+            }}
+          >
+            SYSTEM OWNER
+          </div>
+          <div className="flex-1 h-px" style={{ backgroundColor: brandColors.accent + "40" }} />
+        </div>
+
+        <div className="flex justify-center">
+          <div
+            className="flex flex-col items-center gap-3 px-8 py-6 rounded-2xl border-2 max-w-xs w-full text-center"
+            style={{
+              backgroundColor: brandColors.secondary + "60",
+              borderColor: brandColors.accent,
+              boxShadow: `0 0 24px ${brandColors.accent}30`
+            }}
+          >
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border-2"
+              style={{ borderColor: brandColors.accent, backgroundColor: brandColors.secondary, color: brandColors.accent }}
+            >
+              👤
+            </div>
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: brandColors.accent }}>
+                HUMAN · CEO / ADMINISTRATOR
+              </p>
+              <p className="font-bold text-lg" style={{ color: brandColors.text }}>Slade Kevin Morrison</p>
+              <p className="text-sm mt-1" style={{ color: brandColors.text + "80" }}>Founder & Platform Owner</p>
+            </div>
+            <span
+              className="text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider"
+              style={{ backgroundColor: brandColors.accent + "20", color: brandColors.accent }}
+            >
+              Human — Not AI
+            </span>
+          </div>
+        </div>
+
+        {/* Connector line down to agents */}
+        <div className="w-0.5 h-12 mx-auto" style={{ backgroundColor: brandColors.accent }} />
+      </motion.div>
+
       {Object.entries(hierarchy).map((entry, index) => {
         const [levelKey, levelData] = entry;
         const levelLabel = levelLabels[levelKey];
