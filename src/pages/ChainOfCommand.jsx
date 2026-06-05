@@ -11,12 +11,6 @@ import BrandBanner from "@/components/chainofcommand/BrandBanner";
 import { motion } from "framer-motion";
 
 const HIERARCHY_STRUCTURE = {
-  level1: {
-    name: "SYSTEM OWNER",
-    agents: [
-      { id: "admin", name: "Administrator", title: "SYSTEM OWNER", age: null, role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Core system governance and oversight", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" }
-    ]
-  },
   level2: {
     name: "EXECUTIVE AGENTS",
     agents: [
