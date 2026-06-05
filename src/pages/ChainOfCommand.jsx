@@ -269,6 +269,16 @@ const HIERARCHY_STRUCTURE = {
         goals: ["Guide authors in constructing rich, internally consistent fictional worlds", "Advise on series architecture that rewards loyal readers while welcoming new ones", "Help authors build reader communities and fan ecosystems around their IP", "Identify the mythological and emotional core that makes a story universe expandable"],
         personality: "Imaginative, meticulous, and quietly tenacious. J.K. knows that the details readers never consciously notice are the ones that make a world feel undeniably real.",
         image: null
+      },
+      {
+        id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", title: "VISIONARY FOUNDER ADVISOR", age: null, role: "advisor", status: "active",
+        pillars: ["Proper Business Structure", "Wealth Strategies Trajectory", "Strategic Application"],
+        description: "Advises on visionary platform leadership, founder-driven culture, and building transformative publishing ecosystems",
+        mission: "To ensure this platform fulfills its highest potential — not just as a tool, but as a movement that fundamentally changes who gets to tell their story and how far that story reaches.",
+        purpose: "Slade Kevin Morrison brings the founder's perspective to the Advisory Board — a vision for what this platform is truly capable of becoming. He advises on long-term strategic direction, culture-building, and ensuring every decision serves the platform's deepest mission.",
+        goals: ["Champion the platform's founding mission across every decision and expansion", "Advise on scaling the platform without losing its author-first soul", "Identify transformative opportunities that align vision with commercial reality", "Ensure the platform builds generational value for authors of all backgrounds"],
+        personality: "Visionary, grounded, and deeply mission-driven. Slade sees the long arc clearly and isn't distracted by short-term noise. He builds with purpose.",
+        image: null
       }
     ]
   },
