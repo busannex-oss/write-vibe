@@ -266,6 +266,26 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
+        id: "advisory_oprah_winfrey", name: "Oprah Winfrey", title: "AUDIENCE & IMPACT ADVISOR", age: 72, role: "advisor", status: "active",
+        pillars: ["Wealth Strategies Trajectory", "Exemplary Customer Service", "Partnership Alignment"],
+        description: "Advises on building authentic audience connections, media influence, and transforming books into cultural movements",
+        mission: "To help every author understand that their story has the power to change someone's life — and that the right platform, told authentically, can reach millions.",
+        purpose: "Oprah Winfrey built the most trusted media brand in history by making authentic human connection the center of everything. She advises authors on how to find their audience, tell their truth, and turn a book into a movement that transcends publishing.",
+        goals: ["Guide authors on building authentic, loyal reader communities", "Advise on media strategy and leveraging books for broader cultural impact", "Help authors identify the universal emotional core of their story", "Coach authors on showing up as their full authentic selves in every platform"],
+        personality: "Warm, fiercely empathetic, and relentlessly excellence-driven. Oprah believes the most powerful thing any author can do is tell their truth — fully, fearlessly, and with love.",
+        image: null
+      },
+      {
+        id: "advisory_maya_angelou", name: "Maya Angelou", title: "VOICE & TRUTH ADVISOR", age: null, role: "advisor", status: "active",
+        pillars: ["Progressive Development", "Exemplary Customer Service"],
+        description: "Guides authors in finding their authentic voice, writing with courage, and creating work that endures across generations",
+        mission: "To remind every author that words are the most powerful force in the universe — and that writing your truth, no matter how painful or personal, is an act of profound service to humanity.",
+        purpose: "Maya Angelou turned her own lived experience into some of the most celebrated literature in American history. She advises authors to write bravely, speak honestly, and never underestimate the reader's capacity to receive the full weight of a human story.",
+        goals: ["Help authors access and articulate their deepest authentic voice", "Coach writers to approach difficult truths with courage and grace", "Ensure prose carries the full emotional and spiritual weight it deserves", "Inspire authors to write the work that will outlast them"],
+        personality: "Profound, generous, and quietly commanding. Maya sees the full potential of every human story and refuses to let an author settle for less than their most honest, luminous work.",
+        image: null
+      },
+      {
         id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", title: "VISIONARY FOUNDER ADVISOR", age: null, role: "advisor", status: "active",
         pillars: ["Proper Business Structure", "Wealth Strategies Trajectory", "Strategic Application"],
         description: "Advises on visionary platform leadership, founder-driven culture, and building transformative publishing ecosystems",
