@@ -1,0 +1,88 @@
+{
+  "name": "AdvisoryNotification",
+  "type": "object",
+  "properties": {
+    "advisor_id": {
+      "type": "string",
+      "description": "Advisory board member ID"
+    },
+    "advisor_name": {
+      "type": "string"
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "book_title": {
+      "type": "string"
+    },
+    "chapter_number": {
+      "type": "number"
+    },
+    "character_name": {
+      "type": "string"
+    },
+    "milestone_id": {
+      "type": "string"
+    },
+    "milestone_title": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why this advisor was matched to this review"
+    },
+    "expertise_match": {
+      "type": "string",
+      "description": "The expertise area that triggered the match"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "dismissed"
+      ],
+      "default": "pending"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "review_notes": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "advisor_id",
+    "advisor_name",
+    "book_id",
+    "chapter_number",
+    "milestone_id"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

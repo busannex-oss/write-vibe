@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Plus, Users, BookOpen, Loader2, ChevronLeft, ChevronRight, Filter,
-  GitBranch, MessageSquare, Star, Download, Sparkles, Milestone
+  GitBranch, MessageSquare, Star, Download, Sparkles, Milestone, TrendingUp, Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import TimelineTrack from "@/components/timeline/TimelineTrack";
 import MilestonePanel from "@/components/timeline/MilestonePanel";
+import EmotionalArcChart from "@/components/timeline/EmotionalArcChart";
+import AdvisoryNotificationsPanel from "@/components/timeline/AdvisoryNotificationsPanel";
 
 const CHARACTER_PALETTE = [
   "#f59e0b", "#3b82f6", "#10b981", "#a855f7", "#ef4444",
@@ -36,6 +38,7 @@ export default function CharacterTimeline() {
   const [isNew, setIsNew] = useState(false);
   const [visibleChapters, setVisibleChapters] = useState({ start: 1, end: 10 });
   const [filterAdvisor, setFilterAdvisor] = useState("");
+  const [activeTab, setActiveTab] = useState("grid"); // "grid" | "arc" | "notifications"
   const scrollRef = useRef(null);
 
   const { data: books = [], isLoading: booksLoading } = useQuery({
@@ -84,12 +87,22 @@ export default function CharacterTimeline() {
 
   const saveMilestone = async (form) => {
     const data = { ...form, book_id: selectedBook.id };
+    let savedId = form.id;
     if (form.id) {
       await base44.entities.CharacterMilestone.update(form.id, data);
     } else {
-      await base44.entities.CharacterMilestone.create(data);
+      const created = await base44.entities.CharacterMilestone.create(data);
+      savedId = created.id;
     }
     queryClient.invalidateQueries({ queryKey: ["milestones", selectedBook?.id] });
+    // Trigger advisory notifications asynchronously (don't block save)
+    base44.functions.invoke("advisoryNotifier", {
+      milestone_id: savedId,
+      milestone: { ...data, id: savedId },
+      book_title: selectedBook.title,
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["advisory-notifications", selectedBook?.id] });
+    }).catch(() => {});
     setSelectedMilestone(null);
     setIsNew(false);
   };
@@ -138,6 +151,26 @@ export default function CharacterTimeline() {
         </div>
       </div>
 
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 px-6 py-2 border-b border-white/5 bg-slate-900/60">
+        {[
+          { id: "grid", label: "Timeline Grid", icon: GitBranch },
+          { id: "arc", label: "Emotional Arc", icon: TrendingUp },
+          { id: "notifications", label: "Advisory Inbox", icon: Bell },
+        ].map(tab => {
+          const Icon = tab.icon;
+          return (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+              className={cn("flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all",
+                activeTab === tab.id
+                  ? "bg-amber-500/15 text-amber-300 border border-amber-500/20"
+                  : "text-white/40 hover:text-white/70 hover:bg-white/5")}>
+              <Icon className="w-3.5 h-3.5" /> {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex flex-1 overflow-hidden">
         {/* Main timeline area */}
         <div className={cn("flex-1 flex flex-col overflow-hidden", selectedMilestone ? "lg:w-auto" : "")}>
@@ -150,6 +183,67 @@ export default function CharacterTimeline() {
             </div>
           ) : (
             <div className="flex-1 flex flex-col p-6 overflow-auto">
+
+              {/* Advisory Inbox tab */}
+              {activeTab === "notifications" && (
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <Bell className="w-4 h-4 text-indigo-400" />
+                    <h2 className="text-white font-semibold text-sm">Advisory Board Inbox</h2>
+                    <p className="text-white/30 text-xs">— auto-triggered review requests for relevant board members</p>
+                  </div>
+                  <AdvisoryNotificationsPanel bookId={selectedBook?.id} />
+                </div>
+              )}
+
+              {/* Emotional Arc tab */}
+              {activeTab === "arc" && (
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <TrendingUp className="w-4 h-4 text-amber-400" />
+                    <h2 className="text-white font-semibold text-sm">Emotional Arc Chart</h2>
+                    <p className="text-white/30 text-xs">— emotional intensity per character plotted against chapter milestones</p>
+                  </div>
+                  <div className="bg-slate-900/60 rounded-2xl border border-white/8 p-5">
+                    <EmotionalArcChart milestones={milestones} totalChapters={totalChapters} />
+                  </div>
+                  {/* Per-character breakdown */}
+                  {characters.length > 0 && (
+                    <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {characters.map((charName, i) => {
+                        const charMs = milestones.filter(m => m.character_name === charName);
+                        const avgRating = (() => {
+                          const notes = charMs.flatMap(m => m.advisor_notes || []);
+                          return notes.length ? (notes.reduce((s, n) => s + (n.rating || 0), 0) / notes.length).toFixed(1) : "—";
+                        })();
+                        const peakMs = charMs.reduce((max, m) => (m.milestone_type === "arc_peak" || m.milestone_type === "transformation") ? m : max, null);
+                        return (
+                          <div key={charName} className="bg-white/4 border border-white/8 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-3 h-3 rounded-full" style={{ background: CHARACTER_PALETTE[i % CHARACTER_PALETTE.length] }} />
+                              <p className="text-white font-semibold text-sm">{charName}</p>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-center">
+                              <div><p className="text-white font-bold">{charMs.length}</p><p className="text-white/30 text-xs">Milestones</p></div>
+                              <div><p className="text-amber-400 font-bold">{avgRating}</p><p className="text-white/30 text-xs">Avg Rating</p></div>
+                              <div><p className="text-white font-bold">{charMs.reduce((s, m) => s + (m.advisor_notes?.length || 0), 0)}</p><p className="text-white/30 text-xs">Adv. Notes</p></div>
+                            </div>
+                            {peakMs && (
+                              <p className="text-amber-400/60 text-xs mt-2 border-t border-white/5 pt-2">
+                                Peak: Ch.{peakMs.chapter_number} — {peakMs.title}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Timeline Grid tab — all existing content below */}
+              {activeTab !== "arc" && activeTab !== "notifications" && (
+              <>
               {/* Stats row */}
               <div className="flex gap-3 mb-6 flex-wrap">
                 <Card className="bg-white/5 border-white/10 flex-1 min-w-[120px]">
@@ -297,6 +391,8 @@ export default function CharacterTimeline() {
                     </div>
                   ))}
                 </div>
+              )}
+              </>
               )}
             </div>
           )}
