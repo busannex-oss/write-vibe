@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 
 const HUMAN_LEADERSHIP = [
   {
-    name: "Slade Kevin Morrison",
-    title: "ADVISORY BOARD MEMBER",
-    role: "Advisory Board Member",
-    description: "Visionary platform leader advising on long-term strategic direction, culture-building, and ensuring every decision serves the platform's deepest mission.",
+    name: "Miranda",
+    title: "CEO",
+    role: "Chief Executive Officer",
+    description: "Human leader at the top of the chain of command, overseeing all platform operations and strategic direction.",
     emoji: "👤"
   }
 ];
