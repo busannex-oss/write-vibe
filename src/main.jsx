@@ -15,7 +15,7 @@ if ('serviceWorker' in navigator) {
       .then((reg) => {
         // Poll for updates — guard against InvalidStateError when newestWorker is null
         setInterval(() => {
-          try { reg.update(); } catch (_) {}
+          try { reg.update().catch(() => {}); } catch (_) {}
         }, 60_000);
 
         reg.addEventListener('updatefound', () => {
