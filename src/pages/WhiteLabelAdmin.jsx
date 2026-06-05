@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Building2, Globe, Palette, Users, BarChart3, Key, Loader2,
   CheckCircle2, AlertCircle, TrendingUp, DollarSign, Zap, Crown
@@ -18,6 +19,8 @@ import { cn } from "@/lib/utils";
 
 export default function WhiteLabelAdmin() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [togglingWL, setTogglingWL] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["user"],
@@ -38,6 +41,14 @@ export default function WhiteLabelAdmin() {
   }
 
   const isWhiteLabel = user?.subscription_tier === "white_label";
+
+  const toggleWhiteLabel = async () => {
+    setTogglingWL(true);
+    const newTier = isWhiteLabel ? "professional" : "white_label";
+    await base44.auth.updateMe({ subscription_tier: newTier });
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+    setTogglingWL(false);
+  };
   const activeTenants = tenants.filter(t => t.status === "active");
   const totalMRR = activeTenants.reduce((s, t) => s + (t.monthly_revenue || 0), 0);
   const dnsVerifiedCount = tenants.filter(t => t.dns_verified).length;
@@ -57,11 +68,18 @@ export default function WhiteLabelAdmin() {
               <p className="text-white/40 text-sm">Manage tenants, branding, domains, and reseller configuration</p>
             </div>
           </div>
-          <Badge className={cn("text-sm px-3 py-1.5 border", isWhiteLabel
-            ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
-            : "bg-white/5 border-white/10 text-white/40")}>
-            {isWhiteLabel ? <><CheckCircle2 className="w-3.5 h-3.5 mr-1.5 inline" />White Label Active</> : "Upgrade Required"}
-          </Badge>
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
+            <div className="text-right">
+              <p className="text-xs text-white/40 leading-none mb-0.5">White Label Feature</p>
+              <p className={cn("text-sm font-semibold leading-none", isWhiteLabel ? "text-amber-300" : "text-white/50")}>
+                {isWhiteLabel ? "Active" : "Inactive"}
+              </p>
+            </div>
+            {togglingWL
+              ? <Loader2 className="w-5 h-5 text-amber-400 animate-spin" />
+              : <Switch checked={isWhiteLabel} onCheckedChange={toggleWhiteLabel} className="data-[state=checked]:bg-amber-500" />
+            }
+          </div>
         </div>
 
         {/* Inline Recommendations */}
