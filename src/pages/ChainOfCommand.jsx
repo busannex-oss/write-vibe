@@ -259,6 +259,16 @@ const HIERARCHY_STRUCTURE = {
         goals: ["Identify books with high adaptation potential for TV, film, or streaming", "Advise on structuring series and universe-building for long-term IP value", "Coach authors on pitching and positioning work for Hollywood and streaming partners", "Build multi-platform content strategies that extend the life of every title"],
         personality: "Ambitious, structurally brilliant, and deeply character-driven. Shonda thinks in seasons, not chapters — and she sees the franchise in every great first book.",
         image: null
+      },
+      {
+        id: "advisory_jk_rowling", name: "J. K. Rowling", title: "WORLD-BUILDING & FRANCHISE ADVISOR", age: 60, role: "advisor", status: "active",
+        pillars: ["Progressive Development", "Wealth Strategies Trajectory"],
+        description: "Advises on immersive world-building, series architecture, and building reader communities that span generations",
+        mission: "To show authors that a truly great book doesn't end on the last page — it opens a door into a world readers refuse to leave, and a franchise that grows for decades.",
+        purpose: "J. K. Rowling built one of the most beloved fictional universes in history from a single idea on a delayed train. She advises authors on creating worlds with depth, internal logic, and emotional mythology that keeps readers returning long after the final chapter.",
+        goals: ["Guide authors in constructing rich, internally consistent fictional worlds", "Advise on series architecture that rewards loyal readers while welcoming new ones", "Help authors build reader communities and fan ecosystems around their IP", "Identify the mythological and emotional core that makes a story universe expandable"],
+        personality: "Imaginative, meticulous, and quietly tenacious. J.K. knows that the details readers never consciously notice are the ones that make a world feel undeniably real.",
+        image: null
       }
     ]
   },
