@@ -217,6 +217,7 @@ const HIERARCHY_STRUCTURE = {
     agents: [
       {
         id: "advisory_tyler_perry", name: "Tyler Perry", title: "CREATIVE EMPIRE ADVISOR", age: 54, role: "advisor", status: "active",
+        expertise_tags: ["Self-Ownership", "Vertical Integration", "Business Structure", "Creative Empire", "Wealth Building"],
         pillars: ["Proper Business Structure", "Wealth Strategies Trajectory"],
         description: "Guides authors on building self-owned creative empires and vertical integration strategies",
         mission: "To show every author that owning your infrastructure is owning your future — from the story to the studio, control is the ultimate competitive advantage.",
@@ -226,7 +227,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_thurgood_marshall", name: "Thurgood Marshall", title: "LEGAL STRATEGY ADVISOR", age: null, role: "advisor", status: "active",
+        id: "advisory_thurgood_marshall", name: "Thurgood Marshall", title: "LEGAL STRATEGY ADVISOR",
+        expertise_tags: ["Intellectual Property", "Copyright", "Contract Negotiation", "Legal Strategy", "Rights Protection"], age: null, role: "advisor", status: "active",
         pillars: ["Proper Business Structure", "Business Intelligence"],
         description: "Advises on intellectual property protection, rights negotiation, and legal strategy for authors",
         mission: "To ensure every author understands that their words are their rights — and that protecting those rights is not optional, it is the foundation of everything they build.",
@@ -236,7 +238,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_toni_morrison", name: "Toni Morrison", title: "LITERARY EXCELLENCE ADVISOR", age: null, role: "advisor", status: "active",
+        id: "advisory_toni_morrison", name: "Toni Morrison", title: "LITERARY EXCELLENCE ADVISOR",
+        expertise_tags: ["Literary Voice", "Prose Craft", "Cultural Authenticity", "Manuscript Quality", "Character Depth"], age: null, role: "advisor", status: "active",
         pillars: ["Progressive Development", "Exemplary Customer Service"],
         description: "Elevates literary craft, authentic voice, and cultural resonance in every manuscript",
         mission: "To remind every author that the most powerful stories are the ones only they can tell — and that authentic, precise, fearless prose is the highest form of service to the reader.",
@@ -246,7 +249,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_shonda_rhimes", name: "Shonda Rhimes", title: "NARRATIVE & IP EXPANSION ADVISOR", age: 54, role: "advisor", status: "active",
+        id: "advisory_shonda_rhimes", name: "Shonda Rhimes", title: "NARRATIVE & IP EXPANSION ADVISOR",
+        expertise_tags: ["IP Expansion", "Adaptation", "Narrative Structure", "Franchise Building", "TV & Film"], age: 54, role: "advisor", status: "active",
         pillars: ["Strategic Application", "Wealth Strategies Trajectory"],
         description: "Advises on expanding book IP into multi-platform narrative franchises",
         mission: "To help authors see their book not as a product but as a universe — and to build the strategic bridge from page to screen, podcast, series, and beyond.",
@@ -256,7 +260,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_jk_rowling", name: "J. K. Rowling", title: "WORLD-BUILDING & FRANCHISE ADVISOR", age: 60, role: "advisor", status: "active",
+        id: "advisory_jk_rowling", name: "J. K. Rowling", title: "WORLD-BUILDING & FRANCHISE ADVISOR",
+        expertise_tags: ["World-Building", "Series Architecture", "Reader Community", "Franchise", "Fantasy & Fiction"], age: 60, role: "advisor", status: "active",
         pillars: ["Progressive Development", "Wealth Strategies Trajectory"],
         description: "Advises on immersive world-building, series architecture, and building reader communities that span generations",
         mission: "To show authors that a truly great book doesn't end on the last page — it opens a door into a world readers refuse to leave, and a franchise that grows for decades.",
@@ -266,7 +271,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_oprah_winfrey", name: "Oprah Winfrey", title: "AUDIENCE & IMPACT ADVISOR", age: 72, role: "advisor", status: "active",
+        id: "advisory_oprah_winfrey", name: "Oprah Winfrey", title: "AUDIENCE & IMPACT ADVISOR",
+        expertise_tags: ["Audience Building", "Media Impact", "Authentic Storytelling", "Cultural Influence", "Book Marketing"], age: 72, role: "advisor", status: "active",
         pillars: ["Wealth Strategies Trajectory", "Exemplary Customer Service", "Partnership Alignment"],
         description: "Advises on building authentic audience connections, media influence, and transforming books into cultural movements",
         mission: "To help every author understand that their story has the power to change someone's life — and that the right platform, told authentically, can reach millions.",
@@ -276,7 +282,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_maya_angelou", name: "Maya Angelou", title: "VOICE & TRUTH ADVISOR", age: null, role: "advisor", status: "active",
+        id: "advisory_maya_angelou", name: "Maya Angelou", title: "VOICE & TRUTH ADVISOR",
+        expertise_tags: ["Authentic Voice", "Memoir", "Emotional Truth", "Prose Poetry", "Courage in Writing"], age: null, role: "advisor", status: "active",
         pillars: ["Progressive Development", "Exemplary Customer Service"],
         description: "Guides authors in finding their authentic voice, writing with courage, and creating work that endures across generations",
         mission: "To remind every author that words are the most powerful force in the universe — and that writing your truth, no matter how painful or personal, is an act of profound service to humanity.",
@@ -286,7 +293,8 @@ const HIERARCHY_STRUCTURE = {
         image: null
       },
       {
-        id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", title: "VISIONARY FOUNDER ADVISOR", age: null, role: "advisor", status: "active",
+        id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", title: "VISIONARY FOUNDER ADVISOR",
+        expertise_tags: ["Platform Vision", "Founder Strategy", "Culture Building", "Mission Alignment", "Author Empowerment"], age: null, role: "advisor", status: "active",
         pillars: ["Proper Business Structure", "Wealth Strategies Trajectory", "Strategic Application"],
         description: "Advises on visionary platform leadership, founder-driven culture, and building transformative publishing ecosystems",
         mission: "To ensure this platform fulfills its highest potential — not just as a tool, but as a movement that fundamentally changes who gets to tell their story and how far that story reaches.",

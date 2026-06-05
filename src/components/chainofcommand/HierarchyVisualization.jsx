@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import AgentCard from "./AgentCard";
 import AgentProfile from "./AgentProfile";
 import { motion } from "framer-motion";
@@ -20,6 +20,22 @@ export default function HierarchyVisualization({
   pillars,
   onAgentUpdate
 }) {
+  const [activeTag, setActiveTag] = useState(null);
+
+  // Collect all unique expertise tags across advisory board members
+  const allAdvisoryTags = useMemo(() => {
+    if (!hierarchy.level7) return [];
+    const tags = new Set();
+    hierarchy.level7.agents.forEach(a => a.expertise_tags?.forEach(t => tags.add(t)));
+    return Array.from(tags).sort();
+  }, [hierarchy.level7]);
+
+  const filteredAdvisors = useMemo(() => {
+    if (!hierarchy.level7) return [];
+    if (!activeTag) return hierarchy.level7.agents;
+    return hierarchy.level7.agents.filter(a => a.expertise_tags?.includes(activeTag));
+  }, [hierarchy.level7, activeTag]);
+
   const levelLabels = {
     level1: "SYSTEM OWNER",
     level2: "EXECUTIVE AGENTS",
@@ -110,12 +126,54 @@ export default function HierarchyVisualization({
             </span>
           </div>
 
+          {/* Tag Filter Bar */}
+          {allAdvisoryTags.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "#34d39980" }}>
+                Filter by Expertise
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveTag(null)}
+                  className="text-xs px-3 py-1.5 rounded-full font-semibold border transition-all"
+                  style={{
+                    backgroundColor: !activeTag ? "#34d39930" : "transparent",
+                    borderColor: !activeTag ? "#34d399" : "#34d39940",
+                    color: !activeTag ? "#34d399" : "#34d39970"
+                  }}
+                >
+                  All
+                </button>
+                {allAdvisoryTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                    className="text-xs px-3 py-1.5 rounded-full font-semibold border transition-all"
+                    style={{
+                      backgroundColor: activeTag === tag ? "#34d39930" : "transparent",
+                      borderColor: activeTag === tag ? "#34d399" : "#34d39940",
+                      color: activeTag === tag ? "#34d399" : "#34d39970"
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {filteredAdvisors.length === 0 && (
+            <p className="text-center text-sm py-4" style={{ color: "#34d39960" }}>
+              No advisors match this expertise tag.
+            </p>
+          )}
+
           <div className={`grid gap-6 ${
-            hierarchy.level7.agents.length <= 3
+            filteredAdvisors.length <= 3
               ? "grid-cols-1 md:grid-cols-3"
               : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           }`}>
-            {hierarchy.level7.agents.map((agent, i) => (
+            {filteredAdvisors.map((agent, i) => (
               <motion.div
                 key={agent.id}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -133,11 +191,29 @@ export default function HierarchyVisualization({
                   style={{ borderColor: "#34d39980", backgroundColor: "#064e3b" }}>
                   🎓
                 </div>
-                <div>
+                <div className="w-full">
                   <p className="text-xs font-bold tracking-wider uppercase" style={{ color: "#34d399" }}>
                     {agent.title}
                   </p>
                   <p className="font-bold text-white mt-1">{agent.name}</p>
+                  {agent.expertise_tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2 justify-center">
+                      {agent.expertise_tags.map(tag => (
+                        <span
+                          key={tag}
+                          onClick={e => { e.stopPropagation(); setActiveTag(activeTag === tag ? null : tag); }}
+                          className="text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all"
+                          style={{
+                            backgroundColor: activeTag === tag ? "#34d39940" : "#34d39915",
+                            color: activeTag === tag ? "#34d399" : "#34d39980",
+                            border: `1px solid ${activeTag === tag ? "#34d39970" : "#34d39930"}`
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
