@@ -18,7 +18,7 @@ const STATUS_TABS = [
 
 function StatCard({ icon: Icon, label, value, color }) {
   return (
-    <div className="rounded-2xl border p-5 flex items-center gap-4" style={{ backgroundColor: "#0f172a", borderColor: "#1e293b" }}>
+    <div className="rounded-2xl border p-5 flex items-center gap-4" style={{ backgroundColor: "#1e293b", borderColor: "#334155" }}>
       <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + "20" }}>
         <Icon className="w-5 h-5" style={{ color }} />
       </div>
@@ -42,7 +42,7 @@ function NotificationCard({ n, onMarkReviewed, onDismiss, onSendInsight, sending
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
       className="rounded-xl border p-4 space-y-3"
-      style={{ backgroundColor: isPending ? p.bg : "#0f172a", borderColor: isPending ? p.border + "50" : "#1e293b" }}
+      style={{ backgroundColor: isPending ? p.bg : "#1e293b", borderColor: isPending ? p.border + "50" : "#334155" }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -75,8 +75,8 @@ function NotificationCard({ n, onMarkReviewed, onDismiss, onSendInsight, sending
       {/* AI-generated insight preview */}
       {n.review_notes && (
         <div className="rounded-lg p-3 border text-xs leading-relaxed text-white/70 italic"
-          style={{ backgroundColor: "#0d2a1f", borderColor: "#34d39930" }}>
-          <span className="text-green-400 not-italic font-semibold block mb-1 flex items-center gap-1">
+          style={{ backgroundColor: "#f59e0b0d", borderColor: "#f59e0b30" }}>
+          <span className="text-amber-400 not-italic font-semibold block mb-1 flex items-center gap-1">
             <Sparkles className="w-3 h-3 inline" /> Advisor Insight
           </span>
           {n.review_notes}
@@ -102,7 +102,7 @@ function NotificationCard({ n, onMarkReviewed, onDismiss, onSendInsight, sending
       )}
       {n.status === "reviewed" && (
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-xs text-green-400/70">
+          <div className="flex items-center gap-1.5 text-xs text-amber-400/70">
             <CheckCircle2 className="w-3 h-3" />
             Reviewed {n.reviewed_at ? `on ${new Date(n.reviewed_at).toLocaleDateString()}` : ""}
           </div>
@@ -125,12 +125,12 @@ function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, onSen
 
   return (
     <div className="rounded-2xl border overflow-hidden"
-      style={{ backgroundColor: "#0a1628", borderColor: pendingCount > 0 ? "#34d39940" : "#1e293b" }}>
+      style={{ backgroundColor: "#1e293b", borderColor: pendingCount > 0 ? "#f59e0b40" : "#334155" }}>
       <button onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
-            style={{ backgroundColor: "#34d39920", color: "#34d399" }}>
+            style={{ backgroundColor: "#f59e0b20", color: "#f59e0b" }}>
             {advisor.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
           </div>
           <div className="text-left">
@@ -262,11 +262,11 @@ export default function AdvisoryReviewDashboard() {
   }, [notifications]);
 
   return (
-    <div className="min-h-screen p-6 lg:p-8" style={{ backgroundColor: "#040d1a" }}>
+    <div className="min-h-screen p-6 lg:p-8" style={{ backgroundColor: "#0f172a" }}>
       {/* Header */}
       <div className="mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#34d39920" }}>
-          <Users className="w-5 h-5" style={{ color: "#34d399" }} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/20">
+          <Users className="w-5 h-5 text-amber-400" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-white">Advisory Review Dashboard</h1>
@@ -277,15 +277,15 @@ export default function AdvisoryReviewDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={AlertTriangle} label="Pending Reviews"  value={pendingCount}           color="#f59e0b" />
-        <StatCard icon={AlertTriangle} label="High Priority"    value={highPriorityCount}       color="#ef4444" />
-        <StatCard icon={CheckCircle2}  label="Reviewed"         value={reviewedCount}           color="#34d399" />
-        <StatCard icon={BarChart3}     label="Total Requests"   value={notifications.length}    color="#3b82f6" />
+        <StatCard icon={AlertTriangle} label="High Priority"    value={highPriorityCount}       color="#f87171" />
+        <StatCard icon={CheckCircle2}  label="Reviewed"         value={reviewedCount}           color="#f59e0b" />
+        <StatCard icon={BarChart3}     label="Total Requests"   value={notifications.length}    color="#94a3b8" />
       </div>
 
       {/* Controls */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
         {/* Status Tabs */}
-        <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "#0f172a" }}>
+        <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "#1e293b" }}>
           {STATUS_TABS.map(({ key, label, icon: Icon }) => {
             const count = tabCounts[key] || 0;
             const isActive = statusTab === key;
@@ -293,15 +293,15 @@ export default function AdvisoryReviewDashboard() {
               <button key={key} onClick={() => setStatusTab(key)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
                 style={{
-                  backgroundColor: isActive ? "#34d39920" : "transparent",
-                  color: isActive ? "#34d399" : "#ffffff60",
-                  border: isActive ? "1px solid #34d39940" : "1px solid transparent",
+                  backgroundColor: isActive ? "#f59e0b20" : "transparent",
+                  color: isActive ? "#f59e0b" : "#ffffff60",
+                  border: isActive ? "1px solid #f59e0b40" : "1px solid transparent",
                 }}>
                 <Icon className="w-3.5 h-3.5" />
                 {label}
                 {count > 0 && (
                   <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: isActive ? "#34d39930" : "#ffffff15", color: isActive ? "#34d399" : "#ffffff40" }}>
+                    style={{ backgroundColor: isActive ? "#f59e0b30" : "#ffffff15", color: isActive ? "#f59e0b" : "#ffffff40" }}>
                     {count}
                   </span>
                 )}
@@ -313,7 +313,7 @@ export default function AdvisoryReviewDashboard() {
         <div className="flex gap-2 items-center">
           <select value={advisorFilter} onChange={e => setAdvisorFilter(e.target.value)}
             className="text-xs px-3 py-2 rounded-lg border text-white/70 outline-none"
-            style={{ backgroundColor: "#0f172a", borderColor: "#1e293b" }}>
+            style={{ backgroundColor: "#1e293b", borderColor: "#334155" }}>
             <option value="all">All Advisors</option>
             {ADVISORS.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
           </select>
@@ -321,16 +321,16 @@ export default function AdvisoryReviewDashboard() {
           <button onClick={() => setGroupByAdvisor(g => !g)}
             className="text-xs px-3 py-2 rounded-lg border transition-all"
             style={{
-              backgroundColor: groupByAdvisor ? "#34d39920" : "#0f172a",
-              borderColor: groupByAdvisor ? "#34d39940" : "#1e293b",
-              color: groupByAdvisor ? "#34d399" : "#ffffff50",
+              backgroundColor: groupByAdvisor ? "#f59e0b20" : "#1e293b",
+              borderColor: groupByAdvisor ? "#f59e0b40" : "#334155",
+              color: groupByAdvisor ? "#f59e0b" : "#ffffff50",
             }}>
             Group by Advisor
           </button>
 
           <button onClick={() => load(true)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all hover:bg-white/5"
-            style={{ borderColor: "#1e293b", color: "#ffffff40" }}>
+            className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all hover:bg-amber-500/10"
+            style={{ borderColor: "#334155", color: "#f59e0b80" }}>
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
