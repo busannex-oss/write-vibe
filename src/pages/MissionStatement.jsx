@@ -8,9 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Target, History, BarChart3, Edit3, Save, RotateCcw,
   Eye, EyeOff, Sparkles, CheckCircle2, Loader2, AlertCircle, ChevronDown, ChevronUp,
-  BookOpen, Bot, FileText, Check, X, RefreshCw
+  BookOpen, Bot, FileText, Check, X, RefreshCw, Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ADVISORS } from "@/components/chainofcommand/advisoryConstants";
 
 const PILLARS = [
   "Authenticity", "Creativity", "Empowerment", "Innovation",
@@ -65,6 +66,23 @@ export default function MissionStatementPage() {
 
   const invoke = (action, extra = {}) =>
     base44.functions.invoke("mission", { action, ...extra });
+
+  // Notify all Advisory Board members to review a mission statement version
+  const notifyAdvisoryBoard = async (versionText, versionNumber, context = "Mission Statement Review") => {
+    const notifications = ADVISORS.map(advisor => ({
+      advisor_id: advisor.id,
+      advisor_name: advisor.name,
+      book_title: "Write Vibe Platform",
+      book_id: "platform",
+      chapter_number: versionNumber,
+      milestone_title: `Mission Statement v${versionNumber}`,
+      reason: `New mission statement v${versionNumber} requires Advisory Board review, refinement, and insights before final adoption.`,
+      expertise_match: advisor.expertise_tags[0],
+      priority: "high",
+      status: "pending",
+    }));
+    await base44.entities.AdvisoryNotification.bulkCreate(notifications);
+  };
 
   const loadAll = async () => {
     setLoading(true);
@@ -127,6 +145,7 @@ export default function MissionStatementPage() {
     setDeepDraft(null);
     setEditing(true);
     setTab("current");
+    // Draft accepted — queue for save; advisory notification fires on handleSaveVersion
   };
 
   const handleRejectDraft = () => {
@@ -148,9 +167,12 @@ export default function MissionStatementPage() {
       is_public: editPublic,
       pillar_scores: scores
     });
-    setMission(res.data.mission);
+    const saved = res.data.mission;
+    setMission(saved);
     setEditRationale("");
     setEditing(false);
+    // Notify Advisory Board of new version for review
+    await notifyAdvisoryBoard(editText, saved?.version_number || 1);
     await loadAll();
     setSaving(false);
   };
@@ -267,13 +289,14 @@ export default function MissionStatementPage() {
                 <blockquote className="text-white/90 text-base leading-relaxed border-l-4 border-amber-500 pl-5 italic bg-white/5 p-4 rounded-r-xl">
                   {deepDraft}
                 </blockquote>
+                <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={handleAcceptDraft}
                     className="bg-green-500 hover:bg-green-600 text-white"
                     size="sm"
                   >
-                    <Check className="w-4 h-4 mr-1" /> Accept & Save This Version
+                    <Check className="w-4 h-4 mr-1" /> Accept & Submit for Board Review
                   </Button>
                   <Button
                     onClick={() => setShowRefineInput(p => !p)}
@@ -291,6 +314,11 @@ export default function MissionStatementPage() {
                   >
                     <X className="w-4 h-4 mr-1" /> Discard
                   </Button>
+                </div>
+                <p className="text-xs text-white/40 flex items-center gap-1.5">
+                  <Users className="w-3 h-3 text-green-400/60" />
+                  Accepting will route this draft to all 5 Advisory Board members for review &amp; insights.
+                </p>
                 </div>
                 {showRefineInput && (
                   <div className="flex gap-2">
@@ -451,12 +479,18 @@ export default function MissionStatementPage() {
                     </div>
                     <span className="text-white/70 text-sm">Make publicly visible</span>
                   </label>
-                  <div className="flex gap-2">
-                    <Button onClick={handleSaveVersion} disabled={saving || !editText.trim()} className="bg-amber-500 hover:bg-amber-600 text-black">
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save className="w-4 h-4 mr-1" />}
-                      Save & Analyze
-                    </Button>
-                    <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button onClick={handleSaveVersion} disabled={saving || !editText.trim()} className="bg-amber-500 hover:bg-amber-600 text-black">
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save className="w-4 h-4 mr-1" />}
+                        Save & Analyze
+                      </Button>
+                      <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
+                    </div>
+                    <p className="text-xs text-white/40 flex items-center gap-1.5">
+                      <Users className="w-3 h-3 text-amber-400/60" />
+                      All Advisory Board members will be notified to review this version.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
