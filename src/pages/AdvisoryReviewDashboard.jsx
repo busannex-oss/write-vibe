@@ -1,31 +1,20 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, BookOpen, CheckCircle2, X, Clock, Filter, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, Star, Users, BarChart3, Inbox } from "lucide-react";
+import { BookOpen, CheckCircle2, X, Clock, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, Users, BarChart3, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
+import { PRIORITY_STYLES, ADVISORS, ADVISOR_MAP } from "@/components/chainofcommand/advisoryConstants";
 
-const PRIORITY_STYLES = {
-  high:   { bg: "#7f1d1d25", border: "#ef4444", text: "#fca5a5", badge: "bg-red-500/20 text-red-400 border-red-500/30", label: "HIGH" },
-  medium: { bg: "#78350f25", border: "#f59e0b", text: "#fcd34d", badge: "bg-amber-500/20 text-amber-400 border-amber-500/30", label: "MED" },
-  low:    { bg: "#1e3a5f25", border: "#3b82f6", text: "#93c5fd", badge: "bg-blue-500/20 text-blue-400 border-blue-500/30", label: "LOW" },
-};
+// ─── Constants ───────────────────────────────────────────────────────────────
 
 const STATUS_TABS = [
-  { key: "pending",  label: "Pending",  icon: Clock },
-  { key: "reviewed", label: "Reviewed", icon: CheckCircle2 },
-  { key: "dismissed",label: "Dismissed",icon: X },
-  { key: "all",      label: "All",      icon: Inbox },
+  { key: "pending",   label: "Pending",   icon: Clock },
+  { key: "reviewed",  label: "Reviewed",  icon: CheckCircle2 },
+  { key: "dismissed", label: "Dismissed", icon: X },
+  { key: "all",       label: "All",       icon: Inbox },
 ];
 
-// All known advisory board members with their expertise
-const ADVISORS = [
-  { id: "advisory_oprah",           name: "Oprah Winfrey",       expertise_tags: ["Storytelling", "Audience Building", "Emotional Resonance", "Authenticity"] },
-  { id: "advisory_tyler_perry",     name: "Tyler Perry",         expertise_tags: ["Narrative Arc", "Character Voice", "Cultural Relevance", "World-Building"] },
-  { id: "advisory_thurgood",        name: "Thurgood Marshall",   expertise_tags: ["Intellectual Property", "Literary Rights", "Publishing Law", "Content Ethics"] },
-  { id: "advisory_maya_angelou",    name: "Maya Angelou",        expertise_tags: ["Authentic Voice", "Memoir", "Emotional Truth", "Prose Poetry", "Courage in Writing"] },
-  { id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", expertise_tags: ["Platform Vision", "Founder Strategy", "Culture Building", "Mission Alignment", "Author Empowerment"] },
-];
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ icon: Icon, label, value, color }) {
   return (
@@ -57,19 +46,14 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {isPending && (
-            <span className={`text-xs font-black px-2 py-0.5 rounded-full border ${p.badge}`}>
-              {p.label}
-            </span>
+            <span className={`text-xs font-black px-2 py-0.5 rounded-full border ${p.badge}`}>{p.label}</span>
           )}
           <span className="font-semibold text-white text-sm">{n.advisor_name}</span>
-          <span className="text-white/30 text-xs">·</span>
           <span className="text-white/60 text-xs flex items-center gap-1">
             <BookOpen className="w-3 h-3" />
             {n.book_title || "Unknown Book"} — Ch.{n.chapter_number}
+            {n.character_name && ` · ${n.character_name}`}
           </span>
-          {n.character_name && (
-            <span className="text-xs text-white/40">· {n.character_name}</span>
-          )}
         </div>
         <span className="text-xs text-white/30 whitespace-nowrap flex-shrink-0">
           {n.created_date ? new Date(n.created_date).toLocaleDateString() : ""}
@@ -77,21 +61,15 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
       </div>
 
       {n.milestone_title && (
-        <p className="text-xs text-white/50">
-          <span className="text-white/30">Milestone: </span>{n.milestone_title}
-        </p>
+        <p className="text-xs text-white/50"><span className="text-white/30">Milestone: </span>{n.milestone_title}</p>
       )}
-
       {n.expertise_match && (
         <span className="inline-block text-xs px-2 py-0.5 rounded-full border"
           style={{ backgroundColor: "#34d39915", borderColor: "#34d39940", color: "#34d39980" }}>
           {n.expertise_match}
         </span>
       )}
-
-      {n.reason && (
-        <p className="text-xs leading-relaxed text-white/60">{n.reason}</p>
-      )}
+      {n.reason && <p className="text-xs leading-relaxed text-white/60">{n.reason}</p>}
 
       {isPending && (
         <div className="flex gap-2 pt-1">
@@ -105,7 +83,6 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
           </Button>
         </div>
       )}
-
       {n.status === "reviewed" && (
         <div className="flex items-center gap-1.5 text-xs text-green-400/70">
           <CheckCircle2 className="w-3 h-3" />
@@ -118,16 +95,13 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
 
 function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, defaultOpen }) {
   const [open, setOpen] = useState(defaultOpen);
-  const pending = notifications.filter(n => n.status === "pending");
-  const hasPending = pending.length > 0;
+  const pendingCount = useMemo(() => notifications.filter(n => n.status === "pending").length, [notifications]);
 
   return (
     <div className="rounded-2xl border overflow-hidden"
-      style={{ backgroundColor: "#0a1628", borderColor: hasPending ? "#34d39940" : "#1e293b" }}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors"
-      >
+      style={{ backgroundColor: "#0a1628", borderColor: pendingCount > 0 ? "#34d39940" : "#1e293b" }}>
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
             style={{ backgroundColor: "#34d39920", color: "#34d399" }}>
@@ -137,10 +111,9 @@ function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, defau
             <p className="font-bold text-white text-sm">{advisor.name}</p>
             <p className="text-xs text-white/40 mt-0.5">{advisor.expertise_tags?.slice(0, 3).join(" · ")}</p>
           </div>
-          {hasPending && (
+          {pendingCount > 0 && (
             <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" />
-              {pending.length} pending
+              <AlertTriangle className="w-3 h-3" />{pendingCount} pending
             </span>
           )}
         </div>
@@ -176,6 +149,8 @@ function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, defau
   );
 }
 
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function AdvisoryReviewDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -184,9 +159,7 @@ export default function AdvisoryReviewDashboard() {
   const [groupByAdvisor, setGroupByAdvisor] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => { load(); }, []);
-
-  const load = async (showRefresh = false) => {
+  const load = useCallback(async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
     try {
       const data = await base44.entities.AdvisoryNotification.list("-created_date", 200);
@@ -196,94 +169,98 @@ export default function AdvisoryReviewDashboard() {
     }
     setLoading(false);
     setRefreshing(false);
-  };
+  }, []);
 
-  const markReviewed = async (id) => {
-    await base44.entities.AdvisoryNotification.update(id, {
-      status: "reviewed",
-      reviewed_at: new Date().toISOString(),
-    });
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, status: "reviewed", reviewed_at: new Date().toISOString() } : n));
-  };
+  useEffect(() => { load(); }, [load]);
 
-  const dismiss = async (id) => {
-    await base44.entities.AdvisoryNotification.update(id, { status: "dismissed" });
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, status: "dismissed" } : n));
-  };
+  // Single optimistic-update helper — no duplicated entity calls
+  const applyUpdate = useCallback((id, patch) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, ...patch } : n));
+    base44.entities.AdvisoryNotification.update(id, patch);
+  }, []);
 
-  const filtered = useMemo(() => {
-    let list = notifications;
-    if (statusTab !== "all") list = list.filter(n => n.status === statusTab);
-    if (advisorFilter !== "all") list = list.filter(n => n.advisor_name === advisorFilter);
-    return list;
+  const markReviewed = useCallback((id) =>
+    applyUpdate(id, { status: "reviewed", reviewed_at: new Date().toISOString() }), [applyUpdate]);
+
+  const dismiss = useCallback((id) =>
+    applyUpdate(id, { status: "dismissed" }), [applyUpdate]);
+
+  // All counts + filtered list in one pass
+  const { pendingCount, reviewedCount, highPriorityCount, filtered } = useMemo(() => {
+    let pendingCount = 0, reviewedCount = 0, highPriorityCount = 0;
+    const filtered = [];
+
+    for (const n of notifications) {
+      if (n.status === "pending") {
+        pendingCount++;
+        if (n.priority === "high") highPriorityCount++;
+      } else if (n.status === "reviewed") {
+        reviewedCount++;
+      }
+      const matchesStatus = statusTab === "all" || n.status === statusTab;
+      const matchesAdvisor = advisorFilter === "all" || n.advisor_name === advisorFilter;
+      if (matchesStatus && matchesAdvisor) filtered.push(n);
+    }
+    return { pendingCount, reviewedCount, highPriorityCount, filtered };
   }, [notifications, statusTab, advisorFilter]);
 
-  const pendingCount = notifications.filter(n => n.status === "pending").length;
-  const reviewedCount = notifications.filter(n => n.status === "reviewed").length;
-  const uniqueAdvisors = [...new Set(notifications.map(n => n.advisor_name))].filter(Boolean);
-  const highPriorityCount = notifications.filter(n => n.status === "pending" && n.priority === "high").length;
-
-  // Group filtered by advisor
+  // Group by advisor — uses pre-filtered list, sorts by pending count desc
   const groupedByAdvisor = useMemo(() => {
-    const map = {};
-    ADVISORS.forEach(a => { map[a.name] = []; });
-    filtered.forEach(n => {
-      if (!map[n.advisor_name]) map[n.advisor_name] = [];
-      map[n.advisor_name].push(n);
-    });
-    // Sort: advisors with pending items first
-    return Object.entries(map).sort(([, a], [, b]) => {
-      const aPending = a.filter(n => n.status === "pending").length;
-      const bPending = b.filter(n => n.status === "pending").length;
-      return bPending - aPending;
+    const map = new Map(ADVISORS.map(a => [a.name, []]));
+    for (const n of filtered) {
+      if (!map.has(n.advisor_name)) map.set(n.advisor_name, []);
+      map.get(n.advisor_name).push(n);
+    }
+    return [...map.entries()].sort(([, a], [, b]) => {
+      const diff = b.filter(n => n.status === "pending").length - a.filter(n => n.status === "pending").length;
+      return diff !== 0 ? diff : b.length - a.length;
     });
   }, [filtered]);
+
+  const tabCounts = useMemo(() => {
+    const counts = { pending: 0, reviewed: 0, dismissed: 0, all: notifications.length };
+    for (const n of notifications) counts[n.status] = (counts[n.status] || 0) + 1;
+    return counts;
+  }, [notifications]);
 
   return (
     <div className="min-h-screen p-6 lg:p-8" style={{ backgroundColor: "#040d1a" }}>
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#34d39920" }}>
-            <Users className="w-5 h-5" style={{ color: "#34d399" }} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Advisory Review Dashboard</h1>
-            <p className="text-sm text-white/40">Centralized view of all chapter review requests for the Advisory Board</p>
-          </div>
+      <div className="mb-8 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#34d39920" }}>
+          <Users className="w-5 h-5" style={{ color: "#34d399" }} />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-white">Advisory Review Dashboard</h1>
+          <p className="text-sm text-white/40">Centralized chapter review requests for the Advisory Board</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={AlertTriangle} label="Pending Reviews" value={pendingCount} color="#f59e0b" />
-        <StatCard icon={AlertTriangle} label="High Priority" value={highPriorityCount} color="#ef4444" />
-        <StatCard icon={CheckCircle2} label="Reviewed" value={reviewedCount} color="#34d399" />
-        <StatCard icon={BarChart3} label="Total Requests" value={notifications.length} color="#3b82f6" />
+        <StatCard icon={AlertTriangle} label="Pending Reviews"  value={pendingCount}           color="#f59e0b" />
+        <StatCard icon={AlertTriangle} label="High Priority"    value={highPriorityCount}       color="#ef4444" />
+        <StatCard icon={CheckCircle2}  label="Reviewed"         value={reviewedCount}           color="#34d399" />
+        <StatCard icon={BarChart3}     label="Total Requests"   value={notifications.length}    color="#3b82f6" />
       </div>
 
       {/* Controls */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
         {/* Status Tabs */}
         <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "#0f172a" }}>
-          {STATUS_TABS.map(tab => {
-            const count = tab.key === "all"
-              ? notifications.length
-              : notifications.filter(n => n.status === tab.key).length;
-            const isActive = statusTab === tab.key;
+          {STATUS_TABS.map(({ key, label, icon: Icon }) => {
+            const count = tabCounts[key] || 0;
+            const isActive = statusTab === key;
             return (
-              <button
-                key={tab.key}
-                onClick={() => setStatusTab(tab.key)}
+              <button key={key} onClick={() => setStatusTab(key)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
                 style={{
                   backgroundColor: isActive ? "#34d39920" : "transparent",
                   color: isActive ? "#34d399" : "#ffffff60",
-                  border: isActive ? "1px solid #34d39940" : "1px solid transparent"
-                }}
-              >
-                <tab.icon className="w-3.5 h-3.5" />
-                {tab.label}
+                  border: isActive ? "1px solid #34d39940" : "1px solid transparent",
+                }}>
+                <Icon className="w-3.5 h-3.5" />
+                {label}
                 {count > 0 && (
                   <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold"
                     style={{ backgroundColor: isActive ? "#34d39930" : "#ffffff15", color: isActive ? "#34d399" : "#ffffff40" }}>
@@ -296,37 +273,26 @@ export default function AdvisoryReviewDashboard() {
         </div>
 
         <div className="flex gap-2 items-center">
-          {/* Advisor Filter */}
-          <select
-            value={advisorFilter}
-            onChange={e => setAdvisorFilter(e.target.value)}
-            className="text-xs px-3 py-2 rounded-lg border text-white/70 bg-transparent outline-none"
-            style={{ backgroundColor: "#0f172a", borderColor: "#1e293b" }}
-          >
+          <select value={advisorFilter} onChange={e => setAdvisorFilter(e.target.value)}
+            className="text-xs px-3 py-2 rounded-lg border text-white/70 outline-none"
+            style={{ backgroundColor: "#0f172a", borderColor: "#1e293b" }}>
             <option value="all">All Advisors</option>
-            {ADVISORS.map(a => (
-              <option key={a.id} value={a.name}>{a.name}</option>
-            ))}
+            {ADVISORS.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
           </select>
 
-          {/* Group toggle */}
-          <button
-            onClick={() => setGroupByAdvisor(!groupByAdvisor)}
+          <button onClick={() => setGroupByAdvisor(g => !g)}
             className="text-xs px-3 py-2 rounded-lg border transition-all"
             style={{
               backgroundColor: groupByAdvisor ? "#34d39920" : "#0f172a",
               borderColor: groupByAdvisor ? "#34d39940" : "#1e293b",
-              color: groupByAdvisor ? "#34d399" : "#ffffff50"
-            }}
-          >
+              color: groupByAdvisor ? "#34d399" : "#ffffff50",
+            }}>
             Group by Advisor
           </button>
 
-          <button
-            onClick={() => load(true)}
+          <button onClick={() => load(true)}
             className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all hover:bg-white/5"
-            style={{ borderColor: "#1e293b", color: "#ffffff40" }}
-          >
+            style={{ borderColor: "#1e293b", color: "#ffffff40" }}>
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
@@ -345,13 +311,11 @@ export default function AdvisoryReviewDashboard() {
       ) : groupByAdvisor ? (
         <div className="space-y-4">
           {groupedByAdvisor.map(([advisorName, items]) => {
-            const advisorData = ADVISORS.find(a => a.name === advisorName);
-            if (advisorFilter !== "all" && advisorName !== advisorFilter) return null;
-            if (items.length === 0 && statusTab !== "all") return null;
+            if (items.length === 0) return null;
             return (
               <AdvisorGroup
                 key={advisorName}
-                advisor={advisorData || { name: advisorName, expertise_tags: [] }}
+                advisor={ADVISOR_MAP[advisorName] || { name: advisorName, expertise_tags: [] }}
                 notifications={items}
                 onMarkReviewed={markReviewed}
                 onDismiss={dismiss}
