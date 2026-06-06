@@ -59,12 +59,12 @@ export default function HierarchyVisualization({
         {/* CEO label bar */}
         <div className="flex items-center gap-4">
           <div className="px-4 py-2 rounded-full text-sm font-bold tracking-wider uppercase whitespace-nowrap"
-            style={{ backgroundColor: "#fbbf2420", color: "#fbbf24", border: "1px solid #fbbf2450" }}>
+            style={{ backgroundColor: "#f59e0b20", color: "#f59e0b", border: "1px solid #f59e0b50" }}>
             👑 HUMAN LEADERSHIP — CEO
           </div>
-          <div className="flex-1 h-px" style={{ backgroundColor: "#fbbf2430" }} />
+          <div className="flex-1 h-px" style={{ backgroundColor: "#f59e0b30" }} />
           <span className="text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap"
-            style={{ backgroundColor: "#fbbf2415", color: "#fbbf24" }}>
+            style={{ backgroundColor: "#f59e0b15", color: "#f59e0b" }}>
             Human · Not AI
           </span>
         </div>
@@ -73,20 +73,20 @@ export default function HierarchyVisualization({
         <div className="flex justify-center">
           <div className="flex flex-col items-center gap-4 px-10 py-8 rounded-3xl border-2 max-w-sm w-full text-center"
             style={{
-              background: "linear-gradient(135deg, #1c1407 0%, #2d1f05 100%)",
-              borderColor: "#fbbf24",
-              boxShadow: "0 0 48px #fbbf2430, 0 0 12px #fbbf2415"
+              background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+              borderColor: "#f59e0b",
+              boxShadow: "0 0 48px #f59e0b25, 0 0 12px #f59e0b10"
             }}>
             <div className="w-20 h-20 rounded-full flex items-center justify-center text-3xl border-2"
-              style={{ borderColor: "#fbbf24", backgroundColor: "#78350f" }}>
+              style={{ borderColor: "#f59e0b", backgroundColor: "#1e293b" }}>
               👑
             </div>
             <div>
-              <p className="text-xs font-black tracking-[0.25em] uppercase mb-1" style={{ color: "#fbbf24" }}>
+              <p className="text-xs font-black tracking-[0.25em] uppercase mb-1" style={{ color: "#f59e0b" }}>
                 CHIEF EXECUTIVE OFFICER
               </p>
               <p className="font-black text-2xl text-white">{CEO.name}</p>
-              <p className="text-sm mt-1" style={{ color: "#fbbf2480" }}>Supreme Human Authority</p>
+              <p className="text-sm mt-1" style={{ color: "#f59e0b80" }}>Supreme Human Authority</p>
             </div>
             <p className="text-xs text-white/40 leading-relaxed max-w-xs">{CEO.description}</p>
           </div>
@@ -94,13 +94,13 @@ export default function HierarchyVisualization({
 
         {/* Connector to Advisory Board */}
         <div className="flex flex-col items-center gap-1">
-          <div className="w-0.5 h-8" style={{ backgroundColor: "#fbbf2460" }} />
+          <div className="w-0.5 h-8" style={{ backgroundColor: "#f59e0b60" }} />
           <div className="flex items-center gap-3">
-            <div className="h-px w-24" style={{ backgroundColor: "#fbbf2430" }} />
-            <span className="text-xs tracking-widest uppercase" style={{ color: "#fbbf2450" }}>reports to CEO</span>
-            <div className="h-px w-24" style={{ backgroundColor: "#fbbf2430" }} />
+            <div className="h-px w-24" style={{ backgroundColor: "#f59e0b30" }} />
+            <span className="text-xs tracking-widest uppercase" style={{ color: "#f59e0b50" }}>reports to CEO</span>
+            <div className="h-px w-24" style={{ backgroundColor: "#f59e0b30" }} />
           </div>
-          <div className="w-0.5 h-8" style={{ backgroundColor: "#fbbf2460" }} />
+          <div className="w-0.5 h-8" style={{ backgroundColor: "#f59e0b60" }} />
         </div>
       </motion.div>
 
