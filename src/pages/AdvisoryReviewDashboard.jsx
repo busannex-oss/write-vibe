@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, CheckCircle2, X, Clock, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, Users, BarChart3, Inbox } from "lucide-react";
+import { BookOpen, CheckCircle2, X, Clock, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, Users, BarChart3, Inbox, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { PRIORITY_STYLES, ADVISORS, ADVISOR_MAP } from "@/components/chainofcommand/advisoryConstants";
@@ -30,9 +30,10 @@ function StatCard({ icon: Icon, label, value, color }) {
   );
 }
 
-function NotificationCard({ n, onMarkReviewed, onDismiss }) {
+function NotificationCard({ n, onMarkReviewed, onDismiss, onSendInsight, sendingInsight }) {
   const p = PRIORITY_STYLES[n.priority] || PRIORITY_STYLES.medium;
   const isPending = n.status === "pending";
+  const isSending = sendingInsight === n.id;
 
   return (
     <motion.div
@@ -71,11 +72,27 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
       )}
       {n.reason && <p className="text-xs leading-relaxed text-white/60">{n.reason}</p>}
 
+      {/* AI-generated insight preview */}
+      {n.review_notes && (
+        <div className="rounded-lg p-3 border text-xs leading-relaxed text-white/70 italic"
+          style={{ backgroundColor: "#0d2a1f", borderColor: "#34d39930" }}>
+          <span className="text-green-400 not-italic font-semibold block mb-1 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 inline" /> Advisor Insight
+          </span>
+          {n.review_notes}
+        </div>
+      )}
+
       {isPending && (
-        <div className="flex gap-2 pt-1">
+        <div className="flex gap-2 pt-1 flex-wrap">
           <Button size="sm" onClick={() => onMarkReviewed(n.id)}
             className="h-7 text-xs gap-1 bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30">
             <CheckCircle2 className="w-3 h-3" /> Mark Reviewed
+          </Button>
+          <Button size="sm" onClick={() => onSendInsight(n.id)} disabled={isSending}
+            className="h-7 text-xs gap-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30">
+            {isSending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+            {isSending ? "Generating…" : "Send Insight to Editor"}
           </Button>
           <Button size="sm" onClick={() => onDismiss(n.id)}
             className="h-7 text-xs gap-1 bg-white/5 text-white/40 border border-white/10 hover:bg-white/10">
@@ -84,16 +101,25 @@ function NotificationCard({ n, onMarkReviewed, onDismiss }) {
         </div>
       )}
       {n.status === "reviewed" && (
-        <div className="flex items-center gap-1.5 text-xs text-green-400/70">
-          <CheckCircle2 className="w-3 h-3" />
-          Reviewed {n.reviewed_at ? `on ${new Date(n.reviewed_at).toLocaleDateString()}` : ""}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-green-400/70">
+            <CheckCircle2 className="w-3 h-3" />
+            Reviewed {n.reviewed_at ? `on ${new Date(n.reviewed_at).toLocaleDateString()}` : ""}
+          </div>
+          {!n.review_notes && (
+            <Button size="sm" onClick={() => onSendInsight(n.id)} disabled={isSending}
+              className="h-6 text-xs gap-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30">
+              {isSending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+              {isSending ? "Generating…" : "Generate Insight"}
+            </Button>
+          )}
         </div>
       )}
     </motion.div>
   );
 }
 
-function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, defaultOpen }) {
+function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, onSendInsight, sendingInsight, defaultOpen }) {
   const [open, setOpen] = useState(defaultOpen);
   const pendingCount = useMemo(() => notifications.filter(n => n.status === "pending").length, [notifications]);
 
@@ -137,7 +163,7 @@ function AdvisorGroup({ advisor, notifications, onMarkReviewed, onDismiss, defau
               ) : (
                 <AnimatePresence>
                   {notifications.map(n => (
-                    <NotificationCard key={n.id} n={n} onMarkReviewed={onMarkReviewed} onDismiss={onDismiss} />
+                    <NotificationCard key={n.id} n={n} onMarkReviewed={onMarkReviewed} onDismiss={onDismiss} onSendInsight={onSendInsight} sendingInsight={sendingInsight} />
                   ))}
                 </AnimatePresence>
               )}
@@ -158,6 +184,7 @@ export default function AdvisoryReviewDashboard() {
   const [advisorFilter, setAdvisorFilter] = useState("all");
   const [groupByAdvisor, setGroupByAdvisor] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [sendingInsight, setSendingInsight] = useState(null);
 
   const load = useCallback(async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
@@ -184,6 +211,17 @@ export default function AdvisoryReviewDashboard() {
 
   const dismiss = useCallback((id) =>
     applyUpdate(id, { status: "dismissed" }), [applyUpdate]);
+
+  const sendInsight = useCallback(async (id) => {
+    setSendingInsight(id);
+    const res = await base44.functions.invoke("sendAdvisoryInsight", { notification_id: id });
+    if (res.data?.insight) {
+      setNotifications(prev => prev.map(n =>
+        n.id === id ? { ...n, review_notes: res.data.insight, status: "reviewed", reviewed_at: new Date().toISOString() } : n
+      ));
+    }
+    setSendingInsight(null);
+  }, []);
 
   // All counts + filtered list in one pass
   const { pendingCount, reviewedCount, highPriorityCount, filtered } = useMemo(() => {
@@ -319,6 +357,8 @@ export default function AdvisoryReviewDashboard() {
                 notifications={items}
                 onMarkReviewed={markReviewed}
                 onDismiss={dismiss}
+                onSendInsight={sendInsight}
+                sendingInsight={sendingInsight}
                 defaultOpen={items.some(n => n.status === "pending")}
               />
             );
@@ -328,7 +368,7 @@ export default function AdvisoryReviewDashboard() {
         <div className="space-y-3">
           <AnimatePresence>
             {filtered.map(n => (
-              <NotificationCard key={n.id} n={n} onMarkReviewed={markReviewed} onDismiss={dismiss} />
+              <NotificationCard key={n.id} n={n} onMarkReviewed={markReviewed} onDismiss={dismiss} onSendInsight={sendInsight} sendingInsight={sendingInsight} />
             ))}
           </AnimatePresence>
         </div>
