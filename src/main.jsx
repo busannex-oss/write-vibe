@@ -13,19 +13,28 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
-        // Poll for updates — guard against InvalidStateError when newestWorker is null
+        // Poll for updates every 5 minutes
         setInterval(() => {
           try { reg.update().catch(() => {}); } catch (_) {}
-        }, 60_000);
+        }, 5 * 60_000);
 
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+        const trackInstall = (worker) => {
+          if (!worker) return;
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
               window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
             }
           });
+        };
+
+        // Track any worker already installing when we register
+        if (reg.installing) trackInstall(reg.installing);
+
+        reg.addEventListener('updatefound', () => trackInstall(reg.installing));
+
+        // When controller changes (new SW took over), reload to get fresh assets
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
         });
       })
       .catch((err) => console.warn('[SW] Registration failed:', err));

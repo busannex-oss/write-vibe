@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Search, Eye, Settings } from "lucide-react";
+import { Download, Search, Settings } from "lucide-react";
 import HierarchyVisualization from "@/components/chainofcommand/HierarchyVisualization";
 import BrandCustomizationPanel from "@/components/chainofcommand/BrandCustomizationPanel";
 import BrandBanner from "@/components/chainofcommand/BrandBanner";
 import AdvisoryNotificationsPanel from "@/components/chainofcommand/AdvisoryNotificationsPanel";
-import { motion } from "framer-motion";
 
 const HIERARCHY_STRUCTURE = {
   level2: {
@@ -366,123 +365,75 @@ const PILLARS = [
 export default function ChainOfCommand() {
   const [user, setUser] = useState(null);
   const [brandGuide, setBrandGuide] = useState(null);
-  const [deploymentMode, setDeploymentMode] = useState("core"); // core, whitelabel
-  const [viewMode, setViewMode] = useState("live"); // live, preview
+  const [deploymentMode, setDeploymentMode] = useState("core");
+  const [viewMode, setViewMode] = useState("live");
   const [brandCustomization, setBrandCustomization] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [showCustomization, setShowCustomization] = useState(false);
   const [agents, setAgents] = useState(HIERARCHY_STRUCTURE);
+  const portraitsLoaded = useRef(false);
 
+  // Parallel load: user + portraits at the same time
   useEffect(() => {
-    loadUser();
-    generatePortraits();
+    Promise.all([
+      base44.auth.me().then(userData => {
+        setUser(userData);
+        const isWL = userData?.subscription_tier === "white_label";
+        setDeploymentMode(isWL ? "whitelabel" : "core");
+        if (!isWL) {
+          base44.entities.BrandStyleGuide.filter({ is_current: true })
+            .then(guides => { if (guides.length > 0) setBrandGuide(guides[0]); })
+            .catch(() => {});
+        }
+      }).catch(() => {}),
+
+      // Load portraits only once per session
+      !portraitsLoaded.current
+        ? base44.functions.invoke("generateAgentPortraits", {}).then(result => {
+            portraitsLoaded.current = true;
+            if (!result.data?.portraits) return;
+            const portraitMap = Object.fromEntries(result.data.portraits.map(p => [p.name, p.image]));
+            setAgents(prev => {
+              const updated = JSON.parse(JSON.stringify(prev));
+              Object.values(updated).forEach(level =>
+                level.agents.forEach(agent => {
+                  if (portraitMap[agent.name]) agent.image = portraitMap[agent.name];
+                })
+              );
+              return updated;
+            });
+          }).catch(() => {})
+        : Promise.resolve()
+    ]);
   }, []);
 
-  const loadUser = async () => {
-    try {
-      const userData = await base44.auth.me();
-      setUser(userData);
-      setDeploymentMode(userData?.subscription_tier === "white_label" ? "whitelabel" : "core");
-      
-      if (userData?.subscription_tier !== "white_label") {
-        await loadBrandGuide();
-      }
-    } catch (error) {
-      console.error("Error loading user:", error);
-    }
-  };
+  // Memoize expensive flat-map once — recomputed only when agents change
+  const allAgents = useMemo(() => Object.values(agents).flatMap(l => l.agents), [agents]);
 
-  const loadBrandGuide = async () => {
-    try {
-      const guides = await base44.entities.BrandStyleGuide.filter({ is_current: true });
-      if (guides.length > 0) {
-        setBrandGuide(guides[0]);
-      }
-    } catch (error) {
-      console.error("Error loading brand guide:", error);
-    }
-  };
+  // Memoize stats derived from allAgents
+  const { activeAgentCount, inDevCount, totalAgents } = useMemo(() => ({
+    totalAgents: allAgents.length,
+    activeAgentCount: allAgents.filter(a => a.status === "active").length,
+    inDevCount: allAgents.filter(a => a.status === "in_development").length,
+  }), [allAgents]);
 
-  const generatePortraits = async () => {
-    try {
-      const result = await base44.functions.invoke("generateAgentPortraits", {});
-      if (result.data?.portraits) {
-        const portraitMap = {};
-        result.data.portraits.forEach(p => {
-          portraitMap[p.name] = p.image;
-        });
-
-        setAgents(prev => {
-          const updated = JSON.parse(JSON.stringify(prev));
-          Object.values(updated).forEach(level => {
-            level.agents.forEach(agent => {
-              if (portraitMap[agent.name]) {
-                agent.image = portraitMap[agent.name];
-              }
-            });
-          });
-          return updated;
-        });
-      }
-    } catch (error) {
-      console.error("Error generating portraits:", error);
-    }
-  };
-
-  const extractBrandColors = () => {
-    if (deploymentMode === "whitelabel" && brandCustomization) {
-      return brandCustomization;
-    }
-
+  // Memoize brand colors
+  const brandColors = useMemo(() => {
+    if (deploymentMode === "whitelabel" && brandCustomization) return brandCustomization;
     if (brandGuide?.brand_data?.colors) {
       const colors = brandGuide.brand_data.colors;
       return {
-        primary: colors.find(c => c.role === "primary")?.hex || "#f59e0b",
-        secondary: colors.find(c => c.role === "secondary")?.hex || "#1f2937",
-        accent: colors.find(c => c.role === "accent")?.hex || "#3b82f6",
+        primary:    colors.find(c => c.role === "primary")?.hex    || "#f59e0b",
+        secondary:  colors.find(c => c.role === "secondary")?.hex  || "#1f2937",
+        accent:     colors.find(c => c.role === "accent")?.hex     || "#3b82f6",
         background: colors.find(c => c.role === "background")?.hex || "#0f172a",
-        text: colors.find(c => c.role === "text")?.hex || "#ffffff"
+        text:       colors.find(c => c.role === "text")?.hex       || "#ffffff",
       };
     }
+    return { primary: "#f59e0b", secondary: "#1f2937", accent: "#3b82f6", background: "#0f172a", text: "#ffffff" };
+  }, [deploymentMode, brandCustomization, brandGuide]);
 
-    return {
-      primary: "#f59e0b",
-      secondary: "#1f2937",
-      accent: "#3b82f6",
-      background: "#0f172a",
-      text: "#ffffff"
-    };
-  };
-
-  const getAllAgents = () => {
-    return Object.values(agents).flatMap(level => level.agents);
-  };
-
-  const getFilteredAgents = () => {
-    let filtered = getAllAgents();
-
-    if (searchQuery) {
-      filtered = filtered.filter(agent =>
-        agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agent.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agent.pillars.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-
-    if (statusFilter !== "all") {
-      filtered = filtered.filter(agent => agent.status === statusFilter);
-    }
-
-    return filtered;
-  };
-
-  const activeAgentCount = getAllAgents().filter(a => a.status === "active").length;
-  const inDevCount = getAllAgents().filter(a => a.status === "in_development").length;
-  const totalAgents = getAllAgents().length;
-
-  const brandColors = extractBrandColors();
   const isGuideIncomplete = deploymentMode === "core" && !brandGuide;
 
   return (
@@ -612,15 +563,15 @@ export default function ChainOfCommand() {
             pillars={PILLARS}
             onAgentUpdate={(agentId, updates) => {
               setAgents(prev => {
-                const updated = JSON.parse(JSON.stringify(prev));
-                Object.values(updated).forEach(level => {
-                  level.agents.forEach(a => {
-                    if (a.id === agentId) Object.assign(a, updates);
-                  });
-                });
-                return updated;
+                const next = {};
+                for (const [key, level] of Object.entries(prev)) {
+                  next[key] = {
+                    ...level,
+                    agents: level.agents.map(a => a.id === agentId ? { ...a, ...updates } : a)
+                  };
+                }
+                return next;
               });
-              // If selected agent is being updated, update it too
               setSelectedAgent(prev => prev?.id === agentId ? { ...prev, ...updates } : prev);
             }}
           />
