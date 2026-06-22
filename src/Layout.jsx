@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck, TrendingUp, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -112,7 +112,9 @@ export default function Layout({ children, currentPageName }) {
         { name: "AI Agent Audit", href: "AgentAudit", icon: Bot },
         { name: "White Label Admin", href: "WhiteLabelAdmin", icon: Store },
         { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
-        { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck }
+        { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck },
+        { name: "CCOS Studio", href: "CCOSStudio", icon: TrendingUp },
+        { name: "CCOS Agent", href: "CCOSAgent", icon: MessageSquare }
       ]
     : [];
 

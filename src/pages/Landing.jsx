@@ -233,15 +233,15 @@ export default function Landing() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8">
               <Zap className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300">AI-Powered Book Creation Suite</span>
+              <span className="text-sm text-amber-300">From Idea to Published Book — Without the Overwhelm</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-              Write Your Book with
-              <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> AI Agents</span>
-            </h1>
-            <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
-              From character creation to marketing, our intelligent AI agents handle every aspect of your book journey on autopilot.
-            </p>
+               Turn the Book Inside You Into a
+               <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Published Book</span>
+             </h1>
+             <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+               Write Vibe's AI agents carry your story from first idea to finished manuscript, designed cover, and published book — so you finally hold your work in your hands instead of in your head.
+             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                <Button 
                   size="lg" 
@@ -295,11 +295,11 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Everything You Need to <span className="text-amber-400">Publish</span>
-            </h2>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              Our AI agents work together seamlessly to take your book from concept to market
-            </p>
+               Everything Between You and a <span className="text-amber-400">Published Book</span>
+             </h2>
+             <p className="text-white/60 text-lg max-w-2xl mx-auto">
+               Specialized AI agents handle each stage — characters, outlines, covers, trailers, and your book website — so nothing stalls your book before it reaches readers.
+             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -412,11 +412,11 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="p-6 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Write Your Masterpiece?
-            </h2>
-            <p className="text-white/60 mb-8 max-w-xl mx-auto">
-              Join thousands of authors using AI to bring their stories to life
-            </p>
+               Your Book Is Closer Than You Think
+             </h2>
+             <p className="text-white/60 mb-8 max-w-xl mx-auto">
+               Start your 7-day free trial and watch your first chapter come together today — no credit card, no risk, just the book you've been carrying finally making it onto the page.
+             </p>
             <Button 
               size="lg" 
               onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
