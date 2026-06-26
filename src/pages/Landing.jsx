@@ -123,7 +123,7 @@ export default function Landing() {
       document.head.appendChild(script);
     });
 
-    document.title = 'Write Vibe — Write Your Book with AI Agents';
+    document.title = 'Write Vibe — AI Book Writing & Self-Publishing Platform';
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
     metaDesc.content = 'Write Vibe is an AI-powered book creation suite. Write, design, and publish your book with intelligent AI agents handling characters, outlines, covers, video trailers, and marketing. Start your 7-day free trial.';
