@@ -26,7 +26,7 @@ export default function AudiobookGenerator({ book, onUpdate, isUpdating }) {
 
   const handleGenerate = async () => {
     if (!book.formatted_manuscript && !book.manuscript_chapters?.length) {
-      alert("Please format your manuscript first");
+      alert("Please write your manuscript first");
       return;
     }
 
@@ -146,7 +146,7 @@ Return the narration script with chapter markers in a format ready for text-to-s
           {!audioUrl && (
             <Button
               onClick={handleGenerate}
-              disabled={generating || !book.formatted_manuscript}
+              disabled={generating || (!book.formatted_manuscript && !book.manuscript_chapters?.length)}
               className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
             >
               {generating ? (
@@ -227,10 +227,10 @@ Return the narration script with chapter markers in a format ready for text-to-s
           )}
 
           {/* Requirements */}
-          {!book.formatted_manuscript && (
+          {!book.formatted_manuscript && !book.manuscript_chapters?.length && (
             <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
               <p className="text-sm text-amber-300">
-                📝 Please format your manuscript first to generate an audiobook
+                📝 Please write your manuscript first to generate an audiobook
               </p>
             </div>
           )}
