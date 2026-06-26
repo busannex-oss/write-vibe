@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck, TrendingUp, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -15,40 +16,26 @@ const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports"];
 
 export default function Layout({ children, currentPageName }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  useErrorLogger(user);
+  // Single shared user query — Layout and pages reuse one cached call instead of
+  // each fetching separately. Refetches every 5s on the Settings page so branding
+  // changes (logo/title) are picked up, matching the previous polling behavior.
+  const { data: user, isLoading: loading } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 60000,
+    retry: false,
+    refetchInterval: currentPageName === 'Settings' ? 5000 : false
+  });
 
-  useEffect(() => {
-    loadUser();
-  }, []);
+  useErrorLogger(user);
 
   // Re-check auth whenever page changes
   useEffect(() => {
     if (!loading) checkAccess();
   }, [currentPageName, loading]);
-
-  // Refetch user only when on the Settings page to pick up logo/branding changes
-  useEffect(() => {
-    if (currentPageName !== 'Settings') return;
-    const interval = setInterval(() => {
-      loadUser();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [currentPageName]);
-
-  const loadUser = async () => {
-    try {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    } catch (e) {
-      setUser(null);
-    }
-    setLoading(false);
-  };
 
   const checkAccess = () => {
     const isMemberPage = MEMBER_PAGES.some(p => currentPageName?.startsWith(p));
