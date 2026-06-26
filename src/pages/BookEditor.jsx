@@ -40,20 +40,11 @@ import BookLogoGenerator from "@/components/book/BookLogoGenerator.jsx";
 const STEPS = [
   {
     id: "title",
-    label: "Title",
+    label: "Title & Characters",
     icon: Edit3,
-    description: "Give your book a compelling, marketable title",
-    hint: "AI suggests 8 options — or type your own",
+    description: "Name your book and define the people who drive your story",
+    hint: "AI suggests titles — then add characters with backstory, traits, and appearance",
     isDone: (b) => !!b?.title && b.title !== "Untitled Book",
-  },
-  {
-    id: "characters",
-    label: "Characters",
-    icon: Users,
-    description: "Define the people who drive your story",
-    hint: "Add characters with backstory, traits, and appearance",
-    isDone: (b) => (b?.characters?.length || 0) > 0,
-    optional: true,
   },
   {
     id: "outline",
@@ -474,8 +465,12 @@ export default function BookEditor() {
                 )}
 
                 {/* Step content */}
-                {activeTab === "title"      && <TitleGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
-                {activeTab === "characters" && <EnhancedCharacterCreator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
+                {activeTab === "title" && (
+                  <div className="space-y-8">
+                    <TitleGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
+                    <EnhancedCharacterCreator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
+                  </div>
+                )}
                 {activeTab === "outline"    && <UnifiedOutlineGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "summary"    && <SummaryGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "manuscript" && <ManuscriptWriter book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
