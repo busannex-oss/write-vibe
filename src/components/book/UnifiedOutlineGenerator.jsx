@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Check, Loader2, FileText, Plus, Trash2, Edit3, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, Check, Loader2, FileText, Plus, Trash2, Edit3, ChevronDown, ChevronUp, Bookmark, Library } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SaveTemplateDialog from "@/components/templates/SaveTemplateDialog";
+import LoadTemplateDialog from "@/components/templates/LoadTemplateDialog";
 
 export default function UnifiedOutlineGenerator({ book, onUpdate, isUpdating }) {
   const [generating, setGenerating] = useState(false);
@@ -14,6 +16,8 @@ export default function UnifiedOutlineGenerator({ book, onUpdate, isUpdating }) 
   const [expandedChapter, setExpandedChapter] = useState(null);
   const [editingChapter, setEditingChapter] = useState(null);
   const [viewMode, setViewMode] = useState("simple");
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
 
   const generateOutline = async () => {
     setGenerating(true);
@@ -110,6 +114,11 @@ Follow industry best practices with proper story structure, rising tension, char
     }, true);
   };
 
+  const applyOutlineTemplate = (template) => {
+    setOutline(template.outline_data || []);
+    setViewMode("simple");
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/5 border-white/10">
@@ -161,6 +170,23 @@ Follow industry best practices with proper story structure, rising tension, char
                 <Check className="w-4 h-4 mr-2" />
               )}
               Save Outline
+            </Button>
+            <Button
+              onClick={() => setSaveTemplateOpen(true)}
+              disabled={outline.length === 0}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Bookmark className="w-4 h-4 mr-2" />
+              Save as Template
+            </Button>
+            <Button
+              onClick={() => setLoadTemplateOpen(true)}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Library className="w-4 h-4 mr-2" />
+              Load Template
             </Button>
           </div>
         </CardContent>
@@ -359,6 +385,20 @@ Follow industry best practices with proper story structure, rising tension, char
           </CardContent>
         </Card>
       )}
+
+      <SaveTemplateDialog
+        open={saveTemplateOpen}
+        onClose={() => setSaveTemplateOpen(false)}
+        type="outline"
+        data={outline}
+        defaultName={book.title ? `${book.title} Outline` : "Book Outline"}
+      />
+      <LoadTemplateDialog
+        open={loadTemplateOpen}
+        onClose={() => setLoadTemplateOpen(false)}
+        type="outline"
+        onApply={applyOutlineTemplate}
+      />
     </div>
   );
 }

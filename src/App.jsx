@@ -32,6 +32,7 @@ import AgentConnectionMap from './pages/AgentConnectionMap';
 import AdvisoryReviewDashboard from './pages/AdvisoryReviewDashboard';
 import CCOSStudio from './pages/CCOSStudio';
 import CCOSAgent from './pages/CCOSAgent';
+import Templates from './pages/Templates';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -113,6 +114,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdvisoryReviewDashboard" element={<LayoutWrapper currentPageName="AdvisoryReviewDashboard"><AdvisoryReviewDashboard /></LayoutWrapper>} />
       <Route path="/CCOSStudio" element={<LayoutWrapper currentPageName="CCOSStudio"><CCOSStudio /></LayoutWrapper>} />
       <Route path="/CCOSAgent" element={<LayoutWrapper currentPageName="CCOSAgent"><CCOSAgent /></LayoutWrapper>} />
+      <Route path="/Templates" element={<LayoutWrapper currentPageName="Templates"><Templates /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

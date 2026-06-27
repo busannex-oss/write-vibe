@@ -1,0 +1,144 @@
+{
+  "name": "Template",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "character",
+        "outline"
+      ],
+      "description": "Template type"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of what makes this reusable"
+    },
+    "character_data": {
+      "type": "object",
+      "description": "Snapshot of a character profile (name, role, age, gender, description, backstory, traits, appearance)",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "age": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "backstory": {
+          "type": "string"
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "appearance": {
+          "type": "string"
+        }
+      }
+    },
+    "outline_data": {
+      "type": "array",
+      "description": "Snapshot of outline chapters",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chapter_number": {
+            "type": "number"
+          },
+          "chapter_title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "key_events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "scene_breakdown": {
+            "type": "string"
+          },
+          "narrative_arc": {
+            "type": "string"
+          },
+          "word_count_target": {
+            "type": "number"
+          },
+          "pacing": {
+            "type": "string"
+          },
+          "character_focus": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "plot_threads": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "category": {
+      "type": "string",
+      "description": "Genre or category for filtering"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Free-form tags for filtering"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Starred by the author"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

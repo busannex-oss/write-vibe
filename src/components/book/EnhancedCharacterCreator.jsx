@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Sparkles, Loader2, Plus, Trash2, RefreshCw, Save, User, Image as ImageIcon, Upload, X } from "lucide-react";
+import { Sparkles, Loader2, Plus, Trash2, RefreshCw, Save, User, Image as ImageIcon, Upload, X, Bookmark, Library } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIGenerateButton from "@/components/AIGenerateButton";
+import SaveTemplateDialog from "@/components/templates/SaveTemplateDialog";
+import LoadTemplateDialog from "@/components/templates/LoadTemplateDialog";
 
 const GENDER_OPTIONS = ["Male", "Female", "Non-binary", "Other"];
 
@@ -19,6 +21,8 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
   const [generating, setGenerating] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(null);
   const [uploading, setUploading] = useState(null);
+  const [saveTemplateFor, setSaveTemplateFor] = useState(null);
+  const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
 
   const addNewCharacter = () => {
     const newChar = {
@@ -219,6 +223,39 @@ Style: Professional book illustration, detailed character portrait, appropriate 
     await onUpdate({ characters }, true);
   };
 
+  const charToTemplateData = (c) =>
+    c
+      ? {
+          name: c.name,
+          role: c.role,
+          age: c.age,
+          gender: c.gender,
+          description: c.description,
+          backstory: c.backstory,
+          traits: c.traits,
+          appearance: c.appearance,
+        }
+      : {};
+
+  const applyCharacterTemplate = (template) => {
+    const d = template.character_data || {};
+    setCharacters([
+      ...characters,
+      {
+        name: d.name || "",
+        role: d.role || "",
+        age: d.age || "",
+        gender: d.gender || "",
+        description: d.description || "",
+        backstory: d.backstory || "",
+        traits: d.traits || [],
+        appearance: d.appearance || "",
+        image_url: "",
+        images: [],
+      },
+    ]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -235,6 +272,14 @@ Style: Professional book illustration, detailed character portrait, appropriate 
               </CardDescription>
             </div>
             <div className="flex gap-2">
+              <Button
+                onClick={() => setLoadTemplateOpen(true)}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Library className="w-4 h-4 mr-2" />
+                Load Template
+              </Button>
               <Button
                 onClick={addNewCharacter}
                 variant="outline"
@@ -296,6 +341,16 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                         </div>
                       </div>
                       <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSaveTemplateFor(index)}
+                          disabled={!char.name}
+                          className="border-white/20 text-white hover:bg-white/10"
+                          title="Save as template"
+                        >
+                          <Bookmark className="w-3 h-3" />
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -522,6 +577,22 @@ Style: Professional book illustration, detailed character portrait, appropriate 
           </CardContent>
         </Card>
       )}
+
+      {saveTemplateFor !== null && characters[saveTemplateFor] && (
+        <SaveTemplateDialog
+          open
+          onClose={() => setSaveTemplateFor(null)}
+          type="character"
+          data={charToTemplateData(characters[saveTemplateFor])}
+          defaultName={characters[saveTemplateFor]?.name || ""}
+        />
+      )}
+      <LoadTemplateDialog
+        open={loadTemplateOpen}
+        onClose={() => setLoadTemplateOpen(false)}
+        type="character"
+        onApply={applyCharacterTemplate}
+      />
     </div>
   );
 }
