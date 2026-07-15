@@ -1,0 +1,108 @@
+{
+  "name": "Certification",
+  "type": "object",
+  "properties": {
+    "recipient_name": {
+      "type": "string",
+      "description": "Certified agent or advisor name"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "Stable recipient identifier (e.g. brand_guardian, advisory_oprah)"
+    },
+    "recipient_type": {
+      "type": "string",
+      "enum": [
+        "c_suite_agent",
+        "advisory_board"
+      ],
+      "description": "Recipient group"
+    },
+    "recipient_title": {
+      "type": "string",
+      "description": "Recipient's role/title"
+    },
+    "certification_name": {
+      "type": "string",
+      "description": "Name of the certification awarded",
+      "default": "AI Consultant Certification"
+    },
+    "accreditation_body": {
+      "type": "string",
+      "description": "CPD accreditation body"
+    },
+    "issuing_authority": {
+      "type": "string",
+      "description": "Organization issuing the certification"
+    },
+    "cpd_points": {
+      "type": "number",
+      "description": "CPD points awarded"
+    },
+    "cpd_hours": {
+      "type": "number",
+      "description": "CPD hours accredited"
+    },
+    "certificate_number": {
+      "type": "string",
+      "description": "Unique certificate number"
+    },
+    "verification_code": {
+      "type": "string",
+      "description": "Public verification code"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "competency_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Accredited competency / expertise areas"
+    }
+  },
+  "required": [
+    "recipient_name",
+    "recipient_id",
+    "recipient_type",
+    "certification_name",
+    "certificate_number"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
