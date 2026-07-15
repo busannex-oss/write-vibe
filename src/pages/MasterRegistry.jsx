@@ -19,7 +19,7 @@ const STATUS_COLORS = {
 const CATEGORIES = ["All", "Page", "AI Agent", "AI Tool", "Integration", "Automation", "Document", "Process"];
 const STATUSES = ["All", "Active", "In Development", "Planned"];
 
-function ElementCard({ el }) {
+function ElementCard({ el, onFinishDevelopment, finishingId }) {
   const s = STATUS_COLORS[el.status] || STATUS_COLORS["Planned"];
   return (
     <div className="bg-white/[0.03] border border-white/8 rounded-xl p-5 hover:border-white/15 transition-colors">
@@ -45,6 +45,18 @@ function ElementCard({ el }) {
         <div className="border-l-2 border-amber-500/30 pl-3">
           <p className="text-amber-400/70 text-xs italic">{el.strategic_value}</p>
         </div>
+      )}
+      {el.status === "In Development" && onFinishDevelopment && (
+        <button
+          onClick={() => onFinishDevelopment(el)}
+          disabled={finishingId === el.id}
+          className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-all disabled:opacity-50"
+        >
+          {finishingId === el.id
+            ? <Loader2 className="w-3 h-3 animate-spin" />
+            : <CheckCircle2 className="w-3 h-3" />}
+          Finish Development
+        </button>
       )}
     </div>
   );
@@ -125,6 +137,7 @@ export default function MasterRegistryPage() {
   const [genProgress, setGenProgress] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [finishingId, setFinishingId] = useState(null);
   const autoSaveRef = useRef(null);
   const editorContentRef = useRef(null);
 
@@ -200,6 +213,17 @@ export default function MasterRegistryPage() {
     const res = await invoke("restore", { id });
     setRegistry(res.data.registry);
     setView("document");
+  };
+
+  const handleFinishDevelopment = async (el) => {
+    setFinishingId(el.id);
+    try {
+      const res = await invoke("update_element_status", { element_id: el.id, new_status: "Active" });
+      setRegistry(res.data.registry);
+      setLastSaved(new Date());
+    } finally {
+      setFinishingId(null);
+    }
   };
 
   if (view === "history") {
@@ -342,7 +366,14 @@ export default function MasterRegistryPage() {
                     <div className="text-center py-20 text-white/30">No elements match the selected filters.</div>
                   ) : (
                     <div className="grid gap-4 md:grid-cols-2">
-                      {filtered.map((el, i) => <ElementCard key={el.id || i} el={el} />)}
+                      {filtered.map((el, i) => (
+                        <ElementCard
+                          key={el.id || i}
+                          el={el}
+                          onFinishDevelopment={handleFinishDevelopment}
+                          finishingId={finishingId}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>

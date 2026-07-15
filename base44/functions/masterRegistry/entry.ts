@@ -287,6 +287,52 @@ Return a JSON object with these fields:
       return Response.json({ success: true, updated_element: { ...element, ...result } });
     }
 
+    // ── UPDATE ELEMENT STATUS ─────────────────────────────────────────────────
+    if (action === 'update_element_status') {
+      const { element_id, new_status } = body;
+      if (!element_id || !new_status) {
+        return Response.json({ error: 'element_id and new_status required' }, { status: 400 });
+      }
+
+      const all = await base44.asServiceRole.entities.MasterRegistry.list('-version_number', 1);
+      const current = all.find(r => r.is_current) || all[0];
+      if (!current) return Response.json({ error: 'No registry found' }, { status: 404 });
+
+      const elements = (current.elements || []).map(el =>
+        el.id === element_id ? { ...el, status: new_status } : el
+      );
+
+      // Keep content_html in sync — replace the element's status badge
+      const element = (current.elements || []).find(el => el.id === element_id);
+      let content_html = current.content_html || '';
+      if (element) {
+        const oldStatus = element.status;
+        const statusColor = { Active: '#22c55e', 'In Development': '#f59e0b', Planned: '#64748b' };
+        const oldColor = statusColor[oldStatus] || '#64748b';
+        const newColor = statusColor[new_status] || '#64748b';
+        const escapedName = element.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const badgeRegex = new RegExp(
+          `(<h3[^>]*>${escapedName}</h3>\\s*)(<span[^>]*>)${oldStatus}(</span>)`,
+          's'
+        );
+        content_html = content_html.replace(badgeRegex, (match, h3, openSpan, closeSpan) => {
+          const updatedSpan = openSpan
+            .replace(new RegExp(oldColor + '22', 'g'), newColor + '22')
+            .replace(new RegExp(oldColor + '55', 'g'), newColor + '55')
+            .replace(new RegExp(oldColor, 'g'), newColor);
+          return h3 + updatedSpan + new_status + closeSpan;
+        });
+      }
+
+      await base44.asServiceRole.entities.MasterRegistry.update(current.id, {
+        elements,
+        content_html,
+        generated_at: new Date().toISOString()
+      });
+
+      return Response.json({ success: true, registry: { ...current, elements, content_html } });
+    }
+
     return Response.json({ error: 'Unknown action' }, { status: 400 });
 
   } catch (error) {
