@@ -32,6 +32,7 @@ export default function SOPsPage() {
   const [view, setView] = useState("list"); // list | editor | detail | generator
   const [selectedSop, setSelectedSop] = useState(null);
   const [reviewDue, setReviewDue] = useState([]);
+  const [genContext, setGenContext] = useState(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -80,8 +81,23 @@ export default function SOPsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleGenerateFromContext = async () => {
+    let missionText = "";
+    try {
+      const missions = await base44.entities.MissionStatement.filter({ is_current: true });
+      if (missions.length > 0) missionText = missions[0].text || "";
+    } catch (e) {}
+    const context = `Platform: Write Vibe — an AI-powered book publishing studio that helps authors create, design, publish, and market books end-to-end using a chain-of-command of specialized AI agents and an advisory board.
+
+${missionText ? `Mission Statement:\n${missionText}\n\n` : ""}Core operational pillars: Authenticity, Creativity, Empowerment, Innovation, Community, Excellence, Integrity, Growth.
+
+Generate Standard Operating Procedures covering the platform's key operations: book creation workflow, AI agent orchestration, manuscript generation & editing, cover design, publishing & distribution, marketing campaigns, team collaboration, quality assurance, member onboarding, and advisory board reviews.`;
+    setGenContext(context);
+    setView("generator");
+  };
+
   if (view === "generator") {
-    return <SOPGenerator categories={categories} onBack={() => setView("list")} onSopsSaved={load} />;
+    return <SOPGenerator categories={categories} onBack={() => setView("list")} onSopsSaved={load} initialDocument={genContext} />;
   }
   if (view === "editor") {
     return <SOPEditor sop={selectedSop} categories={categories} onSaved={handleSaved} onCancel={() => setView("list")} />;
@@ -105,6 +121,9 @@ export default function SOPsPage() {
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" onClick={handleExportAll}>
               <Download className="w-4 h-4 mr-1" /> Export All
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleGenerateFromContext} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
+              <Sparkles className="w-4 h-4 mr-1" /> Generate from Site Context
             </Button>
             <Button variant="outline" size="sm" onClick={() => setView("generator")} className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10">
               <Sparkles className="w-4 h-4 mr-1" /> Generate from Doc

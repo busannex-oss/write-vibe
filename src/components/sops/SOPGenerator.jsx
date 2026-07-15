@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,8 +114,8 @@ function SOPPreviewCard({ sop, index, categories, onSave, onDiscard, saving }) {
   );
 }
 
-export default function SOPGenerator({ categories, onBack, onSopsSaved }) {
-  const [docInput, setDocInput] = useState("");
+export default function SOPGenerator({ categories, onBack, onSopsSaved, initialDocument }) {
+  const [docInput, setDocInput] = useState(initialDocument || "");
   const [docType, setDocType] = useState("project_brief");
   const [owner, setOwner] = useState("");
   const [reviewMonths, setReviewMonths] = useState("6");
@@ -129,6 +129,11 @@ export default function SOPGenerator({ categories, onBack, onSopsSaved }) {
   const togglePillar = (p) => setSelectedPillars(prev =>
     prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
   );
+
+  useEffect(() => {
+    if (initialDocument) handleGenerate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerate = async () => {
     if (!docInput.trim()) return;
