@@ -14,7 +14,8 @@
         "social_image",
         "promotional_material",
         "white_paper",
-        "constitution"
+        "constitution",
+        "business_plan"
       ],
       "description": "Document type"
     },
@@ -36,6 +37,19 @@
         "sent"
       ],
       "default": "draft"
+    },
+    "version_number": {
+      "type": "number",
+      "description": "Version number for versioned admin documents"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the current/latest version"
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "Date this version was generated"
     }
   },
   "required": [

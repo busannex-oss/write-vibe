@@ -20,7 +20,7 @@ export default function ConstitutionEditor() {
 
   const { data: docs = [], isLoading } = useQuery({
     queryKey: ["constitution-doc"],
-    queryFn: () => base44.entities.Document.filter({ type: "constitution", book_id: "admin" })
+    queryFn: () => base44.entities.Document.filter({ type: "constitution", book_id: "admin" }, "-version_number")
   });
 
   const existing = docs[0];
