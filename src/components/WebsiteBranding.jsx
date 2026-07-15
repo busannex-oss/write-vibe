@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Check, Loader2, Settings, Trash2, Edit2 } from "lucide-react";
+import { Upload, Check, Loader2, Settings, Trash2, Edit2, History, RotateCcw } from "lucide-react";
 import LogoEditor from "./LogoEditor";
 
 export default function WebsiteBranding({ user, onUpdate }) {
   const [branding, setBranding] = useState({
     website_logo_url: "",
-    website_title: ""
+    website_title: "",
+    logo_versions: []
   });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -22,7 +23,8 @@ export default function WebsiteBranding({ user, onUpdate }) {
     if (user) {
       setBranding({
         website_logo_url: user.website_logo_url || "",
-        website_title: user.website_title || "Write Vibe"
+        website_title: user.website_title || "Write Vibe",
+        logo_versions: user.logo_versions || []
       });
     }
   }, [user]);
@@ -44,8 +46,13 @@ export default function WebsiteBranding({ user, onUpdate }) {
   const handleLogoSave = async (logoUrl) => {
     setUploading(true);
     try {
-      setBranding(prev => ({ ...prev, website_logo_url: logoUrl }));
-      await base44.auth.updateMe({ website_logo_url: logoUrl });
+      const prevLogo = branding.website_logo_url;
+      let newVersions = branding.logo_versions || [];
+      if (prevLogo && prevLogo !== logoUrl) {
+        newVersions = [{ url: prevLogo, saved_at: new Date().toISOString() }, ...newVersions].slice(0, 20);
+      }
+      setBranding(prev => ({ ...prev, website_logo_url: logoUrl, logo_versions: newVersions }));
+      await base44.auth.updateMe({ website_logo_url: logoUrl, logo_versions: newVersions });
       await processLogoWithLLM(logoUrl);
       setShowLogoEditor(false);
       if (onUpdate) onUpdate();
@@ -53,6 +60,23 @@ export default function WebsiteBranding({ user, onUpdate }) {
       console.error("Error saving logo:", error);
     }
     setUploading(false);
+  };
+
+  const handleRestoreVersion = async (versionUrl) => {
+    setSaving(true);
+    try {
+      const prevLogo = branding.website_logo_url;
+      let newVersions = (branding.logo_versions || []).filter(v => v.url !== versionUrl);
+      if (prevLogo && prevLogo !== versionUrl) {
+        newVersions = [{ url: prevLogo, saved_at: new Date().toISOString() }, ...newVersions];
+      }
+      setBranding(prev => ({ ...prev, website_logo_url: versionUrl, logo_versions: newVersions }));
+      await base44.auth.updateMe({ website_logo_url: versionUrl, logo_versions: newVersions });
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error("Error restoring logo:", error);
+    }
+    setSaving(false);
   };
 
   const handleSave = async () => {
@@ -146,6 +170,36 @@ export default function WebsiteBranding({ user, onUpdate }) {
                     <div className="mt-3 p-2 bg-white/5 rounded text-xs space-y-1 border border-white/10">
                       <p className="text-white/60">✓ Logo analyzed and optimized for web</p>
                       <p className="text-white/60">Size: {logoAnalysis.optimization_guide.final_size}</p>
+                    </div>
+                  )}
+
+                  {branding.logo_versions?.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <div className="flex items-center gap-2 mb-3">
+                        <History className="w-4 h-4 text-white/50" />
+                        <p className="text-xs font-medium text-white/60">Logo Versions ({branding.logo_versions.length})</p>
+                      </div>
+                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                        {branding.logo_versions.map((version, idx) => (
+                          <div
+                            key={version.url + idx}
+                            className="group relative rounded-lg border border-white/15 bg-white/5 overflow-hidden"
+                          >
+                            <div className="aspect-square bg-white flex items-center justify-center">
+                              <img src={version.url} alt="Logo version" className="w-full h-full object-contain p-1" />
+                            </div>
+                            <button
+                              onClick={() => handleRestoreVersion(version.url)}
+                              disabled={saving}
+                              title="Restore this version"
+                              className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                            >
+                              <RotateCcw className="w-4 h-4 text-white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-white/30 mt-2">Hover a version and click to restore it as your current logo</p>
                     </div>
                   )}
                 </div>

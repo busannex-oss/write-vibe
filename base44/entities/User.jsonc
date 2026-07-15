@@ -52,6 +52,30 @@
     "website": {
       "type": "string"
     },
+    "website_logo_url": {
+      "type": "string",
+      "description": "Current website logo URL"
+    },
+    "website_title": {
+      "type": "string",
+      "description": "Website / platform title shown in headers"
+    },
+    "logo_versions": {
+      "type": "array",
+      "description": "Archive of previously saved logo versions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "saved_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
     "white_label_config": {
       "type": "object",
       "properties": {
