@@ -13,7 +13,7 @@ import NavCollapsible from "@/components/NavCollapsible";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
-const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications"];
+const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates"];
 
 export default function Layout({ children, currentPageName }) {
