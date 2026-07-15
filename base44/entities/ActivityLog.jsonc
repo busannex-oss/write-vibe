@@ -1,0 +1,65 @@
+{
+  "name": "ActivityLog",
+  "type": "object",
+  "properties": {
+    "actor_email": {
+      "type": "string",
+      "description": "Email of the user who performed the action"
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Display name of the actor"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "book_created",
+        "book_updated",
+        "sop_created",
+        "sop_updated"
+      ],
+      "description": "Type of activity"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "sop"
+      ],
+      "description": "Which entity was affected"
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "entity_title": {
+      "type": "string",
+      "description": "Title of the book or SOP at the time of the action"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Human-readable summary line"
+    }
+  },
+  "required": [
+    "action",
+    "entity_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

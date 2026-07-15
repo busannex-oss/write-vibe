@@ -20,6 +20,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
+import ActivityFeed from "@/components/dashboard/ActivityFeed";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -130,11 +131,13 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Recent Books */}
+      {/* Recent Books + Activity Feed */}
+      <div className="grid lg:grid-cols-3 gap-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
+        className="lg:col-span-2"
       >
         <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
           <CardHeader className="border-b border-white/5">
@@ -203,6 +206,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="lg:col-span-1"
+      >
+        <ActivityFeed />
+      </motion.div>
+      </div>
 
 
     </div>
