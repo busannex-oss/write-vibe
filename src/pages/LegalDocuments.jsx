@@ -86,16 +86,49 @@ export default function LegalDocumentsPage() {
 
   const handleExportPDF = () => {
     if (!activeDoc?.content_html) return;
+    const docTitle = `The Write Vibe — ${activeTab === 'privacy_policy' ? 'Privacy Policy' : 'Terms of Service'}`;
+    const effectiveDate = activeDoc.effective_date
+      ? new Date(activeDoc.effective_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+      : new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
     const win = window.open("", "_blank");
     win.document.write(`<!DOCTYPE html><html><head>
-      <title>The Write Vibe — ${activeTab === 'privacy_policy' ? 'Privacy Policy' : 'Terms of Service'}</title>
+      <title>${docTitle}</title>
       <style>
-        @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-        body { margin: 0; padding: 0; background: #fff; }
-        ul, ol { padding-left: 20px; } li { margin-bottom: 6px; }
-        h2 { page-break-after: avoid; } p { orphans: 3; widows: 3; }
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page { margin: 16mm 16mm 18mm; }
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background: #fff; color: #1e293b;
+          font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.65; }
+        .doc-cover { background: #0b1120; color: #fff; padding: 30mm 18mm 14mm; margin: 0 0 12mm; }
+        .doc-cover .brand { font-family: Arial, Helvetica, sans-serif; font-size: 8pt;
+          letter-spacing: 2px; color: #f59e0b; font-weight: 700; }
+        .doc-cover h1 { font-family: Arial, Helvetica, sans-serif; font-size: 26pt; margin: 8mm 0 4mm;
+          color: #fff; border: none; padding: 0; }
+        .doc-cover .rule { height: 3px; width: 60mm; background: #f59e0b; margin: 6mm 0; border: none; }
+        .doc-cover .meta { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #94a3b8; }
+        h2 { font-family: Arial, Helvetica, sans-serif; color: #0b1120; font-size: 13pt;
+          margin: 18px 0 8px; padding-left: 10px; border-left: 4px solid #f59e0b;
+          page-break-after: avoid; }
+        h3 { font-family: Arial, Helvetica, sans-serif; color: #1e293b; font-size: 11pt;
+          margin: 14px 0 6px; page-break-after: avoid; }
+        p { margin: 0 0 10px; orphans: 3; widows: 3; }
+        ul, ol { padding-left: 22px; margin: 0 0 10px; } li { margin-bottom: 6px; }
+        a { color: #d97706; }
+        .doc-footer { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color: #94a3b8;
+          border-top: 1px solid #e2e8f0; margin-top: 16mm; padding-top: 6px; text-align: center; }
       </style>
-    </head><body>${activeDoc.content_html}</body></html>`);
+    </head><body>
+      <div class="doc-cover">
+        <div class="brand">WRITE VIBE · AI BOOK CREATION PLATFORM</div>
+        <h1>${activeTab === 'privacy_policy' ? 'Privacy Policy' : 'Terms of Service'}</h1>
+        <div class="rule"></div>
+        <div class="meta">Effective ${effectiveDate} · Version ${activeDoc.version_number || 1} · Confidential</div>
+      </div>
+      ${activeDoc.content_html}
+      <div class="doc-footer">© ${new Date().getFullYear()} Write Vibe · Proprietary &amp; Confidential · Unauthorized reproduction is prohibited.</div>
+    </body></html>`);
     win.document.close();
     setTimeout(() => win.print(), 800);
   };

@@ -78,6 +78,19 @@ export default function BookPDFExporter({ book }) {
       let pageNum = 0;
 
       const addPageNumber = (num) => {
+        // Running header (book title — author)
+        doc.setFontSize(9);
+        doc.setFont(fontFamily, "normal");
+        doc.setTextColor(150, 150, 150);
+        const hLeft = titlePageTitle || book.title || "";
+        const hRight = titlePageAuthor || "";
+        if (hLeft) doc.text(hLeft, marginL, 40);
+        if (hRight) doc.text(hRight, pageW - marginR, 40, { align: "right" });
+        doc.setDrawColor(245, 158, 11);
+        doc.setLineWidth(0.6);
+        doc.line(marginL, 46, pageW - marginR, 46);
+
+        // Page number
         doc.setFontSize(9);
         doc.setFont(fontFamily, "normal");
         doc.setTextColor(120, 120, 120);
@@ -120,6 +133,19 @@ export default function BookPDFExporter({ book }) {
           const bw = doc.getTextWidth(byLine);
           doc.text(byLine, (pageW - bw) / 2, ty + 20);
         }
+
+        // Gold accent rule
+        doc.setDrawColor(245, 158, 11);
+        doc.setLineWidth(1);
+        doc.line((pageW - 120) / 2, pageH - 96, (pageW + 120) / 2, pageH - 96);
+
+        // Branded footer
+        doc.setFontSize(8);
+        doc.setFont(fontFamily, "normal");
+        doc.setTextColor(150, 150, 150);
+        const foot = "WRITE VIBE  ·  AI BOOK CREATION PLATFORM";
+        const fw = doc.getTextWidth(foot);
+        doc.text(foot, pageW / 2 - fw / 2, pageH - 60);
 
         doc.addPage();
         pageNum = 1;
@@ -179,9 +205,14 @@ export default function BookPDFExporter({ book }) {
           let y = marginT;
 
           // Chapter heading
+          doc.setDrawColor(245, 158, 11);
+          doc.setLineWidth(2);
+          doc.line(marginL, y - 8, marginL + 44, y - 8);
           doc.setFont(fontFamily, "bold");
           doc.setFontSize(fontSize + 8);
+          doc.setTextColor(245, 158, 11);
           doc.text(`Chapter ${ch.chapter_number}`, marginL, y);
+          doc.setTextColor(0, 0, 0);
           y += (fontSize + 8) * 1.6;
 
           doc.setFont(fontFamily, "bold");

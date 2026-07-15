@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Save, Loader2, Download, Lock, FileDown, Sparkles } from "lucide-react";
 import { jsPDF } from "jspdf";
+import { coverPage, renderContent, PALETTE } from "@/lib/professionalPdf";
 
 export default function ConstitutionEditor() {
   const queryClient = useQueryClient();
@@ -99,14 +100,34 @@ ${missionText ? `Platform mission statement:\n"${missionText}"\n\n` : ""}Based o
 
   const downloadPDF = () => {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pw = pdf.internal.pageSize.getWidth();
-    const margin = 15;
-    const maxW = pw - 2 * margin;
-    pdf.setFontSize(16);
-    pdf.text(title || "Platform Constitution", margin, margin + 10);
-    pdf.setFontSize(11);
-    const lines = pdf.splitTextToSize(content || "", maxW);
-    pdf.text(lines, margin, margin + 25);
+    const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    const versionLabel = existing?.version_number ? `v${existing.version_number}` : "v1";
+
+    coverPage(pdf, {
+      title: title || "Platform Constitution",
+      subtitle: "Foundational Governance Document",
+      badgeLabel: "GOVERNANCE  ·  ADMIN",
+      brandLabel: "WRITE VIBE",
+      brandSub: "PLATFORM CONSTITUTION",
+      meta: [
+        ["DATE GENERATED", today],
+        ["VERSION", versionLabel],
+        ["STATUS", existing?.is_current ? "FINAL — CURRENT" : "FINAL"],
+        ["CLASSIFICATION", "Strictly Confidential — Admin Use Only"]
+      ],
+      accent: PALETTE.gold
+    });
+
+    pdf.addPage();
+    renderContent(pdf, content || "", {
+      headerLabel: "WRITE VIBE  ·  PLATFORM CONSTITUTION",
+      headerRight: (title || "Constitution").slice(0, 42),
+      footerLeft: "Confidential — Admin Use Only",
+      brandLabel: "Write Vibe",
+      accent: PALETTE.gold,
+      fontSize: 10
+    });
+
     pdf.save(`${(title || "Platform Constitution").replace(/\s+/g, "-")}.pdf`);
   };
 
