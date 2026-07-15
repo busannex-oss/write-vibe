@@ -13,7 +13,7 @@ import NavCollapsible from "@/components/NavCollapsible";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
-const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "Constitution", "WhitePaper"];
+const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates"];
 
 export default function Layout({ children, currentPageName }) {
@@ -87,8 +87,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "Strategy" },
         { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Documentation" },
         { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Documentation" },
-        { name: "Constitution", href: "Constitution", icon: Scale, category: "Documentation" },
-        { name: "White Paper", href: "WhitePaper", icon: FileText, category: "Documentation" },
+        { name: "Constitution", href: "AdminDocuments?tab=constitution", icon: Scale, category: "Documentation" },
+        { name: "White Paper", href: "AdminDocuments?tab=white_paper", icon: FileText, category: "Documentation" },
         { name: "Master Registry", href: "MasterRegistry", icon: BookOpen, category: "Architecture" },
         { name: "Map Legend", href: "MapLegend", icon: Map, category: "Architecture" },
         { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid, category: "Architecture" },

@@ -34,8 +34,7 @@ import CCOSStudio from './pages/CCOSStudio';
 import CCOSAgent from './pages/CCOSAgent';
 import Templates from './pages/Templates';
 import Certifications from './pages/Certifications';
-import Constitution from './pages/Constitution';
-import WhitePaper from './pages/WhitePaper';
+import AdminDocuments from './pages/AdminDocuments';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -119,8 +118,7 @@ const AuthenticatedApp = () => {
       <Route path="/CCOSAgent" element={<LayoutWrapper currentPageName="CCOSAgent"><CCOSAgent /></LayoutWrapper>} />
       <Route path="/Templates" element={<LayoutWrapper currentPageName="Templates"><Templates /></LayoutWrapper>} />
       <Route path="/Certifications" element={<LayoutWrapper currentPageName="Certifications"><Certifications /></LayoutWrapper>} />
-      <Route path="/Constitution" element={<LayoutWrapper currentPageName="Constitution"><Constitution /></LayoutWrapper>} />
-      <Route path="/WhitePaper" element={<LayoutWrapper currentPageName="WhitePaper"><WhitePaper /></LayoutWrapper>} />
+      <Route path="/AdminDocuments" element={<LayoutWrapper currentPageName="AdminDocuments"><AdminDocuments /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

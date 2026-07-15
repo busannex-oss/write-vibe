@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Scale, Save, Loader2, Download, Lock, FileDown } from "lucide-react";
+import { Save, Loader2, Download, Lock, FileDown } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-export default function Constitution() {
+export default function ConstitutionEditor() {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -85,25 +85,15 @@ export default function Constitution() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[40vh]">
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 lg:p-8">
-      <div className="mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-          <Scale className="w-5 h-5 text-amber-400" />
-        </div>
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">Constitution</h1>
-          <p className="text-white/50 mt-1">The platform's governing constitution (admin only)</p>
-        </div>
-      </div>
-
-      <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3 mb-6">
+    <div className="space-y-6">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3">
         <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
         <p className="text-sm text-amber-300">
           <strong>Admin only.</strong> This document defines the foundational principles and governance for the platform.
