@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2, Sparkles, Edit3, Download, History, Save, X, RefreshCw,
-  ChevronDown, ChevronUp, CheckCircle2, BookOpen, RotateCcw, Clock, Filter
+  ChevronDown, ChevronUp, CheckCircle2, BookOpen, RotateCcw, Clock, Filter, Target, Send
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RegistryVersionHistory from "@/components/registry/RegistryVersionHistory";
@@ -196,10 +196,20 @@ export default function MasterRegistryPage() {
   const autoSaveRef = useRef(null);
   const editorContentRef = useRef(null);
 
+  // Mission statement
+  const [mission, setMission] = useState(null);
+  const [refineOpen, setRefineOpen] = useState(false);
+  const [refineNotes, setRefineNotes] = useState("");
+  const [refining, setRefining] = useState(false);
+
   const load = async () => {
     setLoading(true);
-    const res = await invoke("get_current");
+    const [res, missionRes] = await Promise.all([
+      invoke("get_current"),
+      base44.functions.invoke("mission", { action: "get" }).catch(() => ({ data: { mission: null } }))
+    ]);
     setRegistry(res.data.registry);
+    setMission(missionRes.data?.mission || null);
     setLoading(false);
   };
 
@@ -281,6 +291,20 @@ export default function MasterRegistryPage() {
     }
   };
 
+  const handleRefineMission = async () => {
+    if (!refineNotes.trim() || refining) return;
+    setRefining(true);
+    try {
+      const res = await invoke("refine_mission", { refinement_notes: refineNotes });
+      setMission(res.data.mission);
+      setRefineNotes("");
+      setRefineOpen(false);
+      setLastSaved(new Date());
+    } finally {
+      setRefining(false);
+    }
+  };
+
   if (view === "history") {
     return <RegistryVersionHistory onBack={() => setView("document")} onRestore={handleRestoreVersion} />;
   }
@@ -354,6 +378,72 @@ export default function MasterRegistryPage() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Mission Statement Section */}
+        {mission && !loading && !generating && (
+          <div className="bg-gradient-to-br from-amber-500/8 to-orange-500/5 border border-amber-500/20 rounded-xl p-6 mb-6">
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/25 flex items-center justify-center shrink-0">
+                  <Target className="w-4.5 h-4.5 text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-sm">Platform Mission Statement</h3>
+                  <p className="text-white/30 text-xs">v{mission.version_number} · {mission.publish_date ? new Date(mission.publish_date).toLocaleDateString() : ''}</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRefineOpen(!refineOpen)}
+                className="shrink-0"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5 mr-1.5", refining && "animate-spin")} />
+                Refine Mission
+              </Button>
+            </div>
+            <p className="text-white/70 text-sm italic leading-relaxed mb-2">"{mission.text}"</p>
+            {mission.change_rationale && (
+              <p className="text-white/30 text-xs mt-2 border-t border-white/5 pt-2">
+                <span className="text-amber-400/60 font-medium">Last change: </span>{mission.change_rationale}
+              </p>
+            )}
+
+            {refineOpen && (
+              <div className="mt-4 pt-4 border-t border-amber-500/15">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-medium mb-2 block">
+                  Refinement Notes
+                </label>
+                <textarea
+                  value={refineNotes}
+                  onChange={(e) => setRefineNotes(e.target.value)}
+                  placeholder="e.g. Make it shorter, emphasize community, add a line about accessibility..."
+                  rows={3}
+                  className="w-full bg-slate-900/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-amber-500/40 resize-none"
+                />
+                <div className="flex gap-2 mt-3">
+                  <Button
+                    size="sm"
+                    onClick={handleRefineMission}
+                    disabled={!refineNotes.trim() || refining}
+                    className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
+                  >
+                    {refining ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Send className="w-3.5 h-3.5 mr-1.5" />}
+                    {refining ? "Refining..." : "Apply Refinement"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setRefineOpen(false); setRefineNotes(""); }}
+                    disabled={refining}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-40">
             <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />

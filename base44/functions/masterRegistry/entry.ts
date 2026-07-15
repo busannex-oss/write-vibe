@@ -302,6 +302,64 @@ Return a JSON object with these fields:
       return Response.json({ success: true, updated_element: { ...element, ...result } });
     }
 
+    // ── REFINE MISSION STATEMENT ──────────────────────────────────────────────
+    if (action === 'refine_mission') {
+      const { refinement_notes } = body;
+      if (!refinement_notes?.trim()) {
+        return Response.json({ error: 'refinement_notes required' }, { status: 400 });
+      }
+
+      // Fetch current mission
+      const allMissions = await base44.asServiceRole.entities.MissionStatement.list('-version_number', 50);
+      const currentMission = allMissions.find(m => m.is_current) || allMissions[0] || null;
+
+      const currentText = currentMission?.text || 'Empowering authors to create, publish, and market their stories with AI.';
+
+      const prompt = `You are a senior brand strategist for The Write Vibe, an AI-powered book creation, publishing, and marketing platform.
+
+CURRENT MISSION STATEMENT:
+"${currentText}"
+
+REFINEMENT NOTES FROM REVIEWER:
+${refinement_notes}
+
+BRAND PILLARS: Authenticity, Creativity, Empowerment, Innovation, Community, Excellence, Integrity, Growth
+
+INSTRUCTIONS:
+- Produce a refined mission statement (2-4 sentences) that incorporates the reviewer's notes.
+- Keep it authentic, inspiring, and differentiated — not generic SaaS copy.
+- Embed at least 3 of the 8 brand pillars naturally.
+- Preserve what already works well; improve only what the notes call out.
+
+Return ONLY the mission statement text. No preamble, no explanation, no quotes.`;
+
+      const refinedText = (await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt,
+        model: 'claude_sonnet_4_6'
+      })).trim();
+
+      // Save as new mission version
+      const maxVersion = allMissions.reduce((max, m) => Math.max(max, m.version_number || 0), 0);
+      // Unset is_current on existing missions
+      for (const m of allMissions.filter(m => m.is_current)) {
+        await base44.asServiceRole.entities.MissionStatement.update(m.id, { is_current: false });
+      }
+
+      const newMission = await base44.asServiceRole.entities.MissionStatement.create({
+        text: refinedText,
+        version_number: maxVersion + 1,
+        publish_date: new Date().toISOString().split('T')[0],
+        is_current: true,
+        is_public: currentMission?.is_public ?? false,
+        change_rationale: `Refined via Master Registry: ${refinement_notes.slice(0, 200)}`,
+        pillar_scores: currentMission?.pillar_scores || [],
+        overall_alignment_score: currentMission?.overall_alignment_score || 0,
+        analysis_status: 'pending'
+      });
+
+      return Response.json({ success: true, mission: newMission });
+    }
+
     // ── UPDATE ELEMENT STATUS ─────────────────────────────────────────────────
     if (action === 'update_element_status') {
       const { element_id, new_status } = body;
