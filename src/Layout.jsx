@@ -90,8 +90,9 @@ export default function Layout({ children, currentPageName }) {
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "Strategy" },
         { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Documentation" },
         { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Documentation" },
-        { name: "Documents", href: "AdminDocuments", icon: FileText, category: "Documentation" },
-        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen, category: "Architecture" },
+        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen, category: "Architecture", children: [
+          { name: "Documents", href: "AdminDocuments", icon: FileText },
+        ]},
         { name: "Map Legend", href: "MapLegend", icon: Map, category: "Architecture" },
         { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid, category: "Architecture" },
         { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette, category: "Architecture" },
