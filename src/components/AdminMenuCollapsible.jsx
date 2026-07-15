@@ -4,23 +4,24 @@ import { createPageUrl } from "@/utils";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
-  const [expanded, setExpanded] = useState(true);
+const CATEGORY_ORDER = ["Core", "Strategy", "Documentation", "Architecture", "System", "Experience"];
 
-  const categories = {
-    "Core": adminNav.slice(0, 2), // User Management, Error Dashboard
-    "Strategy": adminNav.slice(2, 5), // Agent Memory, Mission, SOPs
-    "Documentation": adminNav.slice(5, 10), // Registry, Legend, Pillars, Brand, Sitemap
-    "System": adminNav.slice(10, 14), // Architecture, Legal, Licensing, KPI
-    "Experience": adminNav.slice(14) // Onboarding, Roadmap, Pillars Architecture, Agent Audit
-  };
+export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
+  const [expanded, setExpanded] = useState({ Documentation: true });
+
+  const grouped = adminNav.reduce((acc, item) => {
+    const cat = item.category || "Other";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {});
 
   return (
     <>
-      {Object.entries(categories).map(([category, items]) => (
+      {CATEGORY_ORDER.filter((c) => grouped[c]).map((category) => (
         <div key={category}>
           <button
-            onClick={() => setExpanded(prev => ({ ...prev, [category]: !prev[category] }))}
+            onClick={() => setExpanded((prev) => ({ ...prev, [category]: !prev[category] }))}
             className="w-full flex items-center gap-2 px-4 py-2 mt-2 text-[10px] uppercase tracking-widest text-amber-400/60 font-semibold hover:text-amber-400 transition-colors"
           >
             <ChevronDown className={cn("w-3 h-3 transition-transform", expanded[category] && "rotate-180")} />
@@ -28,7 +29,7 @@ export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
           </button>
           {expanded[category] && (
             <div className="space-y-1">
-              {items.map((item) => {
+              {grouped[category].map((item) => {
                 const isActive = currentPageName === item.href;
                 return (
                   <Link
