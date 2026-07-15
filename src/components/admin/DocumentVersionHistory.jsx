@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, Target, Scale, ClipboardList, Clock, Eye, EyeOff,
-  GitBranch, Sparkles, CheckCircle2
+  GitBranch, Sparkles, CheckCircle2, FileText, Briefcase
 } from "lucide-react";
 
 const Spinner = () => (
@@ -178,6 +178,74 @@ function SOPVersions() {
   );
 }
 
+/* ── Generic admin document version list (white papers / business plans) ─ */
+function DocVersionList({ docs, emptyLabel }) {
+  const [viewingId, setViewingId] = useState(null);
+  if (!docs.length) return <Empty label={emptyLabel || "document"} />;
+  return (
+    <div className="space-y-3">
+      {docs.map((d) => {
+        const open = viewingId === d.id;
+        return (
+          <Card key={d.id} className="bg-white/5 border-white/10">
+            <CardContent className="py-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">v{d.version_number || 1}</Badge>
+                    {d.is_current && (
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                        <CheckCircle2 className="w-2.5 h-2.5 mr-1" />Current
+                      </Badge>
+                    )}
+                    <span className="text-xs text-white/40 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />{fmt(d.generated_at || d.created_date)}
+                    </span>
+                    <Badge variant="outline" className="border-white/15 text-white/50 text-xs">{d.status}</Badge>
+                  </div>
+                  <p className="font-medium text-white text-sm">{d.title}</p>
+                </div>
+                <Button size="icon" variant="ghost" onClick={() => setViewingId(open ? null : d.id)} className="text-white/40 hover:text-white w-8 h-8">
+                  {open ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+              </div>
+              {open ? (
+                <pre className="mt-3 text-xs text-white/70 whitespace-pre-wrap font-mono leading-relaxed max-h-96 overflow-y-auto">{d.content}</pre>
+              ) : (
+                <p className="mt-2 text-sm text-white/50 line-clamp-2">{d.content}</p>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function WhitePaperVersions() {
+  const { data: docs = [], isLoading } = useQuery({
+    queryKey: ["whitepaper-versions"],
+    queryFn: async () => {
+      const all = await base44.entities.Document.filter({ type: "white_paper", book_id: "admin" }, "-version_number");
+      return all.filter(d => !(d.title || "").startsWith("[BIZPLAN]"));
+    }
+  });
+  if (isLoading) return <Spinner />;
+  return <DocVersionList docs={docs} emptyLabel="white paper" />;
+}
+
+function BusinessPlanVersions() {
+  const { data: docs = [], isLoading } = useQuery({
+    queryKey: ["bizplan-versions"],
+    queryFn: async () => {
+      const all = await base44.entities.Document.filter({ type: "white_paper", book_id: "admin" }, "-version_number");
+      return all.filter(d => (d.title || "").startsWith("[BIZPLAN]"));
+    }
+  });
+  if (isLoading) return <Spinner />;
+  return <DocVersionList docs={docs} emptyLabel="business plan" />;
+}
+
 export default function DocumentVersionHistory() {
   return (
     <div className="space-y-4">
@@ -196,10 +264,18 @@ export default function DocumentVersionHistory() {
           <TabsTrigger value="sops" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <ClipboardList className="w-4 h-4 mr-2" />AI-Generated SOPs
           </TabsTrigger>
+          <TabsTrigger value="white_paper" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <FileText className="w-4 h-4 mr-2" />White Papers
+          </TabsTrigger>
+          <TabsTrigger value="bizplan" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <Briefcase className="w-4 h-4 mr-2" />Business Plans
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="mission" className="mt-4"><MissionVersions /></TabsContent>
         <TabsContent value="constitution" className="mt-4"><ConstitutionVersions /></TabsContent>
         <TabsContent value="sops" className="mt-4"><SOPVersions /></TabsContent>
+        <TabsContent value="white_paper" className="mt-4"><WhitePaperVersions /></TabsContent>
+        <TabsContent value="bizplan" className="mt-4"><BusinessPlanVersions /></TabsContent>
       </Tabs>
     </div>
   );

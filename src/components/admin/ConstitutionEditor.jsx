@@ -39,21 +39,22 @@ export default function ConstitutionEditor() {
     setSaving(true);
     try {
       const finalTitle = title.trim() || "Platform Constitution";
-      if (existing) {
-        await base44.entities.Document.update(existing.id, {
-          title: finalTitle,
-          content,
-          status: "final"
-        });
-      } else {
-        await base44.entities.Document.create({
-          type: "constitution",
-          book_id: "admin",
-          title: finalTitle,
-          content,
-          status: "final"
-        });
+      const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const nextVersion = (docs.reduce((m, d) => Math.max(m, d.version_number || 0), 0)) + 1;
+      // Mark previous versions as non-current (preserved as history)
+      for (const d of docs) {
+        if (d.is_current) await base44.entities.Document.update(d.id, { is_current: false });
       }
+      await base44.entities.Document.create({
+        type: "constitution",
+        book_id: "admin",
+        title: finalTitle,
+        content,
+        status: "final",
+        version_number: nextVersion,
+        is_current: true,
+        generated_at: today
+      });
       queryClient.invalidateQueries({ queryKey: ["constitution-doc"] });
     } catch (error) {
       console.error("Error saving constitution:", error);
