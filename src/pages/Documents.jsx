@@ -34,7 +34,9 @@ import {
   Printer,
   Save,
   Copy,
-  Share2
+  Share2,
+  Wand2,
+  RotateCcw
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
@@ -76,6 +78,7 @@ export default function Documents() {
   const [generating, setGenerating] = useState(false);
   const [editingDoc, setEditingDoc] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [refiningId, setRefiningId] = useState(null);
 
   const copyCaption = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -193,13 +196,28 @@ Follow AP style guidelines.`;
         }
       });
 
-      await createDocMutation.mutateAsync({
+      const docData = {
         book_id: selectedBook,
         type,
         title,
         content: response.content,
         status: "draft"
-      });
+      };
+
+      // Press releases are versioned — mark prior versions non-current and set new version number
+      if (type === "press_release") {
+        const existing = documents.filter(d => d.type === "press_release" && d.book_id === selectedBook);
+        const nextVersion = (existing.reduce((m, d) => Math.max(m, d.version_number || 0), 0)) + 1;
+        await base44.entities.Document.updateMany(
+          { book_id: selectedBook, type: "press_release" },
+          { $set: { is_current: false } }
+        );
+        docData.version_number = nextVersion;
+        docData.is_current = true;
+        docData.generated_at = new Date().toISOString();
+      }
+
+      await createDocMutation.mutateAsync(docData);
 
     } catch (error) {
       console.error("Error generating document:", error);
@@ -207,7 +225,12 @@ Follow AP style guidelines.`;
     setGenerating(false);
   };
 
-  const filteredDocs = documents.filter(d => d.type === activeTab);
+  const filteredDocs = documents.filter(d => d.type === activeTab)
+    .slice()
+    .sort((a, b) => {
+      if (activeTab === "press_release") return (b.version_number || 1) - (a.version_number || 1);
+      return 0;
+    });
 
   const downloadDocument = (doc) => {
     const element = document.createElement('a');
@@ -245,6 +268,59 @@ Follow AP style guidelines.`;
 
   const handleRegenerateDoc = async (doc) => {
     await generateDocument(doc.type);
+  };
+
+  const refinePressRelease = async (doc) => {
+    const book = books.find(b => b.id === doc.book_id);
+    setRefiningId(doc.id);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are refining an existing book-launch press release. Improve the writing to be more compelling, polished, and professional while following AP style. Keep the standard press release structure (FOR IMMEDIATE RELEASE, headline, dateline/lead, book details, author quote, about the author, contact, ###).
+
+Book: "${book?.title || ''}"
+Genre: ${book?.category || ''}
+Summary: ${book?.book_summary || ''}
+
+Existing press release:
+${doc.content}
+
+Return the refined, complete press release.`,
+        response_json_schema: {
+          type: "object",
+          properties: { content: { type: "string" } }
+        }
+      });
+
+      const bookPressReleases = documents.filter(d => d.type === "press_release" && d.book_id === doc.book_id);
+      const nextVersion = (bookPressReleases.reduce((m, d) => Math.max(m, d.version_number || 0), 0)) + 1;
+
+      await base44.entities.Document.updateMany(
+        { book_id: doc.book_id, type: "press_release" },
+        { $set: { is_current: false } }
+      );
+
+      await createDocMutation.mutateAsync({
+        book_id: doc.book_id,
+        type: "press_release",
+        title: "Press Release",
+        content: response.content,
+        status: "draft",
+        version_number: nextVersion,
+        is_current: true,
+        generated_at: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error refining press release:", error);
+    }
+    setRefiningId(null);
+  };
+
+  const restoreVersion = async (doc) => {
+    await base44.entities.Document.updateMany(
+      { book_id: doc.book_id, type: "press_release" },
+      { $set: { is_current: false } }
+    );
+    await updateDocMutation.mutateAsync({ id: doc.id, data: { is_current: true, status: "draft" } });
   };
 
   const docTypes = [
@@ -360,6 +436,16 @@ Follow AP style guidelines.`;
                             }`}>
                               {doc.status}
                             </Badge>
+                            {doc.type === "press_release" && (
+                              <Badge className="bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                v{doc.version_number || 1}
+                              </Badge>
+                            )}
+                            {doc.type === "press_release" && doc.is_current === true && (
+                              <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                Current
+                              </Badge>
+                            )}
                             <Button
                               variant="ghost"
                               size="icon"
@@ -461,6 +547,34 @@ Follow AP style guidelines.`;
                             )}
 
                             <div className="flex gap-2 flex-wrap">
+                              {doc.type === "press_release" && doc.is_current !== false && (
+                                <Button
+                                  onClick={() => refinePressRelease(doc)}
+                                  disabled={refiningId === doc.id}
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-amber-500/30 text-amber-300 hover:bg-amber-500/10"
+                                >
+                                  {refiningId === doc.id ? (
+                                    <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                                  ) : (
+                                    <Wand2 className="w-3 h-3 mr-2" />
+                                  )}
+                                  Refine
+                                </Button>
+                              )}
+                              {doc.type === "press_release" && doc.is_current === false && (
+                                <Button
+                                  onClick={() => restoreVersion(doc)}
+                                  disabled={updateDocMutation.isPending}
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-white/20 text-white hover:bg-white/10"
+                                >
+                                  <RotateCcw className="w-3 h-3 mr-2" />
+                                  Restore
+                                </Button>
+                              )}
                               <Button
                                 onClick={() => handleRegenerateDoc(doc)}
                                 disabled={generating}
