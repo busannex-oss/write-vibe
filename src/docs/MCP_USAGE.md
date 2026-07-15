@@ -1,155 +1,90 @@
 # MCP Integration Guide
 
 ## Overview
-WriteVibe now uses the Model Context Protocol (MCP) to provide standardized access to backend resources, entities, and functions. This enables agents, automations, and external clients to interact with the platform consistently.
+WriteVibe's MCP server provides standardized, adaptable access to backend entities, functions, Cloudflare resources, and LLMs. It is secure (auth on all, admin-only for sensitive ops), resilient (timeouts, sanitized errors, graceful degradation), and adaptable (extend by adding names to the allowlists).
 
 ## MCP Server
+**Location:** `base44/functions/mcp-server/entry.ts`
 
-**Location:** `functions/mcp-server.js`
-
-The MCP server exposes:
-- **Resources:** Book, Document, AgentComment entities
-- **Tools:** CRUD operations, function invocation
-- **Protocol:** JSON-RPC over HTTP
+### Capabilities
+- **Adaptable entity CRUD** — generic list/get/create/update/delete tools auto-generated for every entity in `ENTITY_ALLOWLIST`. Add an entity name to expose it.
+- **Dynamic function invocation** — call any backend function in `FUNCTION_ALLOWLIST` (admin only).
+- **Cloudflare MCP** — list zones, DNS records, Workers, KV namespaces, R2 buckets (admin only; credentials passed per call).
+- **LLM registry** — all available InvokeLLM models exposed via `llm_models_list`, unified `llm_invoke` tool with model selection + web search + vision + structured JSON output.
+- **Protocol** — JSON-RPC over HTTP: `resources/list`, `resources/read`, `tools/list`, `tools/call`, `ping`.
 
 ## Using MCP in Frontend Code
-
-### Quick Start
 
 ```javascript
 import { mcpClient } from '@/lib/mcp-client';
 
-// Get all books
-const books = await mcpClient.getBooks();
+// Health check
+await mcpClient.ping();
 
-// Get a specific book
-const book = await mcpClient.getBook(bookId);
+// Adaptable entity CRUD (works for any allowlisted entity)
+const books = await mcpClient.listEntities('Book', { limit: 20 });
+const book = await mcpClient.getEntity('Book', bookId);
+await mcpClient.createEntity('Book', { title: 'New Book' });
+await mcpClient.updateEntity('Book', bookId, { status: 'writing' });
+await mcpClient.deleteEntity('Book', bookId);
 
-// Create a book
-const newBook = await mcpClient.createBook({
-  title: 'My New Book',
-  category: 'fiction',
-  status: 'draft'
+// List available entities / functions
+const entities = await mcpClient.listEntities; // see entities_list tool
+await mcpClient.listFunctions();
+
+// Invoke a backend function (admin only)
+const result = await mcpClient.invokeFunction('generateBookTrailer', { book_id: bookId });
+
+// LLM models + unified invoke
+const models = await mcpClient.listLLMModels();
+const answer = await mcpClient.invokeLLM({
+  prompt: 'Summarize this chapter',
+  model: 'claude_sonnet_4_6',
+  response_json_schema: { type: 'object', properties: { summary: { type: 'string' } } }
+});
+// Web search (only with web_search-capable models: gemini_3_flash, gemini_3_1_pro)
+const research = await mcpClient.invokeLLM({
+  prompt: 'Latest trends in self-publishing',
+  model: 'gemini_3_flash',
+  add_context_from_internet: true
 });
 
-// Update a book
-await mcpClient.updateBook(bookId, {
-  status: 'writing',
-  subtitle: 'Updated subtitle'
-});
-
-// Create a document
-await mcpClient.createDocument({
-  book_id: bookId,
-  type: 'press_release',
-  title: 'Press Release',
-  content: 'Content here'
-});
-
-// Invoke a backend function via MCP
-const result = await mcpClient.invokeFunction('generateBookTrailer', {
-  book_id: bookId,
-  duration: 60
-});
+// Cloudflare (admin only; pass your API token + account ID per call)
+const zones = await mcpClient.cfListZones('your-cf-token');
+const dns = await mcpClient.cfListDNSRecords('your-cf-token', zoneId);
+const workers = await mcpClient.cfListWorkers('your-cf-token', 'your-account-id');
+const kv = await mcpClient.cfListKVNamespaces('your-cf-token', 'your-account-id');
+const r2 = await mcpClient.cfListR2Buckets('your-cf-token', 'your-account-id');
 ```
 
-### Available Tools
+## Security
+- All MCP methods require authenticated user.
+- `invoke_function` and all `cf_*` tools require admin role.
+- Entity names and function names validated against allowlists.
+- Request body capped at 1MB.
+- Errors are sanitized (stable error codes, no internal leakage).
 
-- `book_list` - List all books
-- `book_get` - Get a book by ID
-- `book_create` - Create a new book
-- `book_update` - Update a book
-- `document_list` - List documents for a book
-- `document_create` - Create a document
-- `invoke_function` - Call any backend function
-
-## Using MCP in Agent Configs
-
-Agents now declare `tool_configs` and `backend_function_tools` for MCP access:
-
-```json
-{
-  "description": "My Agent",
-  "instructions": "...",
-  "tool_configs": [
-    {
-      "entity_name": "Book",
-      "allowed_operations": ["read", "update", "create"]
-    },
-    {
-      "entity_name": "Document",
-      "allowed_operations": ["read", "create"]
-    }
-  ],
-  "backend_function_tools": [
-    {
-      "name": "generateBookTrailer",
-      "description": "Generate a book trailer"
-    }
-  ]
-}
-```
-
-## Using MCP in Automations
-
-Automations can use MCP tools to access entities:
-
-```javascript
-// In a backend function triggered by an automation
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
-
-Deno.serve(async (req) => {
-  const base44 = createClientFromRequest(req);
-  const { data: { book_id } } = await req.json();
-  
-  // Use MCP via SDK
-  const book = await base44.entities.Book.get(book_id);
-  // ... process book data
-});
-```
-
-## MCP Protocol Details
-
-### Methods
-
-- `resources/list` - List available resources
-- `resources/read` - Read a resource by URI
-- `tools/list` - List available tools
-- `tools/call` - Call a tool with arguments
-
-### Resource URIs
-
-- `book://list` - All books
-- `document://list` - All documents
-- `agentcomment://list` - All agent comments
-
-## Best Practices
-
-1. **Use MCP Client Helpers** - Use `mcpClient.getBooks()` instead of `callTool('book_list')`
-2. **Error Handling** - Always wrap MCP calls in try/catch
-3. **Authorization** - MCP validates user auth automatically
-4. **Consistency** - Prefer MCP over direct SDK calls for standardization
-5. **Caching** - Consider caching MCP results in components
-
-## Migration Guide
-
-### From Direct SDK to MCP
-
-**Before:**
-```javascript
-const books = await base44.entities.Book.list();
-```
-
-**After:**
-```javascript
-const books = await mcpClient.getBooks();
-```
+## Resilience
+- External (Cloudflare) calls use a 15s timeout via AbortController.
+- Missing Cloudflare credentials return a clear `CF_NOT_CONFIGURED` error instead of crashing.
+- All errors return structured `{ error: { code, message } }` with appropriate HTTP status.
 
 ## Extending MCP
+- **New entity:** add its name to `ENTITY_ALLOWLIST` — CRUD tools generate automatically.
+- **New function:** add its name to `FUNCTION_ALLOWLIST` — invocable via `invoke_function`.
+- **New LLM model:** add to `LLM_MODELS` array with `web_search`/`vision` flags.
 
-To add new resources or tools:
-
-1. Add method handling in `functions/mcp-server.js`
-2. Add helper in `lib/mcp-client.js`
-3. Update agent configs to use new tools
-4. Document in this file
+## Available LLM Models
+| Model | Web Search | Vision |
+|-------|-----------|--------|
+| automatic | ✗ | ✓ |
+| gpt_5_mini | ✗ | ✓ |
+| gemini_3_flash | ✓ | ✓ |
+| gpt_5_4 | ✗ | ✓ |
+| gpt_5_5 | ✗ | ✓ |
+| gemini_3_1_pro | ✓ | ✓ |
+| claude_sonnet_4_6 | ✗ | ✓ |
+| claude_opus_4_6 | ✗ | ✓ |
+| claude_opus_4_7 | ✗ | ✓ |
+| claude_opus_4_8 | ✗ | ✓ |
+| claude-sonnet-5 | ✗ | ✓ |

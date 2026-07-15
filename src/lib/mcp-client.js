@@ -1,107 +1,108 @@
 import { base44 } from '@/api/base44Client';
 
 /**
- * MCP Client Utility
- * Provides standardized access to MCP server resources and tools
+ * Adaptable MCP Client for WriteVibe
+ * Provides standardized access to the MCP server:
+ * - Generic entity CRUD across all allowlisted entities
+ * - Dynamic backend function invocation
+ * - Cloudflare resource tools (zones, DNS, Workers, KV, R2)
+ * - LLM model registry + unified invoke (all available models)
  */
 
-const MCP_SERVER_URL = '/mcp-server';
-
 export const mcpClient = {
-  /**
-   * List available MCP resources
-   */
+  // ---- Protocol primitives ----
+  async _call(method, params) {
+    const response = await base44.functions.invoke('mcp-server', { method, params });
+    return response.data;
+  },
+
   async listResources() {
-    const response = await base44.functions.invoke('mcp-server', {
-      method: 'resources/list'
-    });
-    return response.data.resources;
+    return (await this._call('resources/list')).resources;
   },
 
-  /**
-   * List available MCP tools
-   */
   async listTools() {
-    const response = await base44.functions.invoke('mcp-server', {
-      method: 'tools/list'
-    });
-    return response.data.tools;
+    return (await this._call('tools/list')).tools;
   },
 
-  /**
-   * Call an MCP tool
-   * @param {string} toolName - Tool name
-   * @param {object} args - Tool arguments
-   */
   async callTool(toolName, args = {}) {
-    const response = await base44.functions.invoke('mcp-server', {
-      method: 'tools/call',
-      params: {
-        name: toolName,
-        arguments: args
-      }
-    });
-    return response.data.result;
+    const data = await this._call('tools/call', { name: toolName, arguments: args });
+    if (data.error) throw new Error(data.error.message || data.error.code);
+    return data.result;
   },
 
-  /**
-   * Read an MCP resource
-   * @param {string} uri - Resource URI
-   */
   async readResource(uri) {
-    const response = await base44.functions.invoke('mcp-server', {
-      method: 'resources/read',
-      params: { uri }
-    });
-    return response.data.contents;
+    return (await this._call('resources/read', { uri })).contents;
   },
 
-  /**
-   * Helper: Get all books
-   */
-  async getBooks(limit = 50, offset = 0) {
-    return this.callTool('book_list', { limit, offset });
+  async ping() {
+    return this._call('ping');
   },
 
-  /**
-   * Helper: Get a book
-   */
-  async getBook(bookId) {
-    return this.callTool('book_get', { book_id: bookId });
+  // ---- Adaptable entity CRUD (works for any allowlisted entity) ----
+  async listEntities(entityName, opts = {}) {
+    return this.callTool(`${entityName.toLowerCase()}_list`, opts);
   },
 
-  /**
-   * Helper: Create a book
-   */
-  async createBook(data) {
-    return this.callTool('book_create', data);
+  async getEntity(entityName, id) {
+    return this.callTool(`${entityName.toLowerCase()}_get`, { id });
   },
 
-  /**
-   * Helper: Update a book
-   */
-  async updateBook(bookId, data) {
-    return this.callTool('book_update', { book_id: bookId, data });
+  async createEntity(entityName, data) {
+    return this.callTool(`${entityName.toLowerCase()}_create`, { data });
   },
 
-  /**
-   * Helper: List documents
-   */
-  async getDocuments(bookId) {
-    return this.callTool('document_list', { book_id: bookId });
+  async updateEntity(entityName, id, data) {
+    return this.callTool(`${entityName.toLowerCase()}_update`, { id, data });
   },
 
-  /**
-   * Helper: Create a document
-   */
-  async createDocument(data) {
-    return this.callTool('document_create', data);
+  async deleteEntity(entityName, id) {
+    return this.callTool(`${entityName.toLowerCase()}_delete`, { id });
   },
 
-  /**
-   * Helper: Invoke a backend function via MCP
-   */
+  // ---- Function invocation ----
+  async listFunctions() {
+    return this.callTool('functions_list');
+  },
+
   async invokeFunction(functionName, params = {}) {
     return this.callTool('invoke_function', { function_name: functionName, params });
-  }
+  },
+
+  // ---- LLM tools ----
+  async listLLMModels() {
+    return this.callTool('llm_models_list');
+  },
+
+  async invokeLLM({ prompt, model, add_context_from_internet, response_json_schema, file_urls }) {
+    return this.callTool('llm_invoke', { prompt, model, add_context_from_internet, response_json_schema, file_urls });
+  },
+
+  // ---- Cloudflare tools (admin only; pass api_token + account_id per call) ----
+  async cfListZones(apiToken) {
+    return this.callTool('cf_zones_list', { api_token: apiToken });
+  },
+
+  async cfListDNSRecords(apiToken, zoneId) {
+    return this.callTool('cf_dns_records_list', { api_token: apiToken, zone_id: zoneId });
+  },
+
+  async cfListWorkers(apiToken, accountId) {
+    return this.callTool('cf_workers_list', { api_token: apiToken, account_id: accountId });
+  },
+
+  async cfListKVNamespaces(apiToken, accountId) {
+    return this.callTool('cf_kv_namespaces_list', { api_token: apiToken, account_id: accountId });
+  },
+
+  async cfListR2Buckets(apiToken, accountId) {
+    return this.callTool('cf_r2_buckets_list', { api_token: apiToken, account_id: accountId });
+  },
+
+  // ---- Legacy convenience helpers (preserved for backward compat) ----
+  async getBooks(limit = 50) { return this.listEntities('Book', { limit }); },
+  async getBook(bookId) { return this.getEntity('Book', bookId); },
+  async createBook(data) { return this.createEntity('Book', data); },
+  async updateBook(bookId, data) { return this.updateEntity('Book', bookId, data); },
+  async getDocuments(bookId) { return this.listEntities('Document', { filter: { book_id: bookId } }); },
+  async createDocument(data) { return this.createEntity('Document', data); }
 };

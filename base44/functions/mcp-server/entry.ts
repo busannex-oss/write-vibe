@@ -79,7 +79,7 @@ async function readBody(req) {
   return text ? JSON.parse(text) : {};
 }
 
-/** Fetch with timeout via AbortController. */
+/** Fetch with timeout via AbortController for resilience against hanging calls. */
 async function fetchWithTimeout(url, options = {}, timeoutMs = CF_TIMEOUT_MS) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -91,24 +91,19 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = CF_TIMEOUT_MS) {
   }
 }
 
-/** Resolve the Cloudflare Bearer token + account id, or null if unconfigured. */
-function cfConfig() {
-  const token = Deno.env.get('CLOUDFLARE_API_TOKEN');
-  const accountId = Deno.env.get('CLOUDFLARE_ACCOUNT_ID');
-  if (!token) return null;
-  return { token, accountId: accountId || '' };
-}
-
-/** Generic Cloudflare GET with auth + standardized error handling. */
-async function cfGet(path) {
-  const cfg = cfConfig();
-  if (!cfg) {
-    return { error: { code: 'CF_NOT_CONFIGURED', message: 'Cloudflare API token not set. Configure CLOUDFLARE_API_TOKEN secret.' } };
+/**
+ * Generic Cloudflare GET with auth + standardized error handling.
+ * Credentials are supplied per-call by an admin (api_token, account_id) —
+ * no platform secrets required, keeping the MCP server runnable without config.
+ */
+async function cfGet(path, apiToken, accountId) {
+  if (!apiToken) {
+    return { error: { code: 'CF_NOT_CONFIGURED', message: 'Cloudflare api_token is required in the tool arguments.' } };
   }
   const url = path.startsWith('http') ? path : `https://api.cloudflare.com/client/v4${path}`;
   try {
     const res = await fetchWithTimeout(url, {
-      headers: { 'Authorization': `Bearer ${cfg.token}`, 'Content-Type': 'application/json' }
+      headers: { 'Authorization': `Bearer ${apiToken}`, 'Content-Type': 'application/json' }
     });
     const data = await res.json();
     if (!res.ok) {
@@ -182,28 +177,48 @@ function buildEntityResources() {
 const CLOUDFLARE_TOOLS = [
   {
     name: 'cf_zones_list',
-    description: 'List all Cloudflare zones (domains). Admin only.',
-    inputSchema: { type: 'object', properties: {} }
+    description: 'List all Cloudflare zones (domains). Admin only. Pass api_token per call.',
+    inputSchema: {
+      type: 'object',
+      properties: { api_token: { type: 'string', description: 'Cloudflare API token' } },
+      required: ['api_token']
+    }
   },
   {
     name: 'cf_dns_records_list',
-    description: 'List DNS records for a Cloudflare zone. Admin only.',
-    inputSchema: { type: 'object', properties: { zone_id: { type: 'string' } }, required: ['zone_id'] }
+    description: 'List DNS records for a Cloudflare zone. Admin only. Pass api_token per call.',
+    inputSchema: {
+      type: 'object',
+      properties: { api_token: { type: 'string' }, zone_id: { type: 'string' } },
+      required: ['api_token', 'zone_id']
+    }
   },
   {
     name: 'cf_workers_list',
-    description: 'List all Cloudflare Workers scripts. Admin only.',
-    inputSchema: { type: 'object', properties: {} }
+    description: 'List all Cloudflare Workers scripts. Admin only. Pass api_token + account_id per call.',
+    inputSchema: {
+      type: 'object',
+      properties: { api_token: { type: 'string' }, account_id: { type: 'string' } },
+      required: ['api_token', 'account_id']
+    }
   },
   {
     name: 'cf_kv_namespaces_list',
-    description: 'List all Cloudflare KV namespaces. Admin only.',
-    inputSchema: { type: 'object', properties: {} }
+    description: 'List all Cloudflare KV namespaces. Admin only. Pass api_token + account_id per call.',
+    inputSchema: {
+      type: 'object',
+      properties: { api_token: { type: 'string' }, account_id: { type: 'string' } },
+      required: ['api_token', 'account_id']
+    }
   },
   {
     name: 'cf_r2_buckets_list',
-    description: 'List all Cloudflare R2 buckets. Admin only.',
-    inputSchema: { type: 'object', properties: {} }
+    description: 'List all Cloudflare R2 buckets. Admin only. Pass api_token + account_id per call.',
+    inputSchema: {
+      type: 'object',
+      properties: { api_token: { type: 'string' }, account_id: { type: 'string' } },
+      required: ['api_token', 'account_id']
+    }
   }
 ];
 
@@ -363,30 +378,27 @@ Deno.serve(async (req) => {
         return Response.json({ result });
       }
 
-      // Cloudflare tools (admin only)
+      // Cloudflare tools (admin only; credentials supplied per call)
       if (name.startsWith('cf_')) {
         if (!isAdmin) return mcpError('FORBIDDEN', 'Admin role required for Cloudflare tools', 403);
-        const cfg = cfConfig();
-        if (!cfg) return mcpError('CF_NOT_CONFIGURED', 'Cloudflare API token not set. Configure CLOUDFLARE_API_TOKEN secret.');
+        const token = args.api_token;
+        const accountId = args.account_id;
 
         if (name === 'cf_zones_list') {
-          return Response.json(await cfGet('/zones'));
+          return Response.json(await cfGet('/zones', token));
         }
         if (name === 'cf_dns_records_list') {
           if (!args.zone_id) return mcpError('INVALID_PARAMS', 'zone_id is required');
-          return Response.json(await cfGet(`/zones/${args.zone_id}/dns_records`));
+          return Response.json(await cfGet(`/zones/${args.zone_id}/dns_records`, token));
         }
         if (name === 'cf_workers_list') {
-          if (!cfg.accountId) return mcpError('CF_NOT_CONFIGURED', 'CLOUDFLARE_ACCOUNT_ID not set.');
-          return Response.json(await cfGet(`/accounts/${cfg.accountId}/workers/scripts`));
+          return Response.json(await cfGet(`/accounts/${accountId}/workers/scripts`, token));
         }
         if (name === 'cf_kv_namespaces_list') {
-          if (!cfg.accountId) return mcpError('CF_NOT_CONFIGURED', 'CLOUDFLARE_ACCOUNT_ID not set.');
-          return Response.json(await cfGet(`/accounts/${cfg.accountId}/storage/kv/namespaces`));
+          return Response.json(await cfGet(`/accounts/${accountId}/storage/kv/namespaces`, token));
         }
         if (name === 'cf_r2_buckets_list') {
-          if (!cfg.accountId) return mcpError('CF_NOT_CONFIGURED', 'CLOUDFLARE_ACCOUNT_ID not set.');
-          return Response.json(await cfGet(`/accounts/${cfg.accountId}/r2/buckets`));
+          return Response.json(await cfGet(`/accounts/${accountId}/r2/buckets`, token));
         }
         return mcpError('UNKNOWN_TOOL', `Unknown Cloudflare tool: ${name}`);
       }
@@ -395,7 +407,7 @@ Deno.serve(async (req) => {
       const entityMatch = ENTITY_ALLOWLIST.find(en => name.startsWith(`${en.toLowerCase()}_`));
       if (entityMatch) {
         const op = name.slice(entityMatch.length + 1);
-        const entity = base44.entities[entityName_safe(entityMatch)];
+        const entity = base44.entities[entityMatch];
         if (op === 'list') {
           const limit = Math.min(args.limit || 50, 200);
           const sort = args.sort || '-created_date';
@@ -445,6 +457,3 @@ Deno.serve(async (req) => {
     return mcpError('INTERNAL_ERROR', message, 500);
   }
 });
-
-/** Small helper to keep entity name resolution explicit and safe. */
-function entityName_safe(name) { return name; }
