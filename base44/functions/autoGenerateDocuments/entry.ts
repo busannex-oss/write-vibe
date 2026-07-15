@@ -47,7 +47,19 @@ Deno.serve(async (req) => {
       if (missions.length > 0) missionContext = missions[0].text || '';
     } catch (_) {}
 
-    const contextBlock = `${PLATFORM_CONTEXT}\n\n${missionContext ? `Current mission statement:\n"${missionContext}"\n\n` : ''}Date: ${dateStr}`;
+    // ── Gather platform latest activity (books, reviews, payments) ─────────
+    let activityBlock = '';
+    try {
+      const recentBooks = await base44.asServiceRole.entities.Book.list('-updated_date', 10);
+      const bookLines = recentBooks.map(b => `- "${b.title}" (${b.status || 'draft'})`).join('\n');
+      const reviews = await base44.asServiceRole.entities.Review.list('-created_date', 5);
+      const reviewLines = reviews.map(r => `- ${r.rating}★ by ${r.author_name}: "${(r.content || '').slice(0, 80)}"`).join('\n');
+      const payments = await base44.asServiceRole.entities.Payment.list('-created_date', 5);
+      const paymentLines = payments.map(p => `- ${p.plan} ($${p.amount}) ${p.status}`).join('\n');
+      activityBlock = `\n\nRECENT PLATFORM ACTIVITY (latest):\nRecent books:\n${bookLines || '(none)'}\n\nRecent reviews:\n${reviewLines || '(none)'}\n\nRecent payments:\n${paymentLines || '(none)'}\n`;
+    } catch (_) {}
+
+    const contextBlock = `${PLATFORM_CONTEXT}\n\n${missionContext ? `Current mission statement:\n"${missionContext}"\n\n` : ''}Date: ${dateStr}${activityBlock}`;
 
     // ── 1. MISSION STATEMENT ───────────────────────────────────────────────
     const missionText = await llm(base44, `Based on this platform context, write a clear, inspiring mission statement for Write Vibe (2-3 sentences). ${contextBlock}`);

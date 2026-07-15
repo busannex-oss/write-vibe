@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Scale, FileText, Sparkles, Loader2 } from "lucide-react";
+import { Scale, FileText, Sparkles, Loader2, GitBranch } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import ConstitutionEditor from "@/components/admin/ConstitutionEditor";
 import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers";
+import DocumentVersionHistory from "@/components/admin/DocumentVersionHistory";
 
 export default function AdminDocuments() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -59,12 +60,18 @@ export default function AdminDocuments() {
           <TabsTrigger value="white_paper" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <FileText className="w-4 h-4 mr-2" /> White Paper
           </TabsTrigger>
+          <TabsTrigger value="versions" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <GitBranch className="w-4 h-4 mr-2" /> Version History
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="constitution">
           <ConstitutionEditor />
         </TabsContent>
         <TabsContent value="white_paper">
           <ConfidentialWhitePapers />
+        </TabsContent>
+        <TabsContent value="versions">
+          <DocumentVersionHistory />
         </TabsContent>
       </Tabs>
     </div>
