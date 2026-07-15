@@ -172,6 +172,12 @@ Return JSON with an "elements" array.`;
       ]);
 
       const elementList = batches.flatMap(b => b?.elements || []);
+      // Attach deterministic development progress
+      elementList.forEach(el => {
+        el.development_progress = el.status === 'Active' ? 100
+          : el.status === 'Planned' ? 0
+          : 20 + ((el.id || el.name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 60);
+      });
 
       // Build HTML document
       const categories = [...new Set(elementList.map(e => e.category))];
@@ -208,6 +214,15 @@ Return JSON with an "elements" array.`;
       <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
         <h3 style="font-size: 17px; font-weight: 600; color: #f1f5f9; margin: 0;">${el.name}</h3>
         <span style="background: ${statusColor[el.status] || '#64748b'}22; border: 1px solid ${statusColor[el.status] || '#64748b'}55; color: ${statusColor[el.status] || '#94a3b8'}; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; white-space: nowrap;">${el.status}</span>
+      </div>
+      <div style="margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+          <span style="color: #475569; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">Development Progress</span>
+          <span data-el-progress-label="${el.id}" style="color: ${statusColor[el.status] || '#64748b'}; font-size: 11px; font-weight: 600;">${el.development_progress}%</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.06); border-radius: 6px; height: 6px; overflow: hidden;">
+          <div data-el-progress="${el.id}" style="width: ${el.development_progress}%; height: 100%; background: ${statusColor[el.status] || '#64748b'}; border-radius: 6px; transition: width 0.4s ease;"></div>
+        </div>
       </div>
       ${el.pillar_alignment?.length ? `<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">${el.pillar_alignment.map(p => `<span style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.18); color: #d97706; font-size: 11px; padding: 2px 8px; border-radius: 10px;">${p}</span>`).join('')}</div>` : ''}
       <p style="color: #94a3b8; font-size: 14px; margin: 0 0 14px; line-height: 1.6;">${el.purpose}</p>
@@ -299,7 +314,7 @@ Return a JSON object with these fields:
       if (!current) return Response.json({ error: 'No registry found' }, { status: 404 });
 
       const elements = (current.elements || []).map(el =>
-        el.id === element_id ? { ...el, status: new_status } : el
+        el.id === element_id ? { ...el, status: new_status, development_progress: new_status === 'Active' ? 100 : (el.development_progress ?? 0) } : el
       );
 
       // Keep content_html in sync — replace the element's status badge
@@ -322,6 +337,19 @@ Return a JSON object with these fields:
             .replace(new RegExp(oldColor, 'g'), newColor);
           return h3 + updatedSpan + new_status + closeSpan;
         });
+
+        // Patch progress bar width + background, and label (if present in HTML)
+        const progressTarget = new_status === 'Active' ? 100 : (element.development_progress ?? 0);
+        const escapedId = element_id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const newProgColor = statusColor[new_status] || '#64748b';
+        content_html = content_html.replace(
+          new RegExp(`(data-el-progress="${escapedId}" style="width: )\\d+(%; height: 100%; background: )${oldColor}(;[^"]*")`, 's'),
+          (m, p1, p2, p3) => `${p1}${progressTarget}${p2}${newProgColor}${p3}`
+        );
+        content_html = content_html.replace(
+          new RegExp(`(data-el-progress-label="${escapedId}"[^>]*>)\\d+(%)`, 's'),
+          (m, p1, p2) => `${p1}${progressTarget}${p2}`
+        );
       }
 
       await base44.asServiceRole.entities.MasterRegistry.update(current.id, {

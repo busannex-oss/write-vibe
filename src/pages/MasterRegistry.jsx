@@ -19,8 +19,48 @@ const STATUS_COLORS = {
 const CATEGORIES = ["All", "Page", "AI Agent", "AI Tool", "Integration", "Automation", "Document", "Process"];
 const STATUSES = ["All", "Active", "In Development", "Planned"];
 
+function computeProgress(el) {
+  if (el.status === "Active") return 100;
+  if (el.status === "Planned") return 0;
+  if (typeof el.development_progress === "number") return el.development_progress;
+  return 20 + ((el.id || el.name || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 60);
+}
+
 function ElementCard({ el, onFinishDevelopment, finishingId }) {
   const s = STATUS_COLORS[el.status] || STATUS_COLORS["Planned"];
+  const baseProgress = computeProgress(el);
+  const [displayProgress, setDisplayProgress] = useState(baseProgress);
+  const [animating, setAnimating] = useState(false);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    setDisplayProgress(baseProgress);
+  }, [baseProgress]);
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+  const handleFinish = () => {
+    setAnimating(true);
+    const start = baseProgress;
+    const duration = 1200;
+    const startTime = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 2);
+      setDisplayProgress(Math.round(start + (100 - start) * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        setAnimating(false);
+        onFinishDevelopment(el);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const isFinishing = animating || finishingId === el.id;
+  const barColor = el.status === "Active" ? "bg-green-400" : el.status === "Planned" ? "bg-slate-500" : "bg-amber-400";
+
   return (
     <div className="bg-white/[0.03] border border-white/8 rounded-xl p-5 hover:border-white/15 transition-colors">
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -33,6 +73,21 @@ function ElementCard({ el, onFinishDevelopment, finishingId }) {
           {el.status}
         </span>
       </div>
+
+      {/* Progress bar */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-white/30 text-[10px] uppercase tracking-wider">Progress</span>
+          <span className={cn("text-[10px] font-semibold", s.text)}>{displayProgress}%</span>
+        </div>
+        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <div
+            className={cn("h-full rounded-full transition-all duration-150 ease-out", barColor)}
+            style={{ width: `${displayProgress}%` }}
+          />
+        </div>
+      </div>
+
       {el.pillar_alignment?.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {el.pillar_alignment.map(p => (
@@ -48,14 +103,14 @@ function ElementCard({ el, onFinishDevelopment, finishingId }) {
       )}
       {el.status === "In Development" && onFinishDevelopment && (
         <button
-          onClick={() => onFinishDevelopment(el)}
-          disabled={finishingId === el.id}
+          onClick={handleFinish}
+          disabled={isFinishing}
           className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-all disabled:opacity-50"
         >
-          {finishingId === el.id
+          {isFinishing
             ? <Loader2 className="w-3 h-3 animate-spin" />
             : <CheckCircle2 className="w-3 h-3" />}
-          Finish Development
+          {isFinishing ? "Completing..." : "Finish Development"}
         </button>
       )}
     </div>

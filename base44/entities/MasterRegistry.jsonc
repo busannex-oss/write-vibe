@@ -52,6 +52,11 @@
           },
           "strategic_value": {
             "type": "string"
+          },
+          "development_progress": {
+            "type": "number",
+            "description": "Development progress 0-100",
+            "default": 0
           }
         }
       }
