@@ -36,8 +36,8 @@ const faqs = [
   {
     category: "Publishing & Distribution",
     items: [
-      { q: "Can I publish directly from AuthorForge?", a: "AuthorForge generates fully formatted manuscripts and covers ready for upload to major platforms like Amazon KDP, IngramSpark, Draft2Digital, and more." },
-      { q: "Does AuthorForge handle ISBN and copyright?", a: "We help you prepare your book for publishing but do not directly assign ISBNs. We provide guidance on obtaining ISBNs through Bowker or your country's national agency." },
+      { q: "Can I publish directly from Write Vibe?", a: "Write Vibe generates fully formatted manuscripts and covers ready for upload to major platforms like Amazon KDP, IngramSpark, Draft2Digital, and more." },
+      { q: "Does Write Vibe handle ISBN and copyright?", a: "We help you prepare your book for publishing but do not directly assign ISBNs. We provide guidance on obtaining ISBNs through Bowker or your country's national agency." },
       { q: "Can I create a website for my book?", a: "Yes! Our Website Builder creates a beautiful landing page for your book with newsletter signup, bookstore links, and social sharing — no coding needed." }
     ]
   },

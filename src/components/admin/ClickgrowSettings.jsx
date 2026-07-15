@@ -94,7 +94,7 @@ export default function ClickgrowSettings({ user }) {
       {!config.enabled && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white/50 flex items-center gap-3">
           <Zap className="w-4 h-4 text-white/30 flex-shrink-0" />
-          Enable Clickgrow.AI above to activate growth tracking and AI campaign optimization for AuthorForge.
+          Enable Clickgrow.AI above to activate growth tracking and AI campaign optimization for Write Vibe.
         </div>
       )}
 
@@ -153,7 +153,7 @@ export default function ClickgrowSettings({ user }) {
                 <Input
                   value={config.tracking_domain}
                   onChange={(e) => set("tracking_domain", e.target.value)}
-                  placeholder="track.authorforge.com"
+                  placeholder="track.write vibe.com"
                   className={inputClass}
                 />
                 <p className="text-xs text-white/30 mt-1">Use a custom subdomain for branded click tracking links</p>
@@ -248,7 +248,7 @@ export default function ClickgrowSettings({ user }) {
                 <BarChart3 className="w-4 h-4 text-emerald-400" /> Campaign Defaults & Targets
               </CardTitle>
               <CardDescription className="text-white/40">
-                Default values applied when authors launch new marketing campaigns via AuthorForge
+                Default values applied when authors launch new marketing campaigns via Write Vibe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -321,7 +321,7 @@ export default function ClickgrowSettings({ user }) {
                   <Input
                     value={config.notification_email}
                     onChange={(e) => set("notification_email", e.target.value)}
-                    placeholder="admin@authorforge.com"
+                    placeholder="admin@write vibe.com"
                     type="email"
                     className={inputClass}
                   />
@@ -343,7 +343,7 @@ export default function ClickgrowSettings({ user }) {
 
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 space-y-2">
                 <p className="text-sm font-medium text-emerald-300 flex items-center gap-2">
-                  <Globe className="w-4 h-4" /> What Clickgrow.AI Tracks for AuthorForge
+                  <Globe className="w-4 h-4" /> What Clickgrow.AI Tracks for Write Vibe
                 </p>
                 <ul className="text-xs text-emerald-300/70 space-y-1 list-disc list-inside">
                   <li>Book landing page visits, scroll depth, and time-on-page</li>

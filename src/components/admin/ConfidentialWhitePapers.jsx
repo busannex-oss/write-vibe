@@ -215,7 +215,7 @@ export default function ConfidentialWhitePapers() {
     pdf.setDrawColor(20, 30, 50); pdf.setLineWidth(0.3);
     for (let gx = 12; gx < pw; gx += 18) { pdf.line(gx, 0, gx, ph); }
 
-    // AuthorForge logo block — top right
+    // Write Vibe logo block — top right
     pdf.setFillColor(15, 23, 42);
     pdf.roundedRect(pw - 60, 12, 46, 17, 2, 2, "F");
     pdf.setFillColor(239, 68, 68);
@@ -257,7 +257,7 @@ export default function ConfidentialWhitePapers() {
     const metaItems = [
       ["DATE ISSUED", new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })],
       ["DOCUMENT TYPE", "Investment-Grade White Paper"],
-      ["PREPARED BY", "AuthorForge Research Division"],
+      ["PREPARED BY", "Write Vibe Research Division"],
       ["CLASSIFICATION", "STRICTLY CONFIDENTIAL"],
       ["DISTRIBUTION", "Board of Directors · Senior Leadership"],
       ["VERSION", "v1.0 — Initial Publication"]

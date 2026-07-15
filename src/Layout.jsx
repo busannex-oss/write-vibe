@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck,   TrendingUp, MessageSquare, Library, Award } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck,   TrendingUp, MessageSquare, Library, Award, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -84,6 +84,7 @@ export default function Layout({ children, currentPageName }) {
     ? [
         { name: "User Management", href: "UserManagement", icon: Crown, category: "Core" },
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Core" },
+        { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Core" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "Strategy" },
         { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Documentation" },
         { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Documentation" },

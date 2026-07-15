@@ -1,0 +1,60 @@
+{
+  "name": "ReportSubscription",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Admin user email"
+    },
+    "delivery_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "none"
+      ],
+      "default": "weekly",
+      "description": "How often to receive the team summary email. 'none' = opt out (dashboard only)."
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

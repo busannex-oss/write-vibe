@@ -93,7 +93,7 @@ async function exportPDF(rows, dateRange) {
   doc.rect(0, 0, pageW, 28, "F");
   doc.setTextColor(245, 158, 11);
   doc.setFontSize(18); doc.setFont("helvetica", "bold");
-  doc.text("AuthorForge — Payments & Revenue Report", margin, 12);
+  doc.text("Write Vibe — Payments & Revenue Report", margin, 12);
   doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(180, 180, 180);
   doc.text(`Generated: ${format(new Date(), "PPP")}   |   Period: ${dateRange}`, margin, 20);
 
@@ -139,11 +139,11 @@ async function exportPDF(rows, dateRange) {
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(7); doc.setTextColor(100, 100, 100);
-    doc.text("CONFIDENTIAL — AuthorForge Financial Report", margin, 205);
+    doc.text("CONFIDENTIAL — Write Vibe Financial Report", margin, 205);
     doc.text(`Page ${i} of ${pageCount}`, pageW - margin - 20, 205);
   }
 
-  doc.save(`authorforge-payments-${format(new Date(), "yyyy-MM-dd")}.pdf`);
+  doc.save(`write vibe-payments-${format(new Date(), "yyyy-MM-dd")}.pdf`);
 }
 
 // ── Add Payment Modal ─────────────────────────────────────────────────────────
@@ -391,13 +391,13 @@ export default function PaymentsAccounting() {
       if (type === "pdf") {
         await exportPDF(filtered, dateRange);
       } else if (type === "csv") {
-        downloadFile(toCSV(filtered), `authorforge-payments-${format(new Date(), "yyyy-MM-dd")}.csv`, "text/csv;charset=utf-8;");
+        downloadFile(toCSV(filtered), `write vibe-payments-${format(new Date(), "yyyy-MM-dd")}.csv`, "text/csv;charset=utf-8;");
       } else if (type === "iif") {
-        downloadFile(toIIF(filtered), `authorforge-quickbooks-${format(new Date(), "yyyy-MM-dd")}.iif`, "text/plain");
+        downloadFile(toIIF(filtered), `write vibe-quickbooks-${format(new Date(), "yyyy-MM-dd")}.iif`, "text/plain");
       } else if (type === "json") {
         // Sage / generic JSON export (standard accounting JSON)
         const export_data = {
-          export_info: { generated: new Date().toISOString(), platform: "AuthorForge", period: dateRange },
+          export_info: { generated: new Date().toISOString(), platform: "Write Vibe", period: dateRange },
           summary: { total_revenue: stats.totalRevenue, total_refunded: stats.totalRefunded, net_revenue: stats.netRevenue, transaction_count: stats.count },
           transactions: filtered.map(p => ({
             id: p.invoice_number, date: fmtDate(p.created_date), customer_email: p.user_email,
@@ -407,7 +407,7 @@ export default function PaymentsAccounting() {
             period_start: p.period_start, period_end: p.period_end, notes: p.notes
           }))
         };
-        downloadFile(JSON.stringify(export_data, null, 2), `authorforge-accounting-${format(new Date(), "yyyy-MM-dd")}.json`, "application/json");
+        downloadFile(JSON.stringify(export_data, null, 2), `write vibe-accounting-${format(new Date(), "yyyy-MM-dd")}.json`, "application/json");
       }
     } finally {
       setExportLoading("");

@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     // ── LLM fallback: synthesize realistic analytics data ────────────────────
     const llmFallback = async (context) => {
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Generate realistic analytics dashboard data for an AI book publishing platform called AuthorForge. Context: ${context}. Date range: last ${date_range}. Return plausible but clearly synthetic data that looks like a real SaaS platform with ~500 active users.`,
+        prompt: `Generate realistic analytics dashboard data for an AI book publishing platform called Write Vibe. Context: ${context}. Date range: last ${date_range}. Return plausible but clearly synthetic data that looks like a real SaaS platform with ~500 active users.`,
         response_json_schema: {
           type: "object",
           properties: {

@@ -41,7 +41,7 @@ This white paper must read like a Goldman Sachs or Morgan Stanley investment res
 EXECUTIVE SUMMARY
 Write a precise 3-paragraph executive summary with specific dollar figures, market opportunity, and key investment thesis.
 
-AUTHORFORGE PLATFORM OVERVIEW
+WRITE VIBE PLATFORM OVERVIEW
 Detailed description of platform capabilities, technology stack, AI features, product differentiation, and competitive moat.
 
 MARKET OPPORTUNITY & SIZING
@@ -51,7 +51,7 @@ FINANCIAL MODEL & REVENUE PROJECTIONS
 Detailed revenue model: SaaS subscription tiers (Starter $29/mo, Professional $79/mo, Enterprise $199/mo, White Label $999/mo). Projected ARR for Year 1-5. Projected users. LTV/CAC analysis. Gross margin targets (target 78%+). EBITDA timeline.
 
 COMPETITIVE LANDSCAPE
-Matrix comparing Write Vibe vs. Scrivener, Vellum, Reedsy, Jasper AI, and traditional publishers on 6+ dimensions. Why AuthorForge wins.
+Matrix comparing Write Vibe vs. Scrivener, Vellum, Reedsy, Jasper AI, and traditional publishers on 6+ dimensions. Why Write Vibe wins.
 
 TECHNOLOGY & AI INFRASTRUCTURE
 AI models powering the platform, infrastructure costs, scalability, proprietary advantages.

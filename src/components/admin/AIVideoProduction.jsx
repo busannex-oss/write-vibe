@@ -177,7 +177,7 @@ export default function AIVideoProduction({ user }) {
     output_format: "mp4",
     webcodecs_enabled: true,
     webgl_preview: true,
-    prompt_prefix: "Cinematic book trailer for AuthorForge:",
+    prompt_prefix: "Cinematic book trailer for Write Vibe:",
   });
 
   useEffect(() => {
@@ -570,7 +570,7 @@ export default function AIVideoProduction({ user }) {
                 <Video className="w-4 h-4 text-purple-400" /> Production Defaults
               </CardTitle>
               <CardDescription className="text-white/40">
-                Applied to all book trailer generations via AuthorForge
+                Applied to all book trailer generations via Write Vibe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -626,7 +626,7 @@ export default function AIVideoProduction({ user }) {
                 <Textarea
                   value={config.prompt_prefix}
                   onChange={(e) => set("prompt_prefix", e.target.value)}
-                  placeholder="Cinematic book trailer for AuthorForge:"
+                  placeholder="Cinematic book trailer for Write Vibe:"
                   className={`${inputClass} min-h-[70px]`}
                 />
                 <p className="text-xs text-white/30 mt-1">Prepended to every video generation prompt for consistent brand tone</p>

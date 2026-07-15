@@ -35,6 +35,7 @@ import CCOSAgent from './pages/CCOSAgent';
 import Templates from './pages/Templates';
 import Certifications from './pages/Certifications';
 import AdminDocuments from './pages/AdminDocuments';
+import TeamSummary from './pages/TeamSummary';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -119,6 +120,7 @@ const AuthenticatedApp = () => {
       <Route path="/Templates" element={<LayoutWrapper currentPageName="Templates"><Templates /></LayoutWrapper>} />
       <Route path="/Certifications" element={<LayoutWrapper currentPageName="Certifications"><Certifications /></LayoutWrapper>} />
       <Route path="/AdminDocuments" element={<LayoutWrapper currentPageName="AdminDocuments"><AdminDocuments /></LayoutWrapper>} />
+      <Route path="/TeamSummary" element={<LayoutWrapper currentPageName="TeamSummary"><TeamSummary /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -31,7 +31,7 @@ export default function AIBusinessPlan() {
   const [expandedSection, setExpandedSection] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", content: "" });
   const [form, setForm] = useState({
-    company_name: "AuthorForge",
+    company_name: "Write Vibe",
     tagline: "AI-Powered Book Creation Platform",
     industry: "AI SaaS / Publishing Technology",
     headquarters: "",
@@ -156,14 +156,14 @@ export default function AIBusinessPlan() {
     pdf.setFillColor(245, 158, 11);
     pdf.rect(0, ph / 2 - 1, 5, 2, "F");
 
-    // AuthorForge logo block (top-right)
+    // Write Vibe logo block (top-right)
     pdf.setFillColor(17, 24, 39);
     pdf.roundedRect(pw - 58, 12, 44, 16, 2, 2, "F");
     pdf.setFillColor(245, 158, 11);
     pdf.roundedRect(pw - 57, 13, 6, 14, 1, 1, "F");
     pdf.setFontSize(8); pdf.setFont("helvetica", "bold");
     pdf.setTextColor(255, 255, 255);
-    pdf.text("AUTHORFORGE", pw - 49, 21.5);
+    pdf.text("WRITE VIBE", pw - 49, 21.5);
     pdf.setFontSize(5.5); pdf.setFont("helvetica", "normal");
     pdf.setTextColor(100, 116, 139);
     pdf.text("AI BOOK CREATION PLATFORM", pw - 49, 25.5);
@@ -208,7 +208,7 @@ export default function AIBusinessPlan() {
       ["DATE GENERATED", new Date(doc.created_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })],
       ["DOCUMENT CLASS", "Strictly Confidential — Board Use Only"],
       ["PLANNING HORIZON", "30 Years · 2025–2055"],
-      ["PREPARED BY", "AuthorForge Strategic Intelligence"],
+      ["PREPARED BY", "Write Vibe Strategic Intelligence"],
       ["DOCUMENT VERSION", "v1.0 — Initial Release"],
       ["STATUS", doc.status === "final" ? "FINAL — APPROVED" : "DRAFT — PENDING APPROVAL"]
     ];
@@ -257,7 +257,7 @@ export default function AIBusinessPlan() {
       pdf.setFillColor(17, 24, 39); pdf.rect(0, 0, pw, 14, "F");
       pdf.setFillColor(245, 158, 11); pdf.rect(0, 13.5, pw, 0.5, "F");
       pdf.setFontSize(7); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
-      pdf.text("AUTHORFORGE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
+      pdf.text("WRITE VIBE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
     };
     tocHeader();
     pdf.setFontSize(16); pdf.setFont("helvetica", "bold"); pdf.setTextColor(255, 255, 255);
@@ -371,7 +371,7 @@ export default function AIBusinessPlan() {
       pdf.setFillColor(7, 11, 22); pdf.rect(0, 0, pw, 14, "F");
       pdf.setFillColor(245, 158, 11); pdf.rect(0, 13.5, pw, 0.5, "F");
       pdf.setFontSize(6.5); pdf.setFont("helvetica", "bold"); pdf.setTextColor(245, 158, 11);
-      pdf.text("AUTHORFORGE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
+      pdf.text("WRITE VIBE  ·  STRATEGIC BUSINESS PLAN  ·  CONFIDENTIAL", margin, 9);
       pdf.setTextColor(71, 85, 105); pdf.setFont("helvetica", "normal");
       pdf.text(companyName.slice(0, 50), pw - margin, 9, { align: "right" });
       y = 22;
@@ -381,7 +381,7 @@ export default function AIBusinessPlan() {
       pdf.setFillColor(59, 130, 246); pdf.rect(0, ph - 10, pw, 0.5, "F");
       pdf.setFontSize(6.5); pdf.setTextColor(71, 85, 105);
       pdf.text(`Page ${pn}`, pw / 2, ph - 4, { align: "center" });
-      pdf.text("© AuthorForge " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
+      pdf.text("© Write Vibe " + new Date().getFullYear() + "  ·  CONFIDENTIAL", margin, ph - 4);
     };
     addPageHeader();
 
