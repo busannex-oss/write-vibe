@@ -74,8 +74,8 @@ export default function Layout({ children, currentPageName }) {
     { name: "My Books",   href: "Books",       icon: BookOpen, children: [
       { name: "Template Library", href: "Templates", icon: Library },
       { name: "Documents", href: "Documents", icon: FileText },
+      { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
     ]},
-    { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
     { name: "Team",       href: "Team",        icon: Users, children: [
       { name: "Document Review", href: "DocumentReview", icon: MessageSquare },
     ]},
