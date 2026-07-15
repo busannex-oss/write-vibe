@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AdminMenuCollapsible from "@/components/AdminMenuCollapsible";
+import NavCollapsible from "@/components/NavCollapsible";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
@@ -70,8 +71,9 @@ export default function Layout({ children, currentPageName }) {
 
   const memberNav = [
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard },
-    { name: "My Books",   href: "Books",       icon: BookOpen },
-    { name: "Template Library", href: "Templates", icon: Library },
+    { name: "My Books",   href: "Books",       icon: BookOpen, children: [
+      { name: "Template Library", href: "Templates", icon: Library },
+    ]},
     { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
     { name: "Documents",  href: "Documents",   icon: FileText },
     { name: "Team",       href: "Team",        icon: Users },
@@ -158,6 +160,17 @@ export default function Layout({ children, currentPageName }) {
         {sidebarOpen && (
           <nav className="lg:hidden bg-slate-900/80 backdrop-blur-xl border-b border-white/5 p-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
             {memberNav.map((item) => {
+              if (item.children) {
+                return (
+                  <NavCollapsible
+                    key={item.name}
+                    parent={item}
+                    items={item.children}
+                    currentPageName={currentPageName}
+                    onNavigate={() => setSidebarOpen(false)}
+                  />
+                );
+              }
               const isActive = currentPageName === item.href;
               return (
                 <Link
@@ -205,6 +218,17 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {memberNav.map((item) => {
+              if (item.children) {
+                return (
+                  <NavCollapsible
+                    key={item.name}
+                    parent={item}
+                    items={item.children}
+                    currentPageName={currentPageName}
+                    onNavigate={() => setSidebarOpen(false)}
+                  />
+                );
+              }
               const isActive = currentPageName === item.href;
               return (
                 <Link
