@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Save, Loader2, Download, Lock, FileDown } from "lucide-react";
+import { Save, Loader2, Download, Lock, FileDown, Sparkles } from "lucide-react";
 import { jsPDF } from "jspdf";
 
 export default function ConstitutionEditor() {
@@ -15,6 +15,7 @@ export default function ConstitutionEditor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   const { data: docs = [], isLoading } = useQuery({
@@ -58,6 +59,31 @@ export default function ConstitutionEditor() {
       console.error("Error saving constitution:", error);
     }
     setSaving(false);
+  };
+
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      let missionText = "";
+      try {
+        const missions = await base44.entities.MissionStatement.filter({ is_current: true });
+        if (missions.length > 0) missionText = missions[0].text || "";
+      } catch (e) {
+        // ignore - generate without mission context
+      }
+
+      const prompt = `You are drafting the foundational Constitution for "Write Vibe", an AI-powered book publishing studio platform that helps authors create, design, publish, and market books end-to-end using a chain-of-command of specialized AI agents and an advisory board.
+
+${missionText ? `Platform mission statement:\n"${missionText}"\n\n` : ""}Based on this context, write a comprehensive platform Constitution that establishes the foundational principles, governance structure, core values, operational pillars, AI ethics, member rights & responsibilities, advisory board charter, and amendment process. Structure it with clear articles and sections (Preamble, Core Values, Governance, AI Ethics & Principles, Member Rights & Responsibilities, Advisory Board, Amendments). Write in a formal, authoritative tone. Output the full constitution text only.`;
+
+      const result = await base44.integrations.Core.InvokeLLM({ prompt });
+      const generated = typeof result === "string" ? result : result?.text || result?.response || JSON.stringify(result);
+      setContent(generated);
+      if (!title) setTitle("Write Vibe Platform Constitution");
+    } catch (error) {
+      console.error("Error generating constitution:", error);
+    }
+    setGenerating(false);
   };
 
   const downloadTxt = () => {
@@ -134,6 +160,18 @@ export default function ConstitutionEditor() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white border-0"
+            >
+              {generating ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 mr-2" />
+              )}
+              {generating ? "Generating..." : "Generate with AI"}
+            </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
