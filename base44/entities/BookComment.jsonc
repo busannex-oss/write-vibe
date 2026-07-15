@@ -1,0 +1,92 @@
+{
+  "name": "BookComment",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "Associated book ID"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "chapter",
+        "character",
+        "general"
+      ],
+      "description": "What the comment is attached to"
+    },
+    "chapter_number": {
+      "type": "number",
+      "description": "Chapter number (chapter comments)"
+    },
+    "character_name": {
+      "type": "string",
+      "description": "Character name (character comments)"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Commenter email"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Commenter display name"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "addressed",
+        "dismissed"
+      ],
+      "default": "open"
+    }
+  },
+  "required": [
+    "book_id",
+    "target_type",
+    "content"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
