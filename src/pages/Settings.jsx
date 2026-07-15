@@ -33,6 +33,7 @@ import AIGenerateButton from "@/components/AIGenerateButton";
 import HeroImageManager from "@/components/HeroImageManager";
 import WhiteLabelBranding from "@/components/WhiteLabelBranding";
 import WebsiteBranding from "@/components/WebsiteBranding";
+import EmailPreferences from "@/components/EmailPreferences";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
@@ -61,7 +62,8 @@ export default function Settings() {
     last_name: "",
     biography: "",
     author_photo_url: "",
-    social_media: {}
+    social_media: {},
+    email_preferences: {}
   });
 
   useEffect(() => {
@@ -71,7 +73,8 @@ export default function Settings() {
         last_name: user.last_name || "",
         biography: user.biography || "",
         author_photo_url: user.author_photo_url || "",
-        social_media: user.social_media || {}
+        social_media: user.social_media || {},
+        email_preferences: user.email_preferences || {}
       });
     }
   }, [user]);
@@ -103,6 +106,13 @@ export default function Settings() {
     setProfile(prev => ({
       ...prev,
       social_media: { ...prev.social_media, [id]: value }
+    }));
+  };
+
+  const updateEmailPreference = (id, value) => {
+    setProfile(prev => ({
+      ...prev,
+      email_preferences: { ...prev.email_preferences, [id]: value }
     }));
   };
 
@@ -326,6 +336,25 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Email Subscriptions */}
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Bell className="w-5 h-5 text-amber-400" />
+                Email Subscriptions
+              </CardTitle>
+              <CardDescription className="text-white/50">
+                Choose which reports, updates, and information you'd like to receive via email
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EmailPreferences
+                preferences={profile.email_preferences}
+                onChange={updateEmailPreference}
+              />
             </CardContent>
           </Card>
 
