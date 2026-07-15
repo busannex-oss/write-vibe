@@ -19,17 +19,13 @@ import {
   CheckCircle2,
   XCircle,
   Settings,
-  Lock,
   BarChart3,
-  Briefcase,
   Zap,
   Film,
   DollarSign
 } from "lucide-react";
 import { motion } from "framer-motion";
 import IntegrationSettings from "@/components/admin/IntegrationSettings";
-import AIBusinessPlan from "@/components/admin/AIBusinessPlan";
-import ConfidentialWhitePapers from "@/components/admin/ConfidentialWhitePapers.jsx";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 import AIVideoProduction from "@/components/admin/AIVideoProduction";
 import PaymentsAccounting from "@/components/admin/PaymentsAccounting";
@@ -170,14 +166,6 @@ export default function UserManagement() {
           <TabsTrigger value="integrations" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <Settings className="w-4 h-4 mr-2" />
             Integrations
-          </TabsTrigger>
-          <TabsTrigger value="confidential" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300">
-            <Lock className="w-4 h-4 mr-2" />
-            Confidential
-          </TabsTrigger>
-          <TabsTrigger value="bizplan" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-300">
-            <Briefcase className="w-4 h-4 mr-2" />
-            Business Plan
           </TabsTrigger>
           <TabsTrigger value="video" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
             <Film className="w-4 h-4 mr-2" />
@@ -408,14 +396,6 @@ export default function UserManagement() {
 
         <TabsContent value="integrations">
           <IntegrationSettings user={currentUser} />
-        </TabsContent>
-
-        <TabsContent value="confidential">
-          <ConfidentialWhitePapers />
-        </TabsContent>
-
-        <TabsContent value="bizplan">
-          <AIBusinessPlan />
         </TabsContent>
 
         <TabsContent value="video">
