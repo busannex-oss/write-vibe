@@ -76,8 +76,9 @@ export default function Layout({ children, currentPageName }) {
     ]},
     { name: "Publication Checklist", href: "PublicationChecklist", icon: CheckSquare },
     { name: "Documents",  href: "Documents",   icon: FileText },
-    { name: "Document Review", href: "DocumentReview", icon: MessageSquare },
-    { name: "Team",       href: "Team",        icon: Users },
+    { name: "Team",       href: "Team",        icon: Users, children: [
+      { name: "Document Review", href: "DocumentReview", icon: MessageSquare },
+    ]},
     { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
