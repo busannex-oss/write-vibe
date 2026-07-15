@@ -34,6 +34,7 @@ import {
   Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
+import TeamActivityFeed from "@/components/team/TeamActivityFeed";
 
 const ROLES = [
   { id: "author", label: "Author", description: "Full access to all features", color: "from-amber-500 to-orange-500" },
@@ -335,6 +336,11 @@ export default function Team() {
           )}
         </CardContent>
       </Card>
+
+      {/* Activity Feed */}
+      <div className="mt-6">
+        <TeamActivityFeed selectedBook={selectedBook} />
+      </div>
     </div>
   );
 }
