@@ -13,7 +13,8 @@
         "press_release",
         "social_image",
         "promotional_material",
-        "white_paper"
+        "white_paper",
+        "constitution"
       ],
       "description": "Document type"
     },
