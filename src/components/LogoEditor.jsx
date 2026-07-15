@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Upload, Wand2, Download, X, Loader2, ZoomIn, Crop } from "lucide-react";
+import { Upload, Wand2, Download, X, Loader2, ZoomIn, Crop, Droplet, Palette } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
@@ -15,6 +15,9 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
   const [zoom, setZoom] = useState(1);
   const [cropX, setCropX] = useState(0);
   const [cropY, setCropY] = useState(0);
+  const [opacity, setOpacity] = useState(100);
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [bgTransparent, setBgTransparent] = useState(false);
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
@@ -30,6 +33,9 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
         setZoom(1);
         setCropX(0);
         setCropY(0);
+        setOpacity(100);
+        setBgColor("#ffffff");
+        setBgTransparent(false);
       };
       reader.readAsDataURL(file);
     }
@@ -45,10 +51,15 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
     canvas.width = 400;
     canvas.height = 400;
 
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (bgTransparent) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     const size = 300 / zoom;
+    ctx.globalAlpha = opacity / 100;
     ctx.drawImage(
       img,
       cropX,
@@ -60,6 +71,7 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
       300,
       300
     );
+    ctx.globalAlpha = 1;
   };
 
   useEffect(() => {
@@ -67,7 +79,7 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
       const timer = setTimeout(drawCanvas, 100);
       return () => clearTimeout(timer);
     }
-  }, [zoom, cropX, cropY, selectedFile, step]);
+  }, [zoom, cropX, cropY, opacity, bgColor, bgTransparent, selectedFile, step]);
 
   const handleRemoveBackground = async () => {
     if (!canvasRef.current) return;
@@ -87,6 +99,22 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
       setStep("confirm");
     } catch (error) {
       console.error("Error removing background:", error);
+    }
+    setLoading(false);
+  };
+
+  const handleApplyAdjustments = async () => {
+    if (!canvasRef.current) return;
+    setLoading(true);
+    try {
+      const imageData = canvasRef.current.toDataURL("image/png");
+      const blob = await (await fetch(imageData)).blob();
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: blob });
+      setEditedImage(file_url);
+      setStep("confirm");
+    } catch (error) {
+      console.error("Error applying adjustments:", error);
+      alert("Failed to apply adjustments");
     }
     setLoading(false);
   };
@@ -130,6 +158,9 @@ Create a professional logo that looks premium and trustworthy.`;
     setZoom(1);
     setCropX(0);
     setCropY(0);
+    setOpacity(100);
+    setBgColor("#ffffff");
+    setBgTransparent(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -263,8 +294,58 @@ Create a professional logo that looks premium and trustworthy.`;
               </div>
             </div>
 
+            {/* Transparency */}
+            <div className="space-y-2">
+              <Label className="text-white/70 flex items-center gap-2">
+                <Droplet className="w-4 h-4" />
+                Transparency
+              </Label>
+              <Slider
+                value={[opacity]}
+                onValueChange={(v) => setOpacity(v[0])}
+                min={0}
+                max={100}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-white/40">{opacity}% opacity</p>
+            </div>
+
+            {/* Background Color */}
+            <div className="space-y-2">
+              <Label className="text-white/70 flex items-center gap-2">
+                <Palette className="w-4 h-4" />
+                Background
+              </Label>
+              <div className="flex flex-wrap items-center gap-2">
+                {["#ffffff", "#000000", "#0f172a", "#f59e0b", "#1e40af", "#059669"].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => { setBgColor(c); setBgTransparent(false); }}
+                    className={`w-8 h-8 rounded-lg border-2 transition-all ${!bgTransparent && bgColor === c ? "border-amber-400 scale-110" : "border-white/20"}`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+                <button
+                  onClick={() => setBgTransparent(true)}
+                  className={`w-8 h-8 rounded-lg border-2 transition-all flex items-center justify-center ${bgTransparent ? "border-amber-400 scale-110" : "border-white/20"}`}
+                  style={{ backgroundImage: "linear-gradient(45deg, #64748b 25%, transparent 25%), linear-gradient(-45deg, #64748b 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #64748b 75%), linear-gradient(-45deg, transparent 75%, #64748b 75%)", backgroundSize: "8px 8px" }}
+                  title="Transparent"
+                >
+                  <X className="w-3 h-3 text-white/70" />
+                </button>
+                <input
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => { setBgColor(e.target.value); setBgTransparent(false); }}
+                  className="w-8 h-8 rounded-lg border border-white/20 bg-transparent cursor-pointer"
+                  title="Custom color"
+                />
+              </div>
+            </div>
+
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-wrap gap-3 pt-4">
               <Button
                 onClick={handleRemoveBackground}
                 disabled={loading}
@@ -278,6 +359,18 @@ Create a professional logo that looks premium and trustworthy.`;
                 ) : (
                   "Remove Background"
                 )}
+              </Button>
+              <Button
+                onClick={handleApplyAdjustments}
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Apply & Save
               </Button>
               <Button
                 onClick={() => setStep("upload")}
