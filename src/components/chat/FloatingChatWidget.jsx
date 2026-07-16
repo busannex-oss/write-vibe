@@ -9,7 +9,7 @@ const STORAGE_KEY = 'cs_chat_history';
 
 const WELCOME_MESSAGE = {
   role: 'agent',
-  content: "Hi there! 👋 I'm the Master Customer Service Agent for Write Vibe. I'm here to help you with anything about our AI book studio — from creating your first book to publishing on Amazon. How can I help you today?",
+  content: "Hey there! 👋 I'm Sam — I help folks navigate Write Vibe. Whether you're dreaming up your first book or trying to figure out the whole publishing thing, I've got you. What are you working on?",
 };
 
 export default function FloatingChatWidget() {
@@ -113,8 +113,8 @@ export default function FloatingChatWidget() {
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white text-sm">Master Customer Service</p>
-                  <p className="text-xs text-green-400">● Online now</p>
+                  <p className="font-semibold text-white text-sm">Sam</p>
+                  <p className="text-xs text-green-400">● Customer Service • Online</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
