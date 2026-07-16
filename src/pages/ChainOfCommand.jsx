@@ -400,7 +400,6 @@ const HIERARCHY_STRUCTURE = {
         id: "advisory_marcus_rosier", name: "Marcus Y. Rosier", title: "STRATEGIC LEADERSHIP ADVISOR",
         expertise_tags: ["Leadership", "Strategic Vision", "Founder Mentorship", "Business Scaling", "Executive Coaching"],
         age: null, role: "advisor", status: "active",
-        governance_level: 2,
         pillars: ["Proper Business Structure", "Strategic Application"],
         description: "Advises on executive leadership, strategic vision, and scaling author-platform businesses",
         mission: "To guide leaders through the hardest decisions — turning vision into structure, structure into execution, and execution into legacy.",
@@ -413,7 +412,6 @@ const HIERARCHY_STRUCTURE = {
         id: "advisory_gary_vee", name: "Gary Vaynerchuk", title: "BRAND & DIGITAL MARKETING ADVISOR",
         expertise_tags: ["Digital Marketing", "Personal Branding", "Social Media", "Content Strategy", "Audience Building", "E-commerce"],
         age: 49, role: "advisor", status: "active",
-        governance_level: 2,
         pillars: ["Strategic Application", "Wealth Strategies Trajectory"],
         description: "Advises on digital-first brand building, social media strategy, and audience monetization",
         mission: "To make every author understand that attention is the currency of the modern world — and that building a personal brand is the most valuable long-game they can play.",
@@ -426,7 +424,6 @@ const HIERARCHY_STRUCTURE = {
         id: "advisory_spectacular_smith", name: "Spectacular Smith", title: "SOCIAL MEDIA & BRANDING ADVISOR",
         expertise_tags: ["Social Media Marketing", "Brand Building", "Viral Strategy", "Hip-Hop Entrepreneurship", "Digital Audience Growth"],
         age: 40, role: "advisor", status: "active",
-        governance_level: 2,
         pillars: ["Strategic Application", "Partnership Alignment"],
         description: "Advises on viral social media strategy, personal brand building, and digital audience growth",
         mission: "To show authors that their smartphone is their entire marketing department — and that authenticity paired with consistency is the formula for building a movement online.",
@@ -439,7 +436,6 @@ const HIERARCHY_STRUCTURE = {
         id: "advisory_bozoma_saint_john", name: "Bozoma Saint John", title: "CMO & CULTURAL STRATEGY ADVISOR",
         expertise_tags: ["Brand Marketing", "Cultural Strategy", "C-Suite Leadership", "Diversity & Inclusion", "Consumer Insights", "Entertainment Marketing"],
         age: 53, role: "advisor", status: "active",
-        governance_level: 2,
         pillars: ["Exemplary Customer Service", "Strategic Application", "Partnership Alignment"],
         description: "Advises on cultural brand strategy, executive marketing leadership, and building brands that resonate across demographics",
         mission: "To remind every author and leader that culture is the ultimate differentiator — and that building a brand people feel in their bones requires courage, authenticity, and an uncompromising commitment to truth.",
@@ -500,12 +496,12 @@ const HIERARCHY_STRUCTURE = {
 // Default governance levels by hierarchy tier — enforces authority structure.
 // Agents with an explicit governance_level in their data keep their custom value.
 const GOVERNANCE_BY_LEVEL = {
-  level2: 3,  // C-Suite executives
-  level3: 4,  // Department management
-  level4: 4,  // Department management
-  level5: 5,  // Specialist operations
-  level6: 5,  // Specialist operations
-  level7: 2,  // Advisory board — strategic oversight
+  level2: 3,  // C-Suite executives only
+  level3: 4,  // All non-C-Suite agents
+  level4: 4,
+  level5: 4,
+  level6: 4,
+  level7: 4,
 };
 
 // Merge enrichment data (hobbies, brain, voice, calendar, gender, collaborations, communications) into each agent
