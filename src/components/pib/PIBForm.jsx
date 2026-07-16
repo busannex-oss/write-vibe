@@ -55,7 +55,7 @@ export default function PIBForm({ user, existingPIB, onSaved, onCancel }) {
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {
-      const prompt = `You are helping an author complete their Personal Information Base (PIB) for a book writing platform called Write Vibe.
+      const prompt = `You are helping an author complete their Personal Intelligence Blueprint (PIB) for a book writing platform called Write Vibe.
 
 Author name: ${form.pen_name || user?.full_name || "Unknown"}
 Current bio: ${form.author_bio || "None"}
@@ -116,7 +116,7 @@ Based on the information above, generate a comprehensive and compelling PIB. Fil
               {existingPIB ? "Update PIB Questionnaire" : "Complete Your PIB Questionnaire"}
             </CardTitle>
             <CardDescription className="text-white/50 mt-1">
-              Your Personal Information Base — used across all your books
+              Your Personal Intelligence Blueprint — used across all your books
             </CardDescription>
           </div>
           <AIGenerateButton onClick={handleRegenerate} loading={regenerating} label="Regenerate with AI" size="sm" />

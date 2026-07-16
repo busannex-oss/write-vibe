@@ -44,7 +44,7 @@ export default function PIBSummary({ pib, onEdit }) {
               PIB Questionnaire
             </CardTitle>
             <CardDescription className="text-white/50 mt-1">
-              Your Personal Information Base — attached to your profile for all books
+              Your Personal Intelligence Blueprint — attached to your profile for all books
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
