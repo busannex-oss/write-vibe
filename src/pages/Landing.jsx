@@ -292,7 +292,7 @@ export default function Landing() {
                 poster={heroImage}
                 className="w-full h-[220px] sm:h-[360px] md:h-[500px] object-cover"
               >
-                <source src="https://media.base44.com/videos/public/6975e45ac14c500ed1fcdcf2/844329121_Hero_Promo_Video.mp4" type="video/mp4" />
+                <source src="https://media.base44.com/videos/public/6975e45ac14c500ed1fcdcf2/5d8717cb2_Write_Vibe_Hero.mp4" type="video/mp4" />
               </video>
             </div>
           </motion.div>
