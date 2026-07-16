@@ -81,7 +81,86 @@ INSTRUCTIONS:
       }
     });
 
-    return Response.json(result);
+    // ── Generate comprehensive meeting minutes ──
+    const meetingDate = new Date().toISOString();
+    const attendees = (advisors || []).map(a => a.name);
+    const departmentCount = (result.departments || []).length;
+
+    let recommendationsTotal = 0;
+    (result.departments || []).forEach(d => { recommendationsTotal += (d.refinements || []).length; });
+    (result.advisor_contributions || []).forEach(a => { recommendationsTotal += (a.recommendations || []).length; });
+
+    const escapeHtml = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const deptMinutesHtml = (result.departments || []).map((dept, i) => {
+      const bottlenecks = (dept.bottlenecks || []).map(b => `<li>${escapeHtml(b)}</li>`).join('');
+      const friction = (dept.friction_points || []).map(f => `<li>${escapeHtml(f)}</li>`).join('');
+      const refinements = (dept.refinements || []).map(r => `<li>${escapeHtml(r)}</li>`).join('');
+      return `
+        <h3>3.${i + 1} ${escapeHtml(dept.department_name)}</h3>
+        <p><strong>Priority:</strong> ${escapeHtml(dept.priority)} &nbsp;|&nbsp; <strong>Assigned Director:</strong> ${escapeHtml(dept.assigned_director)}</p>
+        <p><strong>Director Rationale:</strong> ${escapeHtml(dept.director_rationale)}</p>
+        <h4>Bottlenecks Identified</h4>
+        <ul>${bottlenecks || '<li>None identified.</li>'}</ul>
+        <h4>Friction Points</h4>
+        <ul>${friction || '<li>None identified.</li>'}</ul>
+        <h4>Recommended Refinements</h4>
+        <ul>${refinements || '<li>No refinements recommended.</li>'}</ul>`;
+    }).join('');
+
+    const advisorHtml = (result.advisor_contributions || []).map((adv, i) => {
+      const recs = (adv.recommendations || []).map(r => `<li>${escapeHtml(r)}</li>`).join('');
+      return `
+        <h3>4.${i + 1} ${escapeHtml(adv.advisor_name)}</h3>
+        <p><strong>Assessment:</strong> ${escapeHtml(adv.assessment)}</p>
+        <p><strong>Recommendations:</strong></p>
+        <ul>${recs || '<li>No recommendations provided.</li>'}</ul>`;
+    }).join('');
+
+    const formattedDate = new Date(meetingDate).toLocaleString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    const minutesHtml = `<div class="minutes">
+      <h1>ADVISORY BOARD MEETING MINUTES</h1>
+      <div class="meeting-meta">
+        <p><strong>Date:</strong> ${formattedDate}</p>
+        <p><strong>Meeting Type:</strong> Advisory Board Convening</p>
+        <p><strong>Departments Evaluated:</strong> ${departmentCount}</p>
+        <p><strong>Recommendations Generated:</strong> ${recommendationsTotal}</p>
+        <p><strong>Attendees:</strong> ${escapeHtml(attendees.join(', '))}</p>
+      </div>
+      <h2>1. Call to Order</h2>
+      <p>The Advisory Board was convened to evaluate the organizational structure of the platform. The board reviewed ${departmentCount} department${departmentCount !== 1 ? 's' : ''}, assigned Department Directors from within each department's agents, identified bottlenecks and friction points, and generated ${recommendationsTotal} recommendations for structural refinement.</p>
+      <h2>2. Executive Summary</h2>
+      <p>${escapeHtml(result.meeting_summary)}</p>
+      <h2>3. Department Evaluations &amp; Director Assignments</h2>
+      ${deptMinutesHtml}
+      <h2>4. Advisor Contributions</h2>
+      ${advisorHtml}
+      <h2>5. Overall Assessment</h2>
+      <p>${escapeHtml(result.overall_assessment)}</p>
+      <h2>6. Adjournment</h2>
+      <p>The meeting was adjourned following comprehensive evaluation. All ${recommendationsTotal} recommendations are pending administrative review (accept, reject, or refine). The next convening will be scheduled at the administration's discretion.</p>
+    </div>`;
+
+    // Store the minutes record
+    const minutesRecord = await base44.asServiceRole.entities.AdvisoryBoardMinutes.create({
+      meeting_title: `Advisory Board Convening — ${new Date(meetingDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`,
+      meeting_date: meetingDate,
+      meeting_type: "Advisory Board Convening",
+      attendees,
+      department_count: departmentCount,
+      executive_summary: result.meeting_summary || "",
+      overall_assessment: result.overall_assessment || "",
+      recommendations_total: recommendationsTotal,
+      minutes_html: minutesHtml,
+      raw_results: JSON.stringify(result),
+      status: "finalized"
+    });
+
+    return Response.json({ ...result, minutes_id: minutesRecord.id });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

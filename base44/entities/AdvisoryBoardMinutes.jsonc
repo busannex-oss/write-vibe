@@ -1,0 +1,86 @@
+{
+  "name": "AdvisoryBoardMinutes",
+  "type": "object",
+  "properties": {
+    "meeting_title": {
+      "type": "string",
+      "description": "Title of the advisory board meeting"
+    },
+    "meeting_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the meeting was convened"
+    },
+    "meeting_type": {
+      "type": "string",
+      "default": "Advisory Board Convening",
+      "description": "Type of meeting"
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of advisory board members present"
+    },
+    "department_count": {
+      "type": "number",
+      "description": "Number of departments evaluated"
+    },
+    "executive_summary": {
+      "type": "string",
+      "description": "Executive summary of the meeting"
+    },
+    "overall_assessment": {
+      "type": "string",
+      "description": "Overall assessment from the board"
+    },
+    "recommendations_total": {
+      "type": "number",
+      "description": "Total recommendations generated"
+    },
+    "minutes_html": {
+      "type": "string",
+      "description": "Comprehensive formatted minutes as HTML"
+    },
+    "raw_results": {
+      "type": "string",
+      "description": "Full JSON results from the convening"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "finalized",
+        "archived"
+      ],
+      "default": "finalized"
+    }
+  },
+  "required": [
+    "meeting_title",
+    "meeting_date"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

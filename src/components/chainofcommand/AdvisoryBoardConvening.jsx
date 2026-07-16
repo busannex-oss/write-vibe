@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { PRIORITY_STYLES } from "@/components/chainofcommand/advisoryConstants";
 import RecommendationRow from "@/components/chainofcommand/RecommendationRow";
+import MeetingMinutesArchive from "@/components/chainofcommand/MeetingMinutesArchive";
 import { cn } from "@/lib/utils";
 
 export default function AdvisoryBoardConvening({ agents, brandColors }) {
@@ -16,6 +17,7 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
   const [error, setError] = useState(null);
   const [expandedDept, setExpandedDept] = useState(null);
   const [recActions, setRecActions] = useState({});
+  const [minutesRefreshKey, setMinutesRefreshKey] = useState(0);
 
   const getRecState = (key) => recActions[key] || { status: "pending", text: null };
   const updateRec = (key, updates) =>
@@ -68,6 +70,7 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
       });
 
       setResults(response.data);
+      setMinutesRefreshKey(k => k + 1);
     } catch (err) {
       setError(err.message || "Failed to convene advisory board");
     } finally {
@@ -80,6 +83,7 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
   const accent = brandColors.accent;
 
   return (
+    <>
     <Card style={{ backgroundColor: secondary + "60", borderColor: accent + "40" }}>
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -300,5 +304,10 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
         )}
       </CardContent>
     </Card>
+
+      <div className="mt-6">
+        <MeetingMinutesArchive brandColors={brandColors} refreshKey={minutesRefreshKey} />
+      </div>
+    </>
   );
 }
