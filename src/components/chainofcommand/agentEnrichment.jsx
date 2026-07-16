@@ -414,8 +414,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Thursday — Advisory board sync", "Saturday — Creative empire case study review"],
       monthly: ["1st — Strategic advisory memo", "15th — Vertical integration opportunity review"]
     },
-    collaborates_with: ["CEO", "CFO (Patricia Whitfield)", "COO (Valerie Simmons)", "Brand Strategist (Victoria Lopez)", "Bookstore Advisor (Nathan Brooks)"],
-    communicates_with: ["CEO", "CFO", "COO", "Brand Strategist", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "CFO (Patricia Whitfield)", "COO (Valerie Simmons)", "Brand Strategist (Victoria Lopez)", "Bookstore Advisor (Nathan Brooks)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "CFO", "COO", "Brand Strategist", "C-Suite (advisory capacity)"]
   },
   advisory_thurgood_marshall: {
     gender: "male",
@@ -427,8 +427,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Wednesday — Legal advisory sync", "Friday — Rights protection framework review"],
       monthly: ["1st — Legal advisory memo", "15th — Contract vulnerability assessment review"]
     },
-    collaborates_with: ["CEO", "CAO (Diane Holloway)", "Ethical AI Officer (Dr. Samantha Brooks)", "Bookstore Advisor (Nathan Brooks)", "Structure Sentinel (Thomas Wright)"],
-    communicates_with: ["CEO", "CAO", "Ethical AI Officer", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "CAO (Diane Holloway)", "Ethical AI Officer (Dr. Samantha Brooks)", "Bookstore Advisor (Nathan Brooks)", "Structure Sentinel (Thomas Wright)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "CAO", "Ethical AI Officer", "C-Suite (advisory capacity)"]
   },
   advisory_toni_morrison: {
     gender: "female",
@@ -440,8 +440,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Tuesday — Literary advisory sync", "Friday — Manuscript quality benchmarking"],
       monthly: ["1st — Literary excellence advisory memo", "15th — Voice and prose standards review"]
     },
-    collaborates_with: ["CEO", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Summary Writer (Rachel Chen)", "Brand Strategist (Victoria Lopez)"],
-    communicates_with: ["CEO", "Character Creator", "Outline Generator", "Summary Writer", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Summary Writer (Rachel Chen)", "Brand Strategist (Victoria Lopez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Character Creator", "Outline Generator", "Summary Writer", "C-Suite (advisory capacity)"]
   },
   advisory_shonda_rhimes: {
     gender: "female",
@@ -453,8 +453,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Monday — IP expansion advisory sync", "Thursday — Multi-platform strategy review"],
       monthly: ["1st — IP expansion advisory memo", "15th — Adaptation opportunity pipeline review"]
     },
-    collaborates_with: ["CEO", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Brand Strategist (Victoria Lopez)", "Video Producer (Chloe Martinez)"],
-    communicates_with: ["CEO", "Character Creator", "Outline Generator", "Brand Strategist", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Brand Strategist (Victoria Lopez)", "Video Producer (Chloe Martinez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Character Creator", "Outline Generator", "Brand Strategist", "C-Suite (advisory capacity)"]
   },
   advisory_jk_rowling: {
     gender: "female",
@@ -466,8 +466,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Wednesday — World-building advisory sync", "Saturday — Reader community strategy review"],
       monthly: ["1st — World-building advisory memo", "15th — Series architecture review"]
     },
-    collaborates_with: ["CEO", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Marketing Assistant (Priya Patel)", "Brand Strategist (Victoria Lopez)"],
-    communicates_with: ["CEO", "Character Creator", "Outline Generator", "Marketing Assistant", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Character Creator (James Mitchell)", "Outline Generator (Olivia Rodriguez)", "Marketing Assistant (Priya Patel)", "Brand Strategist (Victoria Lopez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Character Creator", "Outline Generator", "Marketing Assistant", "C-Suite (advisory capacity)"]
   },
   advisory_oprah_winfrey: {
     gender: "female",
@@ -479,8 +479,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Tuesday — Audience strategy advisory sync", "Friday — Cultural impact review"],
       monthly: ["1st — Audience impact advisory memo", "15th — Media strategy opportunity review"]
     },
-    collaborates_with: ["CEO", "Marketing Assistant (Priya Patel)", "Seasonal Newsletter Strategist (Isabella Santos)", "Brand Strategist (Victoria Lopez)", "CCO (Jonathan Pierce)"],
-    communicates_with: ["CEO", "Marketing Assistant", "Seasonal Newsletter Strategist", "CCO", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Marketing Assistant (Priya Patel)", "Seasonal Newsletter Strategist (Isabella Santos)", "Brand Strategist (Victoria Lopez)", "CCO (Jonathan Pierce)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Marketing Assistant", "Seasonal Newsletter Strategist", "CCO", "C-Suite (advisory capacity)"]
   },
   advisory_maya_angelou: {
     gender: "female",
@@ -492,8 +492,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Thursday — Voice and truth advisory sync", "Sunday — Literary legacy reflection"],
       monthly: ["1st — Voice and truth advisory memo", "15th — Emotional truth standards review"]
     },
-    collaborates_with: ["CEO", "Character Creator (James Mitchell)", "Summary Writer (Rachel Chen)", "Brand Strategist (Victoria Lopez)", "advisory_toni_morrison"],
-    communicates_with: ["CEO", "Character Creator", "Summary Writer", "Brand Strategist", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Character Creator (James Mitchell)", "Summary Writer (Rachel Chen)", "Brand Strategist (Victoria Lopez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Character Creator", "Summary Writer", "Brand Strategist", "C-Suite (advisory capacity)"]
   },
   advisory_slade_kevin_morrison: {
     gender: "male",
@@ -505,8 +505,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Monday — Founder vision advisory sync", "Friday — Mission alignment review"],
       monthly: ["1st — Founder advisory memo", "15th — Strategic direction review with full C-Suite"]
     },
-    collaborates_with: ["CEO", "All C-Suite", "Brand Strategist (Victoria Lopez)", "Structure Sentinel (Thomas Wright)", "advisory_marcus_rosier"],
-    communicates_with: ["CEO", "All C-Suite", "Full advisory board", "Brand Strategist"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "All C-Suite", "Brand Strategist (Victoria Lopez)", "Structure Sentinel (Thomas Wright)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "All C-Suite", "Brand Strategist"]
   },
   advisory_marcus_rosier: {
     gender: "male",
@@ -518,8 +518,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Tuesday — Leadership advisory sync", "Friday — Organizational health review"],
       monthly: ["1st — Leadership advisory memo", "15th — Executive coaching cycle review"]
     },
-    collaborates_with: ["CEO", "COO (Valerie Simmons)", "CAO (Diane Holloway)", "advisory_slade_kevin_morrison", "All C-Suite (leadership coaching)"],
-    communicates_with: ["CEO", "COO", "CAO", "All C-Suite", "Full advisory board"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "COO (Valerie Simmons)", "CAO (Diane Holloway)", "All C-Suite (leadership coaching)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "COO", "CAO", "All C-Suite"]
   },
   advisory_gary_vee: {
     gender: "male",
@@ -531,8 +531,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Wednesday — Digital marketing advisory sync", "Saturday — Social media trend analysis"],
       monthly: ["1st — Digital marketing advisory memo", "15th — Audience growth strategy review"]
     },
-    collaborates_with: ["CEO", "Marketing Assistant (Priya Patel)", "Title Suggester (Alexandra Chen)", "Brand Strategist (Victoria Lopez)", "advisory_spectacular_smith"],
-    communicates_with: ["CEO", "Marketing Assistant", "Title Suggester", "Brand Strategist", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Marketing Assistant (Priya Patel)", "Title Suggester (Alexandra Chen)", "Brand Strategist (Victoria Lopez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Marketing Assistant", "Title Suggester", "Brand Strategist", "C-Suite (advisory capacity)"]
   },
   advisory_spectacular_smith: {
     gender: "male",
@@ -544,8 +544,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Monday — Social media advisory sync", "Thursday — Viral content framework review"],
       monthly: ["1st — Social media advisory memo", "15th — Digital audience growth review"]
     },
-    collaborates_with: ["CEO", "Marketing Assistant (Priya Patel)", "Video Producer (Chloe Martinez)", "Brand Strategist (Victoria Lopez)", "advisory_gary_vee"],
-    communicates_with: ["CEO", "Marketing Assistant", "Video Producer", "Brand Strategist", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "Marketing Assistant (Priya Patel)", "Video Producer (Chloe Martinez)", "Brand Strategist (Victoria Lopez)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "Marketing Assistant", "Video Producer", "Brand Strategist", "C-Suite (advisory capacity)"]
   },
   advisory_bozoma_saint_john: {
     gender: "female",
@@ -557,8 +557,8 @@ export const AGENT_ENRICHMENT = {
       weekly: ["Tuesday — Cultural strategy advisory sync", "Friday — Brand cultural resonance review"],
       monthly: ["1st — Cultural strategy advisory memo", "15th — Marketing leadership review with CCO"]
     },
-    collaborates_with: ["CEO", "CCO (Jonathan Pierce)", "Brand Strategist (Victoria Lopez)", "Chief Design Officer (Marcus Chen)", "Marketing Assistant (Priya Patel)"],
-    communicates_with: ["CEO", "CCO", "Brand Strategist", "Chief Design Officer", "C-Suite (advisory capacity)"]
+    collaborates_with: ["Full Advisory Board (collective deliberation)", "CEO & Founder — Write Vibe (joint recommendations)", "CCO (Jonathan Pierce)", "Brand Strategist (Victoria Lopez)", "Chief Design Officer (Marcus Chen)", "Marketing Assistant (Priya Patel)"],
+    communicates_with: ["Full Advisory Board", "CEO & Founder", "CCO", "Brand Strategist", "Chief Design Officer", "C-Suite (advisory capacity)"]
   },
 };
 
