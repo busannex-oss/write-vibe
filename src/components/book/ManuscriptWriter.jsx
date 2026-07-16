@@ -26,6 +26,7 @@ import ManuscriptAnalytics from "./ManuscriptAnalytics";
 import ChapterVersionHistory from "./ChapterVersionHistory";
 import AIFeedbackSidebar from "./AIFeedbackSidebar";
 import ChapterAgentProgress from "./ChapterAgentProgress";
+import ChapterComments from "./ChapterComments";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -439,6 +440,15 @@ High quality, professional book illustration, suitable for print publication.`,
                           onApplySuggestion={(original, suggested) => applySuggestion(index, original, suggested)} />
 
                         }
+
+                            <ChapterComments
+                              book={book}
+                              chapterNumber={chapter.chapter_number}
+                              chapterTitle={chapter.chapter_title}
+                              chapterContent={manuscriptChapter?.content}
+                              onRevised={(content) => updateChapterContent(index, content)}
+                            />
+
 
                             {manuscriptChapter?.images?.length > 0 &&
                         <div>
