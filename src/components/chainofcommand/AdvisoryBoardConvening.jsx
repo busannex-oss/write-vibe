@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Users, AlertTriangle, GitBranch, CheckCircle2, Loader2,
-  Gavel, ChevronDown, ChevronUp, Crown, Zap
+  Gavel, ChevronDown, ChevronUp, Crown, Zap, ClipboardCheck
 } from "lucide-react";
 import { PRIORITY_STYLES } from "@/components/chainofcommand/advisoryConstants";
+import RecommendationRow from "@/components/chainofcommand/RecommendationRow";
 import { cn } from "@/lib/utils";
 
 export default function AdvisoryBoardConvening({ agents, brandColors }) {
@@ -14,11 +15,40 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [expandedDept, setExpandedDept] = useState(null);
+  const [recActions, setRecActions] = useState({});
+
+  const getRecState = (key) => recActions[key] || { status: "pending", text: null };
+  const updateRec = (key, updates) =>
+    setRecActions(prev => ({ ...prev, [key]: { ...getRecState(key), ...updates } }));
+
+  const allRecKeys = useMemo(() => {
+    const keys = [];
+    results?.departments?.forEach((dept, dIdx) =>
+      dept.refinements?.forEach((_, rIdx) => keys.push(`dept-${dIdx}-${rIdx}`))
+    );
+    results?.advisor_contributions?.forEach((adv, aIdx) =>
+      adv.recommendations?.forEach((_, rIdx) => keys.push(`advisor-${aIdx}-${rIdx}`))
+    );
+    return keys;
+  }, [results]);
+
+  const recStats = useMemo(() => {
+    let accepted = 0, rejected = 0, refined = 0, pending = 0;
+    allRecKeys.forEach(key => {
+      const s = getRecState(key).status;
+      if (s === "accepted") accepted++;
+      else if (s === "rejected") rejected++;
+      else if (s === "refined") refined++;
+      else pending++;
+    });
+    return { accepted, rejected, refined, pending, total: allRecKeys.length };
+  }, [allRecKeys, recActions]);
 
   const handleConvene = async () => {
     setConvening(true);
     setError(null);
     setResults(null);
+    setRecActions({});
     try {
       const departments = Object.entries(agents)
         .filter(([key]) => key !== "level7")
@@ -161,13 +191,24 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
                             <p className="text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#86efac" }}>
                               <CheckCircle2 className="w-3.5 h-3.5" /> Recommended Refinements
                             </p>
-                            <ul className="space-y-1">
-                              {dept.refinements?.map((r, i) => (
-                                <li key={i} className="text-sm flex items-start gap-2" style={{ color: text + "CC" }}>
-                                  <span className="mt-1.5 w-1 h-1 rounded-full bg-green-400 flex-shrink-0" />{r}
-                                </li>
-                              ))}
-                            </ul>
+                            <div className="space-y-2">
+                              {dept.refinements?.map((r, i) => {
+                                const key = `dept-${idx}-${i}`;
+                                const recState = getRecState(key);
+                                return (
+                                  <RecommendationRow
+                                    key={key}
+                                    text={recState.text || r}
+                                    status={recState.status}
+                                    onStatusChange={(status) => updateRec(key, { status })}
+                                    onTextChange={(newText) => updateRec(key, { text: newText })}
+                                    accent={accent}
+                                    textColor={text + "CC"}
+                                    bulletColor="#86efac"
+                                  />
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -191,19 +232,54 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
                     </div>
                     <p className="text-sm mb-3" style={{ color: text + "CC" }}>{advisor.assessment}</p>
                     {advisor.recommendations?.length > 0 && (
-                      <div className="space-y-1">
-                        {advisor.recommendations.map((rec, i) => (
-                          <div key={i} className="text-sm flex items-start gap-2" style={{ color: text + "AA" }}>
-                            <GitBranch className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: accent + "80" }} />
-                            {rec}
-                          </div>
-                        ))}
+                      <div className="space-y-2">
+                        {advisor.recommendations.map((rec, i) => {
+                          const key = `advisor-${idx}-${i}`;
+                          const recState = getRecState(key);
+                          return (
+                            <RecommendationRow
+                              key={key}
+                              text={recState.text || rec}
+                              status={recState.status}
+                              onStatusChange={(status) => updateRec(key, { status })}
+                              onTextChange={(newText) => updateRec(key, { text: newText })}
+                              accent={accent}
+                              textColor={text + "AA"}
+                              bulletColor={accent}
+                              icon={GitBranch}
+                            />
+                          );
+                        })}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Recommendation Summary */}
+            {recStats.total > 0 && (
+              <div className="p-4 rounded-lg flex flex-wrap items-center gap-4" style={{ backgroundColor: secondary + "80", border: `1px solid ${accent}30` }}>
+                <div className="flex items-center gap-2">
+                  <ClipboardCheck className="w-4 h-4" style={{ color: accent }} />
+                  <span className="text-sm font-semibold" style={{ color: text }}>Recommendation Review</span>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                    {recStats.accepted} Accepted
+                  </span>
+                  <span className="px-2 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                    {recStats.rejected} Rejected
+                  </span>
+                  <span className="px-2 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    {recStats.refined} Refined
+                  </span>
+                  <span className="px-2 py-1 rounded-full bg-white/5 text-white/50 border border-white/10">
+                    {recStats.pending} Pending
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Overall Assessment */}
             {results.overall_assessment && (
