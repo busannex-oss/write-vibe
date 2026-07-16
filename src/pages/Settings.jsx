@@ -24,7 +24,8 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  Youtube
+  Youtube,
+  FileText
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -34,6 +35,7 @@ import HeroImageManager from "@/components/HeroImageManager";
 import WhiteLabelBranding from "@/components/WhiteLabelBranding";
 import WebsiteBranding from "@/components/WebsiteBranding";
 import EmailPreferences from "@/components/EmailPreferences";
+import PIBQuestionnaire from "@/components/pib/PIBQuestionnaire";
 
 const SOCIAL_PLATFORMS = [
   { id: "facebook", name: "Facebook", icon: Facebook },
@@ -195,6 +197,10 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
           <TabsTrigger value="profile" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <User className="w-4 h-4 mr-2" />
             Profile
+          </TabsTrigger>
+          <TabsTrigger value="pib" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <FileText className="w-4 h-4 mr-2" />
+            PIB Questionnaire
           </TabsTrigger>
           <TabsTrigger value="billing" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <CreditCard className="w-4 h-4 mr-2" />
@@ -375,6 +381,11 @@ Create a compelling 2-3 paragraph author biography that sounds professional and 
               </>
             )}
           </Button>
+        </TabsContent>
+
+        {/* PIB Tab */}
+        <TabsContent value="pib" className="space-y-6">
+          <PIBQuestionnaire user={user} />
         </TabsContent>
 
         {/* Billing Tab */}

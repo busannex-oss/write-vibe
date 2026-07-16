@@ -1,0 +1,156 @@
+{
+  "name": "PIBQuestionnaire",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Owner's email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "completed"
+      ],
+      "default": "draft",
+      "description": "PIB completion status"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "PIB version number"
+    },
+    "pen_name": {
+      "type": "string",
+      "description": "Preferred pen name or author name"
+    },
+    "author_bio": {
+      "type": "string",
+      "description": "Comprehensive author biography"
+    },
+    "writing_style": {
+      "type": "string",
+      "description": "Preferred writing style (e.g., conversational, literary, fast-paced)"
+    },
+    "author_voice": {
+      "type": "string",
+      "description": "Author voice and tone description"
+    },
+    "preferred_pov": {
+      "type": "string",
+      "enum": [
+        "first_person",
+        "third_person_limited",
+        "third_person_omniscient",
+        "second_person",
+        "mixed"
+      ],
+      "description": "Preferred narrative point of view"
+    },
+    "content_rating": {
+      "type": "string",
+      "enum": [
+        "G",
+        "PG",
+        "PG-13",
+        "R",
+        "MA"
+      ],
+      "description": "Content rating preference"
+    },
+    "genres": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred genres"
+    },
+    "core_themes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recurring themes the author explores"
+    },
+    "inspirations": {
+      "type": "string",
+      "description": "Authors, books, or experiences that inspire them"
+    },
+    "unique_perspective": {
+      "type": "string",
+      "description": "What makes the author's voice unique"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Target audience description"
+    },
+    "ideal_reader": {
+      "type": "string",
+      "description": "Ideal reader persona"
+    },
+    "publishing_goals": {
+      "type": "string",
+      "description": "Author's publishing goals and aspirations"
+    },
+    "experience_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "experienced",
+        "published"
+      ],
+      "description": "Writing experience level"
+    },
+    "content_boundaries": {
+      "type": "string",
+      "description": "Topics or content to avoid"
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "Timestamp when PIB was marked completed"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
