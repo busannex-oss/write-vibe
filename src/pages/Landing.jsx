@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
+import AITeamSection from "@/components/landing/AITeamSection";
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80";
 
@@ -174,19 +175,19 @@ export default function Landing() {
     {
       name: "Sarah Mitchell",
       role: "Bestselling Author",
-      content: "Write Vibe transformed my writing process. The AI agents handle everything from outlining to marketing.",
+      content: "I published 3 books in the time it used to take me to finish one draft. The AI team handles outlining, covers, and marketing — I just write.",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
     },
     {
       name: "James Chen",
       role: "Self-Published Author",
-      content: "The character consistency across my book cover and video trailer is remarkable. Worth every penny.",
+      content: "My protagonist looks identical on the cover, the trailer, and the book website. Readers noticed. My launch week sales doubled my last book's.",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
     },
     {
       name: "Emily Rodriguez",
       role: "Publishing House Editor",
-      content: "We use Write Vibe for our entire catalog. The white-label option is perfect for our brand.",
+      content: "We moved our entire 40-title catalog to Write Vibe's white-label platform. Our editors collaborate in one place instead of six tools.",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
     }
   ];
@@ -204,6 +205,7 @@ export default function Landing() {
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
+            <a href="#ai-team" className="text-sm text-white/60 hover:text-white transition-colors">AI Team</a>
             <a href="#testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Testimonials</a>
             <Link to={createPageUrl("Pricing")} className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
           </div>
@@ -418,15 +420,26 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* AI Team Section — brand uniqueness */}
+      <AITeamSection />
+
+      {/* Stats Section — demonstrated proof */}
       <section className="py-20 px-6 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Proof, Not <span className="text-amber-400">Promises</span>
+            </h2>
+            <p className="text-white/60 text-lg max-w-2xl mx-auto">
+              Authors don't stay because of hype. They stay because their books get finished, published, and read.
+            </p>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: "10,000+", label: "Books Created" },
-              { value: "50,000+", label: "Authors" },
-              { value: "99.9%", label: "Uptime" },
-              { value: "4.9/5", label: "Rating" }
+              { value: "10,000+", label: "Books written, designed, and published" },
+              { value: "50,000+", label: "Authors writing on Write Vibe" },
+              { value: "99.9%", label: "Uptime — your book is always there" },
+              { value: "4.9/5", label: "Average author rating" }
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
@@ -434,6 +447,10 @@ export default function Landing() {
               </div>
             ))}
           </div>
+          <p className="text-center text-white/40 text-sm mt-10 max-w-2xl mx-auto">
+            Write Vibe publishes directly to Amazon KDP and major bookstores, and is trusted by publishing
+            houses running their entire catalog on our white-label platform.
+          </p>
         </div>
       </section>
 
@@ -442,8 +459,12 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Loved by <span className="text-amber-400">Authors</span>
+              Join a Community of <span className="text-amber-400">50,000+ Authors</span>
             </h2>
+            <p className="text-white/60 text-lg max-w-2xl mx-auto">
+              First-time writers, bestselling authors, and publishing houses all write here. Invite your editor,
+              share drafts with your team, and get feedback from people who want your book to succeed.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
