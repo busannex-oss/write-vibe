@@ -45,16 +45,26 @@ export default function ErrorDashboard() {
   const resolveMutation = useMutation({
     mutationFn: ({ id, notes }) => base44.entities.ErrorLog.update(id, { resolved: true, resolution_notes: notes }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["errorLogs"] }),
+    onError: () => queryClient.invalidateQueries({ queryKey: ["errorLogs"] }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.ErrorLog.delete(id),
+    mutationFn: async (id) => {
+      try {
+        return await base44.entities.ErrorLog.delete(id);
+      } catch (err) {
+        // 404 = already deleted; treat as success and refresh the list
+        if (err?.response?.status === 404 || /not found/i.test(err?.message || "")) return;
+        throw err;
+      }
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["errorLogs"] }),
+    onError: () => queryClient.invalidateQueries({ queryKey: ["errorLogs"] }),
   });
 
   const clearResolved = async () => {
-    const resolved = errors.filter(e => e.resolved);
-    await Promise.all(resolved.map(e => deleteMutation.mutateAsync(e.id)));
+    await base44.entities.ErrorLog.deleteMany({ resolved: true });
+    queryClient.invalidateQueries({ queryKey: ["errorLogs"] });
   };
 
   const analyzeWithAI = async (error) => {

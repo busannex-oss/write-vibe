@@ -47,11 +47,22 @@ Deno.serve(async (req) => {
       fixApplied = true;
     }
 
-    // Mark error as resolved
-    await base44.asServiceRole.entities.ErrorLog.update(errorId, {
-      resolved: true,
-      resolution_notes: fixDetails
-    });
+    // Mark error as resolved (ignore if the log was already deleted)
+    try {
+      await base44.asServiceRole.entities.ErrorLog.update(errorId, {
+        resolved: true,
+        resolution_notes: fixDetails
+      });
+    } catch (updateErr) {
+      if (/not found/i.test(updateErr?.message || '')) {
+        return Response.json({
+          success: true,
+          message: 'Error log already removed',
+          fixDetails
+        });
+      }
+      throw updateErr;
+    }
 
     return Response.json({
       success: true,
