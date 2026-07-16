@@ -18,6 +18,7 @@ const HIERARCHY_STRUCTURE = {
     agents: [
       {
         id: "brand_guardian", name: "Marcus Whitmore", title: "BRAND GUARDIAN", age: 41, role: "executive", status: "active",
+        governance_level: 3,
         pillars: ["Proper Business Structure", "Strategic Application"],
         description: "Enforces brand compliance and consistency across all outputs",
         mission: "To be the unwavering conscience of every creative decision — ensuring the author's voice, visual identity, and messaging remain coherent from first draft to final sale.",
@@ -28,6 +29,7 @@ const HIERARCHY_STRUCTURE = {
       },
       {
         id: "automation_orchestrator", name: "Sam Johnson", title: "AUTOMATION ORCHESTRATOR", age: 38, role: "executive", status: "active",
+        governance_level: 3,
         pillars: ["Business Intelligence", "Proper Business Structure"],
         description: "Manages workflow automation, SLA enforcement, and failure recovery",
         mission: "To keep the entire agent ecosystem running like a well-oiled machine — eliminating bottlenecks, recovering from failures, and making sure every task gets where it needs to go on time.",
@@ -38,6 +40,7 @@ const HIERARCHY_STRUCTURE = {
       },
       {
         id: "project_manager", name: "Sam Thompson", title: "PROJECT MANAGER", age: 42, role: "executive", status: "active",
+        governance_level: 3,
         pillars: ["Proper Business Structure", "Business Intelligence"],
         description: "Oversees all book projects from conception to publication",
         mission: "To shepherd every book from a raw idea to a polished, published reality — on schedule, on budget, and exceeding the author's vision.",
