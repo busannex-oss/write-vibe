@@ -19,7 +19,13 @@ Deno.serve(async (req) => {
       svc.entities.DashboardTask.filter({ source: 'sherry_onboarding' }, '-created_date', 200),
     ]);
     const welcomedEmails = new Set(onboardingTasks.map(t => t.user_email));
-    const newUsers = users.filter(u => u.email && !welcomedEmails.has(u.email));
+    // Only welcome users who joined after this workflow went live — existing users are skipped
+    const LAUNCH_DATE = '2026-07-16T03:00:00Z';
+    const newUsers = users.filter(u =>
+      u.email &&
+      !welcomedEmails.has(u.email) &&
+      new Date(u.created_date) > new Date(LAUNCH_DATE)
+    );
 
     const welcomed = [];
     for (const newUser of newUsers) {
