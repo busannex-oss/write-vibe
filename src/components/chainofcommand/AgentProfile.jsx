@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus, BookOpen, Calendar, Heart, Mic, Users, Volume2 } from "lucide-react";
+import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus, BookOpen, Calendar, Heart, Mic, MicOff, Users, Volume2 } from "lucide-react";
 import { VOICE_PROFILES } from "@/components/chainofcommand/agentEnrichment";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,11 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [voiceError, setVoiceError] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const chatEndRef = useRef(null);
 
   // Memory
@@ -82,6 +87,45 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
     }
   };
 
+  // ── VOICE INTERACTION ─────────────────────────────────────────────────────
+  const startRecording = async () => {
+    setVoiceError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (audioChunksRef.current.length === 0) return;
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const file = new File([audioBlob], "voice_input.webm", { type: "audio/webm" });
+        try {
+          const uploadRes = await base44.integrations.Core.UploadFile({ file });
+          const transcript = await base44.integrations.Core.TranscribeAudio({ audio_url: uploadRes.file_url });
+          const text = typeof transcript === "string" ? transcript : transcript?.text || "";
+          if (text.trim()) sendMessage(text, true);
+        } catch (_) {
+          setVoiceError("Could not process your voice. Please try again or use text.");
+        }
+      };
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setRecording(true);
+    } catch (_) {
+      setVoiceError("Microphone access denied. Please allow mic access to use voice mode.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && recording) {
+      mediaRecorderRef.current.stop();
+      setRecording(false);
+    }
+  };
+
   const loadBooks = async () => {
     setBooksLoading(true);
     try {
@@ -107,10 +151,11 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
   const statusBadge = getStatusBadge(agent.status);
 
   // ── CHAT ───────────────────────────────────────────────────────────────────
-  const sendMessage = async () => {
-    if (!chatInput.trim() || chatLoading) return;
-    const userMsg = chatInput.trim();
-    setChatInput("");
+  const sendMessage = async (overrideText, autoSpeak = false) => {
+    const inputText = overrideText || chatInput;
+    if (!inputText.trim() || chatLoading) return;
+    const userMsg = inputText.trim();
+    if (!overrideText) setChatInput("");
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setChatLoading(true);
 
@@ -147,6 +192,9 @@ ${agent.name}:`,
 
     const assistantMsg = typeof response === "string" ? response : response?.text || "I understand. How can I help further?";
     setMessages(prev => [...prev, { role: "assistant", content: assistantMsg }]);
+
+    // Auto-speak response in voice mode
+    if (autoSpeak) speak(assistantMsg);
 
     // Auto-save meaningful exchanges to memory
     try {
@@ -534,22 +582,59 @@ The person looks intelligent, confident and approachable. Ultra-detailed face, 4
                 )}
                 <div ref={chatEndRef} />
               </div>
-              <div className="p-4 border-t shrink-0" style={{ borderColor: brandColors.accent + "30" }}>
-                <div className="flex gap-2">
-                  <Input
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && sendMessage()}
-                    placeholder={`Message ${agent.name}...`}
-                    className="flex-1 text-sm"
-                    style={{ backgroundColor: brandColors.secondary + "60", borderColor: brandColors.accent + "40", color: brandColors.text }}
-                    disabled={chatLoading}
-                  />
-                  <Button onClick={sendMessage} disabled={chatLoading || !chatInput.trim()}
+              <div className="p-4 border-t shrink-0 space-y-2" style={{ borderColor: brandColors.accent + "30" }}>
+                {voiceError && (
+                  <p className="text-xs px-3 py-2 rounded-lg" style={{ color: "#fca5a5", backgroundColor: "#7f1d1d20" }}>
+                    {voiceError}
+                  </p>
+                )}
+                <div className="flex gap-2 items-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => { setVoiceMode(!voiceMode); setVoiceError(null); }}
                     className="shrink-0"
-                    style={{ backgroundColor: brandColors.accent, color: "#000" }}>
-                    <Send className="w-4 h-4" />
+                    style={{ color: voiceMode ? brandColors.accent : brandColors.text + "60" }}
+                    title={voiceMode ? "Switch to text mode" : "Switch to voice mode"}
+                  >
+                    {voiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
                   </Button>
+                  {voiceMode ? (
+                    <Button
+                      onClick={recording ? stopRecording : startRecording}
+                      disabled={chatLoading}
+                      className="flex-1 gap-2"
+                      style={{
+                        backgroundColor: recording ? "#ef4444" : brandColors.accent,
+                        color: recording ? "#fff" : "#000"
+                      }}
+                    >
+                      {chatLoading ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" />Processing...</>
+                      ) : recording ? (
+                        <><span className="w-3 h-3 rounded-full bg-white animate-pulse" />Recording — tap to send</>
+                      ) : (
+                        <><Mic className="w-4 h-4" />Tap to speak</>
+                      )}
+                    </Button>
+                  ) : (
+                    <>
+                      <Input
+                        value={chatInput}
+                        onChange={e => setChatInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && sendMessage()}
+                        placeholder={`Message ${agent.name}...`}
+                        className="flex-1 text-sm"
+                        style={{ backgroundColor: brandColors.secondary + "60", borderColor: brandColors.accent + "40", color: brandColors.text }}
+                        disabled={chatLoading}
+                      />
+                      <Button onClick={() => sendMessage()} disabled={chatLoading || !chatInput.trim()}
+                        className="shrink-0"
+                        style={{ backgroundColor: brandColors.accent, color: "#000" }}>
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
