@@ -8,8 +8,8 @@ export default function ChatMessage({ message, onReplay }) {
   return (
     <div className={cn("flex items-end gap-2", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 mb-1">
-          <Sparkles className="w-4 h-4 text-white" />
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 mb-1">
+          <img src="https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/1394b08c0_generated_image.png" alt="Sherry Givens" className="w-full h-full object-cover" />
         </div>
       )}
       <div className={cn(

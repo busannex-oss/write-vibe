@@ -9,7 +9,7 @@ const STORAGE_KEY = 'cs_chat_history';
 
 const WELCOME_MESSAGE = {
   role: 'agent',
-  content: "Hey there! 👋 I'm Sam — I help folks navigate Write Vibe. Whether you're dreaming up your first book or trying to figure out the whole publishing thing, I've got you. What are you working on?",
+  content: "Hey there! 👋 I'm Sherry Givens — I'm here to help you make the most of Write Vibe. Whether you're just starting your first book or you're deep in the publishing weeds, I've got you. So — what are you working on these days?",
 };
 
 export default function FloatingChatWidget() {
@@ -107,13 +107,13 @@ export default function FloatingChatWidget() {
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <img src="https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/1394b08c0_generated_image.png" alt="Sherry Givens" className="w-full h-full object-cover" />
                   </div>
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white text-sm">Sam</p>
+                  <p className="font-semibold text-white text-sm">Sherry Givens</p>
                   <p className="text-xs text-green-400">● Customer Service • Online</p>
                 </div>
               </div>
@@ -150,8 +150,8 @@ export default function FloatingChatWidget() {
               ))}
               {loading && (
                 <div className="flex items-end gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                    <img src="https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/1394b08c0_generated_image.png" alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className="bg-white/10 rounded-2xl rounded-bl-md px-4 py-3 flex gap-1">
                     <span className="w-2 h-2 rounded-full bg-white/60 animate-bounce" style={{ animationDelay: '0ms' }} />
