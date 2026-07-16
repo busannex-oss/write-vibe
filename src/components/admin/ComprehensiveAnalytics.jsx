@@ -12,6 +12,7 @@ import {
   TrendingUp, Users, Eye, MousePointer, DollarSign, Target,
   Zap, Globe, RefreshCw, Loader2, AlertTriangle, BookOpen, BarChart3, Megaphone
 } from "lucide-react";
+import PredictiveAnalytics from "@/components/admin/PredictiveAnalytics";
 
 const DATE_RANGES = [
   { label: "7 Days", value: "7d" },
@@ -176,6 +177,9 @@ export default function ComprehensiveAnalytics() {
             <KPICard icon={TrendingUp} label="ROAS" value={d.roas ? `${d.roas}×` : "—"} sub="return on ad spend" color="green" trend={5} />
             <KPICard icon={Target} label="Conversions" value={fmt(d.conversions)} sub={d.conversion_rate} color="red" trend={15} />
           </div>
+
+          {/* ── Predictive Analytics ────────────────────────────────────────── */}
+          <PredictiveAnalytics dailySessions={dailySessions} kpis={d} />
 
           {/* ── Sessions Chart + Traffic Sources ────────────────────────────── */}
           <div className="grid lg:grid-cols-3 gap-4">

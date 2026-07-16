@@ -204,18 +204,18 @@ Follow AP style guidelines.`;
         status: "draft"
       };
 
-      // Press releases are versioned — mark prior versions non-current and set new version number
-      if (type === "press_release") {
-        const existing = documents.filter(d => d.type === "press_release" && d.book_id === selectedBook);
-        const nextVersion = (existing.reduce((m, d) => Math.max(m, d.version_number || 0), 0)) + 1;
+      // All generated documents are auto-saved as versions — mark prior versions non-current
+      const existing = documents.filter(d => d.type === type && d.book_id === selectedBook);
+      const nextVersion = (existing.reduce((m, d) => Math.max(m, d.version_number || 0), 0)) + 1;
+      if (existing.length > 0) {
         await base44.entities.Document.updateMany(
-          { book_id: selectedBook, type: "press_release" },
+          { book_id: selectedBook, type },
           { $set: { is_current: false } }
         );
-        docData.version_number = nextVersion;
-        docData.is_current = true;
-        docData.generated_at = new Date().toISOString();
       }
+      docData.version_number = nextVersion;
+      docData.is_current = true;
+      docData.generated_at = new Date().toISOString();
 
       await createDocMutation.mutateAsync(docData);
 
@@ -227,10 +227,7 @@ Follow AP style guidelines.`;
 
   const filteredDocs = documents.filter(d => d.type === activeTab)
     .slice()
-    .sort((a, b) => {
-      if (activeTab === "press_release") return (b.version_number || 1) - (a.version_number || 1);
-      return 0;
-    });
+    .sort((a, b) => (b.version_number || 1) - (a.version_number || 1));
 
   const downloadDocument = (doc) => {
     const element = document.createElement('a');
@@ -317,7 +314,7 @@ Return the refined, complete press release.`,
 
   const restoreVersion = async (doc) => {
     await base44.entities.Document.updateMany(
-      { book_id: doc.book_id, type: "press_release" },
+      { book_id: doc.book_id, type: doc.type },
       { $set: { is_current: false } }
     );
     await updateDocMutation.mutateAsync({ id: doc.id, data: { is_current: true, status: "draft" } });
@@ -436,12 +433,10 @@ Return the refined, complete press release.`,
                             }`}>
                               {doc.status}
                             </Badge>
-                            {doc.type === "press_release" && (
-                              <Badge className="bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                                v{doc.version_number || 1}
-                              </Badge>
-                            )}
-                            {doc.type === "press_release" && doc.is_current === true && (
+                            <Badge className="bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                              v{doc.version_number || 1}
+                            </Badge>
+                            {doc.is_current === true && (
                               <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                 Current
                               </Badge>
@@ -563,7 +558,7 @@ Return the refined, complete press release.`,
                                   Refine
                                 </Button>
                               )}
-                              {doc.type === "press_release" && doc.is_current === false && (
+                              {doc.is_current === false && (
                                 <Button
                                   onClick={() => restoreVersion(doc)}
                                   disabled={updateDocMutation.isPending}
