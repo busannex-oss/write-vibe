@@ -25,7 +25,7 @@
     "certification_name": {
       "type": "string",
       "description": "Name of the certification awarded",
-      "default": "AI Consultant Certification"
+      "default": "AI CPD Consultant"
     },
     "accreditation_body": {
       "type": "string",

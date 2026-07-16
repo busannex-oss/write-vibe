@@ -47,7 +47,7 @@ export default function Certifications() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-1 flex items-center gap-2">
-              <Award className="w-7 h-7 text-amber-400" /> AI Consultant Certifications
+              <Award className="w-7 h-7 text-amber-400" /> AI CPD Consultant Certifications
             </h1>
             <p className="text-white/40 text-sm">
               CPD-accredited certifications issued to Advisory Board members and C-Suite Agents.
