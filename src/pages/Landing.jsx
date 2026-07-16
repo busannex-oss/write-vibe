@@ -14,7 +14,11 @@ import {
   Check,
   Star,
   Zap,
-  Shield
+  Shield,
+  PenLine,
+  Rocket,
+  Clock,
+  TrendingUp
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
@@ -279,14 +283,105 @@ export default function Landing() {
             className="mt-16 relative"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
-            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10">
-              <img 
-                src={heroImage} 
-                alt="Diverse Authors Proudly Holding Their Published Books"
+            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10 relative">
+              <video 
+                autoPlay 
+                muted 
+                loop 
+                playsInline
+                poster={heroImage}
                 className="w-full h-[220px] sm:h-[360px] md:h-[500px] object-cover"
-              />
+              >
+                <source src="https://media.base44.com/videos/public/6975e45ac14c500ed1fcdcf2/844329121_Hero_Promo_Video.mp4" type="video/mp4" />
+              </video>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Problem Section */}
+      <section className="py-20 px-6 border-t border-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            The Book Inside You <span className="text-amber-400">Deserves to Exist</span>
+          </h2>
+          <p className="text-white/60 text-lg max-w-2xl mx-auto mb-12">
+            Most people carry a book inside them for years — maybe decades. They never start because the process feels impossible: outlining, writing, editing, cover design, formatting, publishing, marketing. It's overwhelming. So the book stays a dream.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+                <Clock className="w-5 h-5 text-red-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">Stalled by Overwhelm</h3>
+              <p className="text-sm text-white/50">Too many steps, too many tools, too many decisions — so nothing gets started.</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+                <BookOpen className="w-5 h-5 text-red-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">Lost Without Structure</h3>
+              <p className="text-sm text-white/50">Without a clear outline and consistent characters, stories fall apart by chapter three.</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+                <TrendingUp className="w-5 h-5 text-red-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">Stuck Before Publishing</h3>
+              <p className="text-sm text-white/50">Writing is hard enough — covers, trailers, and marketing stop most authors cold.</p>
+            </div>
+          </div>
+          <div className="mt-12 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-amber-500/10 border border-amber-500/20">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span className="text-white/80">Write Vibe was built to remove every one of those barriers.</span>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 px-6 bg-white/[0.02]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Three Steps to Your <span className="text-amber-400">Published Book</span>
+            </h2>
+            <p className="text-white/60 text-lg max-w-2xl mx-auto">
+              No writing experience required. No juggling a dozen tools. Just you, your story, and AI that does the heavy lifting.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { step: "01", icon: PenLine, title: "Establish Your Voice", description: "Complete your Personal Intelligence Blueprint — a one-time setup that captures your unique voice, style, and goals. This becomes the source of truth for everything AI creates on your behalf." },
+              { step: "02", icon: Wand2, title: "Let AI Build Your Book", description: "AI agents generate your characters, outline, manuscript, cover, and video trailer — all guided by your voice. Review, refine, and make it yours at every step." },
+              { step: "03", icon: Rocket, title: "Publish & Market", description: "Publish directly to Amazon and major bookstores. Launch your book website, newsletter, and marketing campaigns — all from one place." }
+            ].map((item, index) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center mb-5">
+                  <item.icon className="w-7 h-7 text-amber-400" />
+                </div>
+                <div className="text-5xl font-bold text-white/10 mb-2">{item.step}</div>
+                <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
+                <p className="text-white/50 leading-relaxed">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button 
+              size="lg" 
+              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+            >
+              Start Step One — Free
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -410,21 +505,43 @@ export default function Landing() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="p-6 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-               Your Book Is Closer Than You Think
-             </h2>
-             <p className="text-white/60 mb-8 max-w-xl mx-auto">
-               Start your 7-day free trial and watch your first chapter come together today — no credit card, no risk, just the book you've been carrying finally making it onto the page.
-             </p>
-            <Button 
-              size="lg" 
-              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
-            >
-              Start Your Free Trial
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
+          <div className="p-6 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
+                <Zap className="w-4 h-4 text-amber-400" />
+                <span className="text-sm text-amber-300">7-Day Free Trial • No Credit Card Required</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+                Your Book Is Closer Than You Think
+              </h2>
+              <p className="text-white/60 mb-8 max-w-xl mx-auto">
+                The story you've been carrying deserves to be a book. Start your free trial today and watch your first chapter come together before the week is over — no credit card, no risk, just the book you've been carrying finally making it onto the page.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+                <Button 
+                  size="lg" 
+                  onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+                >
+                  Start Your Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <div className="flex items-center gap-4 text-sm text-white/50">
+                  <div className="flex items-center gap-1.5">
+                    <Shield className="w-4 h-4 text-emerald-400" />
+                    <span>No credit card</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Cancel anytime</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-white/40">
+                Join 50,000+ authors who turned their ideas into published books with Write Vibe.
+              </p>
+            </div>
           </div>
         </div>
       </section>
