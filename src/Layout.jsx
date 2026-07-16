@@ -14,7 +14,7 @@ import NavCollapsible from "@/components/NavCollapsible";
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
 const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments"];
-const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates"];
+const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages"];
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -79,6 +79,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Team",       href: "Team",        icon: Users, children: [
       { name: "Document Review", href: "DocumentReview", icon: MessageSquare },
     ]},
+    { name: "Customer Service", href: "InternalMessages", icon: MessageSquare },
     { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
@@ -87,6 +88,7 @@ export default function Layout({ children, currentPageName }) {
         { name: "User Management", href: "UserManagement", icon: Crown, category: "Core" },
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Core" },
         { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Core" },
+        { name: "Internal Messages", href: "InternalMessages", icon: MessageSquare, category: "Core" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "Strategy" },
         { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Documentation" },
         { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Documentation" },
