@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Pencil, FileText, Calendar } from "lucide-react";
+import { CheckCircle2, Pencil, FileText, Calendar, Lock } from "lucide-react";
 
 const POV_LABELS = {
   first_person: "First Person",
@@ -41,29 +41,39 @@ export default function PIBSummary({ pib, onEdit }) {
           <div>
             <CardTitle className="text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-amber-400" />
-              PIB Questionnaire
+              Personal Intelligence Blueprint
             </CardTitle>
             <CardDescription className="text-white/50 mt-1">
-              Your Personal Intelligence Blueprint — attached to your profile for all books
+              Your original voice and source of truth — the foundation for every book you create
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
+              <Lock className="w-3 h-3 mr-1" />
+              Source of Truth
+            </Badge>
             <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
               <CheckCircle2 className="w-3 h-3 mr-1" />
               Completed
             </Badge>
             <Button onClick={onEdit} variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
               <Pencil className="w-3.5 h-3.5 mr-1.5" />
-              Update / Regenerate
+              Refine Details
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
+          <Lock className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-white/70 leading-relaxed">
+            This is your <span className="text-amber-300 font-medium">original voice</span> — the source of truth that guides all AI-assisted writing in Write Vibe. It does not change. Every book, chapter, and character you create will stay true to who you are as an author.
+          </p>
+        </div>
         {completedDate && (
           <div className="flex items-center gap-2 text-xs text-white/40">
             <Calendar className="w-3.5 h-3.5" />
-            Version {pib.version || 1} • Last updated {completedDate}
+            Version {pib.version || 1} • Established {completedDate}
           </div>
         )}
 

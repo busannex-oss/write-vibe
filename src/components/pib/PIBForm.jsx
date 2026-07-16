@@ -55,7 +55,9 @@ export default function PIBForm({ user, existingPIB, onSaved, onCancel }) {
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {
-      const prompt = `You are helping an author complete their Personal Intelligence Blueprint (PIB) for a book writing platform called Write Vibe.
+      const prompt = `You are helping an author establish their Personal Intelligence Blueprint (PIB) for a book writing platform called Write Vibe.
+
+CRITICAL PRINCIPLE: The PIB is the author's ORIGINAL VOICE and SOURCE OF TRUTH. It does not change. Your role is to clarify and enrich what the author has already expressed — never to replace, override, or fabricate their authentic voice. Stay true to who they are.
 
 Author name: ${form.pen_name || user?.full_name || "Unknown"}
 Current bio: ${form.author_bio || "None"}
@@ -65,7 +67,7 @@ Goals: ${form.publishing_goals || "Unknown"}
 Experience: ${form.experience_level || "Unknown"}
 Inspirations: ${form.inspirations || "Unknown"}
 
-Based on the information above, generate a comprehensive and compelling PIB. Fill in or enhance ALL fields below with rich, specific, professional content. Make the author bio compelling (2-3 paragraphs). Make writing style and voice descriptions vivid and specific. Suggest 3-5 core themes and 3-5 genres that fit. Make target audience and ideal reader descriptions detailed.`;
+Based on the information above, enrich and clarify the author's PIB. Fill in or enhance ALL fields below with rich, specific content that authentically reflects who this author is. Preserve the author's original intent and voice — expand on what they've shared, don't replace it. Make the author bio compelling (2-3 paragraphs). Make writing style and voice descriptions vivid and specific. Suggest 3-5 core themes and 3-5 genres that fit. Make target audience and ideal reader descriptions detailed.`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -113,10 +115,10 @@ Based on the information above, generate a comprehensive and compelling PIB. Fil
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <CardTitle className="text-white">
-              {existingPIB ? "Update PIB Questionnaire" : "Complete Your PIB Questionnaire"}
+              {existingPIB ? "Refine Your Personal Intelligence Blueprint" : "Establish Your Personal Intelligence Blueprint"}
             </CardTitle>
             <CardDescription className="text-white/50 mt-1">
-              Your Personal Intelligence Blueprint — used across all your books
+              Your original voice and source of truth — the foundation for every book you create. This does not change.
             </CardDescription>
           </div>
           <AIGenerateButton onClick={handleRegenerate} loading={regenerating} label="Regenerate with AI" size="sm" />
