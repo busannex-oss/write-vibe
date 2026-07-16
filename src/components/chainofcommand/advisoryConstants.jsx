@@ -12,6 +12,10 @@ export const ADVISORS = [
   { id: "advisory_thurgood",             name: "Thurgood Marshall",    expertise_tags: ["Intellectual Property", "Literary Rights", "Publishing Law", "Content Ethics"] },
   { id: "advisory_maya_angelou",         name: "Maya Angelou",         expertise_tags: ["Authentic Voice", "Memoir", "Emotional Truth", "Prose Poetry", "Courage in Writing"] },
   { id: "advisory_slade_kevin_morrison", name: "Slade Kevin Morrison", expertise_tags: ["Platform Vision", "Founder Strategy", "Culture Building", "Mission Alignment", "Author Empowerment"] },
+  { id: "advisory_marcus_rosier",     name: "Marcus Y. Rosier",    expertise_tags: ["Leadership", "Strategic Vision", "Founder Mentorship", "Business Scaling", "Executive Coaching"] },
+  { id: "advisory_gary_vee",          name: "Gary Vaynerchuk",     expertise_tags: ["Digital Marketing", "Personal Branding", "Social Media", "Content Strategy", "Audience Building", "E-commerce"] },
+  { id: "advisory_spectacular_smith", name: "Spectacular Smith",   expertise_tags: ["Social Media Marketing", "Brand Building", "Viral Strategy", "Hip-Hop Entrepreneurship", "Digital Audience Growth"] },
+  { id: "advisory_bozoma_saint_john", name: "Bozoma Saint John",   expertise_tags: ["Brand Marketing", "Cultural Strategy", "C-Suite Leadership", "Diversity & Inclusion", "Consumer Insights", "Entertainment Marketing"] },
 ];
 
 export const ADVISOR_MAP = Object.fromEntries(ADVISORS.map(a => [a.name, a]));

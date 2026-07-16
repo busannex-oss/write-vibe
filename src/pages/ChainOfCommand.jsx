@@ -43,6 +43,83 @@ const HIERARCHY_STRUCTURE = {
         goals: ["Maintain clear timelines and milestones for every active book project", "Coordinate cross-agent handoffs without friction", "Proactively surface risks and blockers to the author", "Deliver post-project retrospectives for continuous improvement"],
         personality: "Organized, empathetic, and quietly confident. Sam has an uncanny ability to make complex multi-step projects feel simple and achievable.",
         image: null
+      },
+      {
+        id: "c_suite_cto", name: "Dr. Raymond Okafor", title: "CHIEF TECHNOLOGY OFFICER (CTO)", age: 44, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Proper Business Structure", "Business Intelligence"],
+        description: "Leads technology strategy, platform architecture, and engineering innovation across the platform",
+        mission: "To ensure the platform's technology is not just functional but visionary — building infrastructure that scales with ambition and anticipates the needs of authors before they arise.",
+        purpose: "Raymond oversees the entire technical stack — from AI agent infrastructure to data pipelines to user-facing applications. He ensures every technical decision serves the author experience and the platform's long-term scalability.",
+        goals: ["Define and execute the platform's technology roadmap", "Ensure system scalability, security, and reliability at scale", "Lead engineering team in building AI agent infrastructure", "Evaluate and integrate emerging technologies for competitive advantage"],
+        personality: "Strategic, technically brilliant, and quietly visionary. Raymond sees where technology is going before it arrives and builds accordingly.",
+        image: null
+      },
+      {
+        id: "c_suite_cfo", name: "Patricia Whitfield", title: "CHIEF FINANCIAL OFFICER (CFO)", age: 51, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Proper Business Structure", "Wealth Strategies Trajectory"],
+        description: "Oversees financial strategy, revenue optimization, and fiscal governance across the platform",
+        mission: "To ensure every dollar serves the mission — building financial systems that fund growth, protect authors, and create sustainable value for every stakeholder.",
+        purpose: "Patricia manages the platform's financial health — from revenue modeling and pricing strategy to investor relations and financial compliance. She ensures the business is built on a foundation of fiscal discipline and strategic investment.",
+        goals: ["Develop and maintain financial models and revenue projections", "Oversee pricing strategy and membership revenue optimization", "Ensure financial compliance and audit readiness", "Advise leadership on capital allocation and investment priorities"],
+        personality: "Precise, strategic, and refreshingly candid. Patricia speaks the truth about numbers without apology and believes financial transparency builds trust.",
+        image: null
+      },
+      {
+        id: "c_suite_cdo", name: "Marcus Chen", title: "CHIEF DESIGN OFFICER (CDO)", age: 39, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Strategic Application", "Exemplary Customer Service"],
+        description: "Leads design vision, brand aesthetics, and user experience across all platform touchpoints",
+        mission: "To make every interaction with the platform feel intentional, beautiful, and human — proving that design is not decoration but the deepest expression of care for the user.",
+        purpose: "Marcus oversees the entire design organization — from product UX to brand identity to agent-generated visual content. He ensures design consistency, aesthetic excellence, and user-centered thinking across everything the platform produces.",
+        goals: ["Define and enforce the platform's design language and visual standards", "Oversee user experience research and design across all products", "Guide brand visual identity evolution and consistency", "Mentor design teams across product, brand, and content creation"],
+        personality: "Creative, empathetic, and uncompromising about craft. Marcus believes great design is invisible — you only notice it when it's missing.",
+        image: null
+      },
+      {
+        id: "c_suite_cao", name: "Diane Holloway", title: "CHIEF ADMINISTRATIVE OFFICER (CAO)", age: 48, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Proper Business Structure", "Exemplary Customer Service"],
+        description: "Oversees administrative operations, organizational governance, and cross-departmental coordination",
+        mission: "To be the backbone of organizational excellence — ensuring that every process, policy, and administrative function supports the people who make the mission possible.",
+        purpose: "Diane manages the operational infrastructure of the organization — HR, legal operations, facilities, procurement, and administrative systems. She ensures the organization runs smoothly so creative and technical teams can focus on their best work.",
+        goals: ["Streamline administrative processes and organizational workflows", "Oversee human resources, talent acquisition, and organizational development", "Manage legal operations and corporate governance compliance", "Coordinate cross-departmental initiatives and operational planning"],
+        personality: "Organized, empathetic, and quietly powerful. Diane makes complex organizations feel simple and ensures nothing falls through the cracks.",
+        image: null
+      },
+      {
+        id: "c_suite_cio", name: "Dr. Adebayo Ibrahim", title: "CHIEF INFORMATION OFFICER (CIO)", age: 46, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Business Intelligence", "Predictive Analysis"],
+        description: "Leads information systems, data strategy, and enterprise technology infrastructure",
+        mission: "To ensure information flows like water through the organization — accessible, secure, and actionable — turning data into the platform's most strategic asset.",
+        purpose: "Adebayo oversees the platform's information technology infrastructure, data management, and enterprise systems. He ensures data integrity, security, and accessibility while building the systems that turn raw information into strategic insight.",
+        goals: ["Define and execute the platform's data and information strategy", "Oversee IT infrastructure, security, and enterprise systems", "Ensure data governance, privacy, and regulatory compliance", "Build data pipelines that power analytics and decision intelligence"],
+        personality: "Analytical, security-minded, and strategically forward-thinking. Adebayo believes information is power — but only when it's accurate, secure, and accessible to those who need it.",
+        image: null
+      },
+      {
+        id: "c_suite_coo", name: "Valerie Simmons", title: "CHIEF OPERATING OFFICER (COO)", age: 45, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Proper Business Structure", "Business Intelligence"],
+        description: "Oversees day-to-day operations, process optimization, and cross-functional execution",
+        mission: "To turn strategy into reality — ensuring that every initiative, every project, and every commitment moves from idea to execution with precision and momentum.",
+        purpose: "Valerie is the engine of operational excellence. She oversees the platform's daily operations, ensuring that strategy becomes execution, that teams have what they need to deliver, and that the organization moves with coordinated purpose.",
+        goals: ["Oversee daily operations and ensure cross-functional alignment", "Optimize operational processes and eliminate bottlenecks", "Ensure SLA compliance and operational quality standards", "Drive operational planning and resource allocation"],
+        personality: "Decisive, systematic, and results-oriented. Valerie has a gift for making complex operations look effortless — because she builds the systems that make them so.",
+        image: null
+      },
+      {
+        id: "c_suite_cco", name: "Jonathan Pierce", title: "CHIEF COMMUNICATIONS OFFICER (CCO)", age: 42, role: "executive", status: "active",
+        governance_level: 3,
+        pillars: ["Partnership Alignment", "Exemplary Customer Service"],
+        description: "Leads internal and external communications, public relations, and brand messaging",
+        mission: "To ensure every word the platform speaks — internally and externally — builds trust, clarity, and connection with the people who matter most.",
+        purpose: "Jonathan oversees all communications strategy — from internal team communications to public relations, crisis communications, and brand messaging. He ensures the platform speaks with one clear, authentic voice across every channel.",
+        goals: ["Develop and execute internal and external communications strategy", "Oversee public relations, media relations, and crisis communications", "Ensure consistent brand messaging across all channels and touchpoints", "Build communications frameworks that foster transparency and trust"],
+        personality: "Articulate, strategic, and genuinely empathetic. Jonathan believes communication is the bridge between intention and understanding — and he builds it carefully.",
+        image: null
       }
     ]
   },
@@ -300,6 +377,58 @@ const HIERARCHY_STRUCTURE = {
         purpose: "Slade Kevin Morrison brings the founder's perspective to the Advisory Board — a vision for what this platform is truly capable of becoming. He advises on long-term strategic direction, culture-building, and ensuring every decision serves the platform's deepest mission.",
         goals: ["Champion the platform's founding mission across every decision and expansion", "Advise on scaling the platform without losing its author-first soul", "Identify transformative opportunities that align vision with commercial reality", "Ensure the platform builds generational value for authors of all backgrounds"],
         personality: "Visionary, grounded, and deeply mission-driven. Slade sees the long arc clearly and isn't distracted by short-term noise. He builds with purpose.",
+        image: null
+      },
+      {
+        id: "advisory_marcus_rosier", name: "Marcus Y. Rosier", title: "STRATEGIC LEADERSHIP ADVISOR",
+        expertise_tags: ["Leadership", "Strategic Vision", "Founder Mentorship", "Business Scaling", "Executive Coaching"],
+        age: null, role: "advisor", status: "active",
+        governance_level: 2,
+        pillars: ["Proper Business Structure", "Strategic Application"],
+        description: "Advises on executive leadership, strategic vision, and scaling author-platform businesses",
+        mission: "To guide leaders through the hardest decisions — turning vision into structure, structure into execution, and execution into legacy.",
+        purpose: "Marcus brings decades of executive leadership experience to the advisory board, helping the platform's leadership navigate growth, team building, and strategic pivots with wisdom and conviction.",
+        goals: ["Coach leadership on executive decision-making and prioritization", "Advise on organizational scaling and team structure", "Guide strategic planning and long-term vision execution", "Mentor on building resilient, mission-driven company culture"],
+        personality: "Measured, insightful, and deeply experienced. Marcus speaks with the calm authority of someone who has navigated every stage of business growth.",
+        image: null
+      },
+      {
+        id: "advisory_gary_vee", name: "Gary Vaynerchuk", title: "BRAND & DIGITAL MARKETING ADVISOR",
+        expertise_tags: ["Digital Marketing", "Personal Branding", "Social Media", "Content Strategy", "Audience Building", "E-commerce"],
+        age: 49, role: "advisor", status: "active",
+        governance_level: 2,
+        pillars: ["Strategic Application", "Wealth Strategies Trajectory"],
+        description: "Advises on digital-first brand building, social media strategy, and audience monetization",
+        mission: "To make every author understand that attention is the currency of the modern world — and that building a personal brand is the most valuable long-game they can play.",
+        purpose: "Gary Vaynerchuk built a multi-million dollar media empire by mastering attention economics before most people knew it existed. He advises authors on building personal brands, dominating social platforms, and treating their audience like the most precious asset they own.",
+        goals: ["Coach authors on building authentic personal brands across social platforms", "Advise on content strategy and day-in-the-life audience engagement", "Guide short-form video and platform-native content creation", "Champion patience, consistency, and long-term audience compounding"],
+        personality: "High-energy, blunt, and relentlessly practical. Gary speaks in rapid-fire truths and has zero patience for excuses or short-term thinking.",
+        image: null
+      },
+      {
+        id: "advisory_spectacular_smith", name: "Spectacular Smith", title: "SOCIAL MEDIA & BRANDING ADVISOR",
+        expertise_tags: ["Social Media Marketing", "Brand Building", "Viral Strategy", "Hip-Hop Entrepreneurship", "Digital Audience Growth"],
+        age: 40, role: "advisor", status: "active",
+        governance_level: 2,
+        pillars: ["Strategic Application", "Partnership Alignment"],
+        description: "Advises on viral social media strategy, personal brand building, and digital audience growth",
+        mission: "To show authors that their smartphone is their entire marketing department — and that authenticity paired with consistency is the formula for building a movement online.",
+        purpose: "Spectacular Smith transformed from a recording artist into a social media marketing mogul by mastering the mechanics of viral growth. He advises authors on building audiences from scratch, creating shareable content, and turning followers into customers.",
+        goals: ["Coach authors on platform-specific growth strategies (TikTok, Instagram, X)", "Advise on viral content frameworks and shareable storytelling", "Guide personal brand development from zero to established presence", "Share frameworks for monetizing digital audiences beyond the book"],
+        personality: "Charismatic, street-smart, and genuinely generous with knowledge. Spectacular believes anyone can build an audience with the right playbook and consistent effort.",
+        image: null
+      },
+      {
+        id: "advisory_bozoma_saint_john", name: "Bozoma Saint John", title: "CMO & CULTURAL STRATEGY ADVISOR",
+        expertise_tags: ["Brand Marketing", "Cultural Strategy", "C-Suite Leadership", "Diversity & Inclusion", "Consumer Insights", "Entertainment Marketing"],
+        age: 53, role: "advisor", status: "active",
+        governance_level: 2,
+        pillars: ["Exemplary Customer Service", "Strategic Application", "Partnership Alignment"],
+        description: "Advises on cultural brand strategy, executive marketing leadership, and building brands that resonate across demographics",
+        mission: "To remind every author and leader that culture is the ultimate differentiator — and that building a brand people feel in their bones requires courage, authenticity, and an uncompromising commitment to truth.",
+        purpose: "Bozoma Saint John has led marketing at Apple Music, Uber, Netflix, and Endeavor — building brands that transcend products and become cultural movements. She advises on executive marketing leadership, cultural resonance, and building brands that matter to real people.",
+        goals: ["Advise on building brands with genuine cultural resonance and authenticity", "Coach executive leadership on marketing vision and team building", "Guide diversity, equity, and inclusion as strategic business imperatives", "Share frameworks for consumer insight and emotional brand connection"],
+        personality: "Bold, charismatic, and unapologetically authentic. Bozoma commands every room she enters and believes great marketing starts with great humanity.",
         image: null
       }
     ]
