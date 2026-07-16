@@ -80,7 +80,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Team",       href: "Team",        icon: Users, children: [
       { name: "Document Review", href: "DocumentReview", icon: MessageSquare },
     ]},
-    { name: "Customer Service", href: "InternalMessages", icon: MessageSquare },
     { name: "Settings",   href: "Settings",    icon: Settings },
   ];
 
