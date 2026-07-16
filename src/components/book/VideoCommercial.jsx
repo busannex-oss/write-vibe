@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import MusicGenerator from "@/components/book/MusicGenerator";
 
 export default function VideoCommercial({ book, onUpdate }) {
   const [generating, setGenerating] = useState(false);
@@ -27,6 +28,7 @@ export default function VideoCommercial({ book, onUpdate }) {
   const [videoGuideStep, setVideoGuideStep] = useState(null);
   const [videoMethod, setVideoMethod] = useState("google"); // google | runway | kling | gemini
   const [publishMethod, setPublishMethod] = useState("auto"); // auto | manual
+  const [musicUrl, setMusicUrl] = useState(null);
 
   // ── Load saved data on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -38,21 +40,28 @@ export default function VideoCommercial({ book, onUpdate }) {
       if (saved.duration) setSelectedDuration(saved.duration);
       if (saved.storyboardImages?.length) setStoryboardImages(saved.storyboardImages);
       if (saved.youtubeUrl) setYoutubeUrl(saved.youtubeUrl);
+      if (saved.musicUrl) setMusicUrl(saved.musicUrl);
     } catch {
       // not JSON — ignore
     }
   }, [book.video_commercial_url]);
 
   // ── Persist helper ────────────────────────────────────────────────────────
-  const persist = async (scriptData, duration, images, url) => {
+  const persist = async (scriptData, duration, images, url, music) => {
     const payload = JSON.stringify({
       script: scriptData,
       duration,
       storyboardImages: images,
       youtubeUrl: url || youtubeUrl,
+      musicUrl: music || musicUrl,
       savedAt: new Date().toISOString()
     });
     await onUpdate({ video_commercial_url: payload }, true);
+  };
+
+  const handleMusicGenerated = async (url) => {
+    setMusicUrl(url);
+    await persist(script, selectedDuration, storyboardImages, undefined, url);
   };
 
   // ── Step 1: Generate script ───────────────────────────────────────────────
@@ -396,6 +405,17 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
             </CardContent>
           )}
         </Card>
+      )}
+
+      {/* Step 2.5: Background Music */}
+      {hasScript && (
+        <MusicGenerator
+          script={script}
+          selectedDuration={selectedDuration}
+          book={book}
+          savedMusicUrl={musicUrl}
+          onMusicGenerated={handleMusicGenerated}
+        />
       )}
 
       {/* Step 3: Generate Video with AI */}
