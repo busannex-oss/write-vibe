@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
+import MessageInboxWidget from "@/components/dashboard/MessageInboxWidget";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -211,9 +212,10 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="lg:col-span-1"
+        className="lg:col-span-1 space-y-6"
       >
         <ActivityFeed />
+        <MessageInboxWidget user={user} />
       </motion.div>
       </div>
 
