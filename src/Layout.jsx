@@ -10,6 +10,7 @@ import { useErrorLogger } from "@/components/useErrorLogger";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AdminMenuCollapsible from "@/components/AdminMenuCollapsible";
 import NavCollapsible from "@/components/NavCollapsible";
+import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
@@ -120,7 +121,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Public pages — no sidebar/header
   if (PUBLIC_PAGES.includes(currentPageName)) {
-    return <>{children}</>;
+    return <>{children}<FloatingChatWidget /></>;
   }
 
   // Show nothing while checking auth
@@ -340,6 +341,7 @@ export default function Layout({ children, currentPageName }) {
           </ErrorBoundary>
         </div>
       </main>
+      <FloatingChatWidget />
     </div>
   );
 }
