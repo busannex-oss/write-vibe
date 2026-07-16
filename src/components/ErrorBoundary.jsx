@@ -1,5 +1,6 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
+import { shouldLogError } from "@/lib/query-client";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
@@ -15,7 +16,9 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.setState({ errorInfo });
-    // Log to ErrorLog entity
+    // Preventative: dedupe render errors so a loop doesn't flood the log
+    const dedupeKey = `render:${this.props.componentName || "unknown"}:${error?.message}`;
+    if (!shouldLogError(dedupeKey)) return;
     try {
       base44.entities.ErrorLog.create({
         error_type: "render",

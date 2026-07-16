@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { shouldLogError } from "@/lib/query-client";
 
 /**
  * Global error logger hook.
@@ -7,6 +8,9 @@ import { base44 } from "@/api/base44Client";
  *   - Unhandled JS errors
  *   - Unhandled promise rejections
  *   - Network 403 / 404 from fetch/axios
+ *
+ * Preventative: deduplicates errors by message+page within a 60s window so
+ * repeating errors (failing queries, render loops) don't flood the dashboard.
  */
 export function useErrorLogger(user) {
   const userRef = useRef(user);
@@ -14,6 +18,8 @@ export function useErrorLogger(user) {
 
   useEffect(() => {
     const logError = async (payload) => {
+      const dedupeKey = `${payload.error_type}:${payload.message}:${window.location.pathname}`;
+      if (!shouldLogError(dedupeKey)) return;
       try {
         await base44.entities.ErrorLog.create({
           ...payload,
