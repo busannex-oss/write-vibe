@@ -333,13 +333,18 @@ export default function BookEditor() {
     base44.auth.me().then(u => setUser(u)).catch(() => setUser(null));
   }, []);
 
+  // No book selected — go back to the books list instead of showing "not found"
+  useEffect(() => {
+    if (!bookId) navigate(createPageUrl("Books"), { replace: true });
+  }, [bookId]);
+
   const { data: bookRaw, isLoading } = useQuery({
     queryKey: ['book', bookId],
     queryFn: async () => {
       if (!bookId) return null;
       try {
-        const allBooks = await base44.entities.Book.list();
-        return allBooks.find(b => b.id === bookId) || null;
+        const results = await base44.entities.Book.filter({ id: bookId });
+        return results[0] || null;
       } catch { return null; }
     },
     enabled: !!bookId
