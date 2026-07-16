@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus, BookOpen } from "lucide-react";
+import { X, Zap, CheckCircle, MessageSquare, Brain, Camera, Save, Loader2, Send, Trash2, RefreshCw, Plus, BookOpen, Calendar, Heart, Mic, Users, Volume2 } from "lucide-react";
+import { VOICE_PROFILES } from "@/components/chainofcommand/agentEnrichment";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
@@ -35,6 +36,7 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const chatEndRef = useRef(null);
 
   // Memory
@@ -58,6 +60,27 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
     if (activeTab === "memory") loadMemories();
     if (activeTab === "insights" && !books.length) loadBooks();
   }, [activeTab]);
+
+  const speak = async (text) => {
+    if (speaking) return;
+    setSpeaking(true);
+    try {
+      const res = await base44.integrations.Core.GenerateSpeech({
+        text: text.slice(0, 5000),
+        voice: agent.voice || "river"
+      });
+      if (res?.url) {
+        const audio = new Audio(res.url);
+        audio.onended = () => setSpeaking(false);
+        audio.onerror = () => setSpeaking(false);
+        audio.play();
+      } else {
+        setSpeaking(false);
+      }
+    } catch (_) {
+      setSpeaking(false);
+    }
+  };
 
   const loadBooks = async () => {
     setBooksLoading(true);
@@ -362,6 +385,109 @@ The person looks intelligent, confident and approachable. Ultra-detailed face, 4
                   </div>
                 </div>
               )}
+
+              {/* ── ENRICHMENT: Brain, Voice, Gender, Hobbies, Calendar, Collaborations ── */}
+
+              {/* Brain / Cognitive Profile */}
+              {agent.brain && (
+                <div className="px-4 py-3 rounded-xl" style={{ backgroundColor: brandColors.secondary + "60", border: `1px solid ${brandColors.accent}20` }}>
+                  <h4 className="text-xs font-bold uppercase mb-1.5 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <Brain className="w-3.5 h-3.5" /> Brain
+                  </h4>
+                  <p className="text-sm leading-relaxed" style={{ color: brandColors.text + "BB" }}>{agent.brain}</p>
+                </div>
+              )}
+
+              {/* Gender & Voice */}
+              {(agent.gender || agent.voice) && (
+                <div className="flex flex-wrap gap-2">
+                  {agent.gender && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: brandColors.secondary + "60", border: `1px solid ${brandColors.accent}20` }}>
+                      <span className="text-xs font-bold uppercase" style={{ color: brandColors.accent + "80" }}>Gender</span>
+                      <span className="text-sm capitalize" style={{ color: brandColors.text }}>{agent.gender}</span>
+                    </div>
+                  )}
+                  {agent.voice && VOICE_PROFILES[agent.voice] && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: brandColors.secondary + "60", border: `1px solid ${brandColors.accent}20` }}>
+                      <Mic className="w-3.5 h-3.5" style={{ color: brandColors.accent }} />
+                      <span className="text-xs font-bold uppercase" style={{ color: brandColors.accent + "80" }}>Voice</span>
+                      <span className="text-sm" style={{ color: brandColors.text }}>{VOICE_PROFILES[agent.voice].label} — {VOICE_PROFILES[agent.voice].description}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hobbies */}
+              {agent.hobbies?.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <Heart className="w-3.5 h-3.5" /> Hobbies
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {agent.hobbies.map((h, i) => (
+                      <span key={i} className="px-3 py-1 rounded-full text-xs" style={{ backgroundColor: brandColors.accent + "15", color: brandColors.text + "CC", border: `1px solid ${brandColors.accent}20` }}>
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Calendar / Schedule */}
+              {agent.calendar && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <Calendar className="w-3.5 h-3.5" /> Schedule
+                  </h4>
+                  <div className="space-y-2">
+                    {["daily", "weekly", "monthly"].map(freq => agent.calendar[freq]?.length > 0 ? (
+                      <div key={freq} className="px-3 py-2 rounded-lg" style={{ backgroundColor: brandColors.secondary + "40" }}>
+                        <p className="text-xs font-bold uppercase mb-1.5 capitalize" style={{ color: brandColors.accent + "80" }}>{freq}</p>
+                        <ul className="space-y-1">
+                          {agent.calendar[freq].map((item, i) => (
+                            <li key={i} className="text-xs leading-relaxed flex items-start gap-1.5" style={{ color: brandColors.text + "AA" }}>
+                              <span style={{ color: brandColors.accent + "60" }}>•</span> {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null)}
+                  </div>
+                </div>
+              )}
+
+              {/* Collaborates With */}
+              {agent.collaborates_with?.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <Users className="w-3.5 h-3.5" /> Collaborates With
+                  </h4>
+                  <div className="space-y-1.5">
+                    {agent.collaborates_with.map((c, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm" style={{ color: brandColors.text + "CC" }}>
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: brandColors.accent }} />
+                        {c}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Allowed Communications */}
+              {agent.communicates_with?.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color: brandColors.accent }}>
+                    <MessageSquare className="w-3.5 h-3.5" /> Allowed Communications
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {agent.communicates_with.map((c, i) => (
+                      <span key={i} className="px-2.5 py-1 rounded-full text-xs" style={{ backgroundColor: brandColors.secondary + "60", color: brandColors.text + "AA", border: `1px solid ${brandColors.accent}15` }}>
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -380,9 +506,20 @@ The person looks intelligent, confident and approachable. Ultra-detailed face, 4
                       }}
                     >
                       {msg.content}
-                    </div>
-                  </div>
-                ))}
+                      {msg.role === "assistant" && (
+                        <button
+                          onClick={() => speak(msg.content)}
+                          disabled={speaking}
+                          className="ml-1.5 inline-flex items-center gap-1 text-xs align-middle opacity-50 hover:opacity-100 transition-opacity disabled:opacity-30"
+                          style={{ color: brandColors.accent }}
+                          title="Listen to response"
+                        >
+                          {speaking ? <Loader2 className="w-3 h-3 animate-spin" /> : <Volume2 className="w-3 h-3" />}
+                        </button>
+                      )}
+                      </div>
+                      </div>
+                      ))}
                 {chatLoading && (
                   <div className="flex justify-start">
                     <div className="px-4 py-3 rounded-2xl" style={{ backgroundColor: brandColors.secondary + "80" }}>

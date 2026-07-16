@@ -9,6 +9,7 @@ import HierarchyVisualization from "@/components/chainofcommand/HierarchyVisuali
 import BrandCustomizationPanel from "@/components/chainofcommand/BrandCustomizationPanel";
 import BrandBanner from "@/components/chainofcommand/BrandBanner";
 import AdvisoryNotificationsPanel from "@/components/chainofcommand/AdvisoryNotificationsPanel";
+import { AGENT_ENRICHMENT } from "@/components/chainofcommand/agentEnrichment";
 
 const HIERARCHY_STRUCTURE = {
   level2: {
@@ -250,6 +251,17 @@ const HIERARCHY_STRUCTURE = {
         goals: ["Develop author brand positioning statements and reader personas", "Create brand voice guides that all other agents follow", "Identify unique differentiation points vs. comp authors in the same genre", "Design brand evolution strategies as author catalog grows"],
         personality: "Strategic, deeply perceptive, and refreshingly honest about what's working and what isn't. Victoria asks the uncomfortable questions that unlock the clearest answers.",
         image: null
+      },
+      {
+        id: "master_customer_service", name: "Sophia Martinez", title: "MASTER CUSTOMER SERVICE AGENT", age: 34, role: "manager", status: "active",
+        governance_level: 4,
+        pillars: ["Exemplary Customer Service", "Partnership Alignment"],
+        description: "Conversational, customer-facing AI agent providing chat and voice support to assist clients whenever needed",
+        mission: "To be the warm, capable first point of contact for every client — answering questions, resolving issues, and making every interaction feel heard, valued, and effortlessly resolved.",
+        purpose: "Sophia is the platform's customer-facing concierge — available via chat and voice to guide clients through the platform, troubleshoot issues, escalate to specialists, and ensure no question goes unanswered. She bridges the gap between human users and the AI agent ecosystem.",
+        goals: ["Provide real-time chat and voice support to clients across all time zones", "Resolve common issues without escalation using self-service knowledge", "Route complex issues to the right specialist agent or human team member", "Collect and log customer feedback for continuous platform improvement"],
+        personality: "Warm, patient, endlessly helpful, and genuinely curious about people. Sophia makes every client feel like they're her only priority.",
+        image: null
       }
     ]
   },
@@ -479,6 +491,14 @@ const HIERARCHY_STRUCTURE = {
     ]
   }
 };
+
+// Merge enrichment data (hobbies, brain, voice, calendar, gender, collaborations, communications) into each agent
+Object.values(HIERARCHY_STRUCTURE).forEach(level => {
+  level.agents.forEach(agent => {
+    const enrichment = AGENT_ENRICHMENT[agent.id];
+    if (enrichment) Object.assign(agent, enrichment);
+  });
+});
 
 const PILLARS = [
   "Predictive Analysis",
