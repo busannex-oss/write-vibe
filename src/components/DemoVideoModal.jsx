@@ -1,44 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, X, Play } from "lucide-react";
+import { X, Play } from "lucide-react";
+
+const DEMO_VIDEO_URL = "https://media.base44.com/videos/public/6975e45ac14c500ed1fcdcf2/75c58033e_Demo_Video.mp4";
 
 export default function DemoVideoModal({ isOpen, onClose }) {
-  const [demoVideoUrl, setDemoVideoUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      loadOrGenerateDemoVideo();
-    }
-  }, [isOpen]);
-
-  const generateDemoVideo = async () => {
-    setGenerating(true);
-    try {
-      // Use a professional demo video with better availability
-      const videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4";
-      setDemoVideoUrl(videoUrl);
-      localStorage.setItem("write vibeDemo", videoUrl);
-    } catch (error) {
-      console.error("Error loading demo:", error);
-    } finally {
-      setGenerating(false);
-      setLoading(false);
-    }
-  };
-
-  const loadOrGenerateDemoVideo = async () => {
-    const cached = localStorage.getItem("write vibeDemo");
-    if (cached) {
-      setDemoVideoUrl(cached);
-      setLoading(false);
-    } else {
-      await generateDemoVideo();
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -63,15 +29,13 @@ export default function DemoVideoModal({ isOpen, onClose }) {
 
           {/* Video Container */}
           <div className="bg-black">
-            <iframe
-              width="100%"
-              height="600"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-              title="Write Vibe Demo"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+            <video
+              src={DEMO_VIDEO_URL}
+              controls
+              autoPlay
+              playsInline
               className="w-full aspect-video"
+              aria-label="Write Vibe product demo — AI-powered book creation walkthrough"
             />
           </div>
 
