@@ -4,10 +4,10 @@ import { createPageUrl } from "@/utils";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const CATEGORY_ORDER = ["Core", "Strategy", "Documentation", "Architecture", "System", "Experience"];
+const CATEGORY_ORDER = ["Operations", "AI Agents", "Strategy & Docs", "Platform & Brand"];
 
 export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
-  const [expanded, setExpanded] = useState({ Documentation: true });
+  const [expanded, setExpanded] = useState({ Operations: true });
   const [expandedItems, setExpandedItems] = useState({});
 
   const grouped = adminNav.reduce((acc, item) => {

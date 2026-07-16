@@ -85,34 +85,42 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNav = user?.role === "admin"
     ? [
-        { name: "User Management", href: "UserManagement", icon: Crown, category: "Core" },
-        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Core" },
-        { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Core" },
-        { name: "Internal Messages", href: "InternalMessages", icon: MessageSquare, category: "Core" },
-        { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "Strategy" },
-        { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Documentation" },
-        { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Documentation" },
-        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen, category: "Architecture", children: [
-          { name: "Documents", href: "AdminDocuments", icon: FileText },
+        // Operations — daily admin work
+        { name: "User Management", href: "UserManagement", icon: Crown, category: "Operations" },
+        { name: "Internal Messages", href: "InternalMessages", icon: MessageSquare, category: "Operations" },
+        { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Operations" },
+        { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Operations" },
+        { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Operations" },
+        // AI Agents — agent monitoring and tools
+        { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "AI Agents" },
+        { name: "AI Agent Audit", href: "AgentAudit", icon: Bot, category: "AI Agents", children: [
+          { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
+          { name: "Certifications", href: "Certifications", icon: Award },
         ]},
-        { name: "Map Legend", href: "MapLegend", icon: Map, category: "Architecture" },
-        { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid, category: "Architecture" },
-        { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette, category: "Architecture" },
-        { name: "Sitemap", href: "Sitemap", icon: Map, category: "Architecture" },
-        { name: "System Architecture", href: "SystemArchitecture", icon: Building2, category: "System" },
-        { name: "Legal Documents", href: "LegalDocuments", icon: Scale, category: "System" },
-        { name: "Licensing Terms", href: "LicensingTerms", icon: FileKey, category: "System" },
-        { name: "KPI Framework", href: "KPIFramework", icon: BarChart2, category: "System" },
-        { name: "Onboarding Experience", href: "OnboardingExperience", icon: UserCheck, category: "Experience" },
-        { name: "Version Roadmap", href: "VersionRoadmap", icon: GitBranch, category: "Experience" },
-        { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers, category: "Experience" },
-        { name: "AI Agent Audit", href: "AgentAudit", icon: Bot, category: "Experience" },
-        { name: "White Label Admin", href: "WhiteLabelAdmin", icon: Store, category: "Experience" },
-        { name: "Agent Map", href: "AgentConnectionMap", icon: Network, category: "Experience" },
-        { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Experience" },
-        { name: "CCOS Studio", href: "CCOSStudio", icon: TrendingUp, category: "Experience" },
-        { name: "CCOS Agent", href: "CCOSAgent", icon: MessageSquare, category: "Experience" },
-        { name: "Certifications", href: "Certifications", icon: Award, category: "Experience" }
+        { name: "CCOS Studio", href: "CCOSStudio", icon: TrendingUp, category: "AI Agents", children: [
+          { name: "CCOS Agent", href: "CCOSAgent", icon: MessageSquare },
+        ]},
+        // Strategy & Docs — mission, registry, legal
+        { name: "Mission Statement", href: "MissionStatement", icon: Target, category: "Strategy & Docs" },
+        { name: "Master Registry", href: "MasterRegistry", icon: BookOpen, category: "Strategy & Docs", children: [
+          { name: "Documents", href: "AdminDocuments", icon: FileText },
+          { name: "Map Legend", href: "MapLegend", icon: Map },
+          { name: "Sitemap", href: "Sitemap", icon: Map },
+        ]},
+        { name: "SOPs", href: "SOPs", icon: ClipboardList, category: "Strategy & Docs" },
+        { name: "Legal Documents", href: "LegalDocuments", icon: Scale, category: "Strategy & Docs", children: [
+          { name: "Licensing Terms", href: "LicensingTerms", icon: FileKey },
+        ]},
+        { name: "KPI Framework", href: "KPIFramework", icon: BarChart2, category: "Strategy & Docs" },
+        // Platform & Brand — architecture, brand, growth
+        { name: "Brand Style Guide", href: "BrandStyleGuide", icon: Palette, category: "Platform & Brand", children: [
+          { name: "Pillar Alignment", href: "PillarAlignment", icon: LayoutGrid },
+          { name: "Pillars Architecture", href: "PillarsArchitecture", icon: Layers },
+        ]},
+        { name: "System Architecture", href: "SystemArchitecture", icon: Building2, category: "Platform & Brand" },
+        { name: "Onboarding Experience", href: "OnboardingExperience", icon: UserCheck, category: "Platform & Brand" },
+        { name: "Version Roadmap", href: "VersionRoadmap", icon: GitBranch, category: "Platform & Brand" },
+        { name: "White Label Admin", href: "WhiteLabelAdmin", icon: Store, category: "Platform & Brand" }
       ]
     : [];
 
