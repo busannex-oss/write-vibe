@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import BrandCustomizationPanel from "@/components/chainofcommand/BrandCustomizat
 import BrandBanner from "@/components/chainofcommand/BrandBanner";
 import AdvisoryNotificationsPanel from "@/components/chainofcommand/AdvisoryNotificationsPanel";
 import { AGENT_ENRICHMENT } from "@/components/chainofcommand/agentEnrichment";
+import { AGENT_PORTRAITS } from "@/components/chainofcommand/agentPortraits";
 
 const HIERARCHY_STRUCTURE = {
   level2: {
@@ -497,6 +498,8 @@ Object.values(HIERARCHY_STRUCTURE).forEach(level => {
   level.agents.forEach(agent => {
     const enrichment = AGENT_ENRICHMENT[agent.id];
     if (enrichment) Object.assign(agent, enrichment);
+    const portrait = AGENT_PORTRAITS[agent.id];
+    if (portrait) agent.image = portrait;
   });
 });
 
@@ -521,40 +524,18 @@ export default function ChainOfCommand() {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [showCustomization, setShowCustomization] = useState(false);
   const [agents, setAgents] = useState(HIERARCHY_STRUCTURE);
-  const portraitsLoaded = useRef(false);
 
-  // Parallel load: user + portraits at the same time
   useEffect(() => {
-    Promise.all([
-      base44.auth.me().then(userData => {
-        setUser(userData);
-        const isWL = userData?.subscription_tier === "white_label";
-        setDeploymentMode(isWL ? "whitelabel" : "core");
-        if (!isWL) {
-          base44.entities.BrandStyleGuide.filter({ is_current: true })
-            .then(guides => { if (guides.length > 0) setBrandGuide(guides[0]); })
-            .catch(() => {});
-        }
-      }).catch(() => {}),
-
-      // Load portraits only once per session
-      !portraitsLoaded.current
-        ? base44.functions.invoke("generateAgentPortraits", {}).then(result => {
-            portraitsLoaded.current = true;
-            if (!result.data?.portraits) return;
-            const portraitMap = Object.fromEntries(result.data.portraits.map(p => [p.name, p.image]));
-            setAgents(prev => {
-              const updated = JSON.parse(JSON.stringify(prev));
-              Object.values(updated).forEach(level =>
-                level.agents.forEach(agent => {
-                  if (portraitMap[agent.name]) agent.image = portraitMap[agent.name];
-                })
-              );
-              return updated;
-            });
-          }).catch(() => {})
-        : Promise.resolve()
-    ]);
+    base44.auth.me().then(userData => {
+      setUser(userData);
+      const isWL = userData?.subscription_tier === "white_label";
+      setDeploymentMode(isWL ? "whitelabel" : "core");
+      if (!isWL) {
+        base44.entities.BrandStyleGuide.filter({ is_current: true })
+          .then(guides => { if (guides.length > 0) setBrandGuide(guides[0]); })
+          .catch(() => {});
+      }
+    }).catch(() => {});
   }, []);
 
   // Memoize expensive flat-map once — recomputed only when agents change
