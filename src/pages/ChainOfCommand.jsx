@@ -11,6 +11,7 @@ import BrandBanner from "@/components/chainofcommand/BrandBanner";
 import AdvisoryNotificationsPanel from "@/components/chainofcommand/AdvisoryNotificationsPanel";
 import { AGENT_ENRICHMENT } from "@/components/chainofcommand/agentEnrichment";
 import { AGENT_PORTRAITS } from "@/components/chainofcommand/agentPortraits";
+import AdvisoryBoardConvening from "@/components/chainofcommand/AdvisoryBoardConvening";
 
 const HIERARCHY_STRUCTURE = {
   level2: {
@@ -637,6 +638,13 @@ export default function ChainOfCommand() {
       {user?.role === "admin" && (
         <div className="mb-8">
           <AdvisoryNotificationsPanel />
+        </div>
+      )}
+
+      {/* Advisory Board Convening */}
+      {user?.role === "admin" && (
+        <div className="mb-8">
+          <AdvisoryBoardConvening agents={agents} brandColors={brandColors} />
         </div>
       )}
 
