@@ -14,7 +14,7 @@ export default function MessageInboxWidget({ user }) {
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['inbox-messages', user?.id, isAdmin],
     queryFn: () => base44.entities.InternalMessage.filter(
-      { sender_type: isAdmin ? "user" : "agent" },
+      isAdmin ? { sender_type: "user" } : { thread_id: user.id },
       '-created_date',
       5
     ),
@@ -22,7 +22,14 @@ export default function MessageInboxWidget({ user }) {
     staleTime: 15000
   });
 
-  const unreadCount = messages.filter(m => !m.is_read).length;
+  const unreadCount = messages.filter(m =>
+    !m.is_read && (isAdmin ? m.sender_type === "user" : m.sender_type === "agent")
+  ).length;
+
+  const getSenderLabel = (msg) => {
+    if (isAdmin) return msg.sender_name || "Unknown User";
+    return msg.sender_type === "agent" ? "Customer Service" : "You";
+  };
 
   return (
     <motion.div
@@ -34,7 +41,7 @@ export default function MessageInboxWidget({ user }) {
         <CardHeader className="border-b border-white/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-white">Customer Service Inbox</CardTitle>
+              <CardTitle className="text-white">Customer Service DMs</CardTitle>
               {unreadCount > 0 && (
                 <span className="ml-1 px-2 py-0.5 text-xs font-medium rounded-full bg-amber-500 text-white">
                   {unreadCount} new
@@ -63,29 +70,33 @@ export default function MessageInboxWidget({ user }) {
             </div>
           ) : (
             <div className="divide-y divide-white/5">
-              {messages.map(msg => (
-                <Link
-                  key={msg.id}
-                  to={createPageUrl("InternalMessages")}
-                  className="flex items-start gap-3 p-4 hover:bg-white/5 transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-white truncate">
-                        {isAdmin ? (msg.sender_name || "Unknown User") : "Customer Service"}
-                      </p>
-                      {!msg.is_read && <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />}
+              {messages.map(msg => {
+                const isFromAgent = msg.sender_type === "agent";
+                const showUnread = !msg.is_read && (isAdmin ? !isFromAgent : isFromAgent);
+                return (
+                  <Link
+                    key={msg.id}
+                    to={createPageUrl("InternalMessages")}
+                    className="flex items-start gap-3 p-4 hover:bg-white/5 transition-colors"
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isFromAgent ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gradient-to-br from-slate-600 to-slate-700"}`}>
+                      <MessageSquare className="w-4 h-4 text-white" />
                     </div>
-                    <p className="text-xs text-white/40 truncate mt-0.5">{msg.content}</p>
-                    <p className="text-[10px] text-white/30 mt-1">
-                      {new Date(msg.created_date).toLocaleDateString()} {new Date(msg.created_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-white truncate">
+                          {getSenderLabel(msg)}
+                        </p>
+                        {showUnread && <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-white/40 truncate mt-0.5">{msg.content}</p>
+                      <p className="text-[10px] text-white/30 mt-1">
+                        {new Date(msg.created_date).toLocaleDateString()} {new Date(msg.created_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </CardContent>
