@@ -41,7 +41,7 @@ const HIERARCHY_STRUCTURE = {
       },
       {
         id: "project_manager", name: "Sam Thompson", title: "PROJECT MANAGER", age: 42, role: "executive", status: "active",
-        governance_level: 3,
+        governance_level: 4,
         pillars: ["Proper Business Structure", "Business Intelligence"],
         description: "Oversees all book projects from conception to publication",
         mission: "To shepherd every book from a raw idea to a polished, published reality — on schedule, on budget, and exceeding the author's vision.",
@@ -497,13 +497,25 @@ const HIERARCHY_STRUCTURE = {
   }
 };
 
+// Default governance levels by hierarchy tier — enforces authority structure.
+// Agents with an explicit governance_level in their data keep their custom value.
+const GOVERNANCE_BY_LEVEL = {
+  level2: 3,  // C-Suite executives
+  level3: 4,  // Department management
+  level4: 4,  // Department management
+  level5: 5,  // Specialist operations
+  level6: 5,  // Specialist operations
+  level7: 2,  // Advisory board — strategic oversight
+};
+
 // Merge enrichment data (hobbies, brain, voice, calendar, gender, collaborations, communications) into each agent
-Object.values(HIERARCHY_STRUCTURE).forEach(level => {
+Object.entries(HIERARCHY_STRUCTURE).forEach(([levelKey, level]) => {
   level.agents.forEach(agent => {
     const enrichment = AGENT_ENRICHMENT[agent.id];
     if (enrichment) Object.assign(agent, enrichment);
     const portrait = AGENT_PORTRAITS[agent.id];
     if (portrait) agent.image = portrait;
+    if (!agent.governance_level) agent.governance_level = GOVERNANCE_BY_LEVEL[levelKey];
   });
 });
 
