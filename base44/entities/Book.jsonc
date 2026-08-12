@@ -194,6 +194,36 @@
         }
       }
     },
+    "chapter_versions": {
+      "type": "object",
+      "description": "Saved chapter draft versions keyed by chapter (e.g. chapter_1), each an array of {chapter_number, chapter_title, content, word_count, saved_at, note}",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "chapter_number": {
+              "type": "number"
+            },
+            "chapter_title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "word_count": {
+              "type": "number"
+            },
+            "saved_at": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "outline": {
       "type": "array",
       "items": {
