@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, AlertCircle, Eye, EyeOff, ExternalLink } from "lucide-react";
 import AmazonAdwizarSettings from "@/components/admin/AmazonAdwizarSettings";
+import SocialCredentialsPanel from "@/components/admin/SocialCredentialsPanel";
 
 function SecretInput({ value, onChange, placeholder }) {
   const [show, setShow] = useState(false);
@@ -151,6 +152,12 @@ export default function IntegrationSettings({ user }) {
           { key: "access_token", label: "System User Access Token", placeholder: "EAAxxxxx...", secret: true, hint: "For Conversions API" },
         ]}
       />
+
+      {/* Social publishing accounts */}
+      <div>
+        <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4">Social Publishing</h3>
+        <SocialCredentialsPanel />
+      </div>
 
       {/* Amazon (existing) */}
       <div>

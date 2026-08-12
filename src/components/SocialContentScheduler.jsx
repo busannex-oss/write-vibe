@@ -40,6 +40,7 @@ const SOCIAL_PLATFORMS = [
   { key: "twitter", label: "Twitter/X", color: "bg-sky-500", icon: "🐦" },
   { key: "google", label: "Google My Business", color: "bg-red-500", icon: "🔍" },
   { key: "instagram", label: "Instagram", color: "bg-pink-500", icon: "📷" },
+  { key: "linkedin", label: "LinkedIn", color: "bg-blue-700", icon: "💼" },
 ];
 
 export default function SocialContentScheduler({ posts = [], onUpdate }) {
