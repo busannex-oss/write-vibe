@@ -3,7 +3,9 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Check, Wand2 } from "lucide-react";
+import { Loader2, Copy, Check, Wand2, RefreshCw, UploadCloud } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { slotForSection } from "@/lib/homepageCopy";
 
 const SCHEMA = {
   type: "object",
@@ -24,13 +26,19 @@ export default function SectionImproveDialog({ item, open, onClose }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const queryClient = useQueryClient();
+  const slot = slotForSection(item?.section || "");
 
   useEffect(() => {
     if (!open || !item) return;
     setResult(null);
+    setApplied(false);
     setLoading(true);
     base44.integrations.Core.InvokeLLM({
-      prompt: `You are a Fortune 100 Creative Director and StoryBrand-certified copywriter working on the homepage of Write Vibe — an AI-Powered Publishing & Intellectual Property Development company (never positioned as a ghostwriting, editing, or formatting service). Books are strategic assets that generate authority, revenue, opportunities, and legacy.
+      prompt: `${attempt > 0 ? "This is a REGENERATION request — the previous draft was not strong enough. Produce a materially different, sharper, more distinctive version with a new angle, stronger specificity, and bolder structure. Do not repeat the previous phrasing.\n\n" : ""}You are a Fortune 100 Creative Director and StoryBrand-certified copywriter working on the homepage of Write Vibe — an AI-Powered Publishing & Intellectual Property Development company (never positioned as a ghostwriting, editing, or formatting service). Books are strategic assets that generate authority, revenue, opportunities, and legacy.
 
 Rewrite and elevate this homepage section.
 
@@ -46,7 +54,30 @@ Produce final, ready-to-publish copy — not advice. Executive-level, specific, 
       setResult(res);
       setLoading(false);
     });
-  }, [open, item]);
+  }, [open, item, attempt]);
+
+  const applyToHomepage = async () => {
+    if (!result || !slot) return;
+    setApplying(true);
+    const existing = await base44.entities.HomepageCopy.filter({ slot, is_active: true });
+    if (existing.length) {
+      await base44.entities.HomepageCopy.bulkUpdate(existing.map((e) => ({ id: e.id, is_active: false })));
+    }
+    await base44.entities.HomepageCopy.create({
+      section: item.section,
+      slot,
+      headline: result.headline || "",
+      subheadline: result.subheadline || "",
+      body_copy: result.body_copy || "",
+      bullet_points: result.bullet_points || [],
+      primary_cta: result.primary_cta || "",
+      secondary_cta: result.secondary_cta || "",
+      is_active: true
+    });
+    queryClient.invalidateQueries({ queryKey: ["homepage-copy"] });
+    setApplying(false);
+    setApplied(true);
+  };
 
   const copyAll = () => {
     if (!result) return;
@@ -152,13 +183,33 @@ Produce final, ready-to-publish copy — not advice. Executive-level, specific, 
                 )}
               </div>
             </ScrollArea>
-            <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
-              <Button variant="outline" onClick={onClose} className="border-white/20 text-white/70 hover:bg-white/10">
-                Close
-              </Button>
-              <Button onClick={copyAll} className="bg-amber-500 hover:bg-amber-600 text-white">
+            <div className="flex flex-wrap justify-end items-center gap-2 pt-2 border-t border-white/10">
+              {!slot && (
+                <span className="mr-auto text-xs text-white/40">
+                  This section isn't mapped to a live homepage block — copy it and I'll apply it for you.
+                </span>
+              )}
+              <Button variant="outline" onClick={copyAll} className="border-white/20 text-white/70 hover:bg-white/10">
                 {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                {copied ? "Copied" : "Copy Section Copy"}
+                {copied ? "Copied" : "Copy"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setAttempt((a) => a + 1)}
+                className="border-white/20 text-white/70 hover:bg-white/10"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Regenerate Better Version
+              </Button>
+              <Button
+                onClick={applyToHomepage}
+                disabled={!slot || applying || applied}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-40"
+              >
+                {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  : applied ? <Check className="w-4 h-4 mr-2" />
+                  : <UploadCloud className="w-4 h-4 mr-2" />}
+                {applied ? "Homepage Updated" : "Update Homepage"}
               </Button>
             </div>
           </>

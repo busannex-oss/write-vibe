@@ -25,12 +25,14 @@ import WhyAISection from "@/components/landing/WhyAISection";
 import ClientJourney from "@/components/landing/ClientJourney";
 import AuthorReadinessAssessment from "@/components/landing/AuthorReadinessAssessment";
 import LandingFAQ from "@/components/landing/LandingFAQ";
+import { useHomepageCopy } from "@/lib/homepageCopy";
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80";
 
 export default function Landing() {
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [heroImage, setHeroImage] = useState(DEFAULT_HERO);
+  const copy = useHomepageCopy();
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(async (authed) => {
@@ -199,12 +201,16 @@ export default function Landing() {
               <span className="text-sm text-amber-300">AI-Powered Publishing & Intellectual Property Development</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-              Your Expertise Is an Asset.
-              <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Publish It Like One.</span>
+              {copy("hero", "headline") || (
+                <>
+                  Your Expertise Is an Asset.
+                  <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Publish It Like One.</span>
+                </>
+              )}
             </h1>
             <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
-              Write Vibe combines expert publishing strategy with AI-enhanced workflows to transform your knowledge,
-              experience, and ideas into published books — and the author brand, revenue streams, and opportunities that follow.
+              {copy("hero", "subheadline") || copy("hero", "body_copy") ||
+                "Write Vibe combines expert publishing strategy with AI-enhanced workflows to transform your knowledge, experience, and ideas into published books — and the author brand, revenue streams, and opportunities that follow."}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
@@ -212,7 +218,7 @@ export default function Landing() {
                 onClick={goToSignup}
                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
               >
-                Start Building Your Book — Free
+                {copy("hero", "primary_cta", "Start Building Your Book — Free")}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button
@@ -266,12 +272,13 @@ export default function Landing() {
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Unwritten Expertise Is <span className="text-amber-400">Unrealized Value</span>
+            {copy("problem", "headline") || (
+              <>Unwritten Expertise Is <span className="text-amber-400">Unrealized Value</span></>
+            )}
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto mb-12">
-            Professionals, entrepreneurs, and organizations sit on decades of knowledge that never becomes an asset.
-            The manuscript stays unfinished. The ideas stay unorganized. The publishing process stays confusing.
-            And the authority, visibility, and revenue a book could generate never materialize.
+            {copy("problem", "body_copy") || copy("problem", "subheadline") ||
+              "Professionals, entrepreneurs, and organizations sit on decades of knowledge that never becomes an asset. The manuscript stays unfinished. The ideas stay unorganized. The publishing process stays confusing. And the authority, visibility, and revenue a book could generate never materialize."}
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center text-center">
@@ -306,13 +313,13 @@ export default function Landing() {
             <Layers className="w-6 h-6 text-amber-400" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            One Integrated Process, <span className="text-amber-400">Expert-Guided and AI-Enhanced</span>
+            {copy("solution", "headline") || (
+              <>One Integrated Process, <span className="text-amber-400">Expert-Guided and AI-Enhanced</span></>
+            )}
           </h2>
           <p className="text-white/60 text-lg max-w-3xl mx-auto">
-            Write Vibe replaces the fragmented maze of ghostwriters, editors, designers, and marketing agencies with a single,
-            connected publishing process. Intelligent AI workflows handle research, structure, production, and consistency,
-            while strategic guidance keeps every decision aligned with your goals — and your creativity and voice at the center.
-            The result: books that get finished, published professionally, and built to work as long-term assets.
+            {copy("solution", "body_copy") || copy("solution", "subheadline") ||
+              "Write Vibe replaces the fragmented maze of ghostwriters, editors, designers, and marketing agencies with a single, connected publishing process. Intelligent AI workflows handle research, structure, production, and consistency, while strategic guidance keeps every decision aligned with your goals — and your creativity and voice at the center. The result: books that get finished, published professionally, and built to work as long-term assets."}
           </p>
         </div>
       </section>
@@ -337,10 +344,13 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Measured Outcomes, <span className="text-amber-400">Not Marketing Claims</span>
+              {copy("proof", "headline") || (
+                <>Measured Outcomes, <span className="text-amber-400">Not Marketing Claims</span></>
+              )}
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              Authors and organizations stay because their books get finished, published, and put to work.
+              {copy("proof", "subheadline") || copy("proof", "body_copy") ||
+                "Authors and organizations stay because their books get finished, published, and put to work."}
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -368,10 +378,13 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Authors Who Turned Books Into <span className="text-amber-400">Businesses</span>
+              {copy("testimonials", "headline") || (
+                <>Authors Who Turned Books Into <span className="text-amber-400">Businesses</span></>
+              )}
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              First-time writers, consultants, executives, and publishing houses build their intellectual property here.
+              {copy("testimonials", "subheadline") || copy("testimonials", "body_copy") ||
+                "First-time writers, consultants, executives, and publishing houses build their intellectual property here."}
             </p>
           </div>
 
@@ -421,12 +434,11 @@ export default function Landing() {
                 <span className="text-sm text-amber-300">7-Day Free Trial • No Credit Card Required</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                Start Building Your Next Intellectual Property Asset
+                {copy("cta", "headline", "Start Building Your Next Intellectual Property Asset")}
               </h2>
               <p className="text-white/60 mb-8 max-w-xl mx-auto">
-                The expertise is already yours. Write Vibe provides the strategy, the AI-enhanced workflows,
-                and the publishing ecosystem to turn it into a book — and the brand, products, and opportunities
-                that come after. We'll be your publishing partner from first outline to lasting legacy.
+                {copy("cta", "body_copy") || copy("cta", "subheadline") ||
+                  "The expertise is already yours. Write Vibe provides the strategy, the AI-enhanced workflows, and the publishing ecosystem to turn it into a book — and the brand, products, and opportunities that come after. We'll be your publishing partner from first outline to lasting legacy."}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
                 <Button
@@ -434,7 +446,7 @@ export default function Landing() {
                   onClick={goToSignup}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
                 >
-                  Begin Your Free Trial
+                  {copy("cta", "primary_cta", "Begin Your Free Trial")}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="flex items-center gap-4 text-sm text-white/50">

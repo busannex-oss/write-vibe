@@ -1,0 +1,69 @@
+{
+  "name": "HomepageCopy",
+  "type": "object",
+  "properties": {
+    "section": {
+      "type": "string",
+      "description": "Audit section name this copy replaces"
+    },
+    "slot": {
+      "type": "string",
+      "enum": [
+        "hero",
+        "problem",
+        "solution",
+        "proof",
+        "testimonials",
+        "cta"
+      ],
+      "description": "Which homepage block this copy is applied to"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "subheadline": {
+      "type": "string"
+    },
+    "body_copy": {
+      "type": "string"
+    },
+    "bullet_points": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "primary_cta": {
+      "type": "string"
+    },
+    "secondary_cta": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "section",
+    "slot"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
