@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Gauge, Sparkles, Loader2 } from "lucide-react";
 import AuditScoreCard from "@/components/audit/AuditScoreCard";
+import SectionImproveDialog from "@/components/audit/SectionImproveDialog";
 
 const SECTIONS = [
   "Hero & Value Proposition", "Trust & Credibility", "Problem Framing", "Solution Clarity",
@@ -38,6 +39,7 @@ const SCHEMA = {
 export default function HomepageAudit() {
   const [result, setResult] = useState(null);
   const [running, setRunning] = useState(false);
+  const [improveSection, setImproveSection] = useState(null);
 
   const runAudit = async () => {
     setRunning(true);
@@ -117,7 +119,7 @@ Also identify weak messaging (clichés, vague claims, unsubstantiated numbers, h
 
           <div className="grid md:grid-cols-2 gap-4">
             {(result.sections || []).map((item, i) => (
-              <AuditScoreCard key={i} item={item} />
+              <AuditScoreCard key={i} item={item} onImprove={setImproveSection} />
             ))}
           </div>
 
@@ -141,6 +143,12 @@ Also identify weak messaging (clichés, vague claims, unsubstantiated numbers, h
           </div>
         </div>
       )}
+
+      <SectionImproveDialog
+        item={improveSection}
+        open={!!improveSection}
+        onClose={() => setImproveSection(null)}
+      />
     </div>
   );
 }

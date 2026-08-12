@@ -1,12 +1,19 @@
 import React from "react";
 import { Progress } from "@/components/ui/progress";
+import { Wand2 } from "lucide-react";
 
 const toneFor = (score) =>
   score >= 80 ? "text-emerald-400" : score >= 60 ? "text-amber-400" : "text-red-400";
 
-export default function AuditScoreCard({ item }) {
+export default function AuditScoreCard({ item, onImprove }) {
   return (
-    <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onImprove?.(item)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onImprove?.(item); } }}
+      className="p-5 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:border-amber-500/40 hover:bg-white/[0.07] transition-all text-left"
+    >
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <h3 className="text-white font-semibold">{item.section}</h3>
@@ -31,6 +38,10 @@ export default function AuditScoreCard({ item }) {
           </ul>
         </div>
       )}
+      <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-sm text-amber-400">
+        <Wand2 className="w-4 h-4" />
+        Click to elevate this section
+      </div>
     </div>
   );
 }
