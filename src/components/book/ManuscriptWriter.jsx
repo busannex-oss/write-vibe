@@ -194,6 +194,18 @@ High quality, professional book illustration, suitable for print publication.`,
       images: newManuscript[chapterIndex]?.images || []
     };
     setManuscript(newManuscript);
+
+    // Persist the restored chapter so the rollback survives a reload
+    const cleanManuscript = newManuscript
+      .filter(ch => ch && typeof ch === 'object' && ch.chapter_number !== undefined)
+      .map(ch => ({
+        chapter_number: ch.chapter_number || 0,
+        chapter_title: ch.chapter_title || '',
+        content: ch.content || '',
+        word_count: ch.word_count || 0,
+        images: Array.isArray(ch.images) ? ch.images : []
+      }));
+    onUpdate({ manuscript_chapters: cleanManuscript }, true);
   };
 
   const generateAllChapters = async () => {
