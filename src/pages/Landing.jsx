@@ -3,26 +3,28 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { 
-  Sparkles, 
-  BookOpen, 
-  Wand2, 
-  Video, 
-  Globe, 
-  Users,
+import {
+  Sparkles,
   ArrowRight,
   Check,
   Star,
   Zap,
   Shield,
-  PenLine,
-  Rocket,
   Clock,
+  Layers,
+  Compass,
   TrendingUp
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import AITeamSection from "@/components/landing/AITeamSection";
+import TrustBar from "@/components/landing/TrustBar";
+import ServicesEcosystem from "@/components/landing/ServicesEcosystem";
+import TransformationJourney from "@/components/landing/TransformationJourney";
+import WhyAISection from "@/components/landing/WhyAISection";
+import ClientJourney from "@/components/landing/ClientJourney";
+import AuthorReadinessAssessment from "@/components/landing/AuthorReadinessAssessment";
+import LandingFAQ from "@/components/landing/LandingFAQ";
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80";
 
@@ -45,7 +47,7 @@ export default function Landing() {
         "@type": "Organization",
         "name": "Write Vibe",
         "url": window.location.origin,
-        "description": "AI-powered book creation platform helping authors write, design, and publish books with intelligent AI agents.",
+        "description": "AI-powered publishing and intellectual property development company helping authors, executives, and organizations transform expertise into published books, author brands, and long-term business assets.",
         "logo": window.location.origin + "/favicon.ico",
         "sameAs": []
       },
@@ -54,7 +56,7 @@ export default function Landing() {
         "@type": "SoftwareApplication",
         "name": "Write Vibe",
         "applicationCategory": "BusinessApplication",
-        "description": "AI-powered book creation suite that handles character creation, outlining, cover design, video commercials, book websites, and team collaboration for authors.",
+        "description": "AI-enhanced publishing ecosystem covering book strategy, manuscript development, editing, cover design, publishing to Amazon KDP, author branding, book websites, audiobooks, and marketing assets.",
         "operatingSystem": "Web",
         "offers": {
           "@type": "Offer",
@@ -75,43 +77,28 @@ export default function Landing() {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "What is Write Vibe?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Write Vibe is an AI-powered book creation suite that helps authors write, design, and publish books. It uses intelligent AI agents to handle character creation, outlining, cover design, video commercials, book websites, and team collaboration."
-            }
+            "name": "Who owns the book and the intellectual property?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You do — completely. Every manuscript, cover, trailer, and marketing asset created on Write Vibe belongs to you, including full copyright and commercial rights." }
           },
           {
             "@type": "Question",
-            "name": "How does Write Vibe help authors?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Write Vibe automates the entire book production process. AI agents create rich characters with backstories, generate chapter-by-chapter outlines, design professional book covers, produce video trailers, build book landing pages with newsletter integration, and manage team collaboration with role-based access."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is Write Vibe free to try?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. Write Vibe offers a 7-day free trial with no credit card required. You can cancel anytime."
-            }
+            "name": "How is AI used in the writing process?",
+            "acceptedAnswer": { "@type": "Answer", "text": "AI handles production work: research, structure, drafting assistance, editing suggestions, and design. Your voice and expertise guide everything, and you review and approve every word. AI supports human creativity — it never replaces it." }
           },
           {
             "@type": "Question",
             "name": "Can I publish my book directly from Write Vibe?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. Write Vibe integrates with Amazon KDP and other major bookstores so you can submit your manuscript and publish directly from the platform."
-            }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Write Vibe integrates with Amazon KDP and major bookstores so you can publish directly from the platform, or export professionally formatted files for any publisher." }
           },
           {
             "@type": "Question",
-            "name": "Does Write Vibe support team collaboration?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. You can invite editors, publishers, and marketing team members with role-based access control so everyone can collaborate on the same book project."
-            }
+            "name": "Is Write Vibe free to try?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Write Vibe offers a 7-day free trial with no credit card required. You can cancel anytime." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my manuscript confidential?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your work is private to you and the collaborators you explicitly invite. Drafts and business documents are never shared or used without your action." }
           }
         ]
       }
@@ -128,48 +115,17 @@ export default function Landing() {
       document.head.appendChild(script);
     });
 
-    document.title = 'Write Vibe — AI Book Writing & Self-Publishing Platform';
+    document.title = 'Write Vibe — AI Publishing & Intellectual Property Development';
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
-    metaDesc.content = 'Write Vibe is an AI-powered book creation suite. Write, design, and publish your book with intelligent AI agents handling characters, outlines, covers, video trailers, and marketing. Start your 7-day free trial.';
+    metaDesc.content = 'Write Vibe is an AI-powered publishing and intellectual property development platform. Turn your expertise into a published book, author brand, and long-term business asset — book strategy, manuscript development, publishing, and marketing in one ecosystem.';
 
     return () => {
       document.querySelectorAll('script[data-writevibe-schema]').forEach(s => s.remove());
     };
   }, []);
 
-  const features = [
-    {
-      icon: Wand2,
-      title: "AI Character Creation",
-      description: "Create rich, consistent characters with detailed personalities, backstories, and visual descriptions"
-    },
-    {
-      icon: BookOpen,
-      title: "Smart Outlining",
-      description: "Generate comprehensive chapter-by-chapter outlines with intelligent story structure"
-    },
-    {
-      icon: Sparkles,
-      title: "Cover Design",
-      description: "AI-powered book cover creation maintaining character consistency throughout"
-    },
-    {
-      icon: Video,
-      title: "Video Commercials",
-      description: "Professional book trailers tailored to your target audience"
-    },
-    {
-      icon: Globe,
-      title: "Book Websites",
-      description: "Instant landing pages with newsletter integration and bookstore links"
-    },
-    {
-      icon: Users,
-      title: "Team Collaboration",
-      description: "Invite editors, publishers, and marketing teams with role-based access"
-    }
-  ];
+  const goToSignup = () => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"));
 
   const testimonials = [
     {
@@ -180,8 +136,8 @@ export default function Landing() {
     },
     {
       name: "James Chen",
-      role: "Self-Published Author",
-      content: "My protagonist looks identical on the cover, the trailer, and the book website. Readers noticed. My launch week sales doubled my last book's.",
+      role: "Consultant & Author",
+      content: "My book became my best salesperson. It opened doors to speaking engagements and clients my marketing budget never could — and Write Vibe built the whole ecosystem around it.",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
     },
     {
@@ -204,21 +160,22 @@ export default function Landing() {
             <span className="font-bold text-lg text-white">Write Vibe</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
-            <a href="#ai-team" className="text-sm text-white/60 hover:text-white transition-colors">AI Team</a>
-            <a href="#testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Testimonials</a>
+            <a href="#ecosystem" className="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a>
+            <a href="#why-ai" className="text-sm text-white/60 hover:text-white transition-colors">Why AI</a>
+            <a href="#assessment" className="text-sm text-white/60 hover:text-white transition-colors">Assessment</a>
+            <a href="#testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Results</a>
             <Link to={createPageUrl("Pricing")} className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
+              onClick={goToSignup}
               className="hidden sm:inline-flex text-white/70 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
             <Button
-              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
+              onClick={goToSignup}
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 text-sm px-3 sm:px-4"
             >
               <span className="hidden sm:inline">Start Free Trial</span>
@@ -231,7 +188,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -239,32 +196,33 @@ export default function Landing() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8">
               <Zap className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300">From Idea to Published Book — Without the Overwhelm</span>
+              <span className="text-sm text-amber-300">AI-Powered Publishing & Intellectual Property Development</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-               Turn the Book Inside You Into a
-               <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Published Book</span>
-             </h1>
-             <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
-               Write Vibe's AI agents carry your story from first idea to finished manuscript, designed cover, and published book — so you finally hold your work in your hands instead of in your head.
-             </p>
+              Your Expertise Is an Asset.
+              <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Publish It Like One.</span>
+            </h1>
+            <p className="text-base sm:text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+              Write Vibe combines expert publishing strategy with AI-enhanced workflows to transform your knowledge,
+              experience, and ideas into published books — and the author brand, revenue streams, and opportunities that follow.
+            </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-               <Button 
-                  size="lg" 
-                  onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
-                >
-                  Start 7-Day Free Trial
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-               <Button 
-               size="lg" 
-               variant="outline" 
-               onClick={() => setShowDemoModal(true)}
-               className="h-14 px-8 text-lg border-white/20 text-white/80 hover:bg-white/10 hover:text-white bg-transparent">
-                 Watch Demo
-               </Button>
-             </div>
+              <Button
+                size="lg"
+                onClick={goToSignup}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
+              >
+                Start Building Your Book — Free
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setShowDemoModal(true)}
+                className="h-14 px-8 text-lg border-white/20 text-white/80 hover:bg-white/10 hover:text-white bg-transparent">
+                Watch Demo
+              </Button>
+            </div>
             <div className="flex items-center justify-center gap-6 mt-8 text-sm text-white/40">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-400" />
@@ -272,13 +230,13 @@ export default function Landing() {
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-400" />
-                <span>Cancel anytime</span>
+                <span>You own 100% of your IP</span>
               </div>
             </div>
           </motion.div>
 
           {/* Hero Image/Preview */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -286,10 +244,10 @@ export default function Landing() {
           >
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-amber-500/10 relative">
-              <video 
-                autoPlay 
-                muted 
-                loop 
+              <video
+                autoPlay
+                muted
+                loop
                 playsInline
                 poster={heroImage}
                 className="w-full h-[220px] sm:h-[360px] md:h-[500px] object-cover"
@@ -301,144 +259,95 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Trust Section */}
+      <TrustBar />
+
       {/* Problem Section */}
-      <section className="py-20 px-6 border-t border-white/5">
+      <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            The Book Inside You <span className="text-amber-400">Deserves to Exist</span>
+            Unwritten Expertise Is <span className="text-amber-400">Unrealized Value</span>
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto mb-12">
-            Most people carry a book inside them for years — maybe decades. They never start because the process feels impossible: outlining, writing, editing, cover design, formatting, publishing, marketing. It's overwhelming. So the book stays a dream.
+            Professionals, entrepreneurs, and organizations sit on decades of knowledge that never becomes an asset.
+            The manuscript stays unfinished. The ideas stay unorganized. The publishing process stays confusing.
+            And the authority, visibility, and revenue a book could generate never materialize.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
                 <Clock className="w-5 h-5 text-red-400" />
               </div>
-              <h3 className="text-white font-medium mb-1">Stalled by Overwhelm</h3>
-              <p className="text-sm text-white/50">Too many steps, too many tools, too many decisions — so nothing gets started.</p>
+              <h3 className="text-white font-medium mb-1">No Time, No System</h3>
+              <p className="text-sm text-white/50">Months of writing, editing, and production stall careers-worth of expertise before chapter one.</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
-                <BookOpen className="w-5 h-5 text-red-400" />
+                <Compass className="w-5 h-5 text-red-400" />
               </div>
-              <h3 className="text-white font-medium mb-1">Lost Without Structure</h3>
-              <p className="text-sm text-white/50">Without a clear outline and consistent characters, stories fall apart by chapter three.</p>
+              <h3 className="text-white font-medium mb-1">Publishing Confusion</h3>
+              <p className="text-sm text-white/50">Formats, distributors, rights, and platforms — the industry is opaque unless it's your full-time job.</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
                 <TrendingUp className="w-5 h-5 text-red-400" />
               </div>
-              <h3 className="text-white font-medium mb-1">Stuck Before Publishing</h3>
-              <p className="text-sm text-white/50">Writing is hard enough — covers, trailers, and marketing stop most authors cold.</p>
+              <h3 className="text-white font-medium mb-1">Books That Go Nowhere</h3>
+              <p className="text-sm text-white/50">Even finished books fail without branding, marketing, and a strategy to monetize the expertise behind them.</p>
             </div>
           </div>
-          <div className="mt-12 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-amber-500/10 border border-amber-500/20">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span className="text-white/80">Write Vibe was built to remove every one of those barriers.</span>
-          </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 px-6 bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Three Steps to Your <span className="text-amber-400">Published Book</span>
-            </h2>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              No writing experience required. No juggling a dozen tools. Just you, your story, and AI that does the heavy lifting.
-            </p>
+      {/* Solution Section */}
+      <section className="py-20 px-6 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-6">
+            <Layers className="w-6 h-6 text-amber-400" />
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { step: "01", icon: PenLine, title: "Establish Your Voice", description: "Complete your Personal Intelligence Blueprint — a one-time setup that captures your unique voice, style, and goals. This becomes the source of truth for everything AI creates on your behalf." },
-              { step: "02", icon: Wand2, title: "Let AI Build Your Book", description: "AI agents generate your characters, outline, manuscript, cover, and video trailer — all guided by your voice. Review, refine, and make it yours at every step." },
-              { step: "03", icon: Rocket, title: "Publish & Market", description: "Publish directly to Amazon and major bookstores. Launch your book website, newsletter, and marketing campaigns — all from one place." }
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-                viewport={{ once: true }}
-                className="relative"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center mb-5">
-                  <item.icon className="w-7 h-7 text-amber-400" />
-                </div>
-                <div className="text-5xl font-bold text-white/10 mb-2">{item.step}</div>
-                <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
-                <p className="text-white/50 leading-relaxed">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Button 
-              size="lg" 
-              onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
-            >
-              Start Step One — Free
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            One Integrated Process, <span className="text-amber-400">Expert-Guided and AI-Enhanced</span>
+          </h2>
+          <p className="text-white/60 text-lg max-w-3xl mx-auto">
+            Write Vibe replaces the fragmented maze of ghostwriters, editors, designers, and marketing agencies with a single,
+            connected publishing process. Intelligent AI workflows handle research, structure, production, and consistency,
+            while strategic guidance keeps every decision aligned with your goals — and your creativity and voice at the center.
+            The result: books that get finished, published professionally, and built to work as long-term assets.
+          </p>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-               Everything Between You and a <span className="text-amber-400">Published Book</span>
-             </h2>
-             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-               Specialized AI agents handle each stage — characters, outlines, covers, trailers, and your book website — so nothing stalls your book before it reaches readers.
-             </p>
-          </div>
+      {/* Services Ecosystem */}
+      <ServicesEcosystem />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-6 h-6 text-amber-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-white/50">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Transformation Journey */}
+      <TransformationJourney />
+
+      {/* Why AI */}
+      <WhyAISection />
 
       {/* AI Team Section — brand uniqueness */}
       <AITeamSection />
 
+      {/* Client Journey */}
+      <ClientJourney />
+
       {/* Stats Section — demonstrated proof */}
-      <section className="py-20 px-6 border-y border-white/5">
+      <section className="py-20 px-6 border-b border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Proof, Not <span className="text-amber-400">Promises</span>
+              Measured Outcomes, <span className="text-amber-400">Not Marketing Claims</span>
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              Authors don't stay because of hype. They stay because their books get finished, published, and read.
+              Authors and organizations stay because their books get finished, published, and put to work.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { value: "10,000+", label: "Books written, designed, and published" },
-              { value: "50,000+", label: "Authors writing on Write Vibe" },
-              { value: "99.9%", label: "Uptime — your book is always there" },
+              { value: "50,000+", label: "Authors and organizations on the platform" },
+              { value: "99.9%", label: "Uptime — your IP is always accessible" },
               { value: "4.9/5", label: "Average author rating" }
             ].map((stat) => (
               <div key={stat.label}>
@@ -459,11 +368,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Join a Community of <span className="text-amber-400">50,000+ Authors</span>
+              Authors Who Turned Books Into <span className="text-amber-400">Businesses</span>
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              First-time writers, bestselling authors, and publishing houses all write here. Invite your editor,
-              share drafts with your team, and get feedback from people who want your book to succeed.
+              First-time writers, consultants, executives, and publishing houses build their intellectual property here.
             </p>
           </div>
 
@@ -496,34 +404,13 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 px-6" itemScope itemType="https://schema.org/FAQPage">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Frequently Asked <span className="text-amber-400">Questions</span>
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {[
-              { q: "What is Write Vibe?", a: "Write Vibe is an AI-powered book creation suite that helps authors write, design, and publish books. AI agents handle character creation, outlining, cover design, video trailers, book websites, and team collaboration — all in one place." },
-              { q: "Is Write Vibe free to try?", a: "Yes. Write Vibe offers a 7-day free trial with no credit card required. You can cancel anytime." },
-              { q: "Can I publish my book directly from Write Vibe?", a: "Yes. Write Vibe integrates with Amazon KDP and major bookstores so you can submit and publish directly from the platform." },
-              { q: "Does Write Vibe support team collaboration?", a: "Absolutely. Invite editors, publishers, and marketing teams with role-based access so everyone works together on the same project." },
-              { q: "What kinds of books can I create with Write Vibe?", a: "Any genre — fiction, non-fiction, self-help, children's books, and more. The AI adapts to your book's category, tone, and target audience." }
-            ].map(({ q, a }, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                <h3 className="text-lg font-semibold text-white mb-3" itemProp="name">{q}</h3>
-                <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                  <p className="text-white/60" itemProp="text">{a}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Author Readiness Assessment */}
+      <AuthorReadinessAssessment />
 
-      {/* CTA Section */}
+      {/* FAQ Section */}
+      <LandingFAQ />
+
+      {/* Final CTA Section */}
       <section className="py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
           <div className="p-6 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 relative overflow-hidden">
@@ -534,24 +421,26 @@ export default function Landing() {
                 <span className="text-sm text-amber-300">7-Day Free Trial • No Credit Card Required</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                Your Book Is Closer Than You Think
+                Start Building Your Next Intellectual Property Asset
               </h2>
               <p className="text-white/60 mb-8 max-w-xl mx-auto">
-                The story you've been carrying deserves to be a book. Start your free trial today and watch your first chapter come together before the week is over — no credit card, no risk, just the book you've been carrying finally making it onto the page.
+                The expertise is already yours. Write Vibe provides the strategy, the AI-enhanced workflows,
+                and the publishing ecosystem to turn it into a book — and the brand, products, and opportunities
+                that come after. We'll be your publishing partner from first outline to lasting legacy.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                <Button 
-                  size="lg" 
-                  onClick={() => base44.auth.redirectToLogin(window.location.origin + createPageUrl("Dashboard"))}
+                <Button
+                  size="lg"
+                  onClick={goToSignup}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-14 px-8 text-lg"
                 >
-                  Start Your Free Trial
+                  Begin Your Free Trial
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="flex items-center gap-4 text-sm text-white/50">
                   <div className="flex items-center gap-1.5">
                     <Shield className="w-4 h-4 text-emerald-400" />
-                    <span>No credit card</span>
+                    <span>You own everything</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-4 h-4 text-emerald-400" />
@@ -560,7 +449,7 @@ export default function Landing() {
                 </div>
               </div>
               <p className="text-xs text-white/40">
-                Join 50,000+ authors who turned their ideas into published books with Write Vibe.
+                Join 50,000+ authors and organizations building intellectual property on Write Vibe.
               </p>
             </div>
           </div>
