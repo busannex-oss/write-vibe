@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Check, Wand2, RefreshCw, UploadCloud } from "lucide-react";
+import { Loader2, Copy, Check, Wand2, RefreshCw, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { slotForSection } from "@/lib/homepageCopy";
 
@@ -26,8 +26,9 @@ export default function SectionImproveDialog({ item, open, onClose }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [applying, setApplying] = useState(false);
-  const [applied, setApplied] = useState(false);
+  // preview = { newId, previousIds } while changes are live but not yet accepted
+  const [preview, setPreview] = useState(null);
+  const [accepted, setAccepted] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const queryClient = useQueryClient();
   const slot = slotForSection(item?.section || "");
@@ -35,7 +36,8 @@ export default function SectionImproveDialog({ item, open, onClose }) {
   useEffect(() => {
     if (!open || !item) return;
     setResult(null);
-    setApplied(false);
+    setPreview(null);
+    setAccepted(false);
     setLoading(true);
     base44.integrations.Core.InvokeLLM({
       prompt: `${attempt > 0 ? "This is a REGENERATION request — the previous draft was not strong enough. Produce a materially different, sharper, more distinctive version with a new angle, stronger specificity, and bolder structure. Do not repeat the previous phrasing.\n\n" : ""}You are a Fortune 100 Creative Director and StoryBrand-certified copywriter working on the homepage of Write Vibe — an AI-Powered Publishing & Intellectual Property Development company (never positioned as a ghostwriting, editing, or formatting service). Books are strategic assets that generate authority, revenue, opportunities, and legacy.
@@ -50,33 +52,46 @@ Recommendations to implement: ${(item.recommendations || []).join("; ")}
 
 Produce final, ready-to-publish copy — not advice. Executive-level, specific, inspirational without hype. Avoid clichés like "unlock your potential", "dream big", "next-level", "revolutionary". Naturally support search intent around AI publishing, manuscript development, author branding, and intellectual property. Include a visual direction, and concrete implementation notes (layout, icons, accessibility, mobile). If a field doesn't apply to this section, return an empty string or empty array for it.`,
       response_json_schema: SCHEMA
-    }).then((res) => {
+    }).then(async (res) => {
       setResult(res);
+      // Auto-apply to the live homepage as a pending change the user can accept or reject
+      if (slot) {
+        const existing = await base44.entities.HomepageCopy.filter({ slot, is_active: true });
+        if (existing.length) {
+          await base44.entities.HomepageCopy.bulkUpdate(existing.map((e) => ({ id: e.id, is_active: false })));
+        }
+        const created = await base44.entities.HomepageCopy.create({
+          section: item.section,
+          slot,
+          headline: res.headline || "",
+          subheadline: res.subheadline || "",
+          body_copy: res.body_copy || "",
+          bullet_points: res.bullet_points || [],
+          primary_cta: res.primary_cta || "",
+          secondary_cta: res.secondary_cta || "",
+          is_active: true
+        });
+        queryClient.invalidateQueries({ queryKey: ["homepage-copy"] });
+        setPreview({ newId: created.id, previousIds: existing.map((e) => e.id) });
+      }
       setLoading(false);
     });
   }, [open, item, attempt]);
 
-  const applyToHomepage = async () => {
-    if (!result || !slot) return;
-    setApplying(true);
-    const existing = await base44.entities.HomepageCopy.filter({ slot, is_active: true });
-    if (existing.length) {
-      await base44.entities.HomepageCopy.bulkUpdate(existing.map((e) => ({ id: e.id, is_active: false })));
+  const rejectChanges = async () => {
+    if (!preview) return;
+    await base44.entities.HomepageCopy.delete(preview.newId);
+    if (preview.previousIds.length) {
+      await base44.entities.HomepageCopy.bulkUpdate(preview.previousIds.map((id) => ({ id, is_active: true })));
     }
-    await base44.entities.HomepageCopy.create({
-      section: item.section,
-      slot,
-      headline: result.headline || "",
-      subheadline: result.subheadline || "",
-      body_copy: result.body_copy || "",
-      bullet_points: result.bullet_points || [],
-      primary_cta: result.primary_cta || "",
-      secondary_cta: result.secondary_cta || "",
-      is_active: true
-    });
     queryClient.invalidateQueries({ queryKey: ["homepage-copy"] });
-    setApplying(false);
-    setApplied(true);
+    setPreview(null);
+  };
+
+  const regenerate = async () => {
+    // Roll back the pending changes before generating a new version
+    if (preview) await rejectChanges();
+    setAttempt((a) => a + 1);
   };
 
   const copyAll = () => {
@@ -183,6 +198,11 @@ Produce final, ready-to-publish copy — not advice. Executive-level, specific, 
                 )}
               </div>
             </ScrollArea>
+            {preview && !accepted && (
+              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-sm text-emerald-200">
+                This copy is now live on your homepage. Accept to keep it, or reject to restore the previous version.
+              </div>
+            )}
             <div className="flex flex-wrap justify-end items-center gap-2 pt-2 border-t border-white/10">
               {!slot && (
                 <span className="mr-auto text-xs text-white/40">
@@ -195,22 +215,38 @@ Produce final, ready-to-publish copy — not advice. Executive-level, specific, 
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setAttempt((a) => a + 1)}
+                onClick={regenerate}
+                disabled={accepted}
                 className="border-white/20 text-white/70 hover:bg-white/10"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Regenerate Better Version
+                Regenerate
               </Button>
-              <Button
-                onClick={applyToHomepage}
-                disabled={!slot || applying || applied}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-40"
-              >
-                {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  : applied ? <Check className="w-4 h-4 mr-2" />
-                  : <UploadCloud className="w-4 h-4 mr-2" />}
-                {applied ? "Homepage Updated" : "Update Homepage"}
-              </Button>
+              {preview && !accepted && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={rejectChanges}
+                    className="border-red-500/40 text-red-300 hover:bg-red-500/10"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Reject &amp; Revert
+                  </Button>
+                  <Button
+                    onClick={() => setAccepted(true)}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                  >
+                    <Check className="w-4 h-4 mr-2" />
+                    Accept Changes
+                  </Button>
+                </>
+              )}
+              {accepted && (
+                <Button disabled className="bg-emerald-500 text-white opacity-70">
+                  <Check className="w-4 h-4 mr-2" />
+                  Changes Accepted
+                </Button>
+              )}
             </div>
           </>
         )}

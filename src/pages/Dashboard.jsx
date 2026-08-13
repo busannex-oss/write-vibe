@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import MessageInboxWidget from "@/components/dashboard/MessageInboxWidget";
 import TasksWidget from "@/components/dashboard/TasksWidget";
+import SocialKeysSection from "@/components/dashboard/SocialKeysSection";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -221,7 +222,9 @@ export default function Dashboard() {
       </motion.div>
       </div>
 
-
+      <div className="mt-6">
+        <SocialKeysSection user={user} />
+      </div>
     </div>
   );
 }
