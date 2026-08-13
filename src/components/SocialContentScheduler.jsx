@@ -48,6 +48,23 @@ export default function SocialContentScheduler({ posts = [], onUpdate }) {
   const [generatingImages, setGeneratingImages] = useState({});
   const [posting, setPosting] = useState({});
   const [copiedId, setCopiedId] = useState(null);
+  const [queued, setQueued] = useState({});
+
+  const queueForDailyPush = async (post) => {
+    setQueued(prev => ({ ...prev, [post.id]: "saving" }));
+    try {
+      await base44.entities.SocialPost.create({
+        caption: post.caption,
+        image_url: post.image_url || "",
+        platforms: (post.platforms || []).filter(p => ["facebook", "instagram", "linkedin"].includes(p)),
+        status: "queued",
+      });
+      setQueued(prev => ({ ...prev, [post.id]: "done" }));
+    } catch (error) {
+      console.error("Error queueing post:", error);
+      setQueued(prev => ({ ...prev, [post.id]: null }));
+    }
+  };
 
   const generateImageForPost = async (postId, caption) => {
     setGeneratingImages(prev => ({ ...prev, [postId]: true }));
@@ -270,6 +287,31 @@ export default function SocialContentScheduler({ posts = [], onUpdate }) {
                             Download Image
                           </Button>
                         )}
+
+                        <Button
+                          onClick={() => queueForDailyPush(post)}
+                          disabled={queued[post.id] === "saving" || queued[post.id] === "done"}
+                          size="sm"
+                          variant="outline"
+                          className="border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
+                        >
+                          {queued[post.id] === "saving" ? (
+                            <>
+                              <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                              Queueing...
+                            </>
+                          ) : queued[post.id] === "done" ? (
+                            <>
+                              <Check className="w-3 h-3 mr-2" />
+                              Queued for Daily Push
+                            </>
+                          ) : (
+                            <>
+                              <Calendar className="w-3 h-3 mr-2" />
+                              Queue Daily Auto-Post
+                            </>
+                          )}
+                        </Button>
 
                         {post.platforms?.length > 0 && (
                           <Button
