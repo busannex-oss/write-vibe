@@ -15,6 +15,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Only allow public https image URLs — blocks SSRF to internal hosts / metadata services
+    const isSafePublicImageUrl = (raw) => {
+      let u;
+      try { u = new URL(raw); } catch { return false; }
+      if (u.protocol !== 'https:') return false;
+      const host = u.hostname.toLowerCase();
+      if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.internal') || host.endsWith('.local')) return false;
+      // Block literal IP addresses entirely (covers 169.254.169.254, private ranges, loopback)
+      if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.includes(':') || host.startsWith('[')) return false;
+      return true;
+    };
+
+    if (imageUrl && !isSafePublicImageUrl(imageUrl)) {
+      return Response.json({ error: 'imageUrl must be a public https URL' }, { status: 400 });
+    }
+
     const results = {};
     const errors = [];
 

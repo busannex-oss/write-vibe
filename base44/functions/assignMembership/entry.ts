@@ -54,6 +54,11 @@ Deno.serve(async (req) => {
 
     // Audit: find users with no plan assigned
     if (body.action === 'audit') {
+      const caller = await base44.auth.me().catch(() => null);
+      if (caller?.role !== 'admin') {
+        return Response.json({ error: 'Forbidden' }, { status: 403 });
+      }
+
       const allUsers = await serviceBase44.entities.User.list();
       const unassigned = allUsers.filter(u => !u.subscription_tier);
       

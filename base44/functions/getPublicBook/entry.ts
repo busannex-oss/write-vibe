@@ -28,7 +28,15 @@ Deno.serve(async (req) => {
     if (book.created_by) {
       try {
         const users = await base44.asServiceRole.entities.User.filter({ email: book.created_by });
-        author = users?.[0] || null;
+        const found = users?.[0];
+        // Only expose public profile fields — never the full User record
+        author = found ? {
+          full_name: found.full_name || null,
+          author_bio: found.author_bio || null,
+          author_photo_url: found.author_photo_url || null,
+          website_title: found.website_title || null,
+          social_media_links: found.social_media_links || null
+        } : null;
       } catch (_) {}
     }
 
