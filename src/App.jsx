@@ -39,6 +39,7 @@ import TeamSummary from './pages/TeamSummary';
 import DocumentReview from './pages/DocumentReview';
 import InternalMessages from './pages/InternalMessages';
 import HomepageAudit from './pages/HomepageAudit';
+import PublishingCalendar from './pages/PublishingCalendar';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -127,6 +128,7 @@ const AuthenticatedApp = () => {
       <Route path="/DocumentReview" element={<LayoutWrapper currentPageName="DocumentReview"><DocumentReview /></LayoutWrapper>} />
       <Route path="/InternalMessages" element={<LayoutWrapper currentPageName="InternalMessages"><InternalMessages /></LayoutWrapper>} />
       <Route path="/HomepageAudit" element={<LayoutWrapper currentPageName="HomepageAudit"><HomepageAudit /></LayoutWrapper>} />
+      <Route path="/PublishingCalendar" element={<LayoutWrapper currentPageName="PublishingCalendar"><PublishingCalendar /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
