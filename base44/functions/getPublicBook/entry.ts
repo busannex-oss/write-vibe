@@ -23,11 +23,50 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Book not found' }, { status: 404 });
     }
 
+    const authorEmail = book.created_by;
+
+    // Only books the author has intentionally made public may be served here.
+    const siteStatus = book.website_config?.status;
+    const isPublic = book.status === 'published' || siteStatus === 'live' || siteStatus === 'coming_soon';
+    if (!isPublic) {
+      return Response.json({ error: 'Book not found' }, { status: 404 });
+    }
+
+    // Allowlist of public-safe fields — never expose manuscripts, outlines,
+    // saved drafts or internal character notes.
+    book = {
+      id: book.id,
+      title: book.title,
+      subtitle: book.subtitle,
+      status: book.status,
+      category: book.category,
+      subcategory: book.subcategory,
+      subjects: book.subjects || [],
+      plot_summary: book.plot_summary || null,
+      book_summary: book.book_summary || null,
+      table_of_contents: book.table_of_contents || [],
+      characters: (book.characters || []).map(c => ({
+        name: c?.name || null,
+        role: c?.role || null,
+        description: c?.description || null,
+        image_url: c?.image_url || null
+      })),
+      front_cover_url: book.front_cover_url || null,
+      back_cover_url: book.back_cover_url || null,
+      author_photo_url: book.author_photo_url || null,
+      video_commercial_url: book.video_commercial_url || null,
+      audiobook_url: book.audiobook_url || null,
+      website_config: book.website_config || null,
+      selected_bookstores: book.selected_bookstores || [],
+      social_media_links: book.social_media_links || null,
+      amazon_asin: book.amazon_asin || null
+    };
+
     // Fetch author profile
     let author = null;
-    if (book.created_by) {
+    if (authorEmail) {
       try {
-        const users = await base44.asServiceRole.entities.User.filter({ email: book.created_by });
+        const users = await base44.asServiceRole.entities.User.filter({ email: authorEmail });
         const found = users?.[0];
         // Only expose public profile fields — never the full User record
         author = found ? {

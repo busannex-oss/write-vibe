@@ -157,6 +157,9 @@ Deno.serve(async (req) => {
 
         // ── ARCHIVE: Soft-delete a memory ────────────────────────────────────────
         if (action === 'archive') {
+            if (user.role !== 'admin') {
+                return Response.json({ error: 'Forbidden: admin role required' }, { status: 403 });
+            }
             const { memory_id } = body;
             if (!memory_id) return Response.json({ error: 'memory_id required' }, { status: 400 });
             await base44.asServiceRole.entities.AgentMemory.update(memory_id, { is_archived: true });
@@ -165,6 +168,9 @@ Deno.serve(async (req) => {
 
         // ── CLEAR: Archive all memories for an agent ─────────────────────────────
         if (action === 'clear') {
+            if (user.role !== 'admin') {
+                return Response.json({ error: 'Forbidden: admin role required' }, { status: 403 });
+            }
             const { agent_name } = body;
             if (!agent_name) return Response.json({ error: 'agent_name required' }, { status: 400 });
             const mems = await base44.asServiceRole.entities.AgentMemory.filter({ agent_name, is_archived: false });
