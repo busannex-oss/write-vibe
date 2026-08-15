@@ -11,6 +11,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import AdminMenuCollapsible from "@/components/AdminMenuCollapsible";
 import NavCollapsible from "@/components/NavCollapsible";
 import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
+import MobileNav from "@/components/MobileNav";
 
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
@@ -175,44 +176,20 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Dropdown Menu */}
         {sidebarOpen && (
-          <nav className="lg:hidden bg-slate-900/80 backdrop-blur-xl border-b border-white/5 p-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            {memberNav.map((item) => {
-              if (item.children) {
-                return (
-                  <NavCollapsible
-                    key={item.name}
-                    parent={item}
-                    items={item.children}
-                    currentPageName={currentPageName}
-                    onNavigate={() => setSidebarOpen(false)}
-                  />
-                );
-              }
-              const isActive = currentPageName === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={createPageUrl(item.href)}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                    isActive 
-                      ? "bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400" 
-                      : "text-white/60 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  <item.icon className={cn("w-5 h-5", isActive && "text-amber-400")} />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          <MobileNav
+            memberNav={memberNav}
+            adminNav={adminNav}
+            user={user}
+            currentPageName={currentPageName}
+            onNavigate={() => setSidebarOpen(false)}
+            onLogout={handleLogout}
+          />
         )}
       </div>
 
       {/* Sidebar */}
       <aside className="hidden lg:flex fixed top-0 left-0 z-50 h-full w-72 bg-slate-900/95 backdrop-blur-xl border-r border-white/5 flex-col">
-        <div className="flex flex-col h-full pt-16">
+        <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-white/5">
             <div className="flex items-center gap-3">
@@ -234,6 +211,7 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <p className="px-4 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-white/30">Workspace</p>
             {memberNav.map((item) => {
               if (item.children) {
                 return (
@@ -323,7 +301,7 @@ export default function Layout({ children, currentPageName }) {
       <main className="lg:pl-72 min-h-screen">
         {/* Desktop Top Header */}
         <div className="hidden lg:flex items-center justify-between px-8 h-14 border-b border-white/5 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-30">
-          <h2 className="text-sm font-medium text-white/50 tracking-wide">
+          <h2 className="text-sm font-semibold text-white/80 tracking-wide">
             {currentPageName?.replace(/([A-Z])/g, ' $1').trim()}
           </h2>
           {user && (

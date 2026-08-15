@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const CATEGORY_ORDER = ["Operations", "AI Agents", "Strategy & Docs", "Platform & Brand"];
 
-export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
+export default function AdminMenuCollapsible({ adminNav, currentPageName, onNavigate }) {
   const [expanded, setExpanded] = useState({ Operations: true });
   const [expandedItems, setExpandedItems] = useState({});
 
@@ -45,6 +45,7 @@ export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
                     <div className="flex items-center">
                       <Link
                         to={createPageUrl(item.href)}
+                        onClick={onNavigate}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex-1",
                           isActive
@@ -72,6 +73,7 @@ export default function AdminMenuCollapsible({ adminNav, currentPageName }) {
                             <Link
                               key={child.name}
                               to={createPageUrl(child.href)}
+                              onClick={onNavigate}
                               className={cn(
                                 "flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-all text-xs",
                                 childActive
