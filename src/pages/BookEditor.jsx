@@ -451,7 +451,7 @@ export default function BookEditor() {
 
         {/* ── Main content ─────────────────────────────────────────────────── */}
         <main className="book-editor-main">
-          <div className="book-editor-main-content">
+          <div className={`book-editor-main-content ${["cover", "logo", "website", "viewer", "marketing"].includes(activeTab) ? "wide" : ""}`}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}

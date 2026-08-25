@@ -130,10 +130,24 @@
   }
 
   .book-editor-main-content {
-    max-width: 90rem;
+    max-width: 62rem;
     margin: 0 auto;
-    padding: 2rem 3rem;
+    padding: 2.5rem 3rem 4rem;
     width: 100%;
+  }
+
+  /* Visual tools (covers, website, reading, marketing) keep the full width */
+  .book-editor-main-content.wide {
+    max-width: 90rem;
+  }
+
+  /* Readability — comfortable line spacing for written content */
+  .book-editor-main-content p {
+    line-height: 1.7;
+  }
+
+  .book-editor-main-content textarea {
+    line-height: 1.75;
   }
 
   /* Sidebar stepper items */
