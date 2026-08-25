@@ -185,6 +185,16 @@
           "word_count": {
             "type": "number"
           },
+          "status": {
+            "type": "string",
+            "enum": [
+              "drafting",
+              "reviewing",
+              "finalized"
+            ],
+            "default": "drafting",
+            "description": "Editorial stage of this chapter"
+          },
           "images": {
             "type": "array",
             "items": {

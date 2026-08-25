@@ -27,6 +27,7 @@ import ChapterVersionHistory from "./ChapterVersionHistory";
 import AIFeedbackSidebar from "./AIFeedbackSidebar";
 import ChapterAgentProgress from "./ChapterAgentProgress";
 import ChapterComments from "./ChapterComments";
+import ChapterStatusSelect from "./ChapterStatusSelect";
 
 export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [manuscript, setManuscript] = useState(book.manuscript_chapters || []);
@@ -86,6 +87,7 @@ Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid des
         chapter_title: chapter.chapter_title,
         content: response.content,
         word_count: response.content.split(/\s+/).length,
+        status: existingChapter?.status || "drafting",
         images: existingChapter?.images || []
       };
       setManuscript(newManuscript);
@@ -156,18 +158,27 @@ High quality, professional book illustration, suitable for print publication.`,
     updateChapterContent(chapterIndex, updatedContent);
   };
 
+  // Filter out any undefined/null holes and ensure each item is a valid object
+  const cleanChapters = (list) => list
+    .filter(ch => ch && typeof ch === 'object' && ch.chapter_number !== undefined)
+    .map(ch => ({
+      chapter_number: ch.chapter_number || 0,
+      chapter_title: ch.chapter_title || '',
+      content: ch.content || '',
+      word_count: ch.word_count || 0,
+      status: ch.status || 'drafting',
+      images: Array.isArray(ch.images) ? ch.images : []
+    }));
+
   const saveManuscript = () => {
-    // Filter out any undefined/null holes and ensure each item is a valid object
-    const cleanManuscript = manuscript
-      .filter(ch => ch && typeof ch === 'object' && ch.chapter_number !== undefined)
-      .map(ch => ({
-        chapter_number: ch.chapter_number || 0,
-        chapter_title: ch.chapter_title || '',
-        content: ch.content || '',
-        word_count: ch.word_count || 0,
-        images: Array.isArray(ch.images) ? ch.images : []
-      }));
-    onUpdate({ manuscript_chapters: cleanManuscript }, true);
+    onUpdate({ manuscript_chapters: cleanChapters(manuscript) }, true);
+  };
+
+  const setChapterStatus = (chapterIndex, status) => {
+    const newManuscript = [...manuscript];
+    newManuscript[chapterIndex] = { ...newManuscript[chapterIndex], status };
+    setManuscript(newManuscript);
+    onUpdate({ manuscript_chapters: cleanChapters(newManuscript) }, true);
   };
 
   const saveChapterVersion = async (versionData) => {
@@ -191,21 +202,13 @@ High quality, professional book illustration, suitable for print publication.`,
       chapter_title: version.chapter_title,
       content: version.content,
       word_count: version.word_count,
+      status: newManuscript[chapterIndex]?.status || "drafting",
       images: newManuscript[chapterIndex]?.images || []
     };
     setManuscript(newManuscript);
 
     // Persist the restored chapter so the rollback survives a reload
-    const cleanManuscript = newManuscript
-      .filter(ch => ch && typeof ch === 'object' && ch.chapter_number !== undefined)
-      .map(ch => ({
-        chapter_number: ch.chapter_number || 0,
-        chapter_title: ch.chapter_title || '',
-        content: ch.content || '',
-        word_count: ch.word_count || 0,
-        images: Array.isArray(ch.images) ? ch.images : []
-      }));
-    onUpdate({ manuscript_chapters: cleanManuscript }, true);
+    onUpdate({ manuscript_chapters: cleanChapters(newManuscript) }, true);
   };
 
   const generateAllChapters = async () => {
@@ -217,6 +220,14 @@ High quality, professional book illustration, suitable for print publication.`,
   };
 
   const totalWords = manuscript.reduce((sum, ch) => sum + (ch?.word_count || 0), 0);
+
+  const statusCounts = manuscript.reduce((acc, ch) => {
+    if (ch?.content) {
+      const s = ch.status || "drafting";
+      acc[s] = (acc[s] || 0) + 1;
+    }
+    return acc;
+  }, {});
 
   const feedbackChapter = feedbackChapterIndex !== null ? manuscript[feedbackChapterIndex] : null;
 
@@ -238,14 +249,21 @@ High quality, professional book illustration, suitable for print publication.`,
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
             <div>
-              <div className="text-sm text-white/50">Total Manuscript</div>
-              <div className="text-2xl font-bold text-white">{totalWords.toLocaleString()} words</div>
+              <div className="text-[11px] font-medium uppercase tracking-wider text-white/40">Total Manuscript</div>
+              <div className="text-2xl font-bold text-white mt-0.5">
+                {totalWords.toLocaleString()} <span className="text-sm font-medium text-white/40">words</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">{statusCounts.drafting || 0} drafting</span>
+              <span className="px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">{statusCounts.reviewing || 0} reviewing</span>
+              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{statusCounts.finalized || 0} finalized</span>
             </div>
             <div className="text-right">
-              <div className="text-sm text-white/50">Chapters Written</div>
-              <div className="text-2xl font-bold text-amber-400">
+              <div className="text-[11px] font-medium uppercase tracking-wider text-white/40">Chapters Written</div>
+              <div className="text-2xl font-bold text-amber-400 mt-0.5">
                 {manuscript.filter((ch) => ch?.content).length} / {chapters.length}
               </div>
             </div>
@@ -341,7 +359,7 @@ High quality, professional book illustration, suitable for print publication.`,
                           <span className="font-semibold text-amber-400">{chapter.chapter_number}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-white">{chapter.chapter_title}</h4>
+                          <h4 className="font-semibold text-white text-[15px] leading-snug truncate">{chapter.chapter_title}</h4>
                           {hasContent &&
                         <div className="flex items-center gap-3 mt-1">
                               <span className="text-xs text-emerald-400 flex items-center gap-1">
@@ -361,6 +379,12 @@ High quality, professional book illustration, suitable for print publication.`,
                         }
                         </div>
                         <div className="flex items-center gap-2">
+                          {hasContent && (
+                            <ChapterStatusSelect
+                              status={manuscriptChapter?.status}
+                              onChange={(s) => setChapterStatus(index, s)}
+                            />
+                          )}
                           {hasContent && (
                             <Button
                               onClick={(e) => { e.stopPropagation(); setFeedbackChapterIndex(feedbackChapterIndex === index ? null : index); }}
@@ -412,7 +436,7 @@ High quality, professional book illustration, suitable for print publication.`,
                               />
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                  <label className="text-sm text-white/50">Chapter Content</label>
+                                  <label className="text-[11px] font-medium uppercase tracking-wider text-white/40">Chapter Content</label>
                                   <ChapterVersionHistory
                                     chapterNumber={chapter.chapter_number}
                                     chapterTitle={chapter.chapter_title}
@@ -440,8 +464,8 @@ High quality, professional book illustration, suitable for print publication.`,
                               <Textarea
                             value={sanitizeText(manuscriptChapter?.content) || ""}
                             onChange={(e) => updateChapterContent(index, e.target.value)}
-                            className="bg-white/5 border-white/20 text-white font-mono text-sm"
-                            rows={12}
+                            className="bg-white/5 border-white/20 text-white/90 text-[15px] leading-7 p-4"
+                            rows={16}
                             placeholder="Chapter content will appear here..." />
 
                             </div>
@@ -464,7 +488,7 @@ High quality, professional book illustration, suitable for print publication.`,
 
                             {manuscriptChapter?.images?.length > 0 &&
                         <div>
-                                <label className="text-sm text-white/50 mb-2 block">Chapter Illustrations</label>
+                                <label className="text-[11px] font-medium uppercase tracking-wider text-white/40 mb-2 block">Chapter Illustrations</label>
                                 <div className="grid grid-cols-2 gap-3">
                                   {manuscriptChapter.images.map((img, imgIndex) =>
                             <img
