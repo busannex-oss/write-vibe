@@ -24,6 +24,7 @@ import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import MessageInboxWidget from "@/components/dashboard/MessageInboxWidget";
 import TasksWidget from "@/components/dashboard/TasksWidget";
 import SocialKeysSection from "@/components/dashboard/SocialKeysSection";
+import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -216,6 +217,7 @@ export default function Dashboard() {
         transition={{ delay: 0.5 }}
         className="lg:col-span-1 space-y-6"
       >
+        <WritingProgressWidget books={books} />
         <TasksWidget user={user} />
         <ActivityFeed />
         <MessageInboxWidget user={user} />
