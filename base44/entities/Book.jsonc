@@ -22,6 +22,13 @@
       ],
       "default": "draft"
     },
+    "collaborator_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of invited team members who can view this book and leave comments"
+    },
     "editions": {
       "type": "array",
       "description": "Editions of this book \u2014 each format integrates with the same canonical book, metadata, assets, and analytics",
@@ -472,6 +479,9 @@
       "$or": [
         {
           "created_by": "{{user.email}}"
+        },
+        {
+          "data.collaborator_emails": "{{user.email}}"
         },
         {
           "user_condition": {
