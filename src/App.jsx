@@ -42,6 +42,7 @@ import HomepageAudit from './pages/HomepageAudit';
 import PublishingCalendar from './pages/PublishingCalendar';
 import PlatformHealth from './pages/PlatformHealth';
 import OperationsAgents from './pages/OperationsAgents';
+import ReaderInsights from './pages/ReaderInsights';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -133,6 +134,7 @@ const AuthenticatedApp = () => {
       <Route path="/PublishingCalendar" element={<LayoutWrapper currentPageName="PublishingCalendar"><PublishingCalendar /></LayoutWrapper>} />
       <Route path="/PlatformHealth" element={<LayoutWrapper currentPageName="PlatformHealth"><PlatformHealth /></LayoutWrapper>} />
       <Route path="/OperationsAgents" element={<LayoutWrapper currentPageName="OperationsAgents"><OperationsAgents /></LayoutWrapper>} />
+      <Route path="/ReaderInsights" element={<LayoutWrapper currentPageName="ReaderInsights"><ReaderInsights /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -124,6 +124,22 @@ export default function BookWebsite() {
     } catch (_) {}
   }, [bookId, book]);
 
+  // Record a real page visit once per browser session, per book
+  useEffect(() => {
+    if (!bookId || !book) return;
+    const flag = `bookview_${bookId}`;
+    if (sessionStorage.getItem(flag)) return;
+    sessionStorage.setItem(flag, "1");
+    let sessionId = sessionStorage.getItem("wv_session_id");
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem("wv_session_id", sessionId);
+    }
+    base44.functions
+      .invoke("trackBookView", { bookId, referrer: document.referrer || "", sessionId })
+      .catch(() => {});
+  }, [bookId, book]);
+
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) subscribeMutation.mutate();

@@ -16,7 +16,7 @@ import MobileNav from "@/components/MobileNav";
 // Route protection zones
 const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
 const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents"];
-const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth"];
+const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth", "ReaderInsights"];
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -74,6 +74,7 @@ export default function Layout({ children, currentPageName }) {
   const memberNav = [
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard, children: [
       { name: "Platform Health", href: "PlatformHealth", icon: Activity },
+      { name: "Reader Insights", href: "ReaderInsights", icon: BarChart2 },
     ]},
     { name: "My Books",   href: "Books",       icon: BookOpen, children: [
       { name: "Template Library", href: "Templates", icon: Library },
