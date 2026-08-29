@@ -23,6 +23,17 @@
       "type": "string",
       "description": "Character name (character comments)"
     },
+    "section_label": {
+      "type": "string",
+      "description": "Optional specific section/passage the comment refers to"
+    },
+    "visible_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of the book owner and invited team members who can see this comment"
+    },
     "author_email": {
       "type": "string",
       "description": "Commenter email"
@@ -51,11 +62,14 @@
     "content"
   ],
   "rls": {
-    "create": null,
+    "create": {},
     "read": {
       "$or": [
         {
           "created_by": "{{user.email}}"
+        },
+        {
+          "data.visible_to": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -68,6 +82,13 @@
       "$or": [
         {
           "created_by": "{{user.email}}"
+        },
+        {
+          "data.visible_to": {
+            "$in": [
+              "{{user.email}}"
+            ]
+          }
         },
         {
           "user_condition": {
