@@ -1,0 +1,160 @@
+{
+  "name": "ProviderConnectionRecord",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "Canonical Write Vibe Book ID (primary reference)"
+    },
+    "edition_id": {
+      "type": "string",
+      "description": "Write Vibe edition ID within the book, if applicable"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "lulu",
+        "publishdrive",
+        "amazon_kdp",
+        "amazon_acx",
+        "direct"
+      ],
+      "description": "External provider handling this channel"
+    },
+    "channel": {
+      "type": "string",
+      "description": "Retail/distribution channel (e.g. amazon, apple_books, kobo, google_play, barnes_noble, libraries, direct_store)"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "ebook",
+        "paperback",
+        "hardcover",
+        "audiobook",
+        "workbook",
+        "journal",
+        "large_print",
+        "special_edition"
+      ],
+      "description": "Edition format distributed on this channel"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "not_ready",
+        "ready",
+        "awaiting_approval",
+        "submitted",
+        "processing",
+        "under_review",
+        "approved",
+        "live",
+        "update_pending",
+        "action_required",
+        "rejected",
+        "suspended",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Normalized Write Vibe publication status"
+    },
+    "provider_title_id": {
+      "type": "string",
+      "description": "Provider's ID for the title (secondary reference)"
+    },
+    "provider_product_id": {
+      "type": "string",
+      "description": "Provider's product/job ID (secondary reference)"
+    },
+    "retailer_url": {
+      "type": "string",
+      "description": "Live retailer listing URL once available"
+    },
+    "price": {
+      "type": "number",
+      "description": "Retail price on this channel"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "territories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Distribution territories (ISO country codes or 'WORLD')"
+    },
+    "submitted_at": {
+      "type": "string",
+      "description": "When this channel submission was made"
+    },
+    "live_at": {
+      "type": "string",
+      "description": "When the listing went live"
+    },
+    "last_sync": {
+      "type": "string",
+      "description": "Last successful provider sync timestamp"
+    },
+    "last_error": {
+      "type": "string",
+      "description": "Most recent provider error message"
+    },
+    "last_success": {
+      "type": "string",
+      "description": "Most recent successful provider operation timestamp"
+    },
+    "required_action": {
+      "type": "string",
+      "description": "Human-readable action needed from the author/admin"
+    }
+  },
+  "required": [
+    "book_id",
+    "provider",
+    "channel",
+    "format"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

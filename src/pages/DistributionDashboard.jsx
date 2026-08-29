@@ -9,6 +9,9 @@ import {
   ArrowLeft, Package, Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProviderHealthBanner from "@/components/distribution/ProviderHealthBanner";
+import ChannelMatrix from "@/components/distribution/ChannelMatrix";
+import PrintEconomicsCard from "@/components/distribution/PrintEconomicsCard";
 
 const invoke = (action, extra = {}) => base44.functions.invoke("distributionDashboard", { action, ...extra });
 
@@ -122,12 +125,19 @@ export default function DistributionDashboard() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [publishing, setPublishing] = useState(null);
+  const [channels, setChannels] = useState([]);
+  const [providers, setProviders] = useState([]);
 
   const load = async () => {
     if (!bookId) return;
     setLoading(true);
-    const res = await invoke("get_status", { book_id: bookId });
+    const [res, gwRes] = await Promise.all([
+      invoke("get_status", { book_id: bookId }),
+      base44.functions.invoke("publishingGateway", { action: "list_channels", book_id: bookId }).catch(() => null)
+    ]);
     setData(res.data);
+    setChannels(gwRes?.data?.channels || []);
+    setProviders(gwRes?.data?.providers || []);
     setLoading(false);
   };
 
@@ -153,6 +163,15 @@ export default function DistributionDashboard() {
     setPublishing(null);
   };
 
+  const handleChannelSubmit = async (channel, format) => {
+    setPublishing(channel);
+    await base44.functions.invoke("publishingGateway", {
+      action: "submit_channel", book_id: bookId, channel, format
+    }).catch(() => null);
+    await load();
+    setPublishing(null);
+  };
+
   const exportLog = data?.export_log || [];
 
   return (
@@ -167,7 +186,7 @@ export default function DistributionDashboard() {
             <div className="w-px h-5 bg-white/10" />
             <Package className="w-5 h-5 text-amber-400" />
             <div>
-              <h1 className="text-white font-bold text-base leading-tight">Distribution Dashboard</h1>
+              <h1 className="text-white font-bold text-base leading-tight">Distribution Command Center</h1>
               {data?.book?.title && <p className="text-white/30 text-xs">{data.book.title}</p>}
             </div>
           </div>
@@ -224,6 +243,11 @@ export default function DistributionDashboard() {
                 externalUrl="https://www.acx.com" externalLabel="ACX Dashboard"
               />
             </div>
+
+            {/* Distribution Command Center — multi-channel via the publishing gateway */}
+            <ProviderHealthBanner providers={providers} />
+            <ChannelMatrix channels={channels} publishing={publishing} onSubmit={handleChannelSubmit} />
+            <PrintEconomicsCard bookId={bookId} />
 
             {/* Export Log */}
             <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">

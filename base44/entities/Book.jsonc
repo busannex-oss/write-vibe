@@ -22,6 +22,66 @@
       ],
       "default": "draft"
     },
+    "editions": {
+      "type": "array",
+      "description": "Editions of this book \u2014 each format integrates with the same canonical book, metadata, assets, and analytics",
+      "items": {
+        "type": "object",
+        "properties": {
+          "edition_id": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "ebook",
+              "paperback",
+              "hardcover",
+              "audiobook",
+              "workbook",
+              "journal",
+              "large_print",
+              "special_edition"
+            ]
+          },
+          "isbn": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "page_count": {
+            "type": "number"
+          },
+          "trim_size": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "not_ready",
+              "ready",
+              "awaiting_approval",
+              "submitted",
+              "processing",
+              "under_review",
+              "approved",
+              "live",
+              "update_pending",
+              "action_required",
+              "rejected",
+              "suspended",
+              "retired"
+            ],
+            "default": "draft"
+          }
+        }
+      }
+    },
     "characters": {
       "type": "array",
       "items": {
