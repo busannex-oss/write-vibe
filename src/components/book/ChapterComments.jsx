@@ -22,10 +22,17 @@ export default function ChapterComments({ book, chapterNumber, chapterTitle, cha
   const addMutation = useMutation({
     mutationFn: async (content) => {
       const user = await base44.auth.me();
+      // Share the comment with the book owner and every invited team member
+      const visibleTo = Array.from(new Set([
+        book.created_by,
+        ...(book.collaborator_emails || []),
+        user.email
+      ].filter(Boolean)));
       return base44.entities.BookComment.create({
         book_id: book.id,
         target_type: "chapter",
         chapter_number: chapterNumber,
+        visible_to: visibleTo,
         author_email: user.email,
         author_name: user.full_name,
         content,
