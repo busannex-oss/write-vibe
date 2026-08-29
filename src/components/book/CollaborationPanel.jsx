@@ -19,8 +19,26 @@ export default function CollaborationPanel({ book }) {
     queryFn: () => base44.entities.TeamMember.filter({ book_id: book.id })
   });
 
+  // Keep the book's collaborator list in sync so team members can open the book
+  // and see each other's comments.
+  const syncBookAccess = async (emails) => {
+    await base44.entities.Book.update(book.id, { collaborator_emails: emails });
+    queryClient.invalidateQueries({ queryKey: ['book', book.id] });
+  };
+
   const inviteMutation = useMutation({
-    mutationFn: (data) => base44.entities.TeamMember.create(data),
+    mutationFn: async (data) => {
+      const member = await base44.entities.TeamMember.create(data);
+      // Give them access to the book, then send the app invitation so they can log in
+      const emails = Array.from(new Set([...(book.collaborator_emails || []), data.user_email]));
+      await syncBookAccess(emails);
+      try {
+        await base44.users.inviteUser(data.user_email, "user");
+      } catch {
+        // Already a registered user — access is granted, no invitation needed
+      }
+      return member;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team-members', book.id] });
       setInviteEmail("");
@@ -29,7 +47,12 @@ export default function CollaborationPanel({ book }) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (id) => base44.entities.TeamMember.delete(id),
+    mutationFn: async (member) => {
+      await base44.entities.TeamMember.delete(member.id);
+      await syncBookAccess(
+        (book.collaborator_emails || []).filter((e) => e !== member.user_email)
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team-members', book.id] });
     }
@@ -39,7 +62,7 @@ export default function CollaborationPanel({ book }) {
     if (!inviteEmail) return;
     await inviteMutation.mutateAsync({
       book_id: book.id,
-      user_email: inviteEmail,
+      user_email: inviteEmail.trim().toLowerCase(),
       role: inviteRole,
       status: "invited"
     });
@@ -71,7 +94,7 @@ export default function CollaborationPanel({ book }) {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Invite Form */}
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Input
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
@@ -79,7 +102,7 @@ export default function CollaborationPanel({ book }) {
               className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/40"
             />
             <Select value={inviteRole} onValueChange={setInviteRole}>
-              <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white">
+              <SelectTrigger className="w-full sm:w-40 bg-white/5 border-white/10 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -168,7 +191,7 @@ export default function CollaborationPanel({ book }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => removeMutation.mutate(member.id)}
+                      onClick={() => removeMutation.mutate(member)}
                       className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                     >
                       <Trash2 className="w-4 h-4" />
