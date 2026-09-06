@@ -1,0 +1,37 @@
+{
+  "name": "Advisory Review Completed \u2014 Send Insight to Book Editor",
+  "description": "When an AdvisoryNotification is marked as reviewed, automatically generate an AI insight summary and write it back to the associated CharacterMilestone in the book editor.",
+  "trigger": {
+    "condition": "${ ((.trigger.changed_fields | index(\"status\") != null) and (.trigger.data.status == \"reviewed\")) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "AdvisoryNotification"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "advisory_review_completed_send_insight_to_book_editor",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendAdvisoryInsight",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "sendAdvisoryInsight"
+  }
+}
