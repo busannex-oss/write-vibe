@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { Workflow, Gauge, Bot, Lightbulb, HeartHandshake, ShieldCheck } from "lucide-react";
+import { Workflow, Gauge, Bot, Lightbulb, HeartHandshake, ShieldCheck, UserCog } from "lucide-react";
 import AgentChatPanel from "@/components/agents/AgentChatPanel";
 import { cn } from "@/lib/utils";
 
 const AGENTS = [
+  {
+    name: "personal_executive_assistant",
+    label: "Alexandar Sterling",
+    role: "Personal Executive Assistant",
+    icon: UserCog,
+    blurb: "Your right hand — protects your interests, reviews anything that affects you, and acts on your behalf when you're away.",
+    placeholder: "e.g. Review this and tell me whether it serves my interests..."
+  },
   {
     name: "workflow_architect",
     label: "Elena Vasquez",
