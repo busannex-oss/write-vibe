@@ -4,13 +4,21 @@ import { MessageSquare, X, Send, Volume2, VolumeX, Sparkles } from "lucide-react
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessage from "@/components/chat/ChatMessage";
+import GreetingBubble from "@/components/chat/GreetingBubble";
 
 const STORAGE_KEY = 'cs_chat_history';
+const SESSION_KEY = 'sherry_session_id';
+const GREETED_KEY = 'sherry_greeted';
+const SEEN_KEY = 'sherry_seen_before';
 
-const WELCOME_MESSAGE = {
+const buildWelcome = (firstName, returning) => ({
   role: 'agent',
-  content: "Hey there! 👋 I'm Sherry Givens — I'm here to help you make the most of Write Vibe. Whether you're just starting your first book or you're deep in the publishing weeds, I've got you. So — what are you working on these days?",
-};
+  content: firstName
+    ? `${returning ? 'Welcome back' : 'Hey'}, ${firstName}! 👋 It's Sherry. I've got your projects pulled up — what are we working on today?`
+    : returning
+      ? "Well hey, welcome back! 👋 It's Sherry Givens. Good to see you again — what can I help you with today?"
+      : "Hey there! 👋 I'm Sherry Givens — I'm here to help you make the most of Write Vibe. Whether you're just starting your first book or you're deep in the publishing weeds, I've got you. So — what are you working on these days?",
+});
 
 export default function FloatingChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,19 +26,45 @@ export default function FloatingChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [greeting, setGreeting] = useState(null);
   const messagesEndRef = useRef(null);
 
+  // Greet + log every visitor once per browser session
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
+    let history = null;
     if (saved) {
-      try {
-        setMessages(JSON.parse(saved));
-      } catch {
-        setMessages([WELCOME_MESSAGE]);
-      }
-    } else {
-      setMessages([WELCOME_MESSAGE]);
+      try { history = JSON.parse(saved); } catch { history = null; }
     }
+
+    if (sessionStorage.getItem(GREETED_KEY)) {
+      setMessages(history?.length ? history : [buildWelcome(null, !!localStorage.getItem(SEEN_KEY))]);
+      return;
+    }
+
+    let sessionId = sessionStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem(SESSION_KEY, sessionId);
+    }
+    const returning = !!localStorage.getItem(SEEN_KEY);
+    sessionStorage.setItem(GREETED_KEY, '1');
+    localStorage.setItem(SEEN_KEY, '1');
+
+    base44.functions.invoke('logVisitor', {
+      session_id: sessionId,
+      page: window.location.pathname,
+      referrer: document.referrer || '',
+      returning,
+    }).then((res) => {
+      const welcome = buildWelcome(res.data?.first_name || null, returning);
+      setMessages(history?.length ? [...history, welcome] : [welcome]);
+      setGreeting(welcome.content);
+    }).catch(() => {
+      const welcome = buildWelcome(null, returning);
+      setMessages(history?.length ? history : [welcome]);
+      setGreeting(welcome.content);
+    });
   }, []);
 
   useEffect(() => {
@@ -80,12 +114,22 @@ export default function FloatingChatWidget() {
   return (
     <>
       <AnimatePresence>
+        {!isOpen && greeting && (
+          <GreetingBubble
+            text={greeting}
+            onOpen={() => { setGreeting(null); setIsOpen(true); }}
+            onDismiss={() => setGreeting(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {!isOpen && (
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setIsOpen(true)}
+            onClick={() => { setGreeting(null); setIsOpen(true); }}
             className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30 flex items-center justify-center hover:scale-105 transition-transform"
             aria-label="Open customer service chat"
           >

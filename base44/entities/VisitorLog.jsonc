@@ -1,0 +1,75 @@
+{
+  "name": "VisitorLog",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Anonymous per-browser-session id"
+    },
+    "visitor_type": {
+      "type": "string",
+      "enum": [
+        "visitor",
+        "member",
+        "admin"
+      ],
+      "description": "Anonymous visitor, registered member, or admin"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email if the visitor is logged in"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name if the visitor is logged in"
+    },
+    "page": {
+      "type": "string",
+      "description": "Page path where Sherry greeted them"
+    },
+    "referrer": {
+      "type": "string",
+      "description": "Referring URL, if any"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser user agent"
+    },
+    "returning": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this browser had visited before"
+    },
+    "greeted_by": {
+      "type": "string",
+      "default": "sherry_givens",
+      "description": "Agent who greeted the visitor"
+    },
+    "visited_at": {
+      "type": "string",
+      "description": "ISO timestamp of the visit"
+    }
+  },
+  "required": [
+    "session_id",
+    "visitor_type"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
