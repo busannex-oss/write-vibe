@@ -8,11 +8,13 @@ import InsightStatCard from "@/components/insights/InsightStatCard";
 import ViewsTrendChart from "@/components/insights/ViewsTrendChart";
 import TrafficSourceList from "@/components/insights/TrafficSourceList";
 import MilestoneAttentionTable from "@/components/insights/MilestoneAttentionTable";
+import MilestoneTrafficChart from "@/components/insights/MilestoneTrafficChart";
 import DraftFeedbackPanel from "@/components/insights/DraftFeedbackPanel";
 import {
   buildViewTrend,
   buildSourceBreakdown,
   buildMilestoneAttention,
+  buildMilestoneTrafficSeries,
   buildBookEngagement
 } from "@/lib/insights";
 
@@ -119,6 +121,8 @@ export default function ReaderInsights() {
         </div>
         <TrafficSourceList sources={sources} total={recentViews.length || 1} />
       </div>
+
+      <MilestoneTrafficChart data={buildMilestoneTrafficSeries(views, books, posts)} />
 
       <MilestoneAttentionTable milestones={buildMilestoneAttention(posts, views, subscribers)} />
 

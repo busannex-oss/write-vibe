@@ -58,6 +58,53 @@ export function buildMilestoneAttention(posts, views, subscribers) {
     .sort((a, b) => b.views + b.subscribers * 3 - (a.views + a.subscribers * 3));
 }
 
+/**
+ * Daily visits over the last `days` days, annotated with marketing milestones
+ * that happened that day and flagged when the day is a traffic spike
+ * (more than 1.75x the period average).
+ */
+export function buildMilestoneTrafficSeries(views, books = [], posts = [], days = 60) {
+  const viewCounts = {};
+  views.forEach((v) => {
+    const key = dayKey(v.viewed_at || v.created_date);
+    viewCounts[key] = (viewCounts[key] || 0) + 1;
+  });
+
+  const milestones = {};
+  const addMilestone = (date, label, kind) => {
+    if (!date) return;
+    const key = dayKey(date);
+    (milestones[key] = milestones[key] || []).push({ label, kind });
+  };
+  books.forEach((b) => {
+    addMilestone(b.website_config?.release_date, `${b.title} launch`, "release");
+    addMilestone(b.amazon_kdp_submitted_at, `${b.title} — KDP submitted`, "kdp");
+    addMilestone(b.amazon_acx_submitted_at, `${b.title} — audiobook submitted`, "acx");
+  });
+  posts
+    .filter((p) => p.posted_at)
+    .forEach((p) => addMilestone(p.posted_at, (p.caption || "Social post").slice(0, 60), "social"));
+
+  const series = Array.from({ length: days }, (_, i) => {
+    const date = subDays(new Date(), days - 1 - i);
+    const key = format(date, "yyyy-MM-dd");
+    return {
+      label: format(date, "MMM d"),
+      key,
+      views: viewCounts[key] || 0,
+      milestones: milestones[key] || []
+    };
+  });
+
+  const total = series.reduce((s, d) => s + d.views, 0);
+  const avg = total / days;
+  return series.map((d) => ({
+    ...d,
+    spike: avg > 0 && d.views > avg * 1.75,
+    milestoneCount: d.milestones.length
+  }));
+}
+
 /** Per-book draft engagement summary. */
 export function buildBookEngagement(books, comments, reviews, views) {
   return books

@@ -1,0 +1,40 @@
+{
+  "name": "Alexandar Sterling \u2014 Major Change Alert",
+  "description": "Whenever an agent or teammate records a major change to a book or to strategy (SOPs), Alexandar Sterling briefs the founder by email and adds a briefing item to the dashboard.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ActivityLog"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pea_major_change_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_pea_alert": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "peaAlert",
+            "args": {
+              "activity_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Brief the founder",
+            "description": "Alexandar Sterling alert"
+          }
+        }
+      }
+    ]
+  }
+}
