@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Workflow, Gauge, Bot, Lightbulb, HeartHandshake, ShieldCheck, UserCog } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import AgentChatPanel from "@/components/agents/AgentChatPanel";
 import { cn } from "@/lib/utils";
+import { isFounder } from "@/lib/founder";
 
 const AGENTS = [
   {
@@ -63,7 +66,25 @@ const AGENTS = [
 ];
 
 export default function OperationsAgents() {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => base44.auth.me(),
+    staleTime: 60000
+  });
+
+  // Alexandar Sterling is the Founder & CEO's personal assistant — nobody else sees him.
+  const agents = useMemo(
+    () => AGENTS.filter((a) => a.name !== "personal_executive_assistant" || isFounder(user)),
+    [user]
+  );
+
   const [active, setActive] = useState(AGENTS[0]);
+
+  useEffect(() => {
+    if (!agents.some((a) => a.name === active.name)) setActive(agents[0]);
+  }, [agents, active.name]);
+
+  if (isLoading) return null;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
@@ -76,7 +97,7 @@ export default function OperationsAgents() {
 
       {/* Agent selector */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-        {AGENTS.map((a) => {
+        {agents.map((a) => {
           const isActive = a.name === active.name;
           return (
             <button

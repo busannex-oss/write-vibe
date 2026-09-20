@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { FOUNDER_EMAIL } from '../../shared/founder.ts';
 
 /**
  * Alexandar Sterling (Personal Executive Assistant) alert.
@@ -22,10 +23,12 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ skipped: true, reason: 'no activity data' });
     }
 
-    // Founders / admins receive the briefing.
+    // Only the Founder & CEO receives Alexandar Sterling's briefings.
     const users = await svc.entities.User.list();
-    const admins = users.filter((u) => u.role === 'admin');
-    if (!admins.length) return Response.json({ skipped: true, reason: 'no admin recipient' });
+    const admins = users.filter(
+      (u) => (u.email || '').toLowerCase() === FOUNDER_EMAIL.toLowerCase()
+    );
+    if (!admins.length) return Response.json({ skipped: true, reason: 'founder not found' });
 
     const isStrategy = activity.entity_type === 'sop';
     const subjectLabel = isStrategy ? 'strategy change' : 'book change';
