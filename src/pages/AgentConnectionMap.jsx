@@ -13,8 +13,7 @@ import ConnectionNode from "@/components/connectionmap/ConnectionNode";
 import AgentDetailCard from "@/components/connectionmap/AgentDetailCard";
 
 // Full agent data from ChainOfCommand — imported inline for the map
-const ALL_AGENTS = [
-  { id: "admin", name: "Administrator", title: "SYSTEM OWNER", role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Core system governance and oversight", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" },
+const AGENTS = [
   { id: "brand_guardian", name: "Marcus Whitmore", title: "BRAND GUARDIAN", role: "executive", status: "active", pillars: ["Proper Business Structure", "Strategic Application"], description: "Enforces brand compliance and consistency", mission: "Be the unwavering conscience of every creative decision." },
   { id: "automation_orchestrator", name: "Sam Johnson", title: "AUTOMATION ORCHESTRATOR", role: "executive", status: "active", pillars: ["Business Intelligence", "Proper Business Structure"], description: "Manages workflow automation and SLA enforcement" },
   { id: "project_manager", name: "Sam Thompson", title: "PROJECT MANAGER", role: "executive", status: "active", pillars: ["Proper Business Structure", "Business Intelligence"], description: "Oversees all book projects from conception to publication", mission: "Shepherd every book from raw idea to polished reality." },
@@ -125,6 +124,14 @@ export default function AgentConnectionMap() {
   const [lastMouse, setLastMouse] = useState(null);
   const svgRef = useRef(null);
   const W = 1200, H = 900;
+
+  const { data: user } = useQuery({ queryKey: ['user'], queryFn: () => base44.auth.me(), staleTime: 60000, retry: false });
+
+  // Center node is the real owner — the CEO & Founder — not an agent
+  const ALL_AGENTS = useMemo(() => [
+    { id: "admin", name: user?.full_name || "CEO & Founder", title: "CEO & FOUNDER", role: "admin", status: "active", pillars: ["Proper Business Structure"], description: "Owner of Write Vibe — final authority over every agent and advisor", image: user?.author_photo_url || null },
+    ...AGENTS,
+  ], [user]);
 
   const positions = useMemo(() => computeLayout(W, H), []);
 
