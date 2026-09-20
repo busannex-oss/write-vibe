@@ -25,6 +25,7 @@ import MessageInboxWidget from "@/components/dashboard/MessageInboxWidget";
 import TasksWidget from "@/components/dashboard/TasksWidget";
 import SocialKeysSection from "@/components/dashboard/SocialKeysSection";
 import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget";
+import PEABriefingPanel from "@/components/dashboard/PEABriefingPanel";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -108,6 +109,17 @@ export default function Dashboard() {
           </Link>
         </motion.div>
       </div>
+
+      {/* PEA Briefing — founder only */}
+      {user?.role === "admin" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <PEABriefingPanel user={user} />
+        </motion.div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
