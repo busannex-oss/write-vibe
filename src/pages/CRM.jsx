@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, Heart, Target, Mail, RefreshCw, Search } from "lucide-react";
 import CRMStatCard from "@/components/crm/CRMStatCard";
 import ContactCard from "@/components/crm/ContactCard";
+import NurturePanel from "@/components/crm/NurturePanel";
 
 export default function CRM() {
   const qc = useQueryClient();
@@ -85,6 +86,8 @@ export default function CRM() {
         <CRMStatCard label="Hot leads" value={hotLeads} hint="score 70+" icon={Target} color="from-emerald-400 to-teal-500" />
         <CRMStatCard label="Likely advocates" value={advocates} hint="organic promoters" icon={Heart} color="from-pink-400 to-rose-500" />
       </div>
+
+      <NurturePanel contacts={contacts} onDone={refresh} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">

@@ -92,6 +92,28 @@ export default function ContactCard({ contact, onEnrich, enriching }) {
               </div>
             )}
 
+            {contact.objections?.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Hesitations to overcome</p>
+                <div className="flex flex-wrap gap-1">
+                  {contact.objections.map((o) => <Badge key={o} className="bg-white/10 text-white/60 border-0 text-[10px]">{o}</Badge>)}
+                </div>
+              </div>
+            )}
+
+            {contact.nurture_touches?.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">
+                  Nurture history · {contact.nurture_stage || 0} sent ({contact.nurture_track})
+                </p>
+                {contact.nurture_touches.slice(-3).reverse().map((t, i) => (
+                  <p key={i} className="text-[11px] text-white/45 truncate">
+                    {t.sent_at ? new Date(t.sent_at).toLocaleDateString() : ""} — {t.subject || t.focus} ({t.status})
+                  </p>
+                ))}
+              </div>
+            )}
+
             <Button
               onClick={() => onEnrich(contact.email)}
               disabled={enriching}
