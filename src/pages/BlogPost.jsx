@@ -68,7 +68,11 @@ export default function BlogPost() {
           </div>
 
           {post.cover_image_url && (
-            <img src={post.cover_image_url} alt={post.title} className="w-full rounded-2xl mt-8 border border-white/10" />
+            <img
+              src={post.cover_image_url}
+              alt={post.title}
+              className="w-full aspect-[16/9] object-cover rounded-2xl mt-8 border border-white/10"
+            />
           )}
 
           <div className="prose prose-invert prose-amber max-w-none mt-8 text-white/80">
