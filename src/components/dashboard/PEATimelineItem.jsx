@@ -4,6 +4,7 @@ import { createPageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, BookOpen, ClipboardList, Bot } from "lucide-react";
 import { format } from "date-fns";
+import AgentNameLink from "@/components/agents/AgentNameLink";
 
 const ICONS = { decision: AlertTriangle, book: BookOpen, sop: ClipboardList, agent: Bot };
 
@@ -27,10 +28,14 @@ export default function PEATimelineItem({ item, onResolve, isLast }) {
       <div className={cn("flex-1 pb-4 min-w-0", urgent && "rounded-lg -mt-1 p-3 bg-red-500/10 border border-red-500/30")}>
         <div className="flex items-start justify-between gap-2">
           <p className={cn("text-sm font-medium leading-tight", urgent ? "text-red-200" : "text-white/85")}>{item.title}</p>
-          <span className="text-[10px] text-white/35 whitespace-nowrap">{format(new Date(item.date), "MMM d, h:mm a")}</span>
+          <span className="text-[10px] text-white/35 whitespace-nowrap">{format(new Date(item.date), "MMM d, yyyy · h:mm a")}</span>
         </div>
         {item.subtitle && <p className="text-xs text-white/50 mt-1 line-clamp-2">{item.subtitle}</p>}
-        {item.actor && <p className="text-[11px] text-white/30 mt-1">by {item.actor}</p>}
+        {item.actor && (
+          <p className="text-[11px] text-white/30 mt-1">
+            by <AgentNameLink name={item.actor} className="text-[11px]" />
+          </p>
+        )}
         {urgent && (
           <div className="flex gap-3 mt-2">
             {item.linkPage && (

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, ClipboardList, Activity, Radio } from "lucide-react";
+import { format } from "date-fns";
+import AgentNameLink from "@/components/agents/AgentNameLink";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -87,13 +89,16 @@ export default function ActivityFeed() {
                   </div>
                   <div className="min-w-0 flex-1 pb-1">
                     <p className="text-sm text-white/80 leading-snug">
-                      <span className="font-medium text-white">{a.actor_name || a.actor_email || "Someone"}</span>{" "}
+                      <AgentNameLink name={a.actor_name || a.actor_email} />{" "}
                       <span className="text-white/60">
                         {a.action.includes("created") ? "created" : "updated"}
                       </span>{" "}
                       <span className="font-medium text-white/90">{a.entity_title || "Untitled"}</span>
                     </p>
-                    <p className="text-xs text-white/30 mt-0.5">{timeAgo(a.created_date)}</p>
+                    <p className="text-xs text-white/30 mt-0.5">
+                      {a.created_date ? format(new Date(a.created_date), "MMM d, yyyy · h:mm a") : ""}
+                      {a.created_date ? ` · ${timeAgo(a.created_date)}` : ""}
+                    </p>
                   </div>
                 </div>
               );
