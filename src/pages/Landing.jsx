@@ -484,6 +484,7 @@ export default function Landing() {
             <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/40">
               <Link to={createPageUrl("About")} className="hover:text-white transition-colors">About</Link>
               <Link to={createPageUrl("HowItWorks")} className="hover:text-white transition-colors">How It Works</Link>
+              <Link to={createPageUrl("Blog")} className="hover:text-white transition-colors">Blog</Link>
               <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
               <Link to={createPageUrl("Privacy")} className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link to={createPageUrl("Terms")} className="hover:text-white transition-colors">Terms of Use</Link>
