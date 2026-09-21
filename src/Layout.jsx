@@ -13,10 +13,7 @@ import NavCollapsible from "@/components/NavCollapsible";
 import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 import MobileNav from "@/components/MobileNav";
 
-// Route protection zones
-const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost", "BlogAuthor", "BlogTag"];
-const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents", "BlogManager", "BlogCalendar", "CRM"];
-const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth", "ReaderInsights"];
+import { PUBLIC_PAGES, isPublicPage, isAdminPage } from "@/lib/pageAccess";
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -41,14 +38,15 @@ export default function Layout({ children, currentPageName }) {
   }, [currentPageName, loading]);
 
   const checkAccess = () => {
-    const isMemberPage = MEMBER_PAGES.some(p => currentPageName?.startsWith(p));
-    const isAdminPage  = ADMIN_PAGES.includes(currentPageName);
+    // Anything not explicitly public requires a signed-in user.
+    const needsAuth = !isPublicPage(currentPageName);
+    const adminOnly = isAdminPage(currentPageName);
 
-    if ((isMemberPage || isAdminPage) && !user) {
+    if (needsAuth && !user) {
       base44.auth.redirectToLogin(window.location.href);
       return;
     }
-    if (isAdminPage && user?.role !== "admin") {
+    if (adminOnly && user?.role !== "admin") {
       navigate(createPageUrl("Dashboard"));
     }
   };
