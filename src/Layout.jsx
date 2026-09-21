@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck,   TrendingUp, MessageSquare, Library, Award, Mail, Gauge, CalendarDays, Activity, Workflow } from "lucide-react";
+import { BookOpen, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, Crown, Sparkles, ShieldAlert, Brain, Target, ClipboardList, Map, LayoutGrid, Palette, Building2, Scale, FileKey, BarChart2, UserCheck, GitBranch, Layers, Bot, CheckSquare, Store, Network, Milestone, ClipboardCheck,   TrendingUp, MessageSquare, Library, Award, Mail, Gauge, CalendarDays, Activity, Workflow, Contact, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useErrorLogger } from "@/components/useErrorLogger";
@@ -14,8 +14,8 @@ import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 import MobileNav from "@/components/MobileNav";
 
 // Route protection zones
-const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks"];
-const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents"];
+const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost"];
+const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents", "BlogManager", "CRM"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth", "ReaderInsights"];
 
 export default function Layout({ children, currentPageName }) {
@@ -96,6 +96,8 @@ export default function Layout({ children, currentPageName }) {
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Operations" },
         { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Operations" },
         { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Operations" },
+        { name: "CRM", href: "CRM", icon: Contact, category: "Operations" },
+        { name: "Blog", href: "BlogManager", icon: Newspaper, category: "Operations" },
         // AI Agents — agent monitoring and tools
         { name: "Operations Agents", href: "OperationsAgents", icon: Workflow, category: "AI Agents" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "AI Agents" },

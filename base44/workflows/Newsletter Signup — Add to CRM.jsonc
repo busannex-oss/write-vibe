@@ -1,0 +1,42 @@
+{
+  "description": "When someone subscribes to a newsletter, add them to the CRM and enrich their profile with segmentation and next-best-action insight.",
+  "name": "Newsletter Signup \u2014 Add to CRM",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "newsletter_signup_to_crm",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_contact": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncCrmContact",
+            "args": {
+              "email": "${ .trigger.data.email }",
+              "name": "${ .trigger.data.name }",
+              "source": "newsletter"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Add to CRM",
+            "description": "Upsert and enrich contact"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "NewsletterSubscriber"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "description": "When a website member signs up, create their enriched CRM profile.",
+  "name": "New Member \u2014 Add to CRM",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_member_to_crm",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_contact": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncCrmContact",
+            "args": {
+              "email": "${ .trigger.email }",
+              "name": "${ .trigger.full_name }",
+              "source": "member"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Add member to CRM",
+            "description": "Upsert and enrich profile"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "app_user_auth",
+      "events": [
+        "signup"
+      ]
+    }
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "name": "CRMContact",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Primary identifier for the contact"
+    },
+    "name": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "newsletter",
+        "member",
+        "blog",
+        "book_website",
+        "manual"
+      ],
+      "default": "newsletter",
+      "description": "Where this contact entered the platform"
+    },
+    "lifecycle_stage": {
+      "type": "string",
+      "enum": [
+        "subscriber",
+        "lead",
+        "engaged",
+        "member",
+        "customer",
+        "advocate",
+        "dormant"
+      ],
+      "default": "subscriber",
+      "description": "Where they sit in the loyalty journey"
+    },
+    "lead_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 conversion likelihood"
+    },
+    "segment": {
+      "type": "string",
+      "description": "Marketing segment label"
+    },
+    "persona": {
+      "type": "string",
+      "description": "Short persona summary of who this reader is"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Topics/genres they care about"
+    },
+    "motivations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What drives them to buy or share"
+    },
+    "recommended_next_action": {
+      "type": "string",
+      "description": "Best next touch to raise conversion"
+    },
+    "recommended_content": {
+      "type": "string",
+      "description": "Content or offer most likely to convert them"
+    },
+    "advocacy_potential": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Likelihood of promoting the work organically"
+    },
+    "loyalty_risk": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Risk of going cold or unsubscribing"
+    },
+    "enrichment_summary": {
+      "type": "string",
+      "description": "Narrative insight about this contact"
+    },
+    "enriched_at": {
+      "type": "string"
+    },
+    "is_member": {
+      "type": "boolean",
+      "default": false,
+      "description": "Registered platform member"
+    },
+    "newsletter_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "unsubscribed",
+        "none"
+      ],
+      "default": "none"
+    },
+    "book_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Books they subscribed through"
+    },
+    "subscription_tier": {
+      "type": "string"
+    },
+    "signup_count": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of touchpoints recorded"
+    },
+    "first_seen_at": {
+      "type": "string"
+    },
+    "last_activity_at": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

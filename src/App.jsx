@@ -43,6 +43,10 @@ import PublishingCalendar from './pages/PublishingCalendar';
 import PlatformHealth from './pages/PlatformHealth';
 import OperationsAgents from './pages/OperationsAgents';
 import ReaderInsights from './pages/ReaderInsights';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import BlogManager from './pages/BlogManager';
+import CRM from './pages/CRM';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -135,6 +139,10 @@ const AuthenticatedApp = () => {
       <Route path="/PlatformHealth" element={<LayoutWrapper currentPageName="PlatformHealth"><PlatformHealth /></LayoutWrapper>} />
       <Route path="/OperationsAgents" element={<LayoutWrapper currentPageName="OperationsAgents"><OperationsAgents /></LayoutWrapper>} />
       <Route path="/ReaderInsights" element={<LayoutWrapper currentPageName="ReaderInsights"><ReaderInsights /></LayoutWrapper>} />
+      <Route path="/Blog" element={<LayoutWrapper currentPageName="Blog"><Blog /></LayoutWrapper>} />
+      <Route path="/BlogPost" element={<LayoutWrapper currentPageName="BlogPost"><BlogPost /></LayoutWrapper>} />
+      <Route path="/BlogManager" element={<LayoutWrapper currentPageName="BlogManager"><BlogManager /></LayoutWrapper>} />
+      <Route path="/CRM" element={<LayoutWrapper currentPageName="CRM"><CRM /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
