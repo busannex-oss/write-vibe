@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
 import { ArrowLeft } from "lucide-react";
 import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
-import BlogCard from "@/components/blog/BlogCard";
+import RelatedPostsCarousel from "@/components/blog/RelatedPostsCarousel";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogSidebar from "@/components/blog/BlogSidebar";
 import PostMeta from "@/components/blog/PostMeta";
@@ -87,16 +87,9 @@ export default function BlogPost() {
             />
           </div>
 
-          <CommentSection post={post} />
+          <RelatedPostsCarousel posts={data?.related || []} />
 
-          {data?.related?.length > 0 && (
-            <div className="mt-14">
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-4">Keep reading</p>
-              <div className="grid sm:grid-cols-2 gap-5">
-                {data.related.map((p) => <BlogCard key={p.id} post={p} />)}
-              </div>
-            </div>
-          )}
+          <CommentSection post={post} />
         </article>
 
         <BlogSidebar posts={index?.posts || []} />
