@@ -13,6 +13,7 @@ import PostMeta from "@/components/blog/PostMeta";
 import PostTagLinks from "@/components/blog/PostTagLinks";
 import ShareButtons from "@/components/blog/ShareButtons";
 import CommentSection from "@/components/blog/CommentSection";
+import PostCoverImage from "@/components/blog/PostCoverImage";
 
 export default function BlogPost() {
   const slug = new URLSearchParams(window.location.search).get("slug");
@@ -68,15 +69,12 @@ export default function BlogPost() {
           </div>
 
           {post.cover_image_url && (
-            <img
-              src={post.cover_image_url}
-              alt={post.title}
-              loading="lazy"
-              className="block w-full h-48 sm:h-64 lg:h-80 max-h-[45vh] object-cover rounded-2xl mt-8 border border-white/10"
-            />
+            <div className="mt-8">
+              <PostCoverImage src={post.cover_image_url} alt={post.title} ratio="banner" className="border border-white/10" />
+            </div>
           )}
 
-          <div className="prose prose-invert prose-amber max-w-none mt-8 text-white/80">
+          <div className="prose prose-invert prose-amber article-body max-w-[68ch] mt-9 text-white/75">
             <ReactMarkdown>{post.content || post.excerpt || ""}</ReactMarkdown>
           </div>
 

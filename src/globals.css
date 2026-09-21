@@ -78,6 +78,57 @@ img {
   border-radius: 1rem;
 }
 
+/* Article reading rhythm */
+.article-body {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.article-body > p:first-of-type {
+  font-size: 1.1875rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.article-body h2 {
+  margin-top: 2.75rem;
+  margin-bottom: 0.9rem;
+  font-size: 1.4rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.article-body h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  font-size: 1.15rem;
+}
+
+.article-body p {
+  margin-top: 0;
+  margin-bottom: 1.4rem;
+}
+
+.article-body ul,
+.article-body ol {
+  margin-bottom: 1.6rem;
+}
+
+.article-body li {
+  margin-bottom: 0.5rem;
+}
+
+.article-body strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.article-body blockquote {
+  border-left: 2px solid rgba(245, 158, 11, 0.5);
+  padding-left: 1.1rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
