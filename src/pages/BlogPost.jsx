@@ -60,9 +60,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" /> All posts
           </Link>
 
-          <PostTagLinks tags={post.tags} />
-
-          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight mt-4">{post.title}</h1>
+          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight">{post.title}</h1>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
             <PostMeta post={post} />
