@@ -3,6 +3,7 @@
 // from its position here, so the same agent always shows the same ID.
 import { AGENT_ENRICHMENT } from "@/components/chainofcommand/agentEnrichment";
 import { AGENT_PORTRAITS } from "@/components/chainofcommand/agentPortraits";
+import { resolveGovernance } from "@/lib/agentGovernance";
 
 const ROSTER = [
   // Executive / C-Suite
@@ -74,8 +75,15 @@ export const AGENT_DIRECTORY = ROSTER.map((a, i) => ({
   ...a,
   agent_id: `WV-AG-${String(i + 1).padStart(3, "0")}`,
   portrait: AGENT_PORTRAITS[a.key] || null,
+  // Every agent is a member of exactly one team and holds one governance level.
+  ...resolveGovernance(a.key, a.department),
   ...(AGENT_ENRICHMENT[a.key] || {})
 }));
+
+/** All agents on a given team. */
+export function agentsByTeam(teamId) {
+  return AGENT_DIRECTORY.filter((a) => a.team_id === teamId);
+}
 
 const BY_NAME = new Map(AGENT_DIRECTORY.map((a) => [a.name.toLowerCase(), a]));
 const BY_KEY = new Map(AGENT_DIRECTORY.map((a) => [a.key, a]));
