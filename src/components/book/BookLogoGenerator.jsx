@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Upload, Download, RefreshCw, Check, Loader2, Image } from "lucide-react";
 import { motion } from "framer-motion";
+import BrandOverlayControls from "./BrandOverlayControls";
 
 export default function BookLogoGenerator({ book, user, onUpdate }) {
   const [generating, setGenerating] = useState(false);
@@ -20,10 +21,10 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
 
   // Load saved logo data on mount
   useEffect(() => {
-    if (book.front_cover_url) {
-      setUploadedLogo(book.front_cover_url);
+    if (book.author_logo_url) {
+      setUploadedLogo(book.author_logo_url);
     }
-  }, [book.front_cover_url]);
+  }, [book.author_logo_url]);
 
   // Process uploaded logo with LLM
   const processLogoWithLLM = async (logoUrl) => {
@@ -80,9 +81,9 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
     if (!file) return;
 
     try {
-      const res = await base44.integrations.Core.UploadFile({ file });
+      const res = await base44.integrations.Core.UploadPublicFile({ file });
       setUploadedLogo(res.file_url);
-      await onUpdate({ front_cover_url: res.file_url }, true);
+      await onUpdate({ author_logo_url: res.file_url }, true);
       // Automatically process with LLM
       await processLogoWithLLM(res.file_url);
     } catch (error) {
@@ -97,10 +98,10 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
     try {
       setSelectedLogo(logo.url);
       setUploadedLogo(logo.url);
-      await onUpdate({ front_cover_url: logo.url }, true);
+      await onUpdate({ author_logo_url: logo.url }, true);
       // Automatically process with LLM
       await processLogoWithLLM(logo.url);
-      alert("Logo saved to book!");
+      alert("Logo saved — it now overlays your cover.");
     } catch (error) {
       console.error("Save error:", error);
       alert("Error saving logo: " + error.message);
@@ -117,8 +118,8 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
           <Image className="w-5 h-5 text-amber-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">Book Logo & Branding</h2>
-          <p className="text-sm text-white/50">Generate AI logos or upload your own for your book</p>
+          <h2 className="text-2xl font-bold text-white">Author Logo & Brand Identity</h2>
+          <p className="text-sm text-white/50">Generate or upload your logo — it overlays the cover, never replaces it</p>
         </div>
       </div>
 
@@ -292,6 +293,9 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
           )}
         </CardContent>
       </Card>
+
+      {/* Overlay placement on the cover */}
+      {uploadedLogo && <BrandOverlayControls book={book} user={user} onUpdate={onUpdate} />}
 
       {/* Preview */}
       {uploadedLogo && (

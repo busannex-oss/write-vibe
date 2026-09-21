@@ -23,6 +23,7 @@ import {
   Video
 } from "lucide-react";
 import { motion } from "framer-motion";
+import BrandLogoOverlay from "@/components/book/BrandLogoOverlay";
 
 const SOCIAL_ICONS = {
   facebook: Facebook,
@@ -295,11 +296,14 @@ export default function BookWebsite() {
               {book.front_cover_url ? (
                 <div className="relative group">
                   <div className="absolute -inset-8 bg-gradient-to-br from-amber-500/40 to-orange-500/20 rounded-3xl blur-3xl opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
-                  <img
-                    src={book.front_cover_url}
-                    alt={book.title}
-                    className="relative w-72 md:w-96 h-auto rounded-2xl shadow-2xl shadow-black/80 object-cover ring-1 ring-white/10"
-                  />
+                  <div className="relative w-72 md:w-96">
+                    <img
+                      src={book.front_cover_url}
+                      alt={book.title}
+                      className="relative w-full h-auto rounded-2xl shadow-2xl shadow-black/80 object-cover ring-1 ring-white/10"
+                    />
+                    <BrandLogoOverlay book={book} />
+                  </div>
                 </div>
               ) : (
                 <div className="w-72 aspect-[2/3] rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex flex-col items-center justify-center gap-4 ring-1 ring-white/10">
@@ -341,6 +345,9 @@ export default function BookWebsite() {
                 )}
                 {authorName && (
                   <p className="text-white/50 text-lg mt-2">by <span className="text-white/80 font-medium">{authorName}</span></p>
+                )}
+                {book.author_tagline && (
+                  <p className="text-sm italic mt-2 theme-accent">{book.author_tagline}</p>
                 )}
               </div>
 

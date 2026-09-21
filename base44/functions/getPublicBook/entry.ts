@@ -52,6 +52,9 @@ Deno.serve(async (req) => {
         image_url: c?.image_url || null
       })),
       front_cover_url: book.front_cover_url || null,
+      author_logo_url: book.author_logo_url || null,
+      author_tagline: book.author_tagline || null,
+      logo_overlay: book.logo_overlay || null,
       back_cover_url: book.back_cover_url || null,
       author_photo_url: book.author_photo_url || null,
       video_commercial_url: book.video_commercial_url || null,
