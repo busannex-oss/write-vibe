@@ -5,6 +5,7 @@ import BlogCard from "@/components/blog/BlogCard";
 import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogSidebar from "@/components/blog/BlogSidebar";
+import BloggerRoster from "@/components/blog/BloggerRoster";
 
 export default function Blog() {
   const [activeTag, setActiveTag] = useState(null);
@@ -47,6 +48,8 @@ export default function Blog() {
               {visible.map((p) => <BlogCard key={p.id} post={p} />)}
             </div>
           )}
+
+          <BloggerRoster />
         </div>
 
         <BlogSidebar posts={posts} activeTag={activeTag} onSelectTag={setActiveTag} />
