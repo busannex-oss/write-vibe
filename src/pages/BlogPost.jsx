@@ -65,7 +65,12 @@ export default function BlogPost() {
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
             <PostMeta post={post} />
-            <ShareButtons title={post.title} excerpt={post.excerpt} />
+            {post.published_at && (
+              <span className="flex items-center gap-1.5 text-xs text-white/40">
+                <CalendarDays className="w-3.5 h-3.5" />
+                {format(new Date(post.published_at), "MMMM d, yyyy")}
+              </span>
+            )}
           </div>
 
           {post.cover_image_url && (
@@ -81,15 +86,7 @@ export default function BlogPost() {
           <AuthorSignature authorName={post.author_name} />
 
           <div className="mt-10 pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <PostTagLinks tags={post.tags} />
-              {post.published_at && (
-                <span className="flex items-center gap-1.5 text-xs text-white/35">
-                  <CalendarDays className="w-3.5 h-3.5" />
-                  Published {format(new Date(post.published_at), "MMMM d, yyyy")}
-                </span>
-              )}
-            </div>
+            <PostTagLinks tags={post.tags} />
             <ShareButtons title={post.title} excerpt={post.excerpt} />
           </div>
 
