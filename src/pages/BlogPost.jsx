@@ -14,6 +14,7 @@ import PostTagLinks from "@/components/blog/PostTagLinks";
 import ShareButtons from "@/components/blog/ShareButtons";
 import CommentSection from "@/components/blog/CommentSection";
 import PostCoverImage from "@/components/blog/PostCoverImage";
+import AuthorSignature from "@/components/blog/AuthorSignature";
 
 export default function BlogPost() {
   const slug = new URLSearchParams(window.location.search).get("slug");
@@ -77,6 +78,8 @@ export default function BlogPost() {
           <div className="prose prose-invert prose-amber article-body max-w-[68ch] mt-9 text-white/75">
             <ReactMarkdown>{post.content || post.excerpt || ""}</ReactMarkdown>
           </div>
+
+          <AuthorSignature authorName={post.author_name} />
 
           <div className="mt-10 pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
             <PostTagLinks tags={post.tags} />
