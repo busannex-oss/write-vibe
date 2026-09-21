@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles, Rss } from "lucide-react";
 import BlogCard from "@/components/blog/BlogCard";
 import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
 
@@ -19,9 +19,19 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-5xl mx-auto px-6 py-14">
-        <Link to={createPageUrl("Landing")} className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white mb-8">
-          <ArrowLeft className="w-4 h-4" /> Back home
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link to={createPageUrl("Landing")} className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white">
+            <ArrowLeft className="w-4 h-4" /> Back home
+          </Link>
+          <a
+            href="/functions/blogRss"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-xs text-amber-300 hover:bg-amber-500/20"
+          >
+            <Rss className="w-3.5 h-3.5" /> RSS feed
+          </a>
+        </div>
 
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 mb-4">
