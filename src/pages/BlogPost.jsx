@@ -71,7 +71,8 @@ export default function BlogPost() {
             <img
               src={post.cover_image_url}
               alt={post.title}
-              className="w-full aspect-[16/9] object-cover rounded-2xl mt-8 border border-white/10"
+              loading="lazy"
+              className="block w-full h-48 sm:h-64 lg:h-80 max-h-[45vh] object-cover rounded-2xl mt-8 border border-white/10"
             />
           )}
 

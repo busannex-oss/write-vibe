@@ -64,6 +64,20 @@
   }
 }
 
+/* Images never overflow their container on any viewport */
+img {
+  max-width: 100%;
+}
+
+/* Images inside article/markdown content stay responsive and capped */
+.prose img {
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

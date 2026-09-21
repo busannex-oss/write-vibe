@@ -11,7 +11,7 @@ export default function BlogCard({ post }) {
       to={createPageUrl(`BlogPost?slug=${post.slug}`)}
       className="group rounded-2xl overflow-hidden border border-white/10 bg-white/5 hover:border-amber-500/40 transition-colors flex flex-col"
     >
-      <div className="aspect-[16/9] bg-slate-800 flex items-center justify-center overflow-hidden">
+      <div className="w-full h-40 sm:h-44 bg-slate-800 flex items-center justify-center overflow-hidden">
         {post.cover_image_url ? (
           <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
