@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Eye, Pencil, Trash2, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import BlogPostEditor from "@/components/blog/BlogPostEditor";
+import LinkedInShareCard from "@/components/blog/LinkedInShareCard";
 
 export default function BlogManager() {
   const qc = useQueryClient();
@@ -50,6 +51,8 @@ export default function BlogManager() {
           </Button>
         </div>
       </div>
+
+      <LinkedInShareCard posts={posts} />
 
       {editing && (
         <div className="mb-8">
