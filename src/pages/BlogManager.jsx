@@ -81,12 +81,14 @@ export default function BlogManager() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-white font-medium truncate">{p.title}</p>
-                    <Badge className={p.status === "published" ? "bg-emerald-500/15 text-emerald-300 border-0" : "bg-white/10 text-white/50 border-0"}>
+                    <Badge className={p.status === "published" ? "bg-emerald-500/15 text-emerald-300 border-0" : p.status === "scheduled" ? "bg-sky-500/15 text-sky-300 border-0" : "bg-white/10 text-white/50 border-0"}>
                       {p.status}
                     </Badge>
                   </div>
                   <p className="text-xs text-white/35 mt-1">
-                    {p.published_at ? format(new Date(p.published_at), "MMM d, yyyy") : "unpublished"}
+                    {p.status === "scheduled" && p.scheduled_for
+                      ? `goes live ${format(new Date(p.scheduled_for), "MMM d, yyyy 'at' h:mm a")}`
+                      : p.published_at ? format(new Date(p.published_at), "MMM d, yyyy") : "unpublished"}
                     {" · "}<Eye className="w-3 h-3 inline -mt-0.5" /> {p.view_count || 0} views
                   </p>
                 </div>

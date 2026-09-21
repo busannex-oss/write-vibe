@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Save, Sparkles, X } from "lucide-react";
+import { Loader2, Save, Sparkles, X, CalendarClock } from "lucide-react";
 
 const slugify = (s) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -18,7 +18,8 @@ export default function BlogPostEditor({ post, user, onSaved, onCancel }) {
     cover_image_url: post?.cover_image_url || "",
     tags: (post?.tags || []).join(", "),
     cta_headline: post?.cta_headline || "",
-    status: post?.status || "draft"
+    status: post?.status || "draft",
+    scheduled_for: post?.scheduled_for ? post.scheduled_for.slice(0, 16) : ""
   });
   const [saving, setSaving] = useState(false);
   const [drafting, setDrafting] = useState(false);
@@ -64,6 +65,7 @@ Also give a 2-sentence excerpt, 3 tags, and a newsletter CTA headline that makes
       author_name: post?.author_name || user?.full_name || "Write Vibe",
       seo_title: form.title,
       seo_description: form.excerpt,
+      scheduled_for: status === "scheduled" && form.scheduled_for ? new Date(form.scheduled_for).toISOString() : null,
       published_at: status === "published" ? post?.published_at || new Date().toISOString() : post?.published_at
     };
     if (post?.id) await base44.entities.BlogPost.update(post.id, data);
@@ -123,9 +125,30 @@ Also give a 2-sentence excerpt, 3 tags, and a newsletter CTA headline that makes
           <Input value={form.cta_headline} onChange={(e) => set("cta_headline", e.target.value)} placeholder="Get the next post in your inbox" />
         </div>
 
-        <div className="flex gap-2">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <Label className="text-white/70 mb-2 block flex items-center gap-2">
+            <CalendarClock className="w-4 h-4 text-amber-400" /> Go live on
+          </Label>
+          <Input
+            type="datetime-local"
+            value={form.scheduled_for}
+            onChange={(e) => set("scheduled_for", e.target.value)}
+          />
+          <p className="text-[11px] text-white/35 mt-2">
+            Pick a date and time, then use “Schedule” — the post publishes itself automatically.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
           <Button onClick={() => save("draft")} disabled={saving || !form.title} className="bg-white/10 hover:bg-white/20 text-white border border-white/20">
             <Save className="w-4 h-4 mr-2" /> Save draft
+          </Button>
+          <Button
+            onClick={() => save("scheduled")}
+            disabled={saving || !form.title || !form.scheduled_for}
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+          >
+            <CalendarClock className="w-4 h-4 mr-2" /> Schedule
           </Button>
           <Button onClick={() => save("published")} disabled={saving || !form.title} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null} Publish

@@ -1,0 +1,44 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "publish_scheduled_blog_posts",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "publish_due_posts": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "publishScheduledPosts"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Publish due posts",
+            "description": "Scheduled time reached"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Every 5 minutes, publishes any blog post whose scheduled date and time has arrived",
+  "name": "Publish Scheduled Blog Posts"
+}

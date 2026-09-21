@@ -48,9 +48,14 @@
       "type": "string",
       "enum": [
         "draft",
+        "scheduled",
         "published"
       ],
       "default": "draft"
+    },
+    "scheduled_for": {
+      "type": "string",
+      "description": "ISO datetime when a scheduled post should automatically go live"
     },
     "published_at": {
       "type": "string"
