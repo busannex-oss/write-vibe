@@ -11,6 +11,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
   const [branding, setBranding] = useState({
     website_logo_url: "",
     website_title: "",
+    website_tagline: "",
     logo_versions: []
   });
   const [uploading, setUploading] = useState(false);
@@ -24,6 +25,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
       setBranding({
         website_logo_url: user.website_logo_url || "",
         website_title: user.website_title || "Write Vibe",
+        website_tagline: user.website_tagline || "AI Book Studio",
         logo_versions: user.logo_versions || []
       });
     }
@@ -84,7 +86,8 @@ export default function WebsiteBranding({ user, onUpdate }) {
     try {
       await base44.auth.updateMe({
         website_logo_url: branding.website_logo_url,
-        website_title: branding.website_title
+        website_title: branding.website_title,
+        website_tagline: branding.website_tagline
       });
       if (onUpdate) onUpdate();
     } catch (error) {
@@ -229,6 +232,18 @@ export default function WebsiteBranding({ user, onUpdate }) {
             <p className="text-xs text-white/40 mt-2">Used in headers, footers, and browser tabs</p>
           </div>
 
+          <div>
+            <Label className="text-white/70 mb-2 block">Logo Tagline</Label>
+            <Input
+              value={branding.website_tagline}
+              onChange={(e) => setBranding(prev => ({ ...prev, website_tagline: e.target.value }))}
+              placeholder="AI Book Studio"
+              maxLength={40}
+              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+            />
+            <p className="text-xs text-white/40 mt-2">Short line shown under your name next to the logo</p>
+          </div>
+
           <Button
             onClick={handleSave}
             disabled={saving || uploading}
@@ -263,7 +278,10 @@ export default function WebsiteBranding({ user, onUpdate }) {
                 <img src={branding.website_logo_url} alt="Logo" className="w-full h-full object-contain" />
               </div>
             )}
-            <span className="text-white font-semibold">{branding.website_title || "Write Vibe"}</span>
+            <div>
+              <span className="text-white font-semibold block leading-tight">{branding.website_title || "Write Vibe"}</span>
+              <span className="text-xs text-white/40">{branding.website_tagline || "AI Book Studio"}</span>
+            </div>
           </div>
           <p className="text-xs text-white/40 mt-3">This is how your branding appears on book websites</p>
         </CardContent>

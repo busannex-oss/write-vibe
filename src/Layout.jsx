@@ -208,7 +208,7 @@ export default function Layout({ children, currentPageName }) {
               )}
               <div>
                 <h1 className="font-bold text-lg text-white tracking-tight">{finalBrandName}</h1>
-                <p className="text-xs text-white/40">AI Book Studio</p>
+                <p className="text-xs text-white/40">{user?.website_tagline || "AI Book Studio"}</p>
               </div>
             </div>
           </div>
