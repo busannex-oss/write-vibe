@@ -1,9 +1,14 @@
 import React from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Fingerprint, Brain, Users, Sparkles, ShieldCheck, Users2 } from "lucide-react";
 
 export default function AgentProfileDialog({ agent, open, onOpenChange }) {
+  const { data: user } = useQuery({ queryKey: ['user'], queryFn: () => base44.auth.me(), retry: false, staleTime: 60000 });
+  const isStaff = user?.role === "admin";
+
   if (!agent) return null;
 
   return (
@@ -38,14 +43,17 @@ export default function AgentProfileDialog({ agent, open, onOpenChange }) {
           </div>
         </div>
 
-        <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 mt-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Fingerprint className="w-3.5 h-3.5 text-amber-400" />
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">Unique identification number</p>
+        {isStaff && (
+          <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 mt-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Fingerprint className="w-3.5 h-3.5 text-amber-400" />
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">Unique identification number</p>
+              <span className="text-[9px] uppercase tracking-wider text-white/35 ml-auto">Staff only</span>
+            </div>
+            <p className="text-white font-mono text-lg tracking-wide">{agent.agent_id}</p>
+            <p className="text-[11px] text-white/35 mt-1">System key: {agent.key}</p>
           </div>
-          <p className="text-white font-mono text-lg tracking-wide">{agent.agent_id}</p>
-          <p className="text-[11px] text-white/35 mt-1">System key: {agent.key}</p>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
           <div className="rounded-xl border border-white/10 bg-white/5 p-3">

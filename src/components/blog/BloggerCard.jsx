@@ -14,7 +14,7 @@ export default function BloggerCard({ author }) {
         <div className="min-w-0">
           <p className="text-white font-semibold leading-tight">{author.name}</p>
           <p className="text-xs text-amber-400/80">{author.title}</p>
-          <p className="text-[11px] text-white/35 mt-0.5">{author.id} · {author.beat}</p>
+          <p className="text-[11px] text-white/35 mt-0.5">{author.beat}</p>
         </div>
       </div>
 

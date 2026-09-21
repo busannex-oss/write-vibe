@@ -37,7 +37,7 @@ export default function BlogAuthor() {
           <div>
             <h1 className="text-3xl font-bold text-white">{author.name}</h1>
             <p className="text-amber-400/90 mt-1">{author.title}</p>
-            <p className="text-xs text-white/35 mt-1">{author.id} · {author.beat}</p>
+            <p className="text-xs text-white/35 mt-1">{author.beat}</p>
             <p className="flex gap-2 mt-4 text-white/70 italic">
               <Quote className="w-4 h-4 text-amber-400/60 flex-shrink-0 mt-1" />
               {author.tagline}
