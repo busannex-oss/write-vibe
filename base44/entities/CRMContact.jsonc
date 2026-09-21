@@ -40,6 +40,38 @@
       "default": 0,
       "description": "0-100 conversion likelihood"
     },
+    "score_factors": {
+      "type": "array",
+      "description": "Activity signals that produced the current lead score",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "score_updated_at": {
+      "type": "string",
+      "description": "When the score was last recalculated"
+    },
+    "attention_level": {
+      "type": "string",
+      "enum": [
+        "urgent",
+        "watch",
+        "healthy"
+      ],
+      "description": "How urgently this contact needs a human touch"
+    },
+    "attention_reason": {
+      "type": "string",
+      "description": "Why this contact needs attention"
+    },
     "segment": {
       "type": "string",
       "description": "Marketing segment label"

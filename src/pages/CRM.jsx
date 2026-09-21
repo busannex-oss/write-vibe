@@ -10,6 +10,7 @@ import CRMStatCard from "@/components/crm/CRMStatCard";
 import ContactCard from "@/components/crm/ContactCard";
 import NurturePanel from "@/components/crm/NurturePanel";
 import ConversionFunnel from "@/components/crm/ConversionFunnel";
+import LeadScoringPanel from "@/components/crm/LeadScoringPanel";
 
 export default function CRM() {
   const qc = useQueryClient();
@@ -89,6 +90,8 @@ export default function CRM() {
       </div>
 
       <ConversionFunnel contacts={contacts} onStageClick={setStage} />
+
+      <LeadScoringPanel contacts={contacts} onDone={refresh} />
 
       <NurturePanel contacts={contacts} onDone={refresh} />
 
