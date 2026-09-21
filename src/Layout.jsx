@@ -14,7 +14,7 @@ import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 import MobileNav from "@/components/MobileNav";
 
 // Route protection zones
-const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost", "BlogAuthor"];
+const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost", "BlogAuthor", "BlogTag"];
 const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents", "BlogManager", "BlogCalendar", "CRM"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth", "ReaderInsights"];
 

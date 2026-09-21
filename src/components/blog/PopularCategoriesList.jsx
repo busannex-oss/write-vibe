@@ -1,8 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function PopularCategoriesList({ posts, activeTag, onSelect }) {
+export default function PopularCategoriesList({ posts, activeTag }) {
   const counts = {};
   (posts || []).forEach((p) => (p.tags || []).forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
   const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
@@ -16,18 +18,10 @@ export default function PopularCategoriesList({ posts, activeTag, onSelect }) {
         <p className="text-[11px] font-semibold uppercase tracking-widest text-white/40">Popular categories</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        {activeTag && (
-          <button
-            onClick={() => onSelect(null)}
-            className="px-2.5 py-1 rounded-full text-xs border border-white/15 text-white/50 hover:text-white"
-          >
-            Clear
-          </button>
-        )}
         {top.map(([tag, count]) => (
-          <button
+          <Link
             key={tag}
-            onClick={() => onSelect(activeTag === tag ? null : tag)}
+            to={`${createPageUrl("BlogTag")}?tag=${encodeURIComponent(tag)}`}
             className={cn(
               "px-2.5 py-1 rounded-full text-xs border transition-colors",
               activeTag === tag
@@ -36,7 +30,7 @@ export default function PopularCategoriesList({ posts, activeTag, onSelect }) {
             )}
           >
             {tag} <span className="text-white/30">{count}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </div>
