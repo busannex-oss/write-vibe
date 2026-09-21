@@ -6,9 +6,11 @@ import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogSidebar from "@/components/blog/BlogSidebar";
 import BloggerRoster from "@/components/blog/BloggerRoster";
+import AuthorFilterBar from "@/components/blog/AuthorFilterBar";
 
 export default function Blog() {
   const [activeTag, setActiveTag] = useState(null);
+  const [activeAuthor, setActiveAuthor] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['blog-index'],
@@ -17,7 +19,9 @@ export default function Blog() {
   });
 
   const posts = data?.posts || [];
-  const visible = activeTag ? posts.filter((p) => (p.tags || []).includes(activeTag)) : posts;
+  const visible = posts
+    .filter((p) => !activeTag || (p.tags || []).includes(activeTag))
+    .filter((p) => !activeAuthor || p.author_name === activeAuthor);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -28,6 +32,14 @@ export default function Blog() {
           <div className="mb-10">
             <NewsletterSignupForm />
           </div>
+
+          <AuthorFilterBar activeAuthor={activeAuthor} onSelect={setActiveAuthor} />
+
+          {activeAuthor && (
+            <p className="text-sm text-white/50 mb-5">
+              Showing articles by <span className="text-amber-300">{activeAuthor}</span>
+            </p>
+          )}
 
           {activeTag && (
             <p className="text-sm text-white/50 mb-5">
@@ -41,7 +53,7 @@ export default function Blog() {
             </div>
           ) : visible.length === 0 ? (
             <p className="text-white/40 py-12 text-center">
-              {activeTag ? "No posts in this category yet." : "No posts published yet — check back soon."}
+              {activeAuthor ? `${activeAuthor} hasn't published an article yet.` : activeTag ? "No posts in this category yet." : "No posts published yet — check back soon."}
             </p>
           ) : (
             <div className="grid sm:grid-cols-2 gap-6">
