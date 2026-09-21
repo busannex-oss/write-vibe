@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { getBlogAuthor } from "@/lib/blogAuthors";
 
 export default function PostMeta({ post }) {
@@ -28,12 +26,6 @@ export default function PostMeta({ post }) {
         )}
         {author && <p className="text-xs text-white/35">{author.title}</p>}
       </div>
-      {post.published_at && (
-        <span className="flex items-center gap-1.5 text-xs text-white/35">
-          <CalendarDays className="w-3.5 h-3.5" />
-          {format(new Date(post.published_at), "MMMM d, yyyy")}
-        </span>
-      )}
     </div>
   );
 }

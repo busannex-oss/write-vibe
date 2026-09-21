@@ -4,7 +4,8 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
+import { format } from "date-fns";
 import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
 import RelatedPostsCarousel from "@/components/blog/RelatedPostsCarousel";
 import BlogHero from "@/components/blog/BlogHero";
@@ -80,7 +81,15 @@ export default function BlogPost() {
           <AuthorSignature authorName={post.author_name} />
 
           <div className="mt-10 pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-            <PostTagLinks tags={post.tags} />
+            <div className="flex flex-wrap items-center gap-3">
+              <PostTagLinks tags={post.tags} />
+              {post.published_at && (
+                <span className="flex items-center gap-1.5 text-xs text-white/35">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  Published {format(new Date(post.published_at), "MMMM d, yyyy")}
+                </span>
+              )}
+            </div>
             <ShareButtons title={post.title} excerpt={post.excerpt} />
           </div>
 
