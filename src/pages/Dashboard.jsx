@@ -26,6 +26,7 @@ import TasksWidget from "@/components/dashboard/TasksWidget";
 import SocialKeysSection from "@/components/dashboard/SocialKeysSection";
 import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget";
 import PEABriefingPanel from "@/components/dashboard/PEABriefingPanel";
+import PEATimeline from "@/components/dashboard/PEATimeline";
 import { isFounder } from "@/lib/founder";
 
 const STATUS_COLORS = {
@@ -119,6 +120,9 @@ export default function Dashboard() {
           className="mb-8"
         >
           <PEABriefingPanel user={user} />
+          <div className="mt-6">
+            <PEATimeline user={user} />
+          </div>
         </motion.div>
       )}
 
