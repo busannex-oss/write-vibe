@@ -14,8 +14,8 @@ import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 import MobileNav from "@/components/MobileNav";
 
 // Route protection zones
-const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost"];
-const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents", "BlogManager", "CRM"];
+const PUBLIC_PAGES   = ["Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms", "Investor", "FAQ", "CookiePolicy", "HowItWorks", "Blog", "BlogPost", "BlogAuthor"];
+const ADMIN_PAGES    = ["UserManagement", "ErrorDashboard", "Certifications", "SOPs", "MissionStatement", "AdminDocuments", "OperationsAgents", "BlogManager", "BlogCalendar", "CRM"];
 const MEMBER_PAGES   = ["Dashboard", "Books", "BookEditor", "CreateBook", "Documents", "Team", "Settings", "ProjectReports", "Templates", "InternalMessages", "PublishingCalendar", "PlatformHealth", "ReaderInsights"];
 
 export default function Layout({ children, currentPageName }) {
@@ -97,7 +97,9 @@ export default function Layout({ children, currentPageName }) {
         { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Operations" },
         { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Operations" },
         { name: "CRM", href: "CRM", icon: Contact, category: "Operations" },
-        { name: "Blog", href: "BlogManager", icon: Newspaper, category: "Operations" },
+        { name: "Blog", href: "BlogManager", icon: Newspaper, category: "Operations", children: [
+          { name: "Blog Calendar", href: "BlogCalendar", icon: CalendarDays },
+        ]},
         // AI Agents — agent monitoring and tools
         { name: "Operations Agents", href: "OperationsAgents", icon: Workflow, category: "AI Agents" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "AI Agents" },

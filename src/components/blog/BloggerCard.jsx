@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { ChevronDown, Quote } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { ChevronDown, Quote, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function BloggerCard({ author }) {
@@ -21,13 +23,21 @@ export default function BloggerCard({ author }) {
         {author.tagline}
       </p>
 
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 mt-4 text-xs text-white/50 hover:text-white"
-      >
-        {open ? "Less" : "Meet the writer"}
-        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
-      </button>
+      <div className="flex items-center gap-4 mt-4">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center gap-1 text-xs text-white/50 hover:text-white"
+        >
+          {open ? "Less" : "Meet the writer"}
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
+        </button>
+        <Link
+          to={`${createPageUrl("BlogAuthor")}?id=${author.id}`}
+          className="flex items-center gap-1 text-xs text-amber-400/80 hover:text-amber-300"
+        >
+          Full profile <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
 
       {open && (
         <div className="mt-4 space-y-3 text-sm">

@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, ExternalLink, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import BlogPostEditor from "@/components/blog/BlogPostEditor";
 import LinkedInShareCard from "@/components/blog/LinkedInShareCard";
@@ -41,6 +41,11 @@ export default function BlogManager() {
           <p className="text-white/50 mt-1">Publish articles that attract readers and grow your newsletter.</p>
         </div>
         <div className="flex gap-2">
+          <Link to={createPageUrl("BlogCalendar")}>
+            <Button variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10">
+              <CalendarDays className="w-4 h-4 mr-2" /> Calendar
+            </Button>
+          </Link>
           <Link to={createPageUrl("Blog")}>
             <Button variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10">
               <ExternalLink className="w-4 h-4 mr-2" /> View blog

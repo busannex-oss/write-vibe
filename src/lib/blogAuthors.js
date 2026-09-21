@@ -9,6 +9,7 @@ export const BLOG_AUTHORS = [
     beat: "Author brand & positioning",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/4be7af083_generated_image.png",
     tagline: "Your book is not a product. It's a position.",
+    education: "MFA in Literary Nonfiction, Columbia University; MBA in Brand Management, London Business School.",
     background:
       "Twenty-two years in trade publishing, seven as an acquisitions director. MFA in Literary Nonfiction, MBA in brand management. Has shepherded 40+ nonfiction titles onto national lists.",
     voice:
@@ -29,6 +30,7 @@ export const BLOG_AUTHORS = [
     beat: "Writing craft, drafting discipline",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/421993b0b_generated_image.png",
     tagline: "Nobody feels like writing. Write anyway.",
+    education: "BA in Journalism, University of Missouri; MFA in Fiction, University of Iowa Writers' Workshop.",
     background:
       "Former newspaper columnist turned novelist; three published novels, one notoriously abandoned. Taught first-year composition for nine years. Recovering perfectionist.",
     voice:
@@ -49,6 +51,7 @@ export const BLOG_AUTHORS = [
     beat: "Metadata, retail data, sales mechanics",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/80c5c9b29_generated_image.png",
     tagline: "Show me the categories and I'll show you the ceiling.",
+    education: "BSc in Economics, University of Delhi; MSc in Statistics, LSE.",
     background:
       "Ex-retail merchandising analyst at a major ebook platform. MSc in Statistics. Built the pricing models for a mid-size indie press catalog of 900 titles.",
     voice:
@@ -69,6 +72,7 @@ export const BLOG_AUTHORS = [
     beat: "IP, rights, long-term asset building",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/5b7b22680_generated_image.png",
     tagline: "Write the thing your grandchildren can license.",
+    education: "BA in Philosophy, Georgetown University; JD, University of Michigan Law School.",
     background:
       "Thirty years as a publishing rights attorney and literary estate advisor. JD, plus a philosophy degree he refuses to stop referencing. Has negotiated translation deals in 31 territories.",
     voice:
@@ -89,6 +93,7 @@ export const BLOG_AUTHORS = [
     beat: "Marketing, social, launch campaigns",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/0c79154c9_generated_image.png",
     tagline: "Build the audience while you build the book.",
+    education: "BA in Media Studies, UC Berkeley (left in year three, returned to finish); self-taught in growth analytics.",
     background:
       "Grew a books-and-ideas channel to 400k followers before he turned 26. Ran launch campaigns for eleven indie authors. Self-taught, obsessively tested, mildly allergic to gatekeepers.",
     voice:
@@ -109,6 +114,7 @@ export const BLOG_AUTHORS = [
     beat: "Creative endurance, voice, meaning",
     portrait: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/a3ffefd0e_generated_image.png",
     tagline: "A long career is made of survivable days.",
+    education: "BA in English Literature, University of Edinburgh; MDiv, Yale Divinity School; MFA in Poetry, Warren Wilson College.",
     background:
       "Poet, memoirist and former hospice chaplain. Forty years of notebooks. Teaches a sold-out workshop on writing through grief and interruption.",
     voice:

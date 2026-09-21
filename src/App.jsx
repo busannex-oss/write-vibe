@@ -46,6 +46,8 @@ import ReaderInsights from './pages/ReaderInsights';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import BlogManager from './pages/BlogManager';
+import BlogAuthor from './pages/BlogAuthor';
+import BlogCalendar from './pages/BlogCalendar';
 import CRM from './pages/CRM';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -142,6 +144,8 @@ const AuthenticatedApp = () => {
       <Route path="/Blog" element={<LayoutWrapper currentPageName="Blog"><Blog /></LayoutWrapper>} />
       <Route path="/BlogPost" element={<LayoutWrapper currentPageName="BlogPost"><BlogPost /></LayoutWrapper>} />
       <Route path="/BlogManager" element={<LayoutWrapper currentPageName="BlogManager"><BlogManager /></LayoutWrapper>} />
+      <Route path="/BlogAuthor" element={<LayoutWrapper currentPageName="BlogAuthor"><BlogAuthor /></LayoutWrapper>} />
+      <Route path="/BlogCalendar" element={<LayoutWrapper currentPageName="BlogCalendar"><BlogCalendar /></LayoutWrapper>} />
       <Route path="/CRM" element={<LayoutWrapper currentPageName="CRM"><CRM /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
