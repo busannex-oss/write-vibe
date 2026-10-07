@@ -101,6 +101,7 @@ export default function Layout({ children, currentPageName }) {
         ]},
         // AI Agents — agent monitoring and tools
         { name: "Operations Agents", href: "OperationsAgents", icon: Workflow, category: "AI Agents" },
+        { name: "Chain of Command", href: "ChainOfCommand", icon: Network, category: "AI Agents" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "AI Agents" },
         { name: "AI Agent Audit", href: "AgentAudit", icon: Bot, category: "AI Agents", children: [
           { name: "Agent Map", href: "AgentConnectionMap", icon: Network },
