@@ -2,6 +2,8 @@
 // Alexandar Sterling votes first, Rose McLaurin second, then the admin decides.
 // When both agents reach the same decision, minutes are recorded.
 
+import { FOUNDER_EMAIL } from './founder.ts';
+
 export const REVIEWERS = [
   { key: 'personal_executive_assistant', name: 'Alexandar Sterling', role: "Personal Executive Assistant — protects the founder's interests and representation" },
   { key: 'rose_mclaurin', name: 'Rose McLaurin', role: 'Executive Review Officer — independent second reviewer for governance and quality' }
@@ -64,6 +66,15 @@ ${prior ? `\nPrior votes:\n${prior}` : ''}`,
       status: 'draft'
     });
     update.minutes_id = minutes.id;
+    await svc.integrations.Core.SendEmail({
+      to: FOUNDER_EMAIL,
+      from_name: 'Write Vibe Review Board',
+      subject: `Action needed: reviewers agreed to ${reviews[0].decision.toUpperCase()} "${task.title}"`,
+      body: `<p>Alexandar Sterling and Rose McLaurin reached consensus on a high-risk task and it now awaits your final approval.</p>
+<p><strong>Task:</strong> ${esc(task.title)} (${task.action_type})<br/><strong>Consensus:</strong> ${reviews[0].decision.toUpperCase()}</p>
+${reviews.map((v) => `<p><strong>${v.reviewer}:</strong> ${esc(v.rationale)}<br/><em>Recommends:</em> ${esc(v.recommendation)}</p>`).join('')}
+<p><a href="https://thewritevibe.net/AgentTasks">Review and decide now</a></p>`
+    });
   }
 
   await svc.entities.AgentTask.update(task.id, update);
