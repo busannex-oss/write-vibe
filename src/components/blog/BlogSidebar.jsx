@@ -12,8 +12,8 @@ export default function BlogSidebar({ posts, activeTag, onSelectTag }) {
       <SidebarLoginCard />
       <SidebarAdRotator />
       <PopularPostsList posts={posts} />
-      <PopularCategoriesList posts={posts} activeTag={activeTag} onSelect={onSelectTag} />
       <BloggerRoster />
+      <PopularCategoriesList posts={posts} activeTag={activeTag} onSelect={onSelectTag} />
       <PartnerFeaturedPosts />
     </aside>
   );

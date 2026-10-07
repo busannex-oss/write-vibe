@@ -9,14 +9,14 @@ export default function BloggerCard({ author }) {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <div className="flex gap-4">
+      <Link to={`${createPageUrl("BlogAuthor")}?id=${author.id}`} className="group flex gap-4">
         <img src={author.portrait} alt={author.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
         <div className="min-w-0">
-          <p className="text-white font-semibold leading-tight">{author.name}</p>
+          <p className="text-white font-semibold leading-tight group-hover:text-amber-300 transition-colors">{author.name}</p>
           <p className="text-xs text-amber-400/80">{author.title}</p>
           <p className="text-[11px] text-white/35 mt-0.5">{author.beat}</p>
         </div>
-      </div>
+      </Link>
 
       <p className="flex gap-2 mt-4 text-sm text-white/70 italic">
         <Quote className="w-4 h-4 text-amber-400/60 flex-shrink-0" />
