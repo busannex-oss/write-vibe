@@ -1,6 +1,7 @@
 // v2 — AI Generation + Trend Monitor + Auto-Update
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { createDocVersion, reviseDocVersion } from "@/lib/docVersioning";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,7 @@ export default function ConfidentialWhitePapers() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Document.create(data),
+    mutationFn: (data) => createDocVersion(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["white-papers"] });
       setCreating(false);
@@ -110,7 +111,7 @@ export default function ConfidentialWhitePapers() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Document.update(id, data),
+    mutationFn: ({ id, data }) => reviseDocVersion(whitePapers.find((d) => d.id === id), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["white-papers"] });
       setEditingId(null);

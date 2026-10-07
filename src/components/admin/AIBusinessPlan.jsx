@@ -1,6 +1,7 @@
 // v1 — AI 30-Year Strategic Business Plan
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { createDocVersion, reviseDocVersion } from "@/lib/docVersioning";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default function AIBusinessPlan() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Document.create(data),
+    mutationFn: (data) => createDocVersion(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-plans"] });
       setCreating(false);
@@ -54,7 +55,7 @@ export default function AIBusinessPlan() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Document.update(id, data),
+    mutationFn: ({ id, data }) => reviseDocVersion(plans.find((d) => d.id === id), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-plans"] });
       setEditingId(null);

@@ -37,4 +37,5 @@ Disallow: /AdvisoryReviewDashboard
 Disallow: /CCOSStudio
 Disallow: /CCOSAgent
 
-Sitemap: https://thewritevibe.com/sitemap.xml
+Sitemap: https://story-weaver-ai-d1fcdcf2.base44.app/functions/sitemapXml
+Sitemap: https://story-weaver-ai-d1fcdcf2.base44.app/functions/blogRss
