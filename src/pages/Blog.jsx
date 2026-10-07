@@ -5,7 +5,7 @@ import BlogCard from "@/components/blog/BlogCard";
 import NewsletterSignupForm from "@/components/blog/NewsletterSignupForm";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogSidebar from "@/components/blog/BlogSidebar";
-import BloggerRoster from "@/components/blog/BloggerRoster";
+import FeaturedPost from "@/components/blog/FeaturedPost";
 import AuthorFilterBar from "@/components/blog/AuthorFilterBar";
 
 export default function Blog() {
@@ -56,12 +56,13 @@ export default function Blog() {
               {activeAuthor ? `${activeAuthor} hasn't published an article yet.` : activeTag ? "No posts in this category yet." : "No posts published yet — check back soon."}
             </p>
           ) : (
-            <div className="grid sm:grid-cols-2 gap-6">
-              {visible.map((p) => <BlogCard key={p.id} post={p} />)}
-            </div>
+            <>
+              <FeaturedPost post={visible[0]} />
+              <div className="grid sm:grid-cols-2 gap-6">
+                {visible.slice(1).map((p) => <BlogCard key={p.id} post={p} />)}
+              </div>
+            </>
           )}
-
-          <BloggerRoster />
         </div>
 
         <BlogSidebar posts={posts} activeTag={activeTag} onSelectTag={setActiveTag} />

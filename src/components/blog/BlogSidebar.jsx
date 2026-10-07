@@ -4,6 +4,7 @@ import PopularPostsList from "@/components/blog/PopularPostsList";
 import PopularCategoriesList from "@/components/blog/PopularCategoriesList";
 import PartnerFeaturedPosts from "@/components/blog/PartnerFeaturedPosts";
 import SidebarAdRotator from "@/components/blog/SidebarAdRotator";
+import BloggerRoster from "@/components/blog/BloggerRoster";
 
 export default function BlogSidebar({ posts, activeTag, onSelectTag }) {
   return (
@@ -12,6 +13,7 @@ export default function BlogSidebar({ posts, activeTag, onSelectTag }) {
       <SidebarAdRotator />
       <PopularPostsList posts={posts} />
       <PopularCategoriesList posts={posts} activeTag={activeTag} onSelect={onSelectTag} />
+      <BloggerRoster />
       <PartnerFeaturedPosts />
     </aside>
   );
