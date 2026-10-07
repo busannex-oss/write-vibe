@@ -44,6 +44,16 @@ export const AGENT_PORTRAITS = {
   membership_manager:       "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/b1ea86cda_generated_image.png",
   structure_sentinel:       "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/677f2c070_generated_image.png",
 
+  // ── OPERATIONS & CLIENT EXPERIENCE ─────────────────────────────────────────
+  personal_executive_assistant: "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/78c7e2a94_generated_image.png",
+  workflow_architect:       "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/ca0c607ba_generated_image.png",
+  process_optimization:     "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/8ccf95154_generated_image.png",
+  automation_architect:     "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/16cc5ea96_generated_image.png",
+  innovation_agent:         "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/ea2f0d3ca_generated_image.png",
+  retention_agent:          "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/ebfd34d57_generated_image.png",
+  human_in_the_loop:        "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/faf33440c_generated_image.png",
+  sherry_givens:            "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/1297cc932_generated_image.png",
+
   // ── LEVEL 7: ADVISORY BOARD ────────────────────────────────────────────────
   advisory_tyler_perry:        "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/16393dcb4_generated_image.png",
   advisory_thurgood_marshall:  "https://media.base44.com/images/public/6975e45ac14c500ed1fcdcf2/89878008b_generated_image.png",
