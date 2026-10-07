@@ -1,0 +1,40 @@
+{
+  "name": "Book Status Change \u2014 Draft LinkedIn Post",
+  "description": "When a book's status changes, creates a draft LinkedIn post announcing the milestone for review.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Book",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.changed_fields | index(\"status\") != null) and .trigger.data.status != ((.trigger.old_data // {}).status) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "book_status_linkedin_draft",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "draft_post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "draftBookLinkedInPost",
+            "args": {
+              "book_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Draft LinkedIn post",
+            "description": "Book milestone announcement"
+          }
+        }
+      }
+    ]
+  }
+}
