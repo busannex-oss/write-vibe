@@ -1,0 +1,41 @@
+{
+  "name": "BookBackup",
+  "type": "object",
+  "properties": {
+    "file_uri": {
+      "type": "string",
+      "description": "Private file holding the backup JSON"
+    },
+    "book_count": {
+      "type": "number"
+    },
+    "backed_up_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "file_uri"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

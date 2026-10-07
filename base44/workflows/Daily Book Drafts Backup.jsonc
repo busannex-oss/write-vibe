@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_book_drafts_backup",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "backup_drafts": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "backupBookDrafts"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Back up book drafts",
+            "description": "Saved to private files"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Daily Book Drafts Backup",
+  "description": "Every night at 2am, saves a copy of all book drafts to private files",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 2 * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}
