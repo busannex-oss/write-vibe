@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import AgentChatPanel from "@/components/agents/AgentChatPanel";
 import { cn } from "@/lib/utils";
 import { isFounder } from "@/lib/founder";
+import AgentRoleGroups from "@/components/operations/AgentRoleGroups";
+import BookBackupsSection from "@/components/operations/BookBackupsSection";
 
 const AGENTS = [
   {
@@ -95,6 +97,9 @@ export default function OperationsAgents() {
         </p>
       </div>
 
+      <AgentRoleGroups showFounderAgents={isFounder(user)} />
+
+      <h2 className="text-lg font-bold text-white mb-3">Chat with Operations</h2>
       {/* Agent selector */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
         {agents.map((a) => {
@@ -121,6 +126,8 @@ export default function OperationsAgents() {
       </div>
 
       <AgentChatPanel agent={active} />
+
+      {user?.role === "admin" && <BookBackupsSection />}
     </div>
   );
 }
