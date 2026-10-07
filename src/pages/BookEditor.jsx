@@ -134,10 +134,13 @@ const RAW_STEPS = [
   },
 ];
 
+import StageTabs from "@/components/book/StageTabs";
+
 // Steps grouped into four clear stages, in this order
 export const STAGES = [
   { id: "write",   label: "Write",   steps: ["title", "outline", "manuscript"] },
-  { id: "produce", label: "Produce", steps: ["cover", "logo", "format", "audiobook"] },
+  { id: "design",  label: "Design",  steps: ["cover", "logo"] },
+  { id: "publish", label: "Publish", steps: ["format", "audiobook"] },
   { id: "market",  label: "Market",  steps: ["summary", "video", "website", "marketing"] },
 ];
 
@@ -160,7 +163,7 @@ const UTILITY_TABS = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Sidebar stepper — icon-only rail with tooltips
 // ─────────────────────────────────────────────────────────────────────────────
-function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
+function Stepper({ steps, book, activeStep, onStepClick, utilityTabs, stage }) {
   const completedCount = steps.filter(s => s.isDone(book)).length;
   const progress = (completedCount / steps.length) * 100;
 
@@ -182,11 +185,12 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
       const active = activeStep === step.id;
       const prevsDone = steps.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
       const accessible = idx === 0 || prevsDone || step.optional || done;
+      if (step.stage !== stage) return null;
 
       return (
         <React.Fragment key={step.id}>
         {isStageStart(steps, idx) && (
-          <span className={`text-[9px] font-bold uppercase tracking-wider text-amber-400/60 ${idx > 0 ? "mt-3 pt-2 border-t border-white/10 w-8 text-center" : ""}`}>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400/60">
             {step.stage}
           </span>
         )}
@@ -360,6 +364,11 @@ export default function BookEditor() {
 
   const [activeTab, setActiveTab] = useState("title");
   const [user, setUser] = useState(null);
+  const [lastStage, setLastStage] = useState("Write");
+  useEffect(() => {
+    const s = STEPS.find(x => x.id === activeTab);
+    if (s) setLastStage(s.stage);
+  }, [activeTab]);
   const [showAdvanced, setShowAdvanced] = useState(() => localStorage.getItem("bookEditorAdvanced") === "1");
   const toggleAdvanced = () => {
     const next = !showAdvanced;
@@ -404,6 +413,12 @@ export default function BookEditor() {
 
   const currentStepDef = STEPS.find(s => s.id === activeTab) || null;
   const currentStepIdx = visibleSteps.findIndex(s => s.id === activeTab);
+  const activeStage = currentStepDef?.stage || lastStage;
+  const selectStage = (label) => {
+    setLastStage(label);
+    const first = visibleSteps.find(s => s.stage === label);
+    if (first) setActiveTab(first.id);
+  };
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -468,11 +483,9 @@ export default function BookEditor() {
             const active = activeTab === step.id;
             const prevsDone = visibleSteps.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
             const accessible = idx === 0 || prevsDone || step.optional || done;
+            if (step.stage !== activeStage) return null;
             return (
               <React.Fragment key={step.id}>
-              {isStageStart(visibleSteps, idx) && (
-                <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-amber-400/60 px-1">{step.stage}</span>
-              )}
               <button
                 onClick={() => accessible && setActiveTab(step.id)}
                 disabled={!accessible}
@@ -510,6 +523,8 @@ export default function BookEditor() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.16 }}
               >
+                <StageTabs stages={STAGES} steps={visibleSteps} book={book} activeStage={currentStepDef ? activeStage : null} onSelect={selectStage} />
+
                 {/* Banner for main steps */}
                 {currentStepDef && (
                   <StepBanner
@@ -566,6 +581,7 @@ export default function BookEditor() {
             activeStep={activeTab}
             onStepClick={setActiveTab}
             utilityTabs={visibleTabs}
+            stage={activeStage}
           />
           <button onClick={toggleAdvanced} title={showAdvanced ? "Hide advanced tools" : "Show advanced tools"}
             className={`mt-2 w-12 h-12 rounded-xl flex items-center justify-center transition-all ${showAdvanced ? "bg-amber-500/15 text-amber-400" : "bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/60"}`}>
