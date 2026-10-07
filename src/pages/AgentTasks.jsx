@@ -5,6 +5,7 @@ import { Bot, Loader2 } from "lucide-react";
 import AgentTaskForm from "@/components/agenttasks/AgentTaskForm";
 import AgentTaskCard from "@/components/agenttasks/AgentTaskCard";
 import { logEvent } from "@/lib/agentTasks";
+import ActiveTasksPanel from "@/components/agenttasks/ActiveTasksPanel";
 
 export default function AgentTasks() {
   const qc = useQueryClient();
@@ -45,6 +46,7 @@ export default function AgentTasks() {
         </p>
         {pending > 0 && <p className="text-amber-300 text-sm mt-2">{pending} task{pending > 1 ? "s" : ""} waiting for your approval</p>}
       </div>
+      <ActiveTasksPanel tasks={tasks} onChange={change} runningId={runningId} />
       <AgentTaskForm books={books} onCreate={create} />
       {isLoading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 text-amber-500 animate-spin" /></div>
