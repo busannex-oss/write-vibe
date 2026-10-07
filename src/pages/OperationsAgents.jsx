@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { isFounder } from "@/lib/founder";
 import AgentRoleGroups from "@/components/operations/AgentRoleGroups";
 import AgentStructureTable from "@/components/operations/AgentStructureTable";
+import DecisionAuditLog from "@/components/operations/DecisionAuditLog";
 import BookBackupsSection from "@/components/operations/BookBackupsSection";
 
 const AGENTS = [
@@ -100,6 +101,7 @@ export default function OperationsAgents() {
 
       <AgentRoleGroups showFounderAgents={isFounder(user)} />
       <AgentStructureTable showFounderAgents={isFounder(user)} />
+      {user?.role === "admin" && <DecisionAuditLog />}
 
       <h2 className="text-lg font-bold text-white mb-3">Chat with Operations</h2>
       {/* Agent selector */}
