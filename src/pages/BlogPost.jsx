@@ -61,25 +61,32 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" /> All posts
           </Link>
 
-          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight">{post.title}</h1>
-
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-            <PostMeta post={post} />
-            {post.published_at && (
-              <span className="flex items-center gap-1.5 text-xs text-white/40">
-                <CalendarDays className="w-3.5 h-3.5" />
-                {format(new Date(post.published_at), "MMMM d, yyyy")}
-              </span>
+          <header className="max-w-[68ch]">
+            {post.tags?.[0] && (
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400/80 mb-3">{post.tags[0]}</p>
             )}
+            <h1 className="text-3xl lg:text-[2.6rem] font-bold text-white leading-[1.15] tracking-tight">{post.title}</h1>
+            {post.excerpt && (
+              <p className="mt-4 text-lg text-white/55 leading-relaxed">{post.excerpt}</p>
+            )}
+          </header>
+
+          <div className="mt-6 py-4 border-y border-white/5 flex flex-wrap items-center justify-between gap-4">
+            <PostMeta post={post} />
+            <span className="flex items-center gap-1.5 text-xs text-white/40">
+              <CalendarDays className="w-3.5 h-3.5" />
+              {post.published_at && `${format(new Date(post.published_at), "MMMM d, yyyy")} · `}
+              {Math.max(1, Math.round((post.content || "").split(/\s+/).length / 220))} min read
+            </span>
           </div>
 
           {post.cover_image_url && (
             <div className="mt-8">
-              <PostCoverImage src={post.cover_image_url} alt={post.title} ratio="banner" className="border border-white/10" />
+              <PostCoverImage src={post.cover_image_url} alt={post.title} ratio="banner" className="border border-white/10 shadow-2xl shadow-black/40" />
             </div>
           )}
 
-          <div className="prose prose-invert prose-amber article-body max-w-[68ch] mt-9 text-white/75">
+          <div className="prose prose-invert prose-amber article-body max-w-[68ch] mt-10 text-white/75">
             <ReactMarkdown>{post.content || post.excerpt || ""}</ReactMarkdown>
           </div>
 
