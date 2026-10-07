@@ -50,6 +50,7 @@ import BlogAuthor from './pages/BlogAuthor';
 import BlogTag from './pages/BlogTag';
 import BlogCalendar from './pages/BlogCalendar';
 import CRM from './pages/CRM';
+import OAuthConsent from './pages/OAuthConsent';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -149,6 +150,7 @@ const AuthenticatedApp = () => {
       <Route path="/BlogTag" element={<LayoutWrapper currentPageName="BlogTag"><BlogTag /></LayoutWrapper>} />
       <Route path="/BlogCalendar" element={<LayoutWrapper currentPageName="BlogCalendar"><BlogCalendar /></LayoutWrapper>} />
       <Route path="/CRM" element={<LayoutWrapper currentPageName="CRM"><CRM /></LayoutWrapper>} />
+      <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
