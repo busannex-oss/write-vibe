@@ -71,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
 
   const memberNav = [
     { name: "Dashboard",  href: "Dashboard",  icon: LayoutDashboard, children: [
+      { name: "Agent Tasks", href: "AgentTasks", icon: Bot },
       { name: "Platform Health", href: "PlatformHealth", icon: Activity },
       { name: "Reader Insights", href: "ReaderInsights", icon: BarChart2 },
     ]},

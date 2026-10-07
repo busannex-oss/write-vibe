@@ -1,0 +1,142 @@
+{
+  "name": "AgentTask",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What the agent should do"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Detailed instructions, editable by the user"
+    },
+    "area": {
+      "type": "string",
+      "enum": [
+        "writing",
+        "marketing",
+        "distribution",
+        "crm",
+        "general"
+      ],
+      "default": "general"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "analyze",
+        "plan",
+        "publish",
+        "email",
+        "spend"
+      ],
+      "default": "draft",
+      "description": "publish/email/spend are high risk and need approval"
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "high"
+      ],
+      "default": "low"
+    },
+    "agent_key": {
+      "type": "string"
+    },
+    "agent_name": {
+      "type": "string"
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "awaiting_approval",
+        "approved",
+        "paused",
+        "completed",
+        "skipped",
+        "stopped",
+        "failed"
+      ],
+      "default": "queued"
+    },
+    "output": {
+      "type": "string",
+      "description": "Agent result (markdown)"
+    },
+    "error": {
+      "type": "string"
+    },
+    "owner_email": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
