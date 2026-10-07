@@ -22,11 +22,18 @@
   "memory_config": {
     "enabled": true,
     "scope": "both",
+    "include_other_conversation_context": false,
     "instructions": null
   },
+  "context_files": [],
+  "app_user_connector_configs": [],
   "selected_skill_names": [],
   "selected_workspace_skill_ids": [
     "69bee8f19d43ab9b88ea977b"
   ],
+  "whatsapp_greeting": "",
+  "telegram_greeting": "",
+  "line_greeting": "",
+  "allow_anonymous_access": false,
   "name": "brand_strategist"
 }
