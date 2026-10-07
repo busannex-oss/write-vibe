@@ -27,6 +27,7 @@ import SocialKeysSection from "@/components/dashboard/SocialKeysSection";
 import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget";
 import PEABriefingPanel from "@/components/dashboard/PEABriefingPanel";
 import PEATimeline from "@/components/dashboard/PEATimeline";
+import SalesWidget from "@/components/dashboard/SalesWidget";
 import { isFounder } from "@/lib/founder";
 
 const STATUS_COLORS = {
@@ -240,6 +241,8 @@ export default function Dashboard() {
         <MessageInboxWidget user={user} />
       </motion.div>
       </div>
+
+      {user?.role === "admin" && <div className="mt-6"><SalesWidget /></div>}
 
       <div className="mt-6">
         <SocialKeysSection user={user} />
