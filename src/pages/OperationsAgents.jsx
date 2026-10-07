@@ -6,6 +6,7 @@ import AgentChatPanel from "@/components/agents/AgentChatPanel";
 import { cn } from "@/lib/utils";
 import { isFounder } from "@/lib/founder";
 import AgentRoleGroups from "@/components/operations/AgentRoleGroups";
+import AgentStructureTable from "@/components/operations/AgentStructureTable";
 import BookBackupsSection from "@/components/operations/BookBackupsSection";
 
 const AGENTS = [
@@ -98,6 +99,7 @@ export default function OperationsAgents() {
       </div>
 
       <AgentRoleGroups showFounderAgents={isFounder(user)} />
+      <AgentStructureTable showFounderAgents={isFounder(user)} />
 
       <h2 className="text-lg font-bold text-white mb-3">Chat with Operations</h2>
       {/* Agent selector */}
