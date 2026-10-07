@@ -74,7 +74,8 @@ export const AGENT_ASSIGNMENTS = {
   automation_architect: ["operations", "L3"],
   innovation_agent: ["operations", "L3"],
   retention_agent: ["client_experience", "L3"],
-  human_in_the_loop: ["governance", "L2"]
+  human_in_the_loop: ["governance", "L2"],
+  rose_mclaurin: ["governance", "L1"]
 };
 
 /** Resolve team + governance for an agent key. Advisory board members default to ADV. */

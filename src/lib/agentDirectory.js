@@ -68,7 +68,10 @@ const ROSTER = [
   { key: "advisory_marcus_rosier", name: "Marcus Rosier", role: "Advisory Board — Executive Leadership", department: "Advisory Board" },
   { key: "advisory_gary_vee", name: "Gary Vaynerchuk", role: "Advisory Board — Digital Marketing", department: "Advisory Board" },
   { key: "advisory_spectacular_smith", name: "Spectacular Smith", role: "Advisory Board — Social Strategy", department: "Advisory Board" },
-  { key: "advisory_bozoma_saint_john", name: "Bozoma Saint John", role: "Advisory Board — Cultural Strategy", department: "Advisory Board" }
+  { key: "advisory_bozoma_saint_john", name: "Bozoma Saint John", role: "Advisory Board — Cultural Strategy", department: "Advisory Board" },
+
+  // Approval review
+  { key: "rose_mclaurin", name: "Rose McLaurin", role: "Executive Review Officer", department: "Executive" }
 ];
 
 export const AGENT_DIRECTORY = ROSTER.map((a, i) => ({

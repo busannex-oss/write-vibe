@@ -14,7 +14,6 @@ export default function AgentTaskControls({ task, onChange, onRunNow, onEdit, ru
   if (DONE.includes(s)) return btn("Run again", Play, () => onChange({ status: "queued", output: "" }, "Re-queued"));
   return (
     <div className="flex flex-wrap gap-1.5">
-      {s === "awaiting_approval" && btn("Approve", Check, () => onChange({ status: "approved" }, "Approved"), "text-emerald-300 border-emerald-500/40")}
       {s === "paused"
         ? btn("Resume", Play, () => onChange({ status: "queued" }, "Resumed"))
         : btn("Pause", Pause, () => onChange({ status: "paused" }, "Paused"))}

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
+import { reviewTask } from '../../shared/approvalReview.ts';
 
 const HIGH_RISK = ['publish', 'email', 'spend'];
 
@@ -6,7 +7,9 @@ async function runTask(svc, task) {
   const stamp = (event) => [...(task.history || []), { at: new Date().toISOString(), event, by: task.agent_name || 'Agent' }];
   const needsApproval = HIGH_RISK.includes(task.action_type) && task.status !== 'approved';
   if (needsApproval) {
-    await svc.entities.AgentTask.update(task.id, { status: 'awaiting_approval', risk: 'high', history: stamp('Waiting for your approval') });
+    const history = stamp('Sent to Alexandar Sterling and Rose McLaurin for review');
+    await svc.entities.AgentTask.update(task.id, { status: 'awaiting_approval', risk: 'high', history });
+    if (!task.reviews?.length) await reviewTask(svc, { ...task, history });
     return 'awaiting_approval';
   }
   await svc.entities.AgentTask.update(task.id, { status: 'running' });

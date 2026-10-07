@@ -79,6 +79,48 @@
     "completed_at": {
       "type": "string"
     },
+    "reviews": {
+      "type": "array",
+      "description": "Votes from Alexandar Sterling then Rose McLaurin",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reviewer": {
+            "type": "string"
+          },
+          "reviewer_key": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "reject",
+              "refine",
+              "comment",
+              "recommend"
+            ]
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "consensus": {
+      "type": "string",
+      "description": "Agreed decision, or 'split'"
+    },
+    "minutes_id": {
+      "type": "string",
+      "description": "Minutes recorded when reviewers agree"
+    },
     "history": {
       "type": "array",
       "items": {

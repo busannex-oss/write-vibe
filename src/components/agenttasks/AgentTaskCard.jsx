@@ -7,11 +7,16 @@ import { ShieldAlert, ChevronDown, ChevronUp } from "lucide-react";
 import { STATUS_STYLES } from "@/lib/agentTasks";
 import { AGENT_DIRECTORY } from "@/lib/agentDirectory";
 import AgentTaskControls from "./AgentTaskControls";
+import ApprovalReviewPanel from "./ApprovalReviewPanel";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function AgentTaskCard({ task, onChange, onRunNow, running }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(task.instructions || "");
   const [open, setOpen] = useState(false);
+  const qc = useQueryClient();
+  const { data: user } = useQuery({ queryKey: ["user"], queryFn: () => base44.auth.me() });
 
   const reassign = (e) => {
     const a = AGENT_DIRECTORY.find((x) => x.key === e.target.value);
@@ -50,6 +55,9 @@ export default function AgentTaskCard({ task, onChange, onRunNow, running }) {
           </button>
           {open && <div className="prose prose-invert prose-sm max-w-none mt-2"><ReactMarkdown>{task.output}</ReactMarkdown></div>}
         </div>
+      )}
+      {(task.status === "awaiting_approval" || task.reviews?.length > 0) && (
+        <ApprovalReviewPanel task={task} isAdmin={user?.role === "admin"} onDone={() => qc.invalidateQueries({ queryKey: ["agent-tasks"] })} />
       )}
       <AgentTaskControls task={task} onChange={onChange} onRunNow={onRunNow} onEdit={() => setEditing(true)} running={running} />
     </div>
