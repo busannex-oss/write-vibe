@@ -28,6 +28,7 @@ import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget"
 import PEABriefingPanel from "@/components/dashboard/PEABriefingPanel";
 import PEATimeline from "@/components/dashboard/PEATimeline";
 import SalesWidget from "@/components/dashboard/SalesWidget";
+import BookPipelineChart from "@/components/dashboard/BookPipelineChart";
 import { isFounder } from "@/lib/founder";
 
 const STATUS_COLORS = {
@@ -153,6 +154,10 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {user?.role === "admin" && <SalesWidget />}
+
+      <BookPipelineChart books={books} />
+
       {/* Recent Books + Activity Feed */}
       <div className="grid lg:grid-cols-3 gap-6">
       <motion.div
@@ -241,8 +246,6 @@ export default function Dashboard() {
         <MessageInboxWidget user={user} />
       </motion.div>
       </div>
-
-      {user?.role === "admin" && <div className="mt-6"><SalesWidget /></div>}
 
       <div className="mt-6">
         <SocialKeysSection user={user} />

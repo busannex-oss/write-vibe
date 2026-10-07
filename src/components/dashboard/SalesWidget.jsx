@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { DollarSign } from "lucide-react";
 import { format, startOfMonth } from "date-fns";
+import SalesCharts from "@/components/dashboard/SalesCharts";
 
 const usd = (n) => `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
@@ -37,7 +38,9 @@ export default function SalesWidget() {
               </div>
             ))}
           </div>
-          <div className="mt-5 space-y-2">
+          <SalesCharts paid={paid} />
+          <p className="text-xs uppercase tracking-wider text-white/40 mt-6 mb-2">Recent sales</p>
+          <div className="space-y-2">
             {payments.length === 0 && <p className="text-sm text-white/40">No sales recorded yet.</p>}
             {payments.slice(0, 5).map((p) => (
               <div key={p.id} className="flex items-center justify-between text-sm border-b border-white/5 pb-2">
