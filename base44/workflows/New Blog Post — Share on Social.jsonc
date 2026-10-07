@@ -1,0 +1,41 @@
+{
+  "name": "New Blog Post \u2014 Share on Social",
+  "description": "When a blog post is published, shares its link to all connected social accounts (Facebook, Instagram, LinkedIn).",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "BlogPost",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"published\" and ((.trigger.old_data // {}).status // \"\") != \"published\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_post_social_share",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "share_post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "shareNewBlogPost",
+            "args": {
+              "post_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Share on social media",
+            "description": "Post link to followers"
+          }
+        }
+      }
+    ]
+  }
+}
