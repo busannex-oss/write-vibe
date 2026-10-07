@@ -38,7 +38,7 @@ import BookLogoGenerator from "@/components/book/BookLogoGenerator.jsx";
 import BookStatusScheduler from "@/components/book/BookStatusScheduler.jsx";
 
 // ─────────────────────────────────────────────────────────────────────────────
-const STEPS = [
+const RAW_STEPS = [
   {
     id: "title",
     label: "Title & Characters",
@@ -122,14 +122,35 @@ const STEPS = [
     hint: "Full site with cover, summary, promo video, and reader reviews",
     isDone: (b) => !!b?.website_config?.status,
   },
+  {
+    id: "marketing",
+    label: "Marketing",
+    icon: BookMarked,
+    description: "Plan your launch and run campaigns",
+    hint: "Launch plan, campaigns, and scheduled status changes",
+    isDone: (b) => ["marketing", "published"].includes(b?.status),
+    optional: true,
+  },
 ];
 
+// Steps grouped into four clear stages, in this order
+export const STAGES = [
+  { id: "write",   label: "Write",   steps: ["title", "outline", "manuscript"] },
+  { id: "design",  label: "Design",  steps: ["cover", "logo"] },
+  { id: "publish", label: "Publish", steps: ["format", "audiobook"] },
+  { id: "market",  label: "Market",  steps: ["summary", "video", "website", "marketing"] },
+];
+
+const STEPS = STAGES.flatMap(stage =>
+  stage.steps.map(id => ({ ...RAW_STEPS.find(s => s.id === id), stage: stage.label }))
+);
+
 const STEP_IDS = STEPS.map(s => s.id);
+const isStageStart = (idx) => idx === 0 || STEPS[idx - 1].stage !== STEPS[idx].stage;
 
 const UTILITY_TABS = [
   { id: "seo",       label: "SEO",         icon: Sparkles   },
   { id: "viewer",    label: "Read",         icon: Download   },
-  { id: "marketing", label: "Marketing",    icon: BookMarked },
   { id: "team",      label: "Team",         icon: Users      },
   { id: "agents",    label: "Agent Access", icon: ShieldCheck },
 ];
@@ -161,7 +182,13 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
       const accessible = idx === 0 || prevsDone || step.optional || done;
 
       return (
-        <div key={step.id} className="relative group/tip w-full flex flex-col items-center gap-0.5">
+        <React.Fragment key={step.id}>
+        {isStageStart(idx) && (
+          <span className={`text-[9px] font-bold uppercase tracking-wider text-amber-400/60 ${idx > 0 ? "mt-3 pt-2 border-t border-white/10 w-8 text-center" : ""}`}>
+            {step.stage}
+          </span>
+        )}
+        <div className="relative group/tip w-full flex flex-col items-center gap-0.5">
           <button
             onClick={() => accessible && onStepClick(step.id)}
             disabled={!accessible}
@@ -197,6 +224,7 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
               {step.label}{step.optional ? " (optional)" : ""}
             </div>
           </div>
+        </React.Fragment>
         );
       })}
 
@@ -235,6 +263,8 @@ function StepBanner({ step, stepNumber, totalSteps }) {
   return (
     <div className="mb-6 pb-5 border-b border-white/6">
       <div className="flex items-center gap-2 text-white/25 text-xs mb-2 font-medium uppercase tracking-wider">
+        <span className="text-amber-400/60">{step.stage}</span>
+        <span>·</span>
         <span>Step {stepNumber} of {totalSteps}</span>
         {step.optional && (
           <>
@@ -429,8 +459,11 @@ export default function BookEditor() {
             const prevsDone = STEPS.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
             const accessible = idx === 0 || prevsDone || step.optional || done;
             return (
+              <React.Fragment key={step.id}>
+              {isStageStart(idx) && (
+                <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-amber-400/60 px-1">{step.stage}</span>
+              )}
               <button
-                key={step.id}
                 onClick={() => accessible && setActiveTab(step.id)}
                 disabled={!accessible}
                 className={`book-editor-mobile-selector-item ${active ? 'active' : ''} ${done && !active ? 'completed' : ''}`}
@@ -438,6 +471,7 @@ export default function BookEditor() {
                 {done && !active ? <Check className="w-3 h-3" /> : <step.icon className="w-3 h-3" />}
                 <span>{step.label}</span>
               </button>
+              </React.Fragment>
             );
           })}
           <div className="w-px h-4 bg-white/10 shrink-0 mx-1" />
