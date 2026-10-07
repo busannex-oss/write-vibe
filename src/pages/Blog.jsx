@@ -29,10 +29,6 @@ export default function Blog() {
 
       <div className="max-w-6xl mx-auto px-6 py-12 grid lg:grid-cols-[1fr_320px] gap-10">
         <div>
-          <div className="mb-10">
-            <NewsletterSignupForm />
-          </div>
-
           <AuthorFilterBar activeAuthor={activeAuthor} onSelect={setActiveAuthor} />
 
           {activeAuthor && (
@@ -63,6 +59,10 @@ export default function Blog() {
               </div>
             </>
           )}
+
+          <div className="mt-10">
+            <NewsletterSignupForm />
+          </div>
         </div>
 
         <BlogSidebar posts={posts} activeTag={activeTag} onSelectTag={setActiveTag} />
