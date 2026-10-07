@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -136,8 +137,7 @@ const RAW_STEPS = [
 // Steps grouped into four clear stages, in this order
 export const STAGES = [
   { id: "write",   label: "Write",   steps: ["title", "outline", "manuscript"] },
-  { id: "design",  label: "Design",  steps: ["cover", "logo"] },
-  { id: "publish", label: "Publish", steps: ["format", "audiobook"] },
+  { id: "produce", label: "Produce", steps: ["cover", "logo", "format", "audiobook"] },
   { id: "market",  label: "Market",  steps: ["summary", "video", "website", "marketing"] },
 ];
 
@@ -146,7 +146,9 @@ const STEPS = STAGES.flatMap(stage =>
 );
 
 const STEP_IDS = STEPS.map(s => s.id);
-const isStageStart = (idx) => idx === 0 || STEPS[idx - 1].stage !== STEPS[idx].stage;
+const isStageStart = (list, idx) => idx === 0 || list[idx - 1].stage !== list[idx].stage;
+// Tools hidden until "Advanced" is switched on
+const ADVANCED_TABS = ["seo", "team", "agents"];
 
 const UTILITY_TABS = [
   { id: "seo",       label: "SEO",         icon: Sparkles   },
@@ -183,7 +185,7 @@ function Stepper({ steps, book, activeStep, onStepClick, utilityTabs }) {
 
       return (
         <React.Fragment key={step.id}>
-        {isStageStart(idx) && (
+        {isStageStart(steps, idx) && (
           <span className={`text-[9px] font-bold uppercase tracking-wider text-amber-400/60 ${idx > 0 ? "mt-3 pt-2 border-t border-white/10 w-8 text-center" : ""}`}>
             {step.stage}
           </span>
@@ -295,14 +297,14 @@ function StepBanner({ step, stepNumber, totalSteps }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Step footer nav
 // ─────────────────────────────────────────────────────────────────────────────
-function StepNav({ currentStepId, book, onNavigate }) {
-  const idx = STEP_IDS.indexOf(currentStepId);
+function StepNav({ steps, currentStepId, book, onNavigate }) {
+  const idx = steps.findIndex(s => s.id === currentStepId);
   if (idx < 0) return null;
 
-  const currentStep = STEPS[idx];
+  const currentStep = steps[idx];
   const isDone = currentStep.isDone(book);
-  const nextStep = STEPS[idx + 1] || null;
-  const prevStep = STEPS[idx - 1] || null;
+  const nextStep = steps[idx + 1] || null;
+  const prevStep = steps[idx - 1] || null;
 
   // Can go next if current is done, or if next is optional, or current is optional
   const canGoNext = isDone || currentStep.optional;
@@ -358,6 +360,14 @@ export default function BookEditor() {
 
   const [activeTab, setActiveTab] = useState("title");
   const [user, setUser] = useState(null);
+  const [showAdvanced, setShowAdvanced] = useState(() => localStorage.getItem("bookEditorAdvanced") === "1");
+  const toggleAdvanced = () => {
+    const next = !showAdvanced;
+    setShowAdvanced(next);
+    localStorage.setItem("bookEditorAdvanced", next ? "1" : "0");
+  };
+  const visibleSteps = showAdvanced ? STEPS : STEPS.filter(s => !s.optional);
+  const visibleTabs = showAdvanced ? UTILITY_TABS : UTILITY_TABS.filter(t => !ADVANCED_TABS.includes(t.id));
 
   // Load current user
   useEffect(() => {
@@ -393,7 +403,7 @@ export default function BookEditor() {
   };
 
   const currentStepDef = STEPS.find(s => s.id === activeTab) || null;
-  const currentStepIdx = STEP_IDS.indexOf(activeTab);
+  const currentStepIdx = visibleSteps.findIndex(s => s.id === activeTab);
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -453,14 +463,14 @@ export default function BookEditor() {
 
         {/* ── Mobile step selector (top scroll row) ───────────────────────── */}
         <div className="book-editor-mobile-selector">
-          {STEPS.map((step, idx) => {
+          {visibleSteps.map((step, idx) => {
             const done = step.isDone(book);
             const active = activeTab === step.id;
-            const prevsDone = STEPS.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
+            const prevsDone = visibleSteps.slice(0, idx).filter(s => !s.optional).every(s => s.isDone(book));
             const accessible = idx === 0 || prevsDone || step.optional || done;
             return (
               <React.Fragment key={step.id}>
-              {isStageStart(idx) && (
+              {isStageStart(visibleSteps, idx) && (
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-amber-400/60 px-1">{step.stage}</span>
               )}
               <button
@@ -475,13 +485,18 @@ export default function BookEditor() {
             );
           })}
           <div className="w-px h-4 bg-white/10 shrink-0 mx-1" />
-          {UTILITY_TABS.map(tab => (
+          {visibleTabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`book-editor-mobile-selector-item ${activeTab === tab.id ? 'active' : ''}`}>
               <tab.icon className="w-3 h-3" />
               <span>{tab.label}</span>
             </button>
           ))}
+          <button onClick={toggleAdvanced}
+            className={`book-editor-mobile-selector-item ${showAdvanced ? 'active' : ''}`}>
+            <SlidersHorizontal className="w-3 h-3" />
+            <span>{showAdvanced ? "Hide advanced" : "Advanced"}</span>
+          </button>
         </div>
 
         {/* ── Main content ─────────────────────────────────────────────────── */}
@@ -500,7 +515,7 @@ export default function BookEditor() {
                   <StepBanner
                     step={currentStepDef}
                     stepNumber={currentStepIdx + 1}
-                    totalSteps={STEPS.length}
+                    totalSteps={visibleSteps.length}
                   />
                 )}
 
@@ -536,7 +551,7 @@ export default function BookEditor() {
 
                 {/* Next / prev footer — only for main pipeline steps */}
                 {currentStepDef && (
-                  <StepNav currentStepId={activeTab} book={book} onNavigate={setActiveTab} />
+                  <StepNav steps={visibleSteps} currentStepId={activeTab} book={book} onNavigate={setActiveTab} />
                 )}
               </motion.div>
             </AnimatePresence>
@@ -546,12 +561,16 @@ export default function BookEditor() {
         {/* ── Sidebar — icon rail (right side) ────────────────────────────── */}
         <div className="book-editor-sidebar">
           <Stepper
-            steps={STEPS}
+            steps={visibleSteps}
             book={book}
             activeStep={activeTab}
             onStepClick={setActiveTab}
-            utilityTabs={UTILITY_TABS}
+            utilityTabs={visibleTabs}
           />
+          <button onClick={toggleAdvanced} title={showAdvanced ? "Hide advanced tools" : "Show advanced tools"}
+            className={`mt-2 w-12 h-12 rounded-xl flex items-center justify-center transition-all ${showAdvanced ? "bg-amber-500/15 text-amber-400" : "bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/60"}`}>
+            <SlidersHorizontal className="w-5 h-5" />
+          </button>
         </div>
 
       </div>
