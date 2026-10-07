@@ -22,7 +22,19 @@ export default async function(req) {
       });
     }
 
+    // Scheduled book status changes
+    const books = await base44.asServiceRole.entities.Book.filter({ scheduled_status_at: { $lte: now.toISOString() } }, 'scheduled_status_at', 200);
+    const dueBooks = books.filter((b) => b.scheduled_status && b.scheduled_status_at);
+    for (const book of dueBooks) {
+      await base44.asServiceRole.entities.Book.update(book.id, {
+        status: book.scheduled_status,
+        scheduled_status: null,
+        scheduled_status_at: null
+      });
+    }
+
     return Response.json({
+      books_updated: dueBooks.map((b) => `${b.title} → ${b.scheduled_status}`),
       checked: scheduled.length,
       published: due.length,
       titles: due.map((p) => p.title)

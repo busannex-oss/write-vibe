@@ -35,6 +35,7 @@ import CollaborationPanel from "@/components/book/CollaborationPanel.jsx";
 import SEOMetadataEditor from "@/components/book/SEOMetadataEditor.jsx";
 import AgentAccessPanel from "@/components/book/AgentAccessPanel.jsx";
 import BookLogoGenerator from "@/components/book/BookLogoGenerator.jsx";
+import BookStatusScheduler from "@/components/book/BookStatusScheduler.jsx";
 
 // ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
@@ -491,6 +492,7 @@ export default function BookEditor() {
                 {activeTab === "viewer"    && <ManuscriptViewer book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />}
                 {activeTab === "marketing" && (
                   <div className="space-y-6">
+                    <BookStatusScheduler book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
                     <MarketingLaunchPlan book={book} />
                     <MarketingCampaignGenerator book={book} onUpdate={handleUpdate} isUpdating={updateBookMutation.isPending} />
                   </div>
