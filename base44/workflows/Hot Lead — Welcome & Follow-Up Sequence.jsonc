@@ -1,0 +1,94 @@
+{
+  "name": "Hot Lead \u2014 Welcome & Follow-Up Sequence",
+  "description": "When a CRM contact's lead score reaches 60, sends a welcome email, then follow-ups after 3 and 7 days (skipped for existing members).",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CRMContact",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.data.lead_score // 0) >= 60 and ((.trigger.old_data.lead_score // 0) < 60) and (.trigger.data.is_member != true) and (.trigger.data.nurture_paused != true) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "hot_lead_sequence",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_welcome": {
+          "call": "send_email",
+          "with": {
+            "template_name": "LeadWelcome",
+            "to": "${ .trigger.data.email }",
+            "description": "Welcomes a hot lead and points to membership plans",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "wait_3_days",
+          "x-base44": {
+            "title": "Send welcome email"
+          }
+        }
+      },
+      {
+        "wait_3_days": {
+          "wait": "P3D",
+          "then": "send_followup_1",
+          "x-base44": {
+            "title": "Wait 3 days"
+          }
+        }
+      },
+      {
+        "send_followup_1": {
+          "call": "send_email",
+          "with": {
+            "template_name": "LeadFollowUp1",
+            "to": "${ .trigger.data.email }",
+            "description": "Shows the three steps members use to finish their book",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "wait_4_days",
+          "x-base44": {
+            "title": "Send follow-up 1"
+          }
+        }
+      },
+      {
+        "wait_4_days": {
+          "wait": "P4D",
+          "then": "send_followup_2",
+          "x-base44": {
+            "title": "Wait 4 days"
+          }
+        }
+      },
+      {
+        "send_followup_2": {
+          "call": "send_email",
+          "with": {
+            "template_name": "LeadFollowUp2",
+            "to": "${ .trigger.data.email }",
+            "description": "Invites the lead to become a paying member",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send membership invite"
+          }
+        }
+      }
+    ]
+  }
+}
