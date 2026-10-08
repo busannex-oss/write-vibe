@@ -19,10 +19,18 @@
     "status": {
       "type": "string",
       "enum": [
+        "pending",
         "active",
         "unsubscribed"
       ],
-      "default": "active"
+      "default": "pending"
+    },
+    "confirm_token": {
+      "type": "string",
+      "description": "One-time token for email confirmation (double opt-in)"
+    },
+    "confirmed_at": {
+      "type": "string"
     }
   },
   "required": [
