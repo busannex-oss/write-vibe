@@ -34,8 +34,9 @@ const RECIPIENTS = [
 ];
 
 function genCode(prefix) {
-  const seg = () => Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `${prefix}-${seg()}-${seg()}`;
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}-${hex.match(/.{8}/g).join('-')}`;
 }
 
 Deno.serve(async (req) => {

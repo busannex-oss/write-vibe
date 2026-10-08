@@ -10,6 +10,13 @@ export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
     const svc = base44.asServiceRole;
+    let caller = null;
+    try { caller = await base44.auth.me(); } catch (_) { caller = null; }
+    if (!caller || caller.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    const isAdmin = true;
+
     const body = await req.json().catch(() => ({}));
     const email = String(body.email || '').trim().toLowerCase();
     if (!email) return Response.json({ error: 'email is required' }, { status: 400 });
@@ -18,10 +25,6 @@ export default async function (req: Request): Promise<Response> {
     const now = new Date().toISOString();
 
     // Gather every signal we already hold about this person
-    let caller = null;
-    try { caller = await base44.auth.me(); } catch (_) { caller = null; }
-    const isAdmin = caller?.role === 'admin';
-
     const subs = await svc.entities.NewsletterSubscriber.filter({ email });
     const users = await svc.entities.User.filter({ email });
     const member = users?.[0] || null;

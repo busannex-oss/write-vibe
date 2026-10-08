@@ -87,36 +87,12 @@ export default function BookWebsite() {
   const reviews = pageData?.reviews || [];
 
   const subscribeMutation = useMutation({
-    mutationFn: () => base44.entities.NewsletterSubscriber.create({
-      book_id: bookId,
-      email,
-      name,
-      subscribed_at: new Date().toISOString()
-    }),
+    mutationFn: () => base44.functions.invoke('subscribeNewsletter', { book_id: bookId, email, name }),
     onSuccess: () => setSubscribed(true)
   });
 
-  // Auto-subscribe logged-in members
   useEffect(() => {
     if (!bookId || !book) return;
-    base44.auth.isAuthenticated().then(async (authed) => {
-      if (!authed) return;
-      const me = await base44.auth.me();
-      if (!me?.email) return;
-      // Check if already subscribed
-      try {
-        const existing = await base44.entities.NewsletterSubscriber.filter({ book_id: bookId, email: me.email });
-        if (existing?.length > 0) { setSubscribed(true); return; }
-        // Auto-subscribe
-        await base44.entities.NewsletterSubscriber.create({
-          book_id: bookId,
-          email: me.email,
-          name: me.full_name || "",
-          subscribed_at: new Date().toISOString()
-        });
-        setSubscribed(true);
-      } catch (_) {}
-    });
     // Load subscriber count for social proof
     try {
       base44.entities.NewsletterSubscriber.filter({ book_id: bookId }).then(subs => {
@@ -161,9 +137,10 @@ export default function BookWebsite() {
   const logoUrl = branding.logo_url || "";
   const brandName = branding.brand_name || authorName || "";
   const footerText = branding.footer_text || "";
-  const themeColor = branding.theme_color || "#f59e0b";
-  const themeBg1 = branding.theme_bg1 || "#020617";
-  const themeBg2 = branding.theme_bg2 || "#0f172a";
+  const safeHex = (v, fallback) => (/^#[0-9a-fA-F]{6}$/.test(v || "") ? v : fallback);
+  const themeColor = safeHex(branding.theme_color, "#f59e0b");
+  const themeBg1 = safeHex(branding.theme_bg1, "#020617");
+  const themeBg2 = safeHex(branding.theme_bg2, "#0f172a");
   const daysUntil = releaseDate ? Math.ceil((new Date(releaseDate) - new Date()) / (1000 * 60 * 60 * 24)) : null;
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
   const themeStyle = { '--theme-primary': themeColor, '--theme-bg1': themeBg1, '--theme-bg2': themeBg2 };
@@ -764,8 +741,8 @@ export default function BookWebsite() {
             {subscribed ? (
               <div className="flex flex-col items-center gap-3 rounded-xl py-6 px-6" style={{ background: '#10b98120', border: '1px solid #10b98140' }}>
                 <Check className="w-10 h-10 text-emerald-400" />
-                <p className="font-bold text-white text-xl">You're on the list!</p>
-                <p className="text-white/60 text-sm">We'll notify you about updates, exclusive content, and release news.</p>
+                <p className="font-bold text-white text-xl">Check your inbox!</p>
+                <p className="text-white/60 text-sm">Click the confirmation link we sent to finish subscribing.</p>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="space-y-3 text-left">
