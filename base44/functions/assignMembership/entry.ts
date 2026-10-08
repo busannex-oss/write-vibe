@@ -14,10 +14,13 @@ Deno.serve(async (req) => {
     // Auto-assign on user create
     if (event?.type === 'create' && event?.entity_name === 'User') {
       const userId = event.entity_id;
-      const userData = data || {};
+      // Never trust request-supplied data — load the real record
+      const found = userId ? await serviceBase44.entities.User.filter({ id: userId }) : [];
+      const userData = found?.[0];
+      if (!userData) return Response.json({ error: 'User not found' }, { status: 404 });
 
       // Only assign if not already set
-      if (!userData.subscription_tier || !userData.membership_assigned_at) {
+      if (!userData.subscription_tier && !userData.membership_assigned_at) {
         await serviceBase44.entities.User.update(userId, {
           subscription_tier: 'trial',
           membership_assigned_at: new Date().toISOString(),
@@ -30,7 +33,7 @@ Deno.serve(async (req) => {
 
     // Manual plan assignment: { user_id, plan }
     if (user_id && plan) {
-      const user = await serviceBase44.auth.me();
+      const user = await base44.auth.me().catch(() => null);
       if (user?.role !== 'admin') {
         return Response.json({ error: 'Forbidden' }, { status: 403 });
       }

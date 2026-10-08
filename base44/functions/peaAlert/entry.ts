@@ -12,14 +12,12 @@ export default async function (req: Request): Promise<Response> {
     const base44 = createClientFromRequest(req);
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
-    const { activity_id, action, entity_type, entity_title, actor_name, actor_email, summary } = body;
+    const { activity_id } = body;
 
-    let activity = { action, entity_type, entity_title, actor_name, actor_email, summary };
-    if (activity_id) {
-      const found = await svc.entities.ActivityLog.filter({ id: activity_id });
-      if (found?.length) activity = found[0];
-    }
-    if (!activity.action) {
+    // Only brief on real, recorded activity — never on free-form request text
+    const found = activity_id ? await svc.entities.ActivityLog.filter({ id: activity_id }) : [];
+    const activity = found?.[0];
+    if (!activity?.action) {
       return Response.json({ skipped: true, reason: 'no activity data' });
     }
 
@@ -50,6 +48,7 @@ Be direct, calm, and professional. No greeting, no sign-off.`
     const title = `${isStrategy ? 'Strategy' : 'Book'} update: ${activity.entity_title || 'untitled'}`;
     const linkPage = isStrategy ? 'SOPs' : 'Books';
 
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const created = [];
     for (const admin of admins) {
       const task = await svc.entities.DashboardTask.create({
@@ -68,9 +67,9 @@ Be direct, calm, and professional. No greeting, no sign-off.`
         subject: `Alert: ${title}`,
         html: `<div style="font-family:Arial,sans-serif;max-width:560px">
           <p style="color:#64748b;font-size:12px;letter-spacing:1px;text-transform:uppercase">Personal Executive Assistant briefing</p>
-          <h2 style="margin:4px 0 12px;color:#0f172a">${title}</h2>
-          <p style="color:#334155;line-height:1.6">${brief}</p>
-          <p style="color:#64748b;font-size:13px">Recorded by ${who}.</p>
+          <h2 style="margin:4px 0 12px;color:#0f172a">${esc(title)}</h2>
+          <p style="color:#334155;line-height:1.6">${esc(brief)}</p>
+          <p style="color:#64748b;font-size:13px">Recorded by ${esc(who)}.</p>
           <p style="color:#94a3b8;font-size:12px">— Alexandar Sterling, Personal Executive Assistant</p>
         </div>`,
         text: `${title}\n\n${brief}\n\nRecorded by ${who}.\n— Alexandar Sterling`

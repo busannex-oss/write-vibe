@@ -8,6 +8,10 @@ Deno.serve(async (req) => {
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    // Posts go out from the platform's official accounts — admins only
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden: admin role required' }, { status: 403 });
+    }
 
     const { postId, caption, imageUrl, platforms, scheduledDays } = await req.json();
 

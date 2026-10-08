@@ -8,7 +8,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { script, selectedDuration, storyboardImages, bookTitle, bookId, videoMethod = 'google', publishMethod = 'auto' } = await req.json();
+    const { script, selectedDuration, storyboardImages, bookTitle, bookId, videoMethod = 'google', publishMethod: requestedPublish = 'auto' } = await req.json();
+    // Auto-publishing uses the platform's YouTube channel — admins only
+    const publishMethod = requestedPublish === 'auto' && user.role !== 'admin' ? 'manual' : requestedPublish;
     
     if (!script || !selectedDuration || !bookTitle) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });

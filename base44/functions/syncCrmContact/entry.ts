@@ -18,9 +18,17 @@ export default async function (req: Request): Promise<Response> {
     const now = new Date().toISOString();
 
     // Gather every signal we already hold about this person
+    let caller = null;
+    try { caller = await base44.auth.me(); } catch (_) { caller = null; }
+    const isAdmin = caller?.role === 'admin';
+
     const subs = await svc.entities.NewsletterSubscriber.filter({ email });
     const users = await svc.entities.User.filter({ email });
     const member = users?.[0] || null;
+    // Non-admin callers may only sync people who actually signed up — no junk contacts
+    if (!isAdmin && !subs.length && !member) {
+      return Response.json({ ok: true, skipped: true });
+    }
     const bookIds = [...new Set(subs.map((s) => s.book_id).filter(Boolean))];
 
     const books = [];
@@ -124,7 +132,8 @@ Return a practical, specific profile. lead_score is 0-100 based on how close the
       contact = await svc.entities.CRMContact.create(payload);
     }
 
-    return Response.json({ ok: true, created: !current, contact });
+    // Only admins see contact details (member status, plan, insights)
+    return Response.json(isAdmin ? { ok: true, created: !current, contact } : { ok: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
