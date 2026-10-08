@@ -47,7 +47,7 @@ Generate a complete, production-ready video that can be uploaded directly to You
 
     // Call Google's Gemini video generation API
     // Using InvokeLLM with model that supports video generation
-    const videoResponse = await base44.integrations.Core.InvokeLLM({
+    const videoResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: videoPrompt,
       model: 'gemini_3_1_pro', // This model supports video generation
       file_urls: storyboardImages?.map(img => img.url).filter(Boolean) || []

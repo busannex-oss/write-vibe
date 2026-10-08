@@ -374,7 +374,7 @@ Deno.serve(async (req) => {
         if (Array.isArray(args.file_urls) && args.file_urls.length) {
           llmArgs.file_urls = args.file_urls;
         }
-        const result = await base44.integrations.Core.InvokeLLM(llmArgs);
+        const result = await base44.asServiceRole.integrations.Core.InvokeLLM(llmArgs);
         return Response.json({ result });
       }
 

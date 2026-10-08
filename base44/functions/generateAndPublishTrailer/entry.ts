@@ -56,7 +56,7 @@ Generate a complete, polished book trailer ready to publish directly to YouTube.
 
     const selectedModel = methodModels[videoMethod] || 'gemini_3_1_pro';
     
-    videoResponse = await base44.integrations.Core.InvokeLLM({
+    videoResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: videoPrompt,
       model: selectedModel,
       file_urls: storyboardImages?.map(img => img.url).filter(Boolean) || []

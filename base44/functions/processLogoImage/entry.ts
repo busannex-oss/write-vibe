@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     }
 
     // Use LLM to analyze logo and provide optimization guidance
-    const analysis = await base44.integrations.Core.InvokeLLM({
+    const analysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: `You are a logo design expert. Analyze this logo image and provide detailed processing instructions.
 
 For the logo at: ${logo_url}

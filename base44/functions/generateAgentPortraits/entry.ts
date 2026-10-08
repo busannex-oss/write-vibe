@@ -75,7 +75,7 @@ Character: ${agent.description}.
 Style: Professional corporate headshot for an executive directory. Cinematic lighting, sharp focus on face, detailed facial features. Modern professional attire appropriate for the role. Confident, approachable expression with a slight smile. Neutral studio background. Photographic realism, high quality, lifelike — as if shot by a professional corporate photographer.`;
 
       try {
-        const result = await base44.integrations.Core.GenerateImage({ prompt });
+        const result = await base44.asServiceRole.integrations.Core.GenerateImage({ prompt });
 
         // Upload to permanent storage (media folder)
         let finalUrl = result.url;

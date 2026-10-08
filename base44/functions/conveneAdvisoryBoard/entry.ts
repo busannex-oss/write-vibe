@@ -44,7 +44,7 @@ INSTRUCTIONS:
 6. Have each advisory board member contribute their individual assessment and recommendations based on their specific expertise and perspective.
 7. Provide an overall executive summary of the convening and a final overall assessment of the organizational structure.`;
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
         type: "object",

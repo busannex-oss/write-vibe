@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     if (!book_title) return Response.json({ error: 'book_title required' }, { status: 400 });
 
     // Use LLM with web search to fetch real Amazon reviews
-    const response = await base44.integrations.Core.InvokeLLM({
+    const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: `Search Amazon for reviews of the book titled "${book_title}"${author_name ? ` by ${author_name}` : ''}${asin ? ` (ASIN: ${asin})` : ''}.
       
 Find and extract the most recent and helpful customer reviews from Amazon.com.
