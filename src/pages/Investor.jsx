@@ -97,23 +97,7 @@ export default function Investor() {
     e.preventDefault();
     setLoading(true);
     try {
-      await base44.integrations.Core.SendEmail({
-        to: "partnerships@writevibe.com",
-        subject: `New Investor/Partner Inquiry from ${form.firstName} ${form.lastName} - ${form.company}`,
-        body: `
-Name: ${form.firstName} ${form.lastName}
-Company: ${form.company}
-Title: ${form.title}
-Email: ${form.email}
-Phone: ${form.phone}
-Investment/Budget Range: ${form.investmentRange}
-Partnership Type: ${form.partnershipType}
-Timeline: ${form.timeline}
-
-Goals:
-${form.goals}
-        `
-      });
+      await base44.functions.invoke("submitInquiry", { kind: "investor", form });
     } catch (e) {
       // fail silently, still show success
     }

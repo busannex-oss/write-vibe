@@ -18,11 +18,7 @@ export default function Contact() {
     setSending(true);
 
     try {
-      await base44.integrations.Core.SendEmail({
-        to: "support@writevibe.ai",
-        subject: `Contact Form: ${formData.name}`,
-        body: `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-      });
+      await base44.functions.invoke("submitInquiry", { kind: "contact", form: formData });
 
       setSent(true);
       setFormData({ name: "", email: "", message: "" });
