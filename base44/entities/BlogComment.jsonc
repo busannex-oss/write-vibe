@@ -35,7 +35,18 @@
     "content"
   ],
   "rls": {
-    "create": {},
+    "create": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
     "read": {},
     "update": {
       "$or": [
