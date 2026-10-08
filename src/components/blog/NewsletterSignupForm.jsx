@@ -28,8 +28,8 @@ export default function NewsletterSignupForm({ headline = "Get new posts and boo
     return (
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
         <Check className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-        <p className="text-white font-medium">You're on the list.</p>
-        <p className="text-sm text-white/50 mt-1">Watch your inbox for the next story.</p>
+        <p className="text-white font-medium">Check your inbox.</p>
+        <p className="text-sm text-white/50 mt-1">Click the confirmation link we sent to finish subscribing.</p>
       </div>
     );
   }
