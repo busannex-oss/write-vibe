@@ -8,7 +8,7 @@ export default async function(req) {
     // Allow scheduled automation (no user) or an admin triggering it manually
     let user = null;
     try { user = await base44.auth.me(); } catch (_e) { user = null; }
-    if (user && user.role !== 'admin') {
+    if (!user || user.role !== 'admin') {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 

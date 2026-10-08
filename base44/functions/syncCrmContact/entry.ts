@@ -40,7 +40,9 @@ export default async function (req: Request): Promise<Response> {
     const existing = await svc.entities.CRMContact.filter({ email });
     const current = existing?.[0] || null;
 
-    const name = body.name || member?.full_name || subs.find((s) => s.name)?.name || '';
+    // Only admins may supply a name; otherwise use stored values (keeps request text out of the AI prompt)
+    const adminName = isAdmin ? String(body.name || '').replace(/[<>{}\[\]]/g, '').slice(0, 80) : '';
+    const name = adminName || member?.full_name || subs.find((s) => s.name)?.name || '';
     const activeSub = subs.some((s) => s.status !== 'unsubscribed');
 
     const signalText = [

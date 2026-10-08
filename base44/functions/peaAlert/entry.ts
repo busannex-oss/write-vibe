@@ -10,6 +10,8 @@ import { FOUNDER_EMAIL } from '../../shared/founder.ts';
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const caller = await base44.auth.me().catch(() => null);
+    if (caller?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
     const { activity_id } = body;

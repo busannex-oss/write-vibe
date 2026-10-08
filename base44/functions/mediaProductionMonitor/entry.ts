@@ -17,9 +17,8 @@ Deno.serve(async (req) => {
         try {
             const user = await base44.auth.me();
             callerIsAdmin = user?.role === 'admin';
-        } catch (_) {
-            // Scheduled automations run without a user — allow via service role
-        }
+        } catch (_) {}
+        if (!callerIsAdmin) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
         const elevenlabsKey = Deno.env.get("ELEVENLABS_API_KEY");
         const now = new Date();

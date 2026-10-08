@@ -7,7 +7,7 @@ export default async function(req) {
     // Called by the workflow (no user) or manually by an admin.
     let user = null;
     try { user = await base44.auth.me(); } catch (_) { user = null; }
-    if (user && user.role !== 'admin') {
+    if (!user || user.role !== 'admin') {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 

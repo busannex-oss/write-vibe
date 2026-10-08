@@ -13,6 +13,8 @@ Deno.serve(async (req) => {
 
     // Auto-assign on user create
     if (event?.type === 'create' && event?.entity_name === 'User') {
+      const evCaller = await base44.auth.me().catch(() => null);
+      if (evCaller?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const userId = event.entity_id;
       // Never trust request-supplied data — load the real record
       const found = userId ? await serviceBase44.entities.User.filter({ id: userId }) : [];

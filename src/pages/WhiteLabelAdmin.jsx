@@ -45,7 +45,7 @@ export default function WhiteLabelAdmin() {
   const toggleWhiteLabel = async () => {
     setTogglingWL(true);
     const newTier = isWhiteLabel ? "professional" : "white_label";
-    await base44.auth.updateMe({ subscription_tier: newTier });
+    await base44.functions.invoke("assignMembership", { user_id: user.id, plan: newTier });
     queryClient.invalidateQueries({ queryKey: ["user"] });
     setTogglingWL(false);
   };

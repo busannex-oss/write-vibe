@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     // Block regular users; allow admins and scheduled automation invocations
     let caller = null;
     try { caller = await base44.auth.me(); } catch (_) { /* automation */ }
-    if (caller && caller.role !== 'admin') {
+    if (!caller || caller.role !== 'admin') {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 

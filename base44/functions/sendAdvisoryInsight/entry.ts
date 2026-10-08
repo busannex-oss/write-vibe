@@ -20,6 +20,14 @@ Deno.serve(async (req) => {
     const notifs = await base44.asServiceRole.entities.AdvisoryNotification.filter({ id: notification_id });
     const notif = notifs[0];
     if (!notif) return Response.json({ error: 'Notification not found' }, { status: 404 });
+    if (user.role !== 'admin') {
+      let owns = notif.created_by_id === user.id || notif.created_by === user.email;
+      if (!owns && notif.book_id) {
+        const [bk] = await base44.asServiceRole.entities.Book.filter({ id: notif.book_id });
+        owns = !!bk && (bk.created_by_id === user.id || bk.created_by === user.email);
+      }
+      if (!owns) return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // 2. Fetch the related milestone for context
     let milestone = null;

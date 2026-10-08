@@ -58,7 +58,12 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'resolve') {
-      const updated = await svc.entities.BookComment.update(payload.comment_id, { status: payload.status || 'addressed' });
+      const [existing] = await svc.entities.BookComment.filter({ id: payload.comment_id });
+      if (!existing || existing.book_id !== bookId) {
+        return Response.json({ error: 'Comment not found for this book.' }, { status: 404 });
+      }
+      const status = ['open', 'addressed', 'dismissed'].includes(payload.status) ? payload.status : 'addressed';
+      const updated = await svc.entities.BookComment.update(existing.id, { status });
       return Response.json({ comment: updated });
     }
 

@@ -7,7 +7,7 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     let user = null;
     try { user = await base44.auth.me(); } catch (_) { user = null; }
-    if (user && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const { post_id } = await req.json();
     if (!post_id) return Response.json({ error: 'post_id required' }, { status: 400 });

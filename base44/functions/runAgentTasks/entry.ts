@@ -50,7 +50,7 @@ export default async function(req) {
       if (t.created_by !== user.email && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       tasks = [t];
     } else {
-      if (user && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+      if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       tasks = await svc.entities.AgentTask.filter({ status: { $in: ['queued', 'approved'] } }, 'created_date', 10);
     }
 
