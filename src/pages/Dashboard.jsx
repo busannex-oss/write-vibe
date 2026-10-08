@@ -28,6 +28,7 @@ import WritingProgressWidget from "@/components/dashboard/WritingProgressWidget"
 import PEABriefingPanel from "@/components/dashboard/PEABriefingPanel";
 import PEATimeline from "@/components/dashboard/PEATimeline";
 import SalesWidget from "@/components/dashboard/SalesWidget";
+import TrialConversionFunnel from "@/components/dashboard/TrialConversionFunnel";
 import BookPipelineChart from "@/components/dashboard/BookPipelineChart";
 import { isFounder } from "@/lib/founder";
 import OnboardingPrompt from "@/components/dashboard/OnboardingPrompt";
@@ -158,6 +159,7 @@ export default function Dashboard() {
       </div>
 
       {user?.role === "admin" && <SalesWidget />}
+      {user?.role === "admin" && <TrialConversionFunnel />}
 
       <BookPipelineChart books={books} />
 
