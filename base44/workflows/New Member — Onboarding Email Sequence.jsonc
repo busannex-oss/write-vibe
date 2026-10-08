@@ -1,0 +1,94 @@
+{
+  "name": "New Member \u2014 Onboarding Email Sequence",
+  "description": "When a CRM contact becomes a member, sends onboarding tips immediately, then resource guides after 2 and 5 more days.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CRMContact",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.is_member == true and (.trigger.old_data.is_member // false) != true }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_member_onboarding",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_tip_1": {
+          "call": "send_email",
+          "with": {
+            "template_name": "MemberTip1",
+            "to": "${ .trigger.data.email }",
+            "description": "Welcomes the member and invites them to create their first book and take the tour",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "wait_2_days",
+          "x-base44": {
+            "title": "Send welcome tip"
+          }
+        }
+      },
+      {
+        "wait_2_days": {
+          "wait": "P2D",
+          "then": "send_tip_2",
+          "x-base44": {
+            "title": "Wait 2 days"
+          }
+        }
+      },
+      {
+        "send_tip_2": {
+          "call": "send_email",
+          "with": {
+            "template_name": "MemberTip2",
+            "to": "${ .trigger.data.email }",
+            "description": "Guide to templates, calendar and publication checklist",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "wait_5_days",
+          "x-base44": {
+            "title": "Send resource guide"
+          }
+        }
+      },
+      {
+        "wait_5_days": {
+          "wait": "P5D",
+          "then": "send_tip_3",
+          "x-base44": {
+            "title": "Wait 5 days"
+          }
+        }
+      },
+      {
+        "send_tip_3": {
+          "call": "send_email",
+          "with": {
+            "template_name": "MemberTip3",
+            "to": "${ .trigger.data.email }",
+            "description": "Introduces cover, website and marketing agents for launch planning",
+            "variables": {
+              "name": "${ .trigger.data.name // \"there\" }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send launch guide"
+          }
+        }
+      }
+    ]
+  }
+}
