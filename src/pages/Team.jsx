@@ -71,15 +71,7 @@ export default function Team() {
   });
 
   const inviteMutation = useMutation({
-    mutationFn: async (data) => {
-      await base44.entities.TeamMember.create(data);
-      // In a real app, this would send an email invitation
-      await base44.integrations.Core.SendEmail({
-        to: data.user_email,
-        subject: `You've been invited to collaborate on "${books.find(b => b.id === data.book_id)?.title}"`,
-        body: `You've been invited as a ${data.role} on a book project. Log in to access the collaboration.`
-      });
-    },
+    mutationFn: (data) => base44.functions.invoke('inviteTeamMember', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team'] });
       setInviteDialogOpen(false);

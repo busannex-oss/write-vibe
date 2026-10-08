@@ -137,6 +137,7 @@ export default function BookWebsite() {
   const logoUrl = branding.logo_url || "";
   const brandName = branding.brand_name || authorName || "";
   const footerText = branding.footer_text || "";
+  const safeUrl = (v) => { try { return ['http:', 'https:'].includes(new URL(v).protocol) ? v : "#"; } catch { return "#"; } };
   const safeHex = (v, fallback) => (/^#[0-9a-fA-F]{6}$/.test(v || "") ? v : fallback);
   const themeColor = safeHex(branding.theme_color, "#f59e0b");
   const themeBg1 = safeHex(branding.theme_bg1, "#020617");
@@ -610,7 +611,7 @@ export default function BookWebsite() {
                 if (!store) return null;
                 const linksArr = book.website_config?.bookstore_links || [];
                 const linkObj = Array.isArray(linksArr) ? linksArr.find(l => l.id === storeId) : null;
-                const href = linkObj?.url || "#";
+                const href = safeUrl(linkObj?.url);
                 return (
                   <a
                     key={storeId}
@@ -882,7 +883,7 @@ export default function BookWebsite() {
                 return (
                   <a
                     key={id}
-                    href={url}
+                    href={safeUrl(url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-11 h-11 rounded-full flex items-center justify-center text-white/60 hover:text-white transition-all"
