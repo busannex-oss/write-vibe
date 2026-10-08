@@ -71,7 +71,7 @@ Key Events: ${chapter.key_events?.join(', ') || 'None specified'}
 
 Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid descriptions, and character development.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
@@ -110,7 +110,7 @@ Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid des
         ...(book.characters?.map((c) => c.image_url).filter(Boolean) || [])
       ].filter(Boolean);
 
-      const { url } = await base44.integrations.Core.GenerateImage({
+      const { url } = await ai.GenerateImage({
         prompt: `Professional book illustration for Chapter ${chapter.chapter_number}: ${chapter.chapter_title}
 
 Book: "${book.title}"

@@ -49,7 +49,7 @@ export default function ManuscriptFormatter({ book, onUpdate, isUpdating }) {
 
     setFormatting(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `You are a professional manuscript formatter. Format the following book content for ${platform} platform using ${format} style.
 
 Book Title: ${book.title}

@@ -22,7 +22,7 @@ export default function IndustryOutlineGenerator({ book, onUpdate, isUpdating })
         `Chapter ${ch.chapter_number}: ${ch.chapter_title}`
       ).join('\n') || 'No outline available';
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Create a professional, industry-standard book outline following publishing best practices:
 
 Title: ${book.title}

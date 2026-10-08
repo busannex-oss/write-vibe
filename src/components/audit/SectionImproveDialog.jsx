@@ -39,7 +39,7 @@ export default function SectionImproveDialog({ item, open, onClose }) {
     setPreview(null);
     setAccepted(false);
     setLoading(true);
-    base44.integrations.Core.InvokeLLM({
+    ai.InvokeLLM({
       prompt: `${attempt > 0 ? "This is a REGENERATION request — the previous draft was not strong enough. Produce a materially different, sharper, more distinctive version with a new angle, stronger specificity, and bolder structure. Do not repeat the previous phrasing.\n\n" : ""}You are a Fortune 100 Creative Director and StoryBrand-certified copywriter working on the homepage of Write Vibe — an AI-Powered Publishing & Intellectual Property Development company (never positioned as a ghostwriting, editing, or formatting service). Books are strategic assets that generate authority, revenue, opportunities, and legacy.
 
 Rewrite and elevate this homepage section.

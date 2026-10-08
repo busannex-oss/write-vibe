@@ -90,7 +90,7 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
       
       const { file_url } = await base44.integrations.Core.UploadFile({ file: blob });
       
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Remove the background from this image and keep only the logo. Return the processed image with a transparent background. The image URL is: ${file_url}`,
         file_urls: [file_url]
       });
@@ -131,7 +131,7 @@ export default function LogoEditor({ onSave, currentLogoUrl, websiteTitle }) {
 - Be a single icon or wordmark, not too complex
 Create a professional logo that looks premium and trustworthy.`;
 
-      const { url } = await base44.integrations.Core.GenerateImage({
+      const { url } = await ai.GenerateImage({
         prompt,
         existing_image_urls: currentLogoUrl ? [currentLogoUrl] : undefined
       });

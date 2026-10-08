@@ -51,7 +51,7 @@ export default function MilestonePanel({ milestone, onClose, onSave, onDelete })
 
   const generateAISuggestion = async () => {
     setAiLoading(true);
-    const res = await base44.integrations.Core.InvokeLLM({
+    const res = await ai.InvokeLLM({
       prompt: `Suggest a compelling character development milestone for character "${form.character_name}" at chapter ${form.chapter_number}. Milestone type: ${form.milestone_type}. Provide a punchy title (under 8 words), a 1-sentence description, and an emotional state for the character.`,
       response_json_schema: {
         type: "object",

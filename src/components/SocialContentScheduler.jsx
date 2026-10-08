@@ -69,7 +69,7 @@ export default function SocialContentScheduler({ posts = [], onUpdate }) {
   const generateImageForPost = async (postId, caption) => {
     setGeneratingImages(prev => ({ ...prev, [postId]: true }));
     try {
-      const imageResponse = await base44.integrations.Core.GenerateImage({
+      const imageResponse = await ai.GenerateImage({
         prompt: `Create an engaging social media post image based on this caption: "${caption}". 
         Make it visually appealing, on-brand, and suitable for social platforms. 
         Include relevant graphics or visuals that match the content.`,

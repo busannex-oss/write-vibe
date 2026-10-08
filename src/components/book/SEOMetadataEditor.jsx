@@ -51,7 +51,7 @@ Return:
 - meta_title: Compelling title under 60 characters. Include the book title and a key benefit/hook.
 - meta_description: Rich description 140-160 characters. Answer "what is this book about?" directly for AI search engines. Include genre, hook, and call to action.`;
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await ai.InvokeLLM({
       prompt,
       response_json_schema: {
         type: "object",

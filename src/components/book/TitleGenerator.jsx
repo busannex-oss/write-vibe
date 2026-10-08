@@ -27,7 +27,7 @@ export default function TitleGenerator({ book, onUpdate, isUpdating }) {
   const generateTitles = async () => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Generate 8 compelling book title suggestions based on the following:
         
 Characters: ${JSON.stringify(book.characters?.map(c => ({ name: c.name, role: c.role })))}

@@ -48,7 +48,7 @@ export default function InlineRecommendations({ context, contextData = {}, stora
       .map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v).slice(0, 300) : String(v).slice(0, 300)}`)
       .join('\n');
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await ai.InvokeLLM({
       prompt: `You are an expert advisor for a professional AI-powered book publishing platform called Write Vibe.
 
 Context: The user is viewing the "${context}" section of their platform admin dashboard.

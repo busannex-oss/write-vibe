@@ -25,7 +25,7 @@ export default function ManuscriptAnalytics({ book, manuscript }) {
       const fullText = manuscript.map(ch => ch.content).join('\n\n');
       const characterNames = book.characters?.map(c => c.name) || [];
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Analyze this complete manuscript for advanced insights:
 
 Title: ${book.title}

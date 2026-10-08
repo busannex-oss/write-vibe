@@ -127,7 +127,7 @@ export default function WhiteLabelBranding({ user, onUpdate }) {
   const generateLogo = async () => {
     if (!config.brand_name) { alert("Please enter your brand name first"); return; }
     setGeneratingLogo(true);
-    const { url } = await base44.integrations.Core.GenerateImage({
+    const { url } = await ai.GenerateImage({
       prompt: `Modern, professional logo for "${config.brand_name}", book publishing brand. Clean, minimal, memorable, scalable. Square with transparent or dark background.`,
     });
     setConfig(prev => ({ ...prev, logo_url: url }));
@@ -138,7 +138,7 @@ export default function WhiteLabelBranding({ user, onUpdate }) {
 
   const generateColorsFromLogo = async (logoUrl) => {
     setGeneratingColors(true);
-    const response = await base44.integrations.Core.InvokeLLM({
+    const response = await ai.InvokeLLM({
       prompt: `Analyze this brand logo image and extract a complete color scheme for a professional UI. Return three hex colors:
 - primary_color: the most prominent / dominant brand color from the logo (must be accessible on dark backgrounds, vibrant)
 - secondary_color: a dark background color that complements the primary (deep dark tone, e.g. near-black with a hue from the logo)

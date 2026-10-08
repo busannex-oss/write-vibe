@@ -40,7 +40,7 @@ export default function AudiobookGenerator({ book, onUpdate, isUpdating }) {
       setProgress(30);
 
       // Generate audiobook using AI
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Generate an audiobook narration script from this manuscript. 
 
 Voice Style: ${voiceStyles.find(v => v.value === voiceStyle)?.description}

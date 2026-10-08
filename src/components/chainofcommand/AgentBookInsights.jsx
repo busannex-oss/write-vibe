@@ -214,7 +214,7 @@ Return JSON:
   ]
 }`;
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await ai.InvokeLLM({
         prompt: insightPrompt,
         response_json_schema: {
           type: "object",

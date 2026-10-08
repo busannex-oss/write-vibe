@@ -100,7 +100,7 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
   const generateCharacter = async (index) => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Create a detailed character for a ${book.category} book titled "${book.title}".
 
 Target Audience: ${book.target_audience?.age_range}
@@ -147,7 +147,7 @@ Make the character memorable, complex, and appropriate for the target audience.`
     const char = characters[index];
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Regenerate and improve this character for a ${book.category} book:
 
 Current Character:
@@ -197,7 +197,7 @@ Create an enhanced version with more depth, better backstory, and compelling tra
 
     setGeneratingImage(index);
     try {
-      const response = await base44.integrations.Core.GenerateImage({
+      const response = await ai.GenerateImage({
         prompt: `Professional character portrait for a ${book.category} book:
 
 Character: ${char.name}

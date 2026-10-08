@@ -70,7 +70,7 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
     if (speaking) return;
     setSpeaking(true);
     try {
-      const res = await base44.integrations.Core.GenerateSpeech({
+      const res = await ai.GenerateSpeech({
         text: text.slice(0, 5000),
         voice: agent.voice || "river"
       });
@@ -104,7 +104,7 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
         const file = new File([audioBlob], "voice_input.webm", { type: "audio/webm" });
         try {
           const uploadRes = await base44.integrations.Core.UploadFile({ file });
-          const transcript = await base44.integrations.Core.TranscribeAudio({ audio_url: uploadRes.file_url });
+          const transcript = await ai.TranscribeAudio({ audio_url: uploadRes.file_url });
           const text = typeof transcript === "string" ? transcript : transcript?.text || "";
           if (text.trim()) sendMessage(text, true);
         } catch (_) {
@@ -173,7 +173,7 @@ export default function AgentProfile({ agent, onClose, brandColors, pillars, onA
       .map(m => `${m.role === "user" ? "Human" : agent.name}: ${m.content}`)
       .join("\n");
 
-    const response = await base44.integrations.Core.InvokeLLM({
+    const response = await ai.InvokeLLM({
       prompt: `You are ${agent.name}, an AI agent with the role of ${agent.title}.
 Description: ${agent.description}
 ${agent.mission ? `Mission: ${agent.mission}` : ""}
@@ -248,7 +248,7 @@ ${agent.name}:`,
   const generatePhoto = async () => {
     setGeneratingPhoto(true);
     setPhotoSaved(false);
-    const { url } = await base44.integrations.Core.GenerateImage({
+    const { url } = await ai.GenerateImage({
       prompt: `Photorealistic professional portrait of ${agent.name}, an AI agent who works as ${agent.title}. 
 ${agent.age ? `Age: ${agent.age}.` : ""} 
 Style: cinematic, corporate headshot, soft studio lighting, high-tech modern background, professional attire.

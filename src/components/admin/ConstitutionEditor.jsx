@@ -78,7 +78,7 @@ export default function ConstitutionEditor() {
 
 ${missionText ? `Platform mission statement:\n"${missionText}"\n\n` : ""}Based on this context, write a comprehensive platform Constitution that establishes the foundational principles, governance structure, core values, operational pillars, AI ethics, member rights & responsibilities, advisory board charter, and amendment process. Structure it with clear articles and sections (Preamble, Core Values, Governance, AI Ethics & Principles, Member Rights & Responsibilities, Advisory Board, Amendments). Write in a formal, authoritative tone. Output the full constitution text only.`;
 
-      const result = await base44.integrations.Core.InvokeLLM({ prompt });
+      const result = await ai.InvokeLLM({ prompt });
       const generated = typeof result === "string" ? result : result?.text || result?.response || JSON.stringify(result);
       setContent(generated);
       if (!title) setTitle("Write Vibe Platform Constitution");

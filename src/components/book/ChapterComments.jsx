@@ -59,7 +59,7 @@ export default function ChapterComments({ book, chapterNumber, chapterTitle, cha
         .map((c, i) => `${i + 1}. ${c.author_name || c.author_email}: ${c.content}`)
         .join("\n");
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `You are a professional book editor revising a chapter based on editorial feedback.
 
 Book: "${book.title}" (${book.category || "General"})

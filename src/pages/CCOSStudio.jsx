@@ -29,7 +29,7 @@ export default function CCOSStudio() {
     setError(null);
     setResult(null);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: buildEvaluationPrompt(assetType, assetContent, brandContext),
         response_json_schema: CCOS_EVALUATION_SCHEMA,
         model: "claude_sonnet_4_6"

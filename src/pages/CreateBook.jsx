@@ -150,7 +150,7 @@ Existing Characters: ${bookData.characters.map(c => c.name + " (" + c.role + ")"
 
 Create a unique character that fits this book.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
@@ -181,7 +181,7 @@ Characters: ${bookData.characters.map(c => `${c.name} (${c.role}): ${c.descripti
 
 Create an engaging plot that brings these elements together with clear conflict, rising action, and resolution.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",

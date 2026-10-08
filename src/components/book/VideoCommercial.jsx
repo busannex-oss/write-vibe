@@ -68,7 +68,7 @@ export default function VideoCommercial({ book, onUpdate }) {
   const generateScript = async () => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Create a professional book trailer script for:
 
 Book: "${book.title}"
@@ -136,7 +136,7 @@ Make it cinematic, emotional, and compelling.`,
     const images = [];
     try {
       for (const scene of scenes.slice(0, 5)) {
-        const res = await base44.integrations.Core.GenerateImage({
+        const res = await ai.GenerateImage({
           prompt: `Cinematic movie trailer still frame for book "${book.title}".
 Scene ${scene.scene_number}: ${scene.visual}
 Voiceover: "${scene.narration}"

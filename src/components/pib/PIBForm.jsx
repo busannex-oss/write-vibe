@@ -69,7 +69,7 @@ Inspirations: ${form.inspirations || "Unknown"}
 
 Based on the information above, enrich and clarify the author's PIB. Fill in or enhance ALL fields below with rich, specific content that authentically reflects who this author is. Preserve the author's original intent and voice — expand on what they've shared, don't replace it. Make the author bio compelling (2-3 paragraphs). Make writing style and voice descriptions vivid and specific. Suggest 3-5 core themes and 3-5 genres that fit. Make target audience and ideal reader descriptions detailed.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",

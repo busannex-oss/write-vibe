@@ -29,7 +29,7 @@ export default function BlogPostEditor({ post, user, onSaved, onCancel }) {
   const generateDraft = async () => {
     if (!form.title) return;
     setDrafting(true);
-    const res = await base44.integrations.Core.InvokeLLM({
+    const res = await ai.InvokeLLM({
       prompt: `Write a blog post for Write Vibe, an AI book publishing platform for authors.
 Title: ${form.title}
 Audience: authors who want to write, publish and market books and grow a loyal readership.

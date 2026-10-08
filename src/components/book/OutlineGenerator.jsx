@@ -27,7 +27,7 @@ export default function OutlineGenerator({ book, onUpdate, isUpdating }) {
   const generateOutline = async () => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Create a detailed book outline based on:
 
 Title: ${book.title}

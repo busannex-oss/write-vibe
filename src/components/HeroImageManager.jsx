@@ -61,7 +61,7 @@ export default function HeroImageManager() {
   const generateHeroImage = async () => {
     setGenerating(true);
     try {
-      const { url } = await base44.integrations.Core.GenerateImage({
+      const { url } = await ai.GenerateImage({
         prompt: "Professional photograph of diverse authors proudly holding their published books. Include multiple people of different ethnicities and backgrounds, all smiling and displaying their finished novels with confidence. Modern, bright lighting, bookshelf or library background. Professional, inspiring, and celebratory mood. High resolution, 1400x800 pixels."
       });
       setHeroImage(url);

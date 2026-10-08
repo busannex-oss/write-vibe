@@ -25,7 +25,7 @@ export default function MarketingCampaignGenerator({ book }) {
   const generateCampaign = async () => {
     setGenerating(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Generate a comprehensive marketing campaign for this book:
 
 Title: ${book.title}

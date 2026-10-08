@@ -186,7 +186,7 @@ Follow AP style guidelines.`;
         }
       }
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
@@ -271,7 +271,7 @@ Follow AP style guidelines.`;
     const book = books.find(b => b.id === doc.book_id);
     setRefiningId(doc.id);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `You are refining an existing book-launch press release. Improve the writing to be more compelling, polished, and professional while following AP style. Keep the standard press release structure (FOR IMMEDIATE RELEASE, headline, dateline/lead, book details, author quote, about the author, contact, ###).
 
 Book: "${book?.title || ''}"

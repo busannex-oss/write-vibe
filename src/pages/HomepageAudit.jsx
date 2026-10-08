@@ -43,7 +43,7 @@ export default function HomepageAudit() {
 
   const runAudit = async () => {
     setRunning(true);
-    const res = await base44.integrations.Core.InvokeLLM({
+    const res = await ai.InvokeLLM({
       prompt: `You are a panel of experts: a Fortune 100 Creative Director, StoryBrand copywriter, UX strategist, CRO specialist, publishing industry consultant, SEO strategist, and brand positioning expert.
 
 Evaluate the Write Vibe homepage against the standard of a world-class AI publishing and intellectual property development company.

@@ -71,7 +71,7 @@ export default function ErrorDashboard() {
     setSelectedError(error);
     setAnalyzing(true);
     setAiAnalysis(null);
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await ai.InvokeLLM({
       prompt: `You are an expert React/JavaScript debugger. Analyze this application error and provide a concise resolution.
 
 Error Type: ${error.error_type}

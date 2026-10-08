@@ -57,7 +57,7 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
 
       const logos = [];
       for (const prompt of logoPrompts) {
-        const res = await base44.integrations.Core.GenerateImage({
+        const res = await ai.GenerateImage({
           prompt: `${prompt} High-resolution, professional, transparent background preferred, suitable for book covers and author branding.`
         });
         logos.push({

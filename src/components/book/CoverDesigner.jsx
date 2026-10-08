@@ -64,7 +64,7 @@ The cover should:
 
 High quality, professional book cover design, 6x9 aspect ratio, publishing quality.`;
 
-      const response = await base44.integrations.Core.GenerateImage({ prompt });
+      const response = await ai.GenerateImage({ prompt });
       
       setFrontCover(response.url);
 
@@ -131,7 +131,7 @@ Layout requirements:
 
 High quality, professional book back cover, 6x9 aspect ratio, publishing quality.`;
 
-      const response = await base44.integrations.Core.GenerateImage({ 
+      const response = await ai.GenerateImage({ 
         prompt,
         existing_image_urls: [frontCover]
       });

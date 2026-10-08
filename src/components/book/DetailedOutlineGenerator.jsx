@@ -20,7 +20,7 @@ export default function DetailedOutlineGenerator({ book, onUpdate, isUpdating })
         `Chapter ${ch.chapter_number}: ${ch.chapter_title}`
       ).join('\n') || 'No TOC available';
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Create a detailed outline for a book based on:
 
 Title: ${book.title}

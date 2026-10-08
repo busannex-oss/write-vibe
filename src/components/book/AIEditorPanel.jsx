@@ -28,7 +28,7 @@ export default function AIEditorPanel({ content, onApplySuggestion }) {
     
     setAnalyzing(true);
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt: `Analyze this manuscript content and provide detailed editorial feedback:
 
 ${content}

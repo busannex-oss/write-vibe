@@ -131,7 +131,7 @@ Current Bio: ${profile.biography || "No bio yet"}
 
 Create a compelling 2-3 paragraph author biography that sounds professional and engaging. This will be used on the back cover of their books.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await ai.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
