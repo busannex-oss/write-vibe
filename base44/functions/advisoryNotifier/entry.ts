@@ -74,11 +74,18 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { milestone_id, milestone, book_title } = body;
-
-    if (!milestone || !milestone_id) {
-      return Response.json({ error: 'milestone and milestone_id are required' }, { status: 400 });
+    const { milestone_id } = body;
+    if (!milestone_id) {
+      return Response.json({ error: 'milestone_id is required' }, { status: 400 });
     }
+
+    // Load the real milestone and book — never trust request-supplied details
+    const [milestone] = await base44.asServiceRole.entities.CharacterMilestone.filter({ id: milestone_id });
+    if (!milestone) return Response.json({ error: 'Not found' }, { status: 404 });
+    const [book] = milestone.book_id ? await base44.asServiceRole.entities.Book.filter({ id: milestone.book_id }) : [];
+    const ownsBook = book && (book.created_by_id === user.id || book.created_by === user.email);
+    if (user.role !== 'admin' && !ownsBook) return Response.json({ error: 'Not found' }, { status: 404 });
+    const book_title = book?.title;
 
     const matched = matchAdvisors(milestone);
     if (matched.length === 0) {

@@ -91,6 +91,11 @@ Deno.serve(async (req) => {
 
     if (action === 'log_export') {
       const { platform, action: exportAction, metadata_snapshot, errors, notes } = body;
+      const owned = book_id ? await base44.entities.Book.filter({ id: book_id }) : [];
+      const ownBook = owned?.[0];
+      if (!ownBook || (user.role !== 'admin' && ownBook.created_by_id !== user.id && ownBook.created_by !== user.email)) {
+        return Response.json({ error: 'Book not found' }, { status: 404 });
+      }
       const log = await base44.entities.DistributionLog.create({
         book_id, platform, action: exportAction,
         status: errors?.length > 0 ? 'failed' : 'success',

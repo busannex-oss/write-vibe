@@ -10,23 +10,26 @@ export default async function (req: Request): Promise<Response> {
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
     const email = String(body.email || '').trim().toLowerCase();
-    if (!email || !email.includes('@')) {
+    if (!/^[^\s@<>"']{1,64}@[^\s@<>"']+\.[^\s@<>"']{2,}$/.test(email) || email.length > 254) {
       return Response.json({ error: 'A valid email is required' }, { status: 400 });
     }
-    const bookId = body.book_id || 'blog';
+    let bookId = 'blog';
+    if (body.book_id && body.book_id !== 'blog') {
+      const [b] = await svc.entities.Book.filter({ id: String(body.book_id) });
+      if (!b) return Response.json({ error: 'Unknown book' }, { status: 400 });
+      bookId = b.id;
+    }
 
-    const existing = await svc.entities.NewsletterSubscriber.filter({ email, book_id: bookId });
+    // Dedupe by address across all books; anonymous calls never re-activate an unsubscribe
+    const existing = await svc.entities.NewsletterSubscriber.filter({ email });
     if (existing?.length) {
-      if (existing[0].status === 'unsubscribed') {
-        await svc.entities.NewsletterSubscriber.update(existing[0].id, { status: 'active' });
-      }
       return Response.json({ ok: true, already_subscribed: true });
     }
 
     await svc.entities.NewsletterSubscriber.create({
       email,
       book_id: bookId,
-      name: body.name || '',
+      name: String(body.name || '').replace(/[<>{}\[\]]/g, '').slice(0, 80),
       status: 'active',
       subscribed_at: new Date().toISOString()
     });

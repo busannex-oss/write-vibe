@@ -7,6 +7,10 @@ Deno.serve(async (req) => {
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const isPaid = user.subscription_tier && !['trial', 'free'].includes(user.subscription_tier);
+    if (user.role !== 'admin' && !isPaid) {
+      return Response.json({ error: 'Music generation is available on paid plans.' }, { status: 403 });
+    }
 
     const { prompt, provider, bookTitle } = await req.json();
     if (!prompt) {
@@ -25,8 +29,7 @@ Deno.serve(async (req) => {
       }
     }
     if (!apiKey) {
-      const keyNames = Object.keys(env).filter(k => /key|api|minimax|music|mk_/i.test(k));
-      return Response.json({ error: 'MiniMax API key not found in environment.', availableKeyHints: keyNames }, { status: 500 });
+      return Response.json({ error: 'Music generation is not configured.' }, { status: 500 });
     }
 
     // MiniMax music generation API — music-2.6 model

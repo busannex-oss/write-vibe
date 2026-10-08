@@ -20,7 +20,14 @@ Deno.serve(async (req) => {
     if (action === 'get') {
       const all = await base44.asServiceRole.entities.MissionStatement.list();
       const current = all.find(m => m.is_current) || all.sort((a, b) => b.version_number - a.version_number)[0] || null;
+      if (current && !current.is_public && user?.role !== 'admin') {
+        return Response.json({ success: true, mission: null });
+      }
       return Response.json({ success: true, mission: current });
+    }
+
+    if ((action === 'versions' || action === 'alignment') && user?.role !== 'admin') {
+      return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
     // ── GET /mission/versions — fetch version history ──────────────────────

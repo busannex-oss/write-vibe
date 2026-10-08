@@ -39,6 +39,8 @@ function buildEmail(freq, recentSops, recentDocs, recentAutoSops, periodStart, n
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    const caller = await base44.auth.me().catch(() => null);
+    if (caller?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
     const svc = base44.asServiceRole;
 
     let payload = {};
