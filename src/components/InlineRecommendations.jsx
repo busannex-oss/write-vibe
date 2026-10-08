@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Lightbulb, ChevronDown, ChevronUp, Loader2, RefreshCw, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
