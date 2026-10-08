@@ -30,6 +30,7 @@ import PEATimeline from "@/components/dashboard/PEATimeline";
 import SalesWidget from "@/components/dashboard/SalesWidget";
 import BookPipelineChart from "@/components/dashboard/BookPipelineChart";
 import { isFounder } from "@/lib/founder";
+import OnboardingPrompt from "@/components/dashboard/OnboardingPrompt";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-300 border-slate-500/30",
@@ -115,6 +116,8 @@ export default function Dashboard() {
       </div>
 
       {/* PEA Briefing — founder only */}
+      <OnboardingPrompt user={user} />
+
       {isFounder(user) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
