@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     let isMember = false;
     if (!isOwner && !isAdmin) {
       const members = await svc.entities.TeamMember.filter({ book_id: bookId, user_email: user.email });
-      isMember = members.some((m) => m.status !== 'inactive');
+      isMember = members.some((m) => m.status === 'active');
     }
 
     if (!isOwner && !isAdmin && !isMember) {
@@ -30,7 +30,11 @@ Deno.serve(async (req) => {
     const action = payload.action || 'get';
 
     if (action === 'get') {
-      const comments = await svc.entities.BookComment.filter({ book_id: bookId });
+      const allComments = await svc.entities.BookComment.filter({ book_id: bookId });
+      const comments = (isOwner || isAdmin) ? allComments : allComments.filter((c) =>
+        c.created_by_id === user.id || c.author_email === user.email ||
+        (Array.isArray(c.visible_to) && c.visible_to.includes(user.email))
+      );
       const members = await svc.entities.TeamMember.filter({ book_id: bookId });
       return Response.json({
         book,
@@ -61,6 +65,9 @@ Deno.serve(async (req) => {
       const [existing] = await svc.entities.BookComment.filter({ id: payload.comment_id });
       if (!existing || existing.book_id !== bookId) {
         return Response.json({ error: 'Comment not found for this book.' }, { status: 404 });
+      }
+      if (!isOwner && !isAdmin && existing.created_by_id !== user.id && existing.author_email !== user.email) {
+        return Response.json({ error: 'Only the book owner or comment author can change this comment.' }, { status: 403 });
       }
       const status = ['open', 'addressed', 'dismissed'].includes(payload.status) ? payload.status : 'addressed';
       const updated = await svc.entities.BookComment.update(existing.id, { status });

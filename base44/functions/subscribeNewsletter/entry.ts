@@ -43,6 +43,21 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ ok: true, pending_confirmation: true });
     }
 
+    // Durable throttling: per-IP (hashed) and global caps on new confirmation sends
+    const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
+    const ipDigest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`wv-nl:${ip}`));
+    const ipHash = Array.from(new Uint8Array(ipDigest), (b) => b.toString(16).padStart(2, '0')).join('');
+    const hourAgo = new Date(Date.now() - 3600_000).toISOString();
+    const dayAgo = new Date(Date.now() - 86400_000).toISOString();
+    const [ipRecent, hourRecent, dayRecent] = await Promise.all([
+      svc.entities.NewsletterSubscriber.filter({ signup_ip_hash: ipHash, subscribed_at: { $gte: hourAgo } }, '-subscribed_at', 4),
+      svc.entities.NewsletterSubscriber.filter({ status: 'pending', subscribed_at: { $gte: hourAgo } }, '-subscribed_at', 31),
+      svc.entities.NewsletterSubscriber.filter({ status: 'pending', subscribed_at: { $gte: dayAgo } }, '-subscribed_at', 201)
+    ]);
+    if (ipRecent.length >= 3 || hourRecent.length >= 30 || dayRecent.length >= 200) {
+      return Response.json({ error: 'Too many signups right now. Please try again later.' }, { status: 429 });
+    }
+
     const bytes = crypto.getRandomValues(new Uint8Array(24));
     const token = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 
@@ -52,6 +67,7 @@ export default async function (req: Request): Promise<Response> {
       name: String(body.name || '').replace(/[<>{}\[\]]/g, '').slice(0, 80),
       status: 'pending',
       confirm_token: token,
+      signup_ip_hash: ipHash,
       subscribed_at: new Date().toISOString()
     });
 

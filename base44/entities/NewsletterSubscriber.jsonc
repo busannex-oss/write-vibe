@@ -31,6 +31,10 @@
     },
     "confirmed_at": {
       "type": "string"
+    },
+    "signup_ip_hash": {
+      "type": "string",
+      "description": "Hashed signup IP used for rate limiting"
     }
   },
   "required": [
