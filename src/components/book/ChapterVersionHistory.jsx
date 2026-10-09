@@ -8,12 +8,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
+import ChapterVersionCompare from "./ChapterVersionCompare";
 
 export default function ChapterVersionHistory({ chapterNumber, chapterTitle, currentContent, onSaveVersion, versions = [], onRestore }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [viewingVersion, setViewingVersion] = useState(null);
   const [saveNote, setSaveNote] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState("all");
 
   const handleSaveCurrentVersion = async () => {
     if (!currentContent) return;
@@ -39,8 +42,12 @@ export default function ChapterVersionHistory({ chapterNumber, chapterTitle, cur
     }
   };
 
-  const sortedVersions = [...versions].sort((a, b) => 
+  const allSorted = [...versions].sort((a, b) =>
     new Date(b.saved_at) - new Date(a.saved_at)
+  );
+  const versionNumber = (v) => allSorted.length - allSorted.indexOf(v);
+  const sortedVersions = allSorted.filter((v) =>
+    sourceFilter === "all" || (sourceFilter === "agent" ? v.source === "agent" : v.source !== "agent")
   );
 
   return (
@@ -103,8 +110,20 @@ export default function ChapterVersionHistory({ chapterNumber, chapterTitle, cur
               </CardContent>
             </Card>
 
+            <div className="flex gap-1">
+              {[["all", "All"], ["agent", "Agent drafts"], ["manual", "Manual"]].map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setSourceFilter(key)}
+                  className={`flex-1 text-xs rounded-md px-2 py-1 border ${sourceFilter === key ? "bg-amber-500/20 border-amber-500/50 text-amber-300" : "border-white/10 text-white/50 hover:bg-white/5"}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {/* Version List */}
-            <ScrollArea className="h-[400px]">
+            <ScrollArea className="h-[340px]">
               <div className="space-y-2">
                 {sortedVersions.length === 0 ? (
                   <div className="text-center py-8 text-white/40">
@@ -127,9 +146,14 @@ export default function ChapterVersionHistory({ chapterNumber, chapterTitle, cur
                       onClick={() => setViewingVersion(version)}
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <Badge className="text-xs bg-amber-500/20 text-amber-400 border-amber-500/30">
-                          v{sortedVersions.length - index}
-                        </Badge>
+                        <div className="flex gap-1">
+                          <Badge className="text-xs bg-amber-500/20 text-amber-400 border-amber-500/30">
+                            v{versionNumber(version)}
+                          </Badge>
+                          {version.source === "agent" && (
+                            <Badge className="text-xs bg-violet-500/20 text-violet-300 border-violet-500/30">Agent</Badge>
+                          )}
+                        </div>
                         <span className="text-xs text-white/40">
                           {formatDistanceToNow(new Date(version.saved_at), { addSuffix: true })}
                         </span>
@@ -159,7 +183,17 @@ export default function ChapterVersionHistory({ chapterNumber, chapterTitle, cur
                   {viewingVersion && (
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => handleRestoreVersion(viewingVersion)}
+                        onClick={() => setCompareMode(!compareMode)}
+                        variant="outline"
+                        size="sm"
+                        className="border-white/20 text-white hover:bg-white/10"
+                      >
+                        {compareMode ? "Preview" : "Compare with current"}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          if (window.confirm("Replace the current chapter draft with this version?")) handleRestoreVersion(viewingVersion);
+                        }}
                         className="bg-emerald-500 hover:bg-emerald-600 text-white"
                         size="sm"
                       >
@@ -179,7 +213,13 @@ export default function ChapterVersionHistory({ chapterNumber, chapterTitle, cur
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                {viewingVersion ? (
+                {viewingVersion && compareMode ? (
+                  <ChapterVersionCompare
+                    version={viewingVersion}
+                    versionLabel={`v${versionNumber(viewingVersion)} · ${new Date(viewingVersion.saved_at).toLocaleString()}`}
+                    currentContent={currentContent}
+                  />
+                ) : viewingVersion ? (
                   <ScrollArea className="h-[450px]">
                     <div className="p-4 space-y-4">
                       <div className="flex items-center gap-4 text-sm text-white/40 pb-3 border-b border-white/10">

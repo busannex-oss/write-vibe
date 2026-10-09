@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ export default function ManuscriptWriter({ book, onUpdate, isUpdating }) {
   const [coAuthorMode, setCoAuthorMode] = useState(false);
   const [coAuthorPrompt, setCoAuthorPrompt] = useState("");
   const [chapterVersions, setChapterVersions] = useState(book.chapter_versions || {});
+  const chapterVersionsRef = useRef(book.chapter_versions || {});
   const [feedbackChapterIndex, setFeedbackChapterIndex] = useState(null);
 
   const chapters = book.industry_outline || book.detailed_outline || book.table_of_contents || [];
@@ -93,6 +94,16 @@ Write 2000-3000 words of engaging, well-paced prose. Include dialogue, vivid des
       };
       setManuscript(newManuscript);
       setCoAuthorPrompt("");
+      // Snapshot every agent-generated draft so it can be browsed/compared/restored later
+      saveChapterVersion({
+        chapter_number: chapter.chapter_number,
+        chapter_title: chapter.chapter_title,
+        content: response.content,
+        word_count: response.content.split(/\s+/).length,
+        saved_at: new Date().toISOString(),
+        note: coAuthorMode && coAuthorPrompt ? `Agent revision: ${coAuthorPrompt.substring(0, 80)}` : "Agent draft",
+        source: "agent"
+      });
     } catch (error) {
       console.error("Error generating chapter:", error);
     }
@@ -184,14 +195,13 @@ High quality, professional book illustration, suitable for print publication.`,
 
   const saveChapterVersion = async (versionData) => {
     const chapterKey = `chapter_${versionData.chapter_number}`;
-    const currentVersions = chapterVersions[chapterKey] || [];
-    const newVersions = [...currentVersions, versionData];
-    
+    const latest = chapterVersionsRef.current;
     const updatedVersions = {
-      ...chapterVersions,
-      [chapterKey]: newVersions
+      ...latest,
+      [chapterKey]: [...(latest[chapterKey] || []), versionData]
     };
-    
+
+    chapterVersionsRef.current = updatedVersions;
     setChapterVersions(updatedVersions);
     onUpdate({ chapter_versions: updatedVersions }, false);
   };
