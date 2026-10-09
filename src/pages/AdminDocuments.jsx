@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Scale, FileText, Sparkles, Loader2, GitBranch, DollarSign } from "lucide-react";
 import PricingValuationPrompt from "@/components/admin/PricingValuationPrompt";
+import SystemValuationReport from "@/components/admin/SystemValuationReport";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import ConstitutionEditor from "@/components/admin/ConstitutionEditor";
@@ -75,7 +76,8 @@ export default function AdminDocuments() {
           <ConfidentialWhitePapers />
         </TabsContent>
         <TabsContent value="pricing">
-          <PricingValuationPrompt />
+          <SystemValuationReport />
+          <div className="mt-8"><PricingValuationPrompt /></div>
         </TabsContent>
         <TabsContent value="versions">
           <DocumentVersionHistory />
