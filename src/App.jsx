@@ -55,6 +55,7 @@ const OAuthConsent = lazy(() => import('./pages/OAuthConsent'));
 const AgentTasks = lazy(() => import('./pages/AgentTasks'));
 const MemberOnboarding = lazy(() => import('./pages/MemberOnboarding'));
 const SystemTraces = lazy(() => import('./pages/SystemTraces'));
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
@@ -164,6 +165,7 @@ const AuthenticatedApp = () => {
       <Route path="/AgentTasks" element={<LayoutWrapper currentPageName="AgentTasks"><AgentTasks /></LayoutWrapper>} />
       <Route path="/MemberOnboarding" element={<LayoutWrapper currentPageName="MemberOnboarding"><MemberOnboarding /></LayoutWrapper>} />
       <Route path="/SystemTraces" element={<LayoutWrapper currentPageName="SystemTraces"><SystemTraces /></LayoutWrapper>} />
+      <Route path="/RefundPolicy" element={<LayoutWrapper currentPageName="RefundPolicy"><RefundPolicy /></LayoutWrapper>} />
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

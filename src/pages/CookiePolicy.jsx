@@ -98,6 +98,7 @@ export default function CookiePolicy() {
             <Link to={createPageUrl("FAQ")} className="hover:text-white transition-colors">FAQ</Link>
             <Link to={createPageUrl("Contact")} className="hover:text-white transition-colors">Contact</Link>
             <Link to={createPageUrl("CookiePolicy")} className="hover:text-white transition-colors">Cookie Policy</Link>
+            <Link to={createPageUrl("RefundPolicy")} className="hover:text-white transition-colors">Refund Policy</Link>
             <Link to={createPageUrl("HowItWorks")} className="hover:text-white transition-colors">How It Works</Link>
             <Link to={createPageUrl("Investor")} className="hover:text-white transition-colors">Investors</Link>
           </div>

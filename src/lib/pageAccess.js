@@ -3,7 +3,7 @@
 
 export const PUBLIC_PAGES = [
   "Landing", "BookWebsite", "Pricing", "About", "Contact", "Privacy", "Terms",
-  "Investor", "FAQ", "CookiePolicy", "HowItWorks",
+  "Investor", "FAQ", "CookiePolicy", "RefundPolicy", "HowItWorks",
   "Blog", "BlogPost", "BlogAuthor", "BlogTag"
 ];
 
