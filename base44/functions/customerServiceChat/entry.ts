@@ -1,11 +1,23 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 
+// Per-caller throttle (per isolate): max requests per hour window
+const WINDOW_MS = 60 * 60 * 1000;
+const LIMITS = { anon: 20, user: 60 };
+const hits = new Map();
+function allow(key, limit) {
+  const now = Date.now();
+  const arr = (hits.get(key) || []).filter((t) => now - t < WINDOW_MS);
+  if (arr.length >= limit) { hits.set(key, arr); return false; }
+  arr.push(now);
+  hits.set(key, arr);
+  if (hits.size > 5000) hits.delete(hits.keys().next().value);
+  return true;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
-    const messages = body.messages || [];
-    const enableVoice = body.enableVoice || false;
 
     // Identify who's chatting (may be an anonymous visitor on public pages)
     let user = null;
@@ -16,6 +28,21 @@ Deno.serve(async (req) => {
     }
 
     const isAdmin = user?.role === 'admin';
+
+    if (!isAdmin) {
+      const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
+      const key = user ? `u:${user.id}` : `ip:${ip}`;
+      if (!allow(key, user ? LIMITS.user : LIMITS.anon)) {
+        return Response.json({ error: 'Too many messages — please try again later.' }, { status: 429 });
+      }
+    }
+
+    // Cap history size and message length sent to the LLM
+    const messages = (Array.isArray(body.messages) ? body.messages : [])
+      .slice(-12)
+      .map((m) => ({ role: m?.role === 'user' ? 'user' : 'assistant', content: String(m?.content || '').substring(0, 1000) }));
+    // Voice (paid speech) only for signed-in users
+    const enableVoice = !!body.enableVoice && !!user;
 
     // Build live context based on who's talking
     let liveContext = '';

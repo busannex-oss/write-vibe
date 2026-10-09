@@ -353,6 +353,7 @@ Deno.serve(async (req) => {
 
       // LLM: invoke
       if (name === 'llm_invoke') {
+        if (!isAdmin) return mcpError('FORBIDDEN', 'Admin role required for llm_invoke', 403);
         const prompt = args.prompt;
         if (!prompt || typeof prompt !== 'string') return mcpError('INVALID_PARAMS', 'prompt is required');
         const model = args.model || 'automatic';
