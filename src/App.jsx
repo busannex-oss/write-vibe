@@ -5,54 +5,61 @@ import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
-import AgentMemoryLog from './pages/AgentMemoryLog';
-import BookEditor from './pages/BookEditor';
-import MissionStatement from './pages/MissionStatement';
-import SOPs from './pages/SOPs';
-import MasterRegistry from './pages/MasterRegistry';
-import MapLegend from './pages/MapLegend';
-import PillarAlignment from './pages/PillarAlignment';
-import BrandStyleGuide from './pages/BrandStyleGuide';
-import Sitemap from './pages/Sitemap';
-import SystemArchitecture from './pages/SystemArchitecture';
-import LegalDocuments from './pages/LegalDocuments';
-import BookHealthCheck from './pages/BookHealthCheck';
-import LicensingTerms from './pages/LicensingTerms';
-import AgentPortal from './pages/AgentPortal';
-import KPIFramework from './pages/KPIFramework';
-import OnboardingExperience from './pages/OnboardingExperience';
-import VersionRoadmap from './pages/VersionRoadmap';
-import PillarsArchitecture from './pages/PillarsArchitecture';
-import AgentAudit from './pages/AgentAudit';
-import DistributionDashboard from './pages/DistributionDashboard';
-import ChainOfCommand from './pages/ChainOfCommand';
-import PublicationChecklist from './pages/PublicationChecklist';
-import WhiteLabelAdmin from './pages/WhiteLabelAdmin';
-import AgentConnectionMap from './pages/AgentConnectionMap';
-import AdvisoryReviewDashboard from './pages/AdvisoryReviewDashboard';
-import CCOSStudio from './pages/CCOSStudio';
-import CCOSAgent from './pages/CCOSAgent';
-import Templates from './pages/Templates';
-import Certifications from './pages/Certifications';
-import AdminDocuments from './pages/AdminDocuments';
-import TeamSummary from './pages/TeamSummary';
-import DocumentReview from './pages/DocumentReview';
-import InternalMessages from './pages/InternalMessages';
-import HomepageAudit from './pages/HomepageAudit';
-import PublishingCalendar from './pages/PublishingCalendar';
-import PlatformHealth from './pages/PlatformHealth';
-import OperationsAgents from './pages/OperationsAgents';
-import ReaderInsights from './pages/ReaderInsights';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
-import BlogManager from './pages/BlogManager';
-import BlogAuthor from './pages/BlogAuthor';
-import BlogTag from './pages/BlogTag';
-import BlogCalendar from './pages/BlogCalendar';
-import CRM from './pages/CRM';
-import OAuthConsent from './pages/OAuthConsent';
-import AgentTasks from './pages/AgentTasks';
-import MemberOnboarding from './pages/MemberOnboarding';
+import { lazy, Suspense } from 'react';
+const AgentMemoryLog = lazy(() => import('./pages/AgentMemoryLog'));
+const BookEditor = lazy(() => import('./pages/BookEditor'));
+const MissionStatement = lazy(() => import('./pages/MissionStatement'));
+const SOPs = lazy(() => import('./pages/SOPs'));
+const MasterRegistry = lazy(() => import('./pages/MasterRegistry'));
+const MapLegend = lazy(() => import('./pages/MapLegend'));
+const PillarAlignment = lazy(() => import('./pages/PillarAlignment'));
+const BrandStyleGuide = lazy(() => import('./pages/BrandStyleGuide'));
+const Sitemap = lazy(() => import('./pages/Sitemap'));
+const SystemArchitecture = lazy(() => import('./pages/SystemArchitecture'));
+const LegalDocuments = lazy(() => import('./pages/LegalDocuments'));
+const BookHealthCheck = lazy(() => import('./pages/BookHealthCheck'));
+const LicensingTerms = lazy(() => import('./pages/LicensingTerms'));
+const AgentPortal = lazy(() => import('./pages/AgentPortal'));
+const KPIFramework = lazy(() => import('./pages/KPIFramework'));
+const OnboardingExperience = lazy(() => import('./pages/OnboardingExperience'));
+const VersionRoadmap = lazy(() => import('./pages/VersionRoadmap'));
+const PillarsArchitecture = lazy(() => import('./pages/PillarsArchitecture'));
+const AgentAudit = lazy(() => import('./pages/AgentAudit'));
+const DistributionDashboard = lazy(() => import('./pages/DistributionDashboard'));
+const ChainOfCommand = lazy(() => import('./pages/ChainOfCommand'));
+const PublicationChecklist = lazy(() => import('./pages/PublicationChecklist'));
+const WhiteLabelAdmin = lazy(() => import('./pages/WhiteLabelAdmin'));
+const AgentConnectionMap = lazy(() => import('./pages/AgentConnectionMap'));
+const AdvisoryReviewDashboard = lazy(() => import('./pages/AdvisoryReviewDashboard'));
+const CCOSStudio = lazy(() => import('./pages/CCOSStudio'));
+const CCOSAgent = lazy(() => import('./pages/CCOSAgent'));
+const Templates = lazy(() => import('./pages/Templates'));
+const Certifications = lazy(() => import('./pages/Certifications'));
+const AdminDocuments = lazy(() => import('./pages/AdminDocuments'));
+const TeamSummary = lazy(() => import('./pages/TeamSummary'));
+const DocumentReview = lazy(() => import('./pages/DocumentReview'));
+const InternalMessages = lazy(() => import('./pages/InternalMessages'));
+const HomepageAudit = lazy(() => import('./pages/HomepageAudit'));
+const PublishingCalendar = lazy(() => import('./pages/PublishingCalendar'));
+const PlatformHealth = lazy(() => import('./pages/PlatformHealth'));
+const OperationsAgents = lazy(() => import('./pages/OperationsAgents'));
+const ReaderInsights = lazy(() => import('./pages/ReaderInsights'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BlogPost = lazy(() => import('./pages/BlogPost'));
+const BlogManager = lazy(() => import('./pages/BlogManager'));
+const BlogAuthor = lazy(() => import('./pages/BlogAuthor'));
+const BlogTag = lazy(() => import('./pages/BlogTag'));
+const BlogCalendar = lazy(() => import('./pages/BlogCalendar'));
+const CRM = lazy(() => import('./pages/CRM'));
+const OAuthConsent = lazy(() => import('./pages/OAuthConsent'));
+const AgentTasks = lazy(() => import('./pages/AgentTasks'));
+const MemberOnboarding = lazy(() => import('./pages/MemberOnboarding'));
+
+const PageLoader = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
+    <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SWUpdateBanner from '@/components/SWUpdateBanner';
@@ -90,6 +97,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -157,6 +165,7 @@ const AuthenticatedApp = () => {
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
