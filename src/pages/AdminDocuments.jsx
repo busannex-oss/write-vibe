@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Scale, FileText, Sparkles, Loader2, GitBranch } from "lucide-react";
+import { Scale, FileText, Sparkles, Loader2, GitBranch, DollarSign } from "lucide-react";
+import PricingValuationPrompt from "@/components/admin/PricingValuationPrompt";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import ConstitutionEditor from "@/components/admin/ConstitutionEditor";
@@ -60,6 +61,9 @@ export default function AdminDocuments() {
           <TabsTrigger value="white_paper" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <FileText className="w-4 h-4 mr-2" /> White Paper
           </TabsTrigger>
+          <TabsTrigger value="pricing" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
+            <DollarSign className="w-4 h-4 mr-2" /> Pricing & Valuation
+          </TabsTrigger>
           <TabsTrigger value="versions" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300">
             <GitBranch className="w-4 h-4 mr-2" /> Version History
           </TabsTrigger>
@@ -69,6 +73,9 @@ export default function AdminDocuments() {
         </TabsContent>
         <TabsContent value="white_paper">
           <ConfidentialWhitePapers />
+        </TabsContent>
+        <TabsContent value="pricing">
+          <PricingValuationPrompt />
         </TabsContent>
         <TabsContent value="versions">
           <DocumentVersionHistory />
