@@ -492,6 +492,7 @@ export default function Landing() {
               <Link to={createPageUrl("Contact")} className="hover:text-white transition-colors">Contact</Link>
               <Link to={createPageUrl("CookiePolicy")} className="hover:text-white transition-colors">Cookie Policy</Link>
               <Link to={createPageUrl("RefundPolicy")} className="hover:text-white transition-colors">Refund Policy</Link>
+              <Link to={createPageUrl("AIDisclosure")} className="hover:text-white transition-colors">AI Disclosure</Link>
             </div>
             <div className="text-sm text-white/40">
               © 2026 Write Vibe. All rights reserved.
