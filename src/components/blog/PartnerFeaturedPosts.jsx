@@ -18,7 +18,7 @@ export default function PartnerFeaturedPosts() {
               rel="noopener noreferrer"
               className="flex gap-3 group"
             >
-              <img src={p.image} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+              <img src={p.image} alt="" loading="lazy" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-amber-400/70">{p.partner}</p>
                 <p className="text-sm text-white/80 group-hover:text-amber-300 leading-snug">

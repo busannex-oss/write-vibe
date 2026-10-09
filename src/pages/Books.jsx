@@ -321,7 +321,7 @@ export default function Books() {
                 <Link to={`/BookEditor?id=${book.id}`} className={bulkEditMode ? "pointer-events-none" : ""}>
                   <div className="aspect-[3/4] relative bg-gradient-to-br from-slate-700 to-slate-800">
                     {book.front_cover_url ? (
-                      <img src={book.front_cover_url} alt="" className="w-full h-full object-cover" />
+                      <img src={book.front_cover_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <BookOpen className="w-12 h-12 text-white/20" />
@@ -378,7 +378,7 @@ export default function Books() {
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex-shrink-0 overflow-hidden">
                       {book.front_cover_url ? (
-                        <img src={book.front_cover_url} alt="" className="w-full h-full object-cover" />
+                        <img src={book.front_cover_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <BookOpen className="w-6 h-6 text-white/20" />

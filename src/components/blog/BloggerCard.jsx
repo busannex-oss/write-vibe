@@ -10,7 +10,7 @@ export default function BloggerCard({ author }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <Link to={`${createPageUrl("BlogAuthor")}?id=${author.id}`} className="group flex gap-4">
-        <img src={author.portrait} alt={author.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+        <img src={author.portrait} alt={author.name} loading="lazy" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
         <div className="min-w-0">
           <p className="text-white font-semibold leading-tight group-hover:text-amber-300 transition-colors">{author.name}</p>
           <p className="text-xs text-amber-400/80">{author.title}</p>

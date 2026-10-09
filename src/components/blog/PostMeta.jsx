@@ -9,7 +9,7 @@ export default function PostMeta({ post }) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {author && (
-        <img src={author.portrait} alt={author.name} className="w-10 h-10 rounded-full object-cover" />
+        <img src={author.portrait} alt={author.name} loading="lazy" className="w-10 h-10 rounded-full object-cover" />
       )}
       <div className="text-sm">
         {post.author_name && (

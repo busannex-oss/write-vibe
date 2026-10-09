@@ -13,7 +13,7 @@ export default function CommentList({ comments, user, onDelete }) {
         <div key={c.id} className="flex gap-3">
           <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
             {c.author_photo_url ? (
-              <img src={c.author_photo_url} alt="" className="w-full h-full object-cover" />
+              <img src={c.author_photo_url} alt="" loading="lazy" className="w-full h-full object-cover" />
             ) : (
               <span className="text-xs text-white/50">{(c.author_name || "?").charAt(0)}</span>
             )}
