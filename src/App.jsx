@@ -54,6 +54,7 @@ const CRM = lazy(() => import('./pages/CRM'));
 const OAuthConsent = lazy(() => import('./pages/OAuthConsent'));
 const AgentTasks = lazy(() => import('./pages/AgentTasks'));
 const MemberOnboarding = lazy(() => import('./pages/MemberOnboarding'));
+const SystemTraces = lazy(() => import('./pages/SystemTraces'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
@@ -162,6 +163,7 @@ const AuthenticatedApp = () => {
       <Route path="/CRM" element={<LayoutWrapper currentPageName="CRM"><CRM /></LayoutWrapper>} />
       <Route path="/AgentTasks" element={<LayoutWrapper currentPageName="AgentTasks"><AgentTasks /></LayoutWrapper>} />
       <Route path="/MemberOnboarding" element={<LayoutWrapper currentPageName="MemberOnboarding"><MemberOnboarding /></LayoutWrapper>} />
+      <Route path="/SystemTraces" element={<LayoutWrapper currentPageName="SystemTraces"><SystemTraces /></LayoutWrapper>} />
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

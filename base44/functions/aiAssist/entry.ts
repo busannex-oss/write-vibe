@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { withGuard } from '../../shared/guard.ts';
 
 // Server-side gateway for the app's built-in AI features. Requires a signed-in
 // user, caps input size, and enforces a per-user daily allowance per operation.
@@ -25,7 +26,13 @@ const str = (v: unknown, max: number) => String(v ?? '').slice(0, max);
 const urls = (v: unknown) =>
   (Array.isArray(v) ? v : v ? [v] : []).filter((u) => typeof u === 'string' && /^https?:\/\//.test(u)).slice(0, 5);
 
+const guarded = withGuard('aiAssist', 120, handler);
+
 export default async function (req: Request): Promise<Response> {
+  return guarded(req);
+}
+
+async function handler(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me().catch(() => null);

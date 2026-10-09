@@ -1,8 +1,9 @@
 import { base44 } from "@/api/base44Client";
+import { getTraceId } from "@/lib/trace";
 
 // AI features run on the server so integration credits are protected.
 const run = async (op, params) => {
-  const res = await base44.functions.invoke("aiAssist", { op, params });
+  const res = await base44.functions.invoke("aiAssist", { op, params, trace_id: getTraceId() });
   return res.data.result;
 };
 

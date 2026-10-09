@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { shouldLogError } from "@/lib/query-client";
+import { getTraceId } from "@/lib/trace";
 
 /**
  * Global error logger hook.
@@ -21,6 +22,14 @@ export function useErrorLogger(user) {
       const dedupeKey = `${payload.error_type}:${payload.message}:${window.location.pathname}`;
       if (!shouldLogError(dedupeKey)) return;
       try {
+        base44.entities.SystemTrace.create({
+          trace_id: getTraceId(),
+          kind: "error",
+          source: window.location.pathname,
+          status: "error",
+          message: String(payload.message).slice(0, 500),
+          user_email: userRef.current?.email,
+        }).catch(() => {});
         await base44.entities.ErrorLog.create({
           ...payload,
           user_email: userRef.current?.email || "anonymous",

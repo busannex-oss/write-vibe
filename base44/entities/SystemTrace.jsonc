@@ -1,0 +1,66 @@
+{
+  "name": "SystemTrace",
+  "type": "object",
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "description": "Shared id linking events from one browser session or run"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "function_call",
+        "agent_action",
+        "error",
+        "rate_limited"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "description": "Function, agent, or page that produced the event"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "error",
+        "blocked"
+      ],
+      "default": "ok"
+    },
+    "duration_ms": {
+      "type": "number"
+    },
+    "message": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "source"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

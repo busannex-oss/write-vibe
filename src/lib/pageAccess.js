@@ -9,7 +9,7 @@ export const PUBLIC_PAGES = [
 
 export const ADMIN_PAGES = [
   // Operations
-  "UserManagement", "InternalMessages", "ErrorDashboard", "TeamSummary",
+  "UserManagement", "InternalMessages", "ErrorDashboard", "SystemTraces", "TeamSummary",
   "AdvisoryReviewDashboard", "CRM", "BlogManager", "BlogCalendar",
   // AI agents
   "OperationsAgents", "AgentMemoryLog", "AgentAudit", "AgentConnectionMap",

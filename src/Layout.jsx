@@ -93,6 +93,7 @@ export default function Layout({ children, currentPageName }) {
         { name: "User Management", href: "UserManagement", icon: Crown, category: "Operations" },
         { name: "Internal Messages", href: "InternalMessages", icon: MessageSquare, category: "Operations" },
         { name: "Error Dashboard", href: "ErrorDashboard", icon: ShieldAlert, category: "Operations" },
+        { name: "System Traces", href: "SystemTraces", icon: Activity, category: "Operations" },
         { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Operations" },
         { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Operations" },
         { name: "CRM", href: "CRM", icon: Contact, category: "Operations" },

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { reviewTask } from '../../shared/approvalReview.ts';
+import { withGuard } from '../../shared/guard.ts';
 
 const HIGH_RISK = ['publish', 'email', 'spend'];
 
@@ -34,7 +35,13 @@ Instructions: ${task.instructions || 'Use your best judgment.'}${bookContext}`
   }
 }
 
+const guarded = withGuard('runAgentTasks', 60, handler, 'agent_action');
+
 export default async function(req) {
+  return guarded(req);
+}
+
+async function handler(req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
