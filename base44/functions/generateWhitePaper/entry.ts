@@ -7,6 +7,15 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
  *  - monitor    : Checks current market trends and returns update suggestions
  *  - auto_update: Fetches trends and rewrites/refreshes the white paper content
  */
+// Current, evidence-based platform state (as of Oct 2026) shared by all documents.
+const PLATFORM_STATE = `Write Vibe (thewritevibe.net) is a live AI-powered book creation, publishing and author-marketing platform. Founded 2025, Chicago IL, owner Miranda M. Johnson.
+BUILT TODAY: 69 app screens, 74 backend services, 30 AI agents with human personas (incl. a founder's executive assistant), 26 automated workflows, 47 data models with row-level security.
+CAPABILITIES: AI book studio (outlines, manuscript writing, chapter version history, collaboration comments, cover design with author logo overlay, audiobook, book trailers, music), editions & distribution gateway (Amazon KDP/ACX, Lulu, PublishDrive adapters), autonomous agent tasks with dual-reviewer approval and human override, humanized blog platform with SEO/RSS/sitemap and scheduling, CRM with AI lead scoring and nurture email sequences, reader insights analytics, social posting to LinkedIn/Facebook/Instagram, Google Drive chapter export, white-label tenant architecture with branding and domain mapping, MCP server for AI clients, system-wide rate limiting and tracing, daily backups, and a full business documentation library (constitution, SOPs, KPI framework, legal, brand style guide).
+ACTIVATION REQUIRED: social API keys, Discord webhook, print/ebook provider accounts, membership payment processing.
+TRACTION: pre-revenue; early users only; no paying white-label tenants yet. State this honestly.
+VALUATION (Oct 9 2026, internal estimate, not a certified appraisal): replacement value $422,000; fair market value $285,000; retail/acquisition $325,000; cash buyout $195,000; licensing $2,450/month.
+PRICING: membership plans plus white-label licensing.`;
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -34,7 +43,8 @@ ${focus ? `Focus area: ${focus}` : ''}
 Date: ${today}
 
 ABOUT THE PLATFORM THIS DOCUMENT IS FOR:
-Write Vibe is an AI-powered book creation and publishing platform that enables authors to write, design, market, and publish professional books using artificial intelligence. The platform offers: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing campaigns, Amazon KDP/ACX direct publishing integration, white-label licensing, and team collaboration tools. Founded 2025, Chicago IL. Target market: 11M+ self-publishing authors globally.
+${PLATFORM_STATE}
+Target market: 11M+ self-publishing authors globally.
 
 This white paper must read like a Goldman Sachs or Morgan Stanley investment research document. Use formal financial language throughout. Include:
 
@@ -174,7 +184,9 @@ Company: ${company_name} | Industry: ${industry || 'AI SaaS / Publishing Technol
 Tagline: ${tagline || 'AI-Powered Book Creation Platform'} | Mission: ${mission || 'Democratize professional book publishing through artificial intelligence'}
 Date: ${today}
 
-This is Write Vibe — an AI book creation platform. Include specific capabilities: AI manuscript writing, AI cover design, AI audiobook generation, AI marketing, Amazon KDP/ACX integration, white-label B2B licensing.
+CURRENT PLATFORM STATE (use as the factual baseline; do not overstate traction):
+${PLATFORM_STATE}
+Year 1 of the plan starts in 2026 (platform built in 2025-2026; commercial launch now).
 
 Write each section with a clear ALL CAPS header. Use specific dollar amounts, headcount, percentages, and dates. This must read like a document prepared for a Series A/B board meeting.
 
@@ -190,9 +202,9 @@ MARKET ANALYSIS
 TAM: $47B global publishing market. SAM: $8.2B self-publishing tools. SOM: $850M AI-assisted authoring (2025). CAGR 34% through 2030. Specific competitor analysis.
 
 PRODUCT ROADMAP
-Q1-Q4 2025 milestones. 2026-2028 feature expansion. 2029+ platform evolution.
+Completed (2025-2026), activation items, Q4 2026-2027 milestones, 2028-2030 expansion, 2031+ evolution.
 
-PHASE 1 STRATEGY — YEARS 1-5 (2025-2030)
+PHASE 1 STRATEGY — YEARS 1-5 (2026-2030)
 Revenue target: $0 to $25M ARR. Users: 0 to 85,000. Team: 3 to 45 FTEs. Key milestones, funding rounds (Seed $500K, Series A $5M, Series B $20M).
 
 PHASE 2 STRATEGY — YEARS 6-10 (2031-2035)
