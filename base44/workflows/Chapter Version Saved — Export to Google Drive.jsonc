@@ -1,0 +1,40 @@
+{
+  "name": "Chapter Version Saved \u2014 Export to Google Drive",
+  "description": "Whenever a new chapter version is saved, exports the latest draft to the 'Write Vibe Chapter Drafts' folder in Google Drive.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Book",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.changed_fields | index(\"chapter_versions\") != null }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "chapter_version_drive_export",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "export_to_drive": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "exportChapterDraftToDrive",
+            "args": {
+              "book_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Export draft to Google Drive",
+            "description": "Latest saved chapter version"
+          }
+        }
+      }
+    ]
+  }
+}
