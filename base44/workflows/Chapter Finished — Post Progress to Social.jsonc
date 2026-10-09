@@ -1,0 +1,41 @@
+{
+  "name": "Chapter Finished \u2014 Post Progress to Social",
+  "description": "When a chapter is marked finished, writes a book-progress update and posts it to your connected Facebook, Instagram and LinkedIn accounts.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Book",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.changed_fields | index(\"manuscript_chapters\") != null) and (([.trigger.data.manuscript_chapters[]? | select(.status == \"finalized\")] | length) > ([((.trigger.old_data // {}).manuscript_chapters // [])[] | select(.status == \"finalized\")] | length)) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "chapter_finished_social_post",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "post_progress": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "postChapterProgress",
+            "args": {
+              "book_id": "${ .trigger.entity_id }",
+              "previously_finalized": "${ [((.trigger.old_data // {}).manuscript_chapters // [])[] | select(.status == \"finalized\") | .chapter_number] }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Post progress to social",
+            "description": "Summary of the newly finished chapter"
+          }
+        }
+      }
+    ]
+  }
+}
