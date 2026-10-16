@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-10-16T02:49:15.965Z",
+  "pages": [
+    {
+      "slug": "readme",
+      "routePath": "/readme",
+      "title": "Readme",
+      "source": "README.md"
+    },
+    {
+      "slug": "leadfollowup1",
+      "routePath": "/leadfollowup1",
+      "title": "Leadfollowup1",
+      "source": "base44/emails/LeadFollowUp1.html"
+    },
+    {
+      "slug": "leadfollowup2",
+      "routePath": "/leadfollowup2",
+      "title": "Leadfollowup2",
+      "source": "base44/emails/LeadFollowUp2.html"
+    },
+    {
+      "slug": "leadwelcome",
+      "routePath": "/leadwelcome",
+      "title": "Leadwelcome",
+      "source": "base44/emails/LeadWelcome.html"
+    },
+    {
+      "slug": "membertip1",
+      "routePath": "/membertip1",
+      "title": "Membertip1",
+      "source": "base44/emails/MemberTip1.html"
+    },
+    {
+      "slug": "membertip2",
+      "routePath": "/membertip2",
+      "title": "Membertip2",
+      "source": "base44/emails/MemberTip2.html"
+    },
+    {
+      "slug": "membertip3",
+      "routePath": "/membertip3",
+      "title": "Membertip3",
+      "source": "base44/emails/MemberTip3.html"
+    },
+    {
+      "slug": "newpostdigest",
+      "routePath": "/newpostdigest",
+      "title": "Newpostdigest",
+      "source": "base44/emails/NewPostDigest.html"
+    },
+    {
+      "slug": "index",
+      "routePath": "/",
+      "title": "Index",
+      "source": "index.html"
+    },
+    {
+      "slug": "offline",
+      "routePath": "/offline",
+      "title": "Offline",
+      "source": "public/offline.html"
+    },
+    {
+      "slug": "mcp-usage",
+      "routePath": "/mcp-usage",
+      "title": "Mcp Usage",
+      "source": "src/docs/MCP_USAGE.md"
+    }
+  ]
+}
