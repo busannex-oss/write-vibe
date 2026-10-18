@@ -85,6 +85,84 @@
     "notes": {
       "type": "string",
       "description": "Additional notes"
+    },
+    "version_history": {
+      "type": "array",
+      "description": "Snapshots of earlier versions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "saved_at": {
+            "type": "string"
+          },
+          "saved_by": {
+            "type": "string"
+          },
+          "change_note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "review_history": {
+      "type": "array",
+      "description": "Review decisions: accept, reject, refine, assign",
+      "items": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "reject",
+              "refine",
+              "assign"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "by": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          },
+          "assignee": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

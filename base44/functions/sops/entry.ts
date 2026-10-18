@@ -1,5 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
+const snapshot = (s: any, user: any, note?: string) => ({
+  version: s.version || 1, title: s.title, purpose: s.purpose, scope: s.scope, trigger: s.trigger,
+  steps: s.steps || [], notes: s.notes, status: s.status,
+  saved_at: new Date().toISOString(), saved_by: user.full_name || user.email, change_note: note || ''
+});
+
 const PILLARS = ["Authenticity", "Creativity", "Empowerment", "Innovation", "Community", "Excellence", "Integrity", "Growth"];
 
 Deno.serve(async (req) => {
@@ -81,14 +87,62 @@ Deno.serve(async (req) => {
       const { id, ...fields } = body;
       if (!id) return Response.json({ error: 'id required' }, { status: 400 });
 
-      // Bump version if content changed
+      // Snapshot the current version into history, then bump version if content changed
       if (fields.steps || fields.purpose || fields.scope) {
-        const all = await base44.asServiceRole.entities.SOP.list();
-        const current = all.find(s => s.id === id);
-        if (current) fields.version = (current.version || 1) + 1;
+        const current = await base44.asServiceRole.entities.SOP.get(id);
+        if (current) {
+          fields.version = (current.version || 1) + 1;
+          fields.version_history = [...(current.version_history || []), snapshot(current, user, fields.change_note)];
+          fields.status = fields.status === 'active' ? 'under_review' : (fields.status || 'under_review');
+        }
       }
+      delete fields.change_note;
 
       const updated = await base44.asServiceRole.entities.SOP.update(id, fields);
+      return Response.json({ success: true, sop: updated });
+    }
+
+    // ── REVIEW — accept / reject / refine / assign ──────────────────────────
+    if (action === 'review') {
+      const { id, decision, note, assignee } = body;
+      const current = await base44.asServiceRole.entities.SOP.get(id);
+      if (!current) return Response.json({ error: 'SOP not found' }, { status: 404 });
+      const statusFor = { accept: 'active', reject: 'draft', refine: 'under_review', assign: 'under_review' };
+      const entry = {
+        decision, note: note || '', version: current.version || 1,
+        by: user.full_name || user.email, at: new Date().toISOString(),
+        assignee: assignee ? `${assignee.agent_name}${assignee.department ? ` (${assignee.department})` : ''}` : ''
+      };
+      if (decision === 'refine' || decision === 'assign') {
+        await base44.asServiceRole.entities.AgentTask.create({
+          title: `${decision === 'refine' ? 'Refine' : 'Review'} SOP: ${current.title} (v${current.version || 1})`,
+          instructions: `${note || 'Review this SOP and propose improvements.'}\n\nSOP id: ${id}`,
+          area: 'general', action_type: 'draft', risk: 'low',
+          agent_key: assignee?.agent_key || 'workflow_architect',
+          agent_name: assignee?.agent_name || 'Elena Vasquez',
+          status: 'queued', owner_email: user.email
+        });
+      }
+      const updated = await base44.asServiceRole.entities.SOP.update(id, {
+        status: statusFor[decision],
+        review_history: [...(current.review_history || []), entry]
+      });
+      return Response.json({ success: true, sop: updated });
+    }
+
+    // ── RESTORE — bring back an earlier version as a new version ────────────
+    if (action === 'restore') {
+      const { id, version } = body;
+      const current = await base44.asServiceRole.entities.SOP.get(id);
+      const old = (current.version_history || []).find(v => v.version === version);
+      if (!old) return Response.json({ error: 'Version not found' }, { status: 404 });
+      const updated = await base44.asServiceRole.entities.SOP.update(id, {
+        title: old.title, purpose: old.purpose, scope: old.scope, trigger: old.trigger,
+        steps: old.steps || [], notes: old.notes,
+        version: (current.version || 1) + 1,
+        status: 'under_review',
+        version_history: [...(current.version_history || []), snapshot(current, user, `Before restoring v${version}`)]
+      });
       return Response.json({ success: true, sop: updated });
     }
 

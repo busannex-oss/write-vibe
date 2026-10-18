@@ -7,6 +7,8 @@ import {
   ArrowLeft, Edit3, Download, Bell, CheckCircle2, Tags, User, Calendar, Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SOPReviewPanel from "@/components/sops/SOPReviewPanel";
+import SOPVersionHistory from "@/components/sops/SOPVersionHistory";
 
 const STATUS_COLORS = {
   draft: "bg-slate-500/20 text-slate-400 border-slate-500/30",
@@ -191,6 +193,9 @@ ${sop.notes || 'N/A'}`;
             <CardContent className="pt-0"><p className="text-white/70 text-sm leading-relaxed">{sop.notes}</p></CardContent>
           </Card>
         )}
+
+        <SOPReviewPanel sop={sop} onRefresh={onRefresh} />
+        <SOPVersionHistory sop={sop} onRefresh={onRefresh} />
 
       </div>
     </div>

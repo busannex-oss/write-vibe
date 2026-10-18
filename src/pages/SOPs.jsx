@@ -103,7 +103,7 @@ Generate Standard Operating Procedures covering the platform's key operations: b
     return <SOPEditor sop={selectedSop} categories={categories} onSaved={handleSaved} onCancel={() => setView("list")} />;
   }
   if (view === "detail") {
-    return <SOPDetail sop={selectedSop} categories={categories} onEdit={() => handleEdit(selectedSop)} onBack={() => setView("list")} onRefresh={load} />;
+    return <SOPDetail sop={selectedSop} categories={categories} onEdit={() => handleEdit(selectedSop)} onBack={() => setView("list")} onRefresh={async () => { setSelectedSop(await base44.entities.SOP.get(selectedSop.id)); load(); }} />;
   }
 
   return (

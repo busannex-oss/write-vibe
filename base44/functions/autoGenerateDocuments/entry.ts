@@ -116,78 +116,7 @@ Deno.serve(async (req) => {
     });
     results.business_plan = { version: bpVersion, status: 'generated' };
 
-    // ── 5. SOPs ────────────────────────────────────────────────────────────
-    // Archive previous auto-generated SOPs (preserved as history), then generate a fresh set.
-    const existingSops = await base44.asServiceRole.entities.SOP.filter({ auto_generated: true });
-    for (const s of existingSops) {
-      if (s.status !== 'archived') {
-        await base44.asServiceRole.entities.SOP.update(s.id, { status: 'archived' });
-      }
-    }
-
-    const sopSchema = {
-      type: 'object',
-      properties: {
-        sops: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              title: { type: 'string' },
-              purpose: { type: 'string' },
-              scope: { type: 'string' },
-              trigger: { type: 'string' },
-              pillar_alignment: { type: 'array', items: { type: 'string' } },
-              notes: { type: 'string' },
-              steps: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    step_number: { type: 'number' },
-                    step_name: { type: 'string' },
-                    instruction: { type: 'string' },
-                    responsible_role: { type: 'string' }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-    const sopResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `Based on this platform context, generate 6-8 Standard Operating Procedures covering Write Vibe's key operations: book creation workflow, AI agent orchestration, manuscript generation & editing, cover design, publishing & distribution, marketing campaigns, team collaboration, quality assurance, member onboarding, and advisory board reviews. Each SOP needs purpose, scope, trigger, pillar_alignment, 4-6 steps (step_number, step_name, instruction, responsible_role), and notes. ${contextBlock}`,
-      response_json_schema: sopSchema
-    });
-    const sops = (sopResult && sopResult.sops) || [];
-    const reviewDate = new Date();
-    reviewDate.setMonth(reviewDate.getMonth() + 6);
-    const reviewDateStr = reviewDate.toISOString().split('T')[0];
-
-    for (const sop of sops) {
-      await base44.asServiceRole.entities.SOP.create({
-        title: sop.title,
-        purpose: sop.purpose,
-        scope: sop.scope,
-        trigger: sop.trigger,
-        pillar_alignment: sop.pillar_alignment || [],
-        steps: (sop.steps || []).map((st, i) => ({
-          step_number: st.step_number || i + 1,
-          step_name: st.step_name,
-          instruction: st.instruction,
-          responsible_role: st.responsible_role
-        })),
-        notes: sop.notes,
-        owner: 'AI Auto-Generated',
-        status: 'draft',
-        version: 1,
-        auto_generated: true,
-        review_date: reviewDateStr,
-        category_ids: []
-      });
-    }
-    results.sops = { count: sops.length, status: 'generated' };
+    // SOPs are no longer regenerated monthly — they are versioned and reviewed in place.
 
     results.generated_at = dateStr;
     return Response.json({ success: true, results });
