@@ -73,7 +73,8 @@ Deno.serve(async (req) => {
         title, purpose, scope,
         pillar_alignment: pillar_alignment || [],
         trigger, owner, review_date,
-        status: status || 'draft',
+        status: 'under_review',
+        review_stage: 'pending_board',
         version: 1,
         category_ids: category_ids || [],
         steps: steps || [],
@@ -93,7 +94,10 @@ Deno.serve(async (req) => {
         if (current) {
           fields.version = (current.version || 1) + 1;
           fields.version_history = [...(current.version_history || []), snapshot(current, user, fields.change_note)];
-          fields.status = fields.status === 'active' ? 'under_review' : (fields.status || 'under_review');
+          fields.status = 'under_review';
+          fields.review_stage = 'pending_board';
+          fields.board_votes = [];
+          fields.final_votes = [];
         }
       }
       delete fields.change_note;
@@ -125,6 +129,7 @@ Deno.serve(async (req) => {
       }
       const updated = await base44.asServiceRole.entities.SOP.update(id, {
         status: statusFor[decision],
+        review_stage: decision === 'accept' || decision === 'reject' ? 'decided' : 'refining',
         review_history: [...(current.review_history || []), entry]
       });
       return Response.json({ success: true, sop: updated });
@@ -141,6 +146,7 @@ Deno.serve(async (req) => {
         steps: old.steps || [], notes: old.notes,
         version: (current.version || 1) + 1,
         status: 'under_review',
+        review_stage: 'pending_board', board_votes: [], final_votes: [],
         version_history: [...(current.version_history || []), snapshot(current, user, `Before restoring v${version}`)]
       });
       return Response.json({ success: true, sop: updated });

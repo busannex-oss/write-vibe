@@ -86,6 +86,75 @@
       "type": "string",
       "description": "Additional notes"
     },
+    "review_stage": {
+      "type": "string",
+      "enum": [
+        "pending_board",
+        "in_review",
+        "awaiting_founder",
+        "refining",
+        "decided"
+      ],
+      "description": "Where the SOP is in the Advisory Board review"
+    },
+    "board_votes": {
+      "type": "array",
+      "description": "Advisory Board member votes on the current version",
+      "items": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "final_votes": {
+      "type": "array",
+      "description": "Final votes by Alexandar Sterling and Rose McLaurin",
+      "items": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "minutes_id": {
+      "type": "string",
+      "description": "Minutes of the latest review"
+    },
     "version_history": {
       "type": "array",
       "description": "Snapshots of earlier versions",
@@ -133,7 +202,7 @@
     },
     "review_history": {
       "type": "array",
-      "description": "Review decisions: accept, reject, refine, assign",
+      "description": "Review decisions: accept, reject, refine, assign, or split",
       "items": {
         "type": "object",
         "properties": {
@@ -143,7 +212,8 @@
               "accept",
               "reject",
               "refine",
-              "assign"
+              "assign",
+              "split"
             ]
           },
           "note": {
