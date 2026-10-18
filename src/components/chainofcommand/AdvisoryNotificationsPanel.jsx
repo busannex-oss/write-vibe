@@ -4,6 +4,7 @@ import { Bell, BookOpen, CheckCircle2, X, ChevronDown, ChevronUp } from "lucide-
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { PRIORITY_STYLES } from "./advisoryConstants";
+import ReviewDecisionBar from "@/components/review/ReviewDecisionBar";
 
 export default function AdvisoryNotificationsPanel() {
   const [notifications, setNotifications] = useState([]);
@@ -25,6 +26,20 @@ export default function AdvisoryNotificationsPanel() {
   const updateStatus = async (id, status, extra = {}) => {
     await base44.entities.AdvisoryNotification.update(id, { status, ...extra });
     setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const decide = async (n, decision, { note, assignee }) => {
+    const reviewed_at = new Date().toISOString();
+    if (decision === "reject") return updateStatus(n.id, "dismissed", { review_notes: note, reviewed_at });
+    if (decision === "accept") return updateStatus(n.id, "reviewed", { review_notes: note, reviewed_at });
+    const a = assignee || { agent_key: "outline_generator", agent_name: "Olivia Rodriguez" };
+    await base44.entities.AgentTask.create({
+      title: `${decision === "refine" ? "Refine" : "Review"}: ${n.book_title} · Ch.${n.chapter_number}`,
+      instructions: [n.reason, n.milestone_title && `Milestone: ${n.milestone_title}`, note].filter(Boolean).join("\n\n"),
+      area: "writing", action_type: "analyze", risk: "low", status: "queued",
+      book_id: n.book_id, agent_key: a.agent_key, agent_name: a.agent_name
+    });
+    await updateStatus(n.id, "reviewed", { review_notes: `${decision === "refine" ? "Refinement requested" : `Assigned to ${a.agent_name}`}${note ? `: ${note}` : ""}`, reviewed_at });
   };
 
   return (
@@ -93,11 +108,7 @@ export default function AdvisoryNotificationsPanel() {
                     {n.reason && (
                       <p className="text-xs leading-relaxed" style={{ color: p.text + "cc" }}>{n.reason}</p>
                     )}
-                    <Button size="sm"
-                      onClick={() => updateStatus(n.id, "reviewed", { reviewed_at: new Date().toISOString() })}
-                      className="h-7 text-xs gap-1 bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30">
-                      <CheckCircle2 className="w-3 h-3" /> Mark Reviewed
-                    </Button>
+                    <ReviewDecisionBar onDecide={(d, opts) => decide(n, d, opts)} />
                   </motion.div>
                 );
               })}

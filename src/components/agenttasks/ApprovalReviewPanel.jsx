@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Gavel, Check, X, FileText } from "lucide-react";
 import AgentNameLink from "@/components/agents/AgentNameLink";
+import ReviewDecisionBar from "@/components/review/ReviewDecisionBar";
+import { logEvent } from "@/lib/agentTasks";
 
 const DECISION_STYLES = {
   accept: "text-emerald-300", reject: "text-red-300", refine: "text-amber-300",
@@ -19,6 +21,20 @@ export default function ApprovalReviewPanel({ task, isAdmin, onDone }) {
     setBusy(decision || action);
     await base44.functions.invoke("reviewAgentTask", { action, taskId: task.id, decision, note });
     setBusy(null);
+    onDone();
+  };
+
+  const decide = async (decision, { note: n, assignee }) => {
+    if (decision === "accept" || decision === "reject") {
+      await base44.functions.invoke("reviewAgentTask", { action: "decide", taskId: task.id, decision: decision === "accept" ? "approve" : "reject", note: n });
+    } else {
+      const event = decision === "refine" ? `Refinement requested: ${n}` : `Assigned to ${assignee.agent_name} (${assignee.department})`;
+      await base44.entities.AgentTask.update(task.id, {
+        status: "queued", output: "", reviews: [], consensus: "",
+        ...(decision === "refine" ? { instructions: `${task.instructions || ""}\n\nRefinement: ${n}`.trim() } : { agent_key: assignee.agent_key, agent_name: assignee.agent_name, ...(n ? { instructions: `${task.instructions || ""}\n\n${n}`.trim() } : {}) }),
+        history: logEvent(task, event, "Founder")
+      });
+    }
     onDone();
   };
 
@@ -41,17 +57,7 @@ export default function ApprovalReviewPanel({ task, isAdmin, onDone }) {
           {task.consensus === "split" ? "Reviewers split — your call." : <><FileText className="w-3 h-3 text-emerald-300" />Agreement reached ({task.consensus}). Minutes recorded.</>}
         </p>
       )}
-      {isAdmin && reviews.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Admin note (optional)" className="h-7 text-xs flex-1 min-w-[160px]" />
-          <Button size="sm" disabled={!!busy} onClick={() => call("decide", "approve")} className="h-7 text-xs bg-emerald-600 hover:bg-emerald-500 text-white">
-            {busy === "approve" ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Check className="w-3 h-3 mr-1" />}Approve
-          </Button>
-          <Button size="sm" disabled={!!busy} onClick={() => call("decide", "reject")} className="h-7 text-xs bg-red-600 hover:bg-red-500 text-white">
-            {busy === "reject" ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <X className="w-3 h-3 mr-1" />}Reject
-          </Button>
-        </div>
-      )}
+      {isAdmin && task.status === "awaiting_approval" && <ReviewDecisionBar onDecide={decide} />}
     </div>
   );
 }
