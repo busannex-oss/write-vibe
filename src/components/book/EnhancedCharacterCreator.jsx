@@ -361,6 +361,16 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                       <div className="flex gap-2">
                         <Button
                           size="sm"
+                          onClick={saveCharacters}
+                          disabled={isUpdating}
+                          className="bg-amber-500 hover:bg-amber-600 text-slate-950 border-0"
+                          title="Save character"
+                        >
+                          {isUpdating ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Save className="w-3 h-3 mr-1" />}
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => setSaveTemplateFor(index)}
                           disabled={!char.name}
