@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Sparkles, Upload, Download, RefreshCw, Check, Loader2, Image } from "lucide-react";
 import { motion } from "framer-motion";
 import BrandOverlayControls from "./BrandOverlayControls";
+import AuthorBrandLogoCard from "./AuthorBrandLogoCard";
 
 export default function BookLogoGenerator({ book, user, onUpdate }) {
   const [generating, setGenerating] = useState(false);
@@ -296,6 +297,8 @@ export default function BookLogoGenerator({ book, user, onUpdate }) {
       </Card>
 
       {/* Overlay placement on the cover */}
+      <AuthorBrandLogoCard user={user} book={book} onUpdate={onUpdate} />
+
       {uploadedLogo && <BrandOverlayControls book={book} user={user} onUpdate={onUpdate} />}
 
       {/* Preview */}
