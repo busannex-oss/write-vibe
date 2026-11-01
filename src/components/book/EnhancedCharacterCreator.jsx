@@ -4,6 +4,8 @@ import CharacterProfileFields from "@/components/book/CharacterProfileFields";
 import { IMAGE_STYLES, buildIdentityContext, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
 import CharacterPhotoSet from "@/components/book/CharacterPhotoSet";
 import CharacterPrintButton from "@/components/book/CharacterPrintButton";
+import CharacterIdentityFields from "@/components/book/CharacterIdentityFields";
+import { generatePhotoSet } from "@/lib/characterPhotoSet";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -120,6 +122,7 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
 
   const generateCharacter = async (index) => {
     setGenerating(true);
+    const cur = characters[index];
     try {
       const response = await ai.InvokeLLM({
         prompt: `Create a detailed character for a ${book.category} book titled "${book.title}".
@@ -128,15 +131,21 @@ Target Audience: ${book.target_audience?.age_range}
 Themes: ${book.subjects?.join(', ')}
 Plot Summary: ${book.plot_summary}
 
-Generate a compelling character with:
+${["name", "age", "gender", "role"].filter((k) => cur[k]).map((k) => `Keep the author's chosen ${k}: ${cur[k]}`).join("\n")}
+
+Fill in EVERY field:
 - Name (appropriate for the genre and setting)
 - Role (protagonist, antagonist, supporting, mentor, etc.)
-- Age (specific age or age range)
-- Gender
+- Age (a single whole number, e.g. 34)
+- Gender (one of: ${GENDER_OPTIONS.join(", ")})
+- Sexual orientation
+- Occupation (their specific job)
+- Hobbies (2-3 specific hobbies)
+- Education, Skills, Special training
 - Description (personality, motivations, conflicts)
 - Backstory (brief but impactful)
 - Traits (3-5 personality traits)
-- Appearance (detailed physical description)
+- Appearance (detailed physical description: face, hair, eyes, skin tone, build, height, distinguishing marks)
 
 Make the character memorable, complex, and appropriate for the target audience.`,
         response_json_schema: {
@@ -145,23 +154,33 @@ Make the character memorable, complex, and appropriate for the target audience.`
             name: { type: "string" },
             role: { type: "string" },
             age: { type: "string" },
-            gender: { type: "string" },
+            gender: { type: "string", enum: GENDER_OPTIONS },
+            sexual_orientation: { type: "string" },
+            occupation: { type: "string" },
+            hobbies: { type: "string" },
+            education: { type: "string" },
+            skills: { type: "string" },
+            special_training: { type: "string" },
             description: { type: "string" },
             backstory: { type: "string" },
             traits: { type: "array", items: { type: "string" } },
             appearance: { type: "string" }
-          }
+          },
+          required: ["name", "role", "age", "gender", "sexual_orientation", "occupation", "hobbies", "education", "skills", "special_training", "description", "backstory", "traits", "appearance"]
         }
       });
 
-      const updated = [...characters];
-      updated[index] = { ...updated[index], ...response, image_url: updated[index].image_url, images: updated[index].images };
-      setCharacters(updated);
+      const filled = { ...cur, ...response, images: cur.images, image_url: cur.image_url };
+      patchCharacter(index, filled);
+      setGenerating(false);
+      setGeneratingImage(index);
+      patchCharacter(index, await generatePhotoSet(filled, book));
     } catch (error) {
       console.error("Error generating character:", error);
       alert("Failed to generate character");
     }
     setGenerating(false);
+    setGeneratingImage(null);
   };
 
   const regenerateCharacter = async (index) => {
@@ -453,7 +472,7 @@ Create an enhanced version with more depth, better backstory, and compelling tra
                           </p>
                         )}
 
-                        <CharacterPhotoSet char={char} book={book} onPatch={(p) => patchCharacter(index, p)} />
+                        <CharacterPhotoSet char={char} book={book} onPatch={(p) => patchCharacter(index, p)} generatingAll={generatingImage === index} />
 
                         {/* Upload + Generate */}
                         <div className="flex flex-wrap gap-2">
@@ -501,56 +520,7 @@ Create an enhanced version with more depth, better backstory, and compelling tra
 
                       {/* RIGHT — Comprehensive details */}
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label className="text-white/70">Name</Label>
-                            <Input
-                              value={char.name}
-                              onChange={(e) => updateCharacter(index, 'name', e.target.value)}
-                              placeholder="Character name"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-white/70">Role</Label>
-                            <Input
-                              value={char.role}
-                              onChange={(e) => updateCharacter(index, 'role', e.target.value)}
-                              placeholder="e.g., Protagonist, Antagonist"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label className="text-white/70">Age</Label>
-                            <Input
-                              type="number"
-                              min="0"
-                              value={char.age || ""}
-                              onChange={(e) => updateCharacter(index, 'age', e.target.value)}
-                              placeholder="e.g., 28"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-white/70">Gender</Label>
-                            <Select
-                              value={char.gender || undefined}
-                              onValueChange={(v) => updateCharacter(index, 'gender', v)}
-                            >
-                              <SelectTrigger className="bg-white/5 border-white/20 text-white">
-                                <SelectValue placeholder="Select gender" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {GENDER_OPTIONS.map((g) => (
-                                  <SelectItem key={g} value={g}>{g}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                        <CharacterIdentityFields char={char} genderOptions={GENDER_OPTIONS} onChange={(field, value) => updateCharacter(index, field, value)} />
 
                         <div>
                           <Label className="text-white/70">Description</Label>

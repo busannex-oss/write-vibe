@@ -1,35 +1,20 @@
 import React, { useState } from "react";
-import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Loader2, Camera, Lock, RefreshCw } from "lucide-react";
-import { PHOTO_SET, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
+import { PHOTO_SET } from "@/components/book/characterImageStyles";
+import { generatePhotoSet } from "@/lib/characterPhotoSet";
 
 // Headshot, full body, professional and casual photos — all the same locked identity.
-export default function CharacterPhotoSet({ char, book, onPatch }) {
-  const [busy, setBusy] = useState(null);
+export default function CharacterPhotoSet({ char, book, onPatch, generatingAll }) {
+  const [localBusy, setBusy] = useState(null);
+  const busy = generatingAll ? "all" : localBusy;
   const set = char.photo_set || {};
-
-  const gen = (shot, ref) =>
-    ai.GenerateImage({
-      ...(ref ? { existing_image_urls: [ref] } : {}),
-      prompt: buildCharacterImagePrompt(char, book, shot.prompt(char), !!ref),
-    }).then((r) => r.url);
 
   const run = async (keys) => {
     if (!char.appearance && !char.description) return alert("Please add appearance or description first");
     setBusy(keys.length > 1 ? "all" : keys[0]);
     try {
-      let identity = char.identity_image_url;
-      const next = { ...set };
-      if (!identity) {
-        identity = await gen(PHOTO_SET[0], null); // headshot becomes the locked identity
-        next.headshot = identity;
-        keys = keys.filter((k) => k !== "headshot");
-      }
-      const shots = PHOTO_SET.filter((s) => keys.includes(s.key));
-      const urls = await Promise.all(shots.map((s) => gen(s, identity)));
-      shots.forEach((s, i) => (next[s.key] = urls[i]));
-      onPatch({ identity_image_url: identity, photo_set: next, images: [...new Set([...Object.values(next), ...(char.images || [])])] });
+      onPatch(await generatePhotoSet(char, book, keys));
     } catch (e) {
       alert("Failed to generate photos: " + e.message);
     }
