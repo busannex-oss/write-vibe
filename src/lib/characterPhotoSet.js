@@ -13,8 +13,11 @@ export async function generatePhotoSet(char, book, keys = PHOTO_SET.map((s) => s
   let identity = char.identity_image_url;
   const next = { ...(char.photo_set || {}) };
   // The locked identity image can never be regenerated.
-  if (identity) keys = keys.filter((k) => next[k] !== identity);
-  if (!identity) {
+  // When locked, the headshot slot IS the locked image and is never generated.
+  if (identity) {
+    next.headshot = identity;
+    keys = keys.filter((k) => k !== "headshot" && next[k] !== identity);
+  } else {
     identity = await gen(PHOTO_SET[0], null); // headshot becomes the locked identity
     next.headshot = identity;
     keys = keys.filter((k) => k !== "headshot");
@@ -22,6 +25,6 @@ export async function generatePhotoSet(char, book, keys = PHOTO_SET.map((s) => s
   const shots = PHOTO_SET.filter((s) => keys.includes(s.key));
   const urls = await Promise.all(shots.map((s) => gen(s, identity)));
   shots.forEach((s, i) => (next[s.key] = urls[i]));
-  const images = [...new Set([...Object.values(next), ...(char.images || [])])];
+  const images = [...new Set([identity, ...Object.values(next), ...(char.images || [])])].filter(Boolean);
   return { identity_image_url: identity, photo_set: next, images, image_url: images[0] };
 }

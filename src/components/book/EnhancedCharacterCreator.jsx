@@ -265,7 +265,10 @@ Create an enhanced version with more depth, better backstory, and compelling tra
       });
 
       const existing = getImages(characters[index]);
-      setCharacterImages(index, [response.url, ...existing]);
+      // Locked image always stays first (the main portrait); new pictures go after it.
+      setCharacterImages(index, locked
+        ? [locked, response.url, ...existing.filter((u) => u !== locked)]
+        : [response.url, ...existing]);
     } catch (error) {
       console.error("Error generating image:", error);
       alert("Failed to generate character image");
