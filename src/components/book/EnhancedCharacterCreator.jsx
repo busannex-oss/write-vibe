@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Sparkles, Loader2, Plus, Trash2, RefreshCw, Save, User, Image as ImageIcon, Upload, X, Bookmark, Library } from "lucide-react";
+import { Sparkles, Loader2, Plus, Trash2, RefreshCw, Save, User, Image as ImageIcon, Upload, X, Bookmark, Library, Lock, Unlock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIGenerateButton from "@/components/AIGenerateButton";
 import SaveTemplateDialog from "@/components/templates/SaveTemplateDialog";
@@ -92,8 +92,20 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
     setCharacterImages(index, imgs);
   };
 
+  const toggleIdentityLock = (index, img) => {
+    const current = characters[index].identity_image_url;
+    if (current && current !== img && !confirm("Replace this character's locked identity with this picture?")) return;
+    const updated = [...characters];
+    updated[index] = { ...updated[index], identity_image_url: current === img ? "" : img };
+    setCharacters(updated);
+  };
+
   const removeImage = (index, imgIndex) => {
     const imgs = [...getImages(characters[index])];
+    if (imgs[imgIndex] === characters[index].identity_image_url) {
+      alert("This picture is the character's locked identity. Unlock it before removing.");
+      return;
+    }
     imgs.splice(imgIndex, 1);
     setCharacterImages(index, imgs);
   };
@@ -198,8 +210,13 @@ Create an enhanced version with more depth, better backstory, and compelling tra
 
     setGeneratingImage(index);
     try {
+      const locked = char.identity_image_url;
+      const identityRule = locked
+        ? `\n\nIDENTITY LOCK (mandatory): The attached reference image is this character's permanent physical identity. Reproduce the exact same person: identical face, facial features, skin tone, eye color, hair color and style, body type, height, age, and any distinguishing marks. Do NOT alter the identity in any way. ONLY the clothing/outfit may change.`
+        : "";
       const response = await ai.GenerateImage({
-        prompt: `Professional character portrait for a ${book.category} book:
+        ...(locked ? { existing_image_urls: [locked] } : {}),
+        prompt: `Professional character portrait for a ${book.category} book:${identityRule}
 
 Character: ${char.name}
 Role: ${char.role}
@@ -411,9 +428,21 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                                 >
                                   <X className="w-3 h-3" />
                                 </button>
+                                <button
+                                  onClick={() => toggleIdentityLock(index, img)}
+                                  className={`absolute bottom-0.5 left-0.5 w-5 h-5 rounded-full flex items-center justify-center transition-colors ${char.identity_image_url === img ? "bg-amber-500 text-slate-950" : "bg-black/70 text-white hover:bg-amber-500/80"}`}
+                                  title={char.identity_image_url === img ? "Locked identity — click to unlock" : "Lock as permanent identity"}
+                                >
+                                  {char.identity_image_url === img ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                                </button>
                               </div>
                             ))}
                           </div>
+                        )}
+                        {char.identity_image_url && (
+                          <p className="text-xs text-amber-300/80 flex items-center gap-1">
+                            <Lock className="w-3 h-3" /> Identity locked: new portraits keep this exact person, only clothing changes.
+                          </p>
                         )}
 
                         {/* Upload + Generate */}

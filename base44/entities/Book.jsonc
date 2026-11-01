@@ -160,6 +160,12 @@
           "role": {
             "type": "string"
           },
+          "age": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           },
@@ -177,6 +183,16 @@
           },
           "image_url": {
             "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "identity_image_url": {
+            "type": "string",
+            "description": "Locked reference portrait: the character's permanent physical identity. Regenerations may change clothing only."
           }
         }
       }
