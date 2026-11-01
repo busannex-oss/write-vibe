@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import CharacterProfileFields from "@/components/book/CharacterProfileFields";
-import { IMAGE_STYLES, buildIdentityContext } from "@/components/book/characterImageStyles";
+import { IMAGE_STYLES, buildIdentityContext, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
+import CharacterPhotoSet from "@/components/book/CharacterPhotoSet";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -50,6 +51,9 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
     updated[index] = { ...updated[index], [field]: value };
     setCharacters(updated);
   };
+
+  const patchCharacter = (index, patch) =>
+    setCharacters((prev) => prev.map((c, i) => (i === index ? { ...c, ...patch } : c)));
 
   const deleteCharacter = (index) => {
     if (confirm("Delete this character?")) {
@@ -214,25 +218,9 @@ Create an enhanced version with more depth, better backstory, and compelling tra
     setGeneratingImage(index);
     try {
       const locked = char.identity_image_url;
-      const identityRule = locked
-        ? `\n\nIDENTITY LOCK (mandatory): The attached reference image is this character's permanent physical identity. Reproduce the exact same person: identical face, facial features, skin tone, eye color, hair color and style, body type, height, age, and any distinguishing marks. Do NOT alter the identity in any way. ONLY the clothing/outfit may change.`
-        : "";
       const response = await ai.GenerateImage({
         ...(locked ? { existing_image_urls: [locked] } : {}),
-        prompt: `Professional character image for a ${book.category} book:${identityRule}
-
-Shot type: ${IMAGE_STYLES[imageStyle[index] || "portrait"].prompt}
-${buildIdentityContext(char)}
-Represent the character's identity respectfully and authentically, without stereotypes or caricature.
-
-Character: ${char.name}
-Role: ${char.role}
-Age: ${char.age || "unspecified"}
-Gender: ${char.gender || "unspecified"}
-Appearance: ${char.appearance || char.description}
-Traits: ${char.traits?.join(', ')}
-
-Style: Professional book illustration, detailed character portrait, appropriate for ${book.target_audience?.age_range} audience, high quality, book cover quality.`,
+        prompt: buildCharacterImagePrompt(char, book, IMAGE_STYLES[imageStyle[index] || "portrait"].prompt, !!locked),
       });
 
       const existing = getImages(characters[index]);
@@ -461,6 +449,8 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                             <Lock className="w-3 h-3" /> Identity locked: new portraits keep this exact person, only clothing changes.
                           </p>
                         )}
+
+                        <CharacterPhotoSet char={char} book={book} onPatch={(p) => patchCharacter(index, p)} />
 
                         {/* Upload + Generate */}
                         <div className="flex flex-wrap gap-2">

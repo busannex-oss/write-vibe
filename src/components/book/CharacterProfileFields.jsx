@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const FIELDS = [
+  { key: "occupation", label: "Occupation / Job", placeholder: "e.g. trauma surgeon, detective, barista..." },
+  { key: "hobbies", label: "Hobbies", placeholder: "e.g. rock climbing, painting, chess..." },
   { key: "education", label: "Education", placeholder: "Schools, degrees, self-taught knowledge..." },
   { key: "skills", label: "Skills", placeholder: "What they're good at..." },
   { key: "special_training", label: "Special Training", placeholder: "Military, martial arts, magic, medical, etc..." },

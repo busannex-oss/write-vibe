@@ -175,6 +175,12 @@
           "backstory": {
             "type": "string"
           },
+          "occupation": {
+            "type": "string"
+          },
+          "hobbies": {
+            "type": "string"
+          },
           "education": {
             "type": "string"
           },
@@ -205,6 +211,24 @@
           "identity_image_url": {
             "type": "string",
             "description": "Locked reference portrait: the character's permanent physical identity. Regenerations may change clothing only."
+          },
+          "photo_set": {
+            "type": "object",
+            "description": "Required identity-locked photos",
+            "properties": {
+              "headshot": {
+                "type": "string"
+              },
+              "full_body": {
+                "type": "string"
+              },
+              "professional": {
+                "type": "string"
+              },
+              "casual": {
+                "type": "string"
+              }
+            }
           }
         }
       }

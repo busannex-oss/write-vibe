@@ -8,10 +8,20 @@ export const IMAGE_STYLES = {
   emotional: { label: "Emotional Moment", prompt: "Expressive close-up capturing a defining emotion tied to their backstory." },
 };
 
+// The four required photos every character gets.
+export const PHOTO_SET = [
+  { key: "headshot", label: "Headshot", prompt: () => "Professional close-up headshot, head and shoulders, plain softly lit studio background, looking at camera." },
+  { key: "full_body", label: "Full Body", prompt: () => "Full-body photo from head to toe, standing naturally, showing physique, posture and complete outfit." },
+  { key: "professional", label: "Professional", prompt: (c) => `Professional portrait at work as ${c.occupation || "their profession"}, in a realistic workplace with attire and tools of that job.` },
+  { key: "casual", label: "Casual / Hobby", prompt: (c) => `Relaxed candid casual photo enjoying their hobby: ${c.hobbies || "a favorite pastime"}, casual clothing, natural setting.` },
+];
+
 export const buildIdentityContext = (char) =>
   [
     ["Gender identity", char.gender],
     ["Sexual orientation", char.sexual_orientation],
+    ["Occupation", char.occupation],
+    ["Hobbies", char.hobbies],
     ["Education", char.education],
     ["Skills", char.skills],
     ["Special training", char.special_training],
@@ -20,3 +30,20 @@ export const buildIdentityContext = (char) =>
     .filter(([, v]) => v)
     .map(([k, v]) => `${k}: ${v}`)
     .join("\n");
+
+export const IDENTITY_LOCK_RULE = `IDENTITY LOCK (mandatory): The attached reference image is this character's permanent physical identity. Reproduce the exact same person: identical face, facial features, skin tone, eye color, hair color and style, body type, height, age, and any distinguishing marks. Do NOT alter the identity in any way. ONLY the clothing, pose and setting may change.`;
+
+export const buildCharacterImagePrompt = (char, book, shotPrompt, locked) => `Professional character image for a ${book.category} book:${locked ? `\n\n${IDENTITY_LOCK_RULE}` : ""}
+
+Shot type: ${shotPrompt}
+${buildIdentityContext(char)}
+Represent the character's identity respectfully and authentically, without stereotypes or caricature.
+
+Character: ${char.name}
+Role: ${char.role}
+Age: ${char.age || "unspecified"}
+Gender: ${char.gender || "unspecified"}
+Appearance: ${char.appearance || char.description}
+Traits: ${char.traits?.join(", ")}
+
+Style: Photorealistic, high quality, consistent character, appropriate for ${book.target_audience?.age_range || "general"} audience.`;
