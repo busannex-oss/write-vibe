@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     }
     const pending = body.id
       ? [await svc.entities.SOP.get(body.id)]
-      : (await svc.entities.SOP.filter({ review_stage: 'pending_board' }, { sort: 'updated_date', limit: 3 })).items;
+      : (await svc.entities.SOP.filter({ review_stage: 'pending_board' }, 'updated_date', 3));
 
     const results = [];
     for (const sop of pending) {

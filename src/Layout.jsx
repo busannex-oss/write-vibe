@@ -101,6 +101,7 @@ export default function Layout({ children, currentPageName }) {
           { name: "Blog Calendar", href: "BlogCalendar", icon: CalendarDays },
         ]},
         // AI Agents — agent monitoring and tools
+        { name: "Agent Control Center", href: "AgentControlCenter", icon: Gauge, category: "AI Agents" },
         { name: "Operations Agents", href: "OperationsAgents", icon: Workflow, category: "AI Agents" },
         { name: "Chain of Command", href: "ChainOfCommand", icon: Network, category: "AI Agents" },
         { name: "Agent Memory", href: "AgentMemoryLog", icon: Brain, category: "AI Agents" },
