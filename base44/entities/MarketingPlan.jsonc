@@ -1,0 +1,125 @@
+{
+  "name": "MarketingPlan",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string"
+    },
+    "positioning": {
+      "type": "string"
+    },
+    "audience_summary": {
+      "type": "string"
+    },
+    "budget_split": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "percent": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          },
+          "tactics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cadence": {
+            "type": "string"
+          },
+          "kpi": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "bookstore_tactics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "store": {
+            "type": "string"
+          },
+          "tactics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "first_30_days": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "book_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
