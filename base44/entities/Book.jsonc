@@ -166,10 +166,22 @@
           "gender": {
             "type": "string"
           },
+          "sexual_orientation": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           },
           "backstory": {
+            "type": "string"
+          },
+          "education": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "string"
+          },
+          "special_training": {
             "type": "string"
           },
           "traits": {

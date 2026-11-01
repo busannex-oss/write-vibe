@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import CharacterProfileFields from "@/components/book/CharacterProfileFields";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -560,6 +561,8 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                             rows={2}
                           />
                         </div>
+
+                        <CharacterProfileFields char={char} onChange={(field, value) => updateCharacter(index, field, value)} />
 
                         <div>
                           <Label className="text-white/70">Appearance</Label>
