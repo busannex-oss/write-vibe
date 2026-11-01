@@ -491,7 +491,11 @@ Create an enhanced version with more depth, better backstory, and compelling tra
                           </p>
                         )}
 
-                        <CharacterPhotoSet char={char} book={book} onPatch={(p) => patchCharacter(index, p)} generatingAll={generatingImage === index} />
+                        <CharacterPhotoSet char={char} book={book} onPatch={(p) => {
+                          const updated = characters.map((c, i) => (i === index ? { ...c, ...p, photo_set: { ...(c.photo_set || {}), ...(p.photo_set || {}) } } : c));
+                          setCharacters(updated);
+                          onUpdate({ characters: updated }, true); // save generated photos immediately
+                        }} onLock={(img) => toggleIdentityLock(index, img)} generatingAll={generatingImage === index} />
 
                         {/* Upload + Generate */}
                         <div className="flex flex-wrap gap-2">

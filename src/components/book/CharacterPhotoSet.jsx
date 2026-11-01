@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Camera, Lock, RefreshCw } from "lucide-react";
+import { Loader2, Camera, Lock, Unlock, RefreshCw } from "lucide-react";
 import { PHOTO_SET } from "@/components/book/characterImageStyles";
 import { generatePhotoSet } from "@/lib/characterPhotoSet";
 
 // Headshot, full body, professional and casual photos — all the same locked identity.
-export default function CharacterPhotoSet({ char, book, onPatch, generatingAll }) {
+export default function CharacterPhotoSet({ char, book, onPatch, onLock, generatingAll }) {
   const [localBusy, setBusy] = useState(null);
   const busy = generatingAll ? "all" : localBusy;
   const set = char.photo_set || {};
@@ -38,6 +38,11 @@ export default function CharacterPhotoSet({ char, book, onPatch, generatingAll }
               {busy === s.key || (busy === "all") ? <Loader2 className="w-5 h-5 text-amber-400 animate-spin" />
                 : set[s.key] ? <img src={set[s.key]} alt={`${char.name} ${s.label}`} className="w-full h-full object-cover" />
                 : <Camera className="w-5 h-5 text-white/20" />}
+              {!busy && set[s.key] && (
+                <button onClick={() => onLock(set[s.key])} title={set[s.key] === char.identity_image_url ? "Locked identity — click to unlock" : "Lock as permanent identity"} className={`absolute bottom-1 left-1 w-6 h-6 rounded-full flex items-center justify-center ${set[s.key] === char.identity_image_url ? "bg-amber-500 text-slate-950" : "bg-black/70 text-white hover:bg-amber-500/80"}`}>
+                  {set[s.key] === char.identity_image_url ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                </button>
+              )}
               {!busy && set[s.key] !== char.identity_image_url && (
                 <button onClick={() => run([s.key])} title={`Regenerate ${s.label}`} className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <RefreshCw className="w-3 h-3" />
