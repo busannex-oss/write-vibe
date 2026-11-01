@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import CharacterProfileFields from "@/components/book/CharacterProfileFields";
 import { IMAGE_STYLES, buildIdentityContext, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
 import CharacterPhotoSet from "@/components/book/CharacterPhotoSet";
+import CharacterPrintButton from "@/components/book/CharacterPrintButton";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -383,10 +384,12 @@ Create an enhanced version with more depth, better backstory, and compelling tra
                         >
                           <RefreshCw className={`w-3 h-3 ${generating ? 'animate-spin' : ''}`} />
                         </Button>
+                        <CharacterPrintButton char={char} bookTitle={book.title} />
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => deleteCharacter(index)}
+                          title="Delete character"
                           className="border-red-500/30 text-red-400 hover:bg-red-500/10"
                         >
                           <Trash2 className="w-3 h-3" />
