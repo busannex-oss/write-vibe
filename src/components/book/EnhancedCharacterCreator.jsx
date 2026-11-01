@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import CharacterProfileFields from "@/components/book/CharacterProfileFields";
+import { IMAGE_STYLES, buildIdentityContext } from "@/components/book/characterImageStyles";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,6 +23,7 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
   const [editingIndex, setEditingIndex] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(null);
+  const [imageStyle, setImageStyle] = useState({});
   const [uploading, setUploading] = useState(null);
   const [saveTemplateFor, setSaveTemplateFor] = useState(null);
   const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
@@ -217,7 +219,11 @@ Create an enhanced version with more depth, better backstory, and compelling tra
         : "";
       const response = await ai.GenerateImage({
         ...(locked ? { existing_image_urls: [locked] } : {}),
-        prompt: `Professional character portrait for a ${book.category} book:${identityRule}
+        prompt: `Professional character image for a ${book.category} book:${identityRule}
+
+Shot type: ${IMAGE_STYLES[imageStyle[index] || "portrait"].prompt}
+${buildIdentityContext(char)}
+Represent the character's identity respectfully and authentically, without stereotypes or caricature.
 
 Character: ${char.name}
 Role: ${char.role}
@@ -477,10 +483,23 @@ Style: Professional book illustration, detailed character portrait, appropriate 
                               disabled={uploading === index}
                             />
                           </label>
+                          <Select
+                            value={imageStyle[index] || "portrait"}
+                            onValueChange={(v) => setImageStyle({ ...imageStyle, [index]: v })}
+                          >
+                            <SelectTrigger className="w-44 bg-white/5 border-white/20 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(IMAGE_STYLES).map(([k, s]) => (
+                                <SelectItem key={k} value={k}>{s.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <AIGenerateButton
                             onClick={() => generateCharacterImage(index)}
                             loading={generatingImage === index}
-                            label="Generate Portrait"
+                            label="Generate Image"
                             icon={ImageIcon}
                             variant="outline"
                           />
