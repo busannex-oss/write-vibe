@@ -26,6 +26,7 @@ import ClientJourney from "@/components/landing/ClientJourney";
 import AuthorReadinessAssessment from "@/components/landing/AuthorReadinessAssessment";
 import LandingFAQ from "@/components/landing/LandingFAQ";
 import { useHomepageCopy } from "@/lib/homepageCopy";
+import BrandMark from "@/components/landing/BrandMark";
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&h=800&fit=crop&q=80";
 
@@ -156,9 +157,7 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
+            <BrandMark />
             <span className="font-bold text-lg text-white">Write Vibe</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
@@ -476,9 +475,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
+              <BrandMark small />
               <span className="font-semibold text-white">Write Vibe</span>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/40">

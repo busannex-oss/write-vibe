@@ -1,0 +1,35 @@
+{
+  "name": "BrandAsset",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Asset identifier, e.g. site_logo"
+    },
+    "url": {
+      "type": "string",
+      "description": "Public URL of the brand asset"
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

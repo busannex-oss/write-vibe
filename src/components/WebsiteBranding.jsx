@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Check, Loader2, Settings, Trash2, Edit2, History, RotateCcw } from "lucide-react";
 import LogoEditor from "./LogoEditor";
+import { saveBrandLogo } from "@/lib/brandLogo";
 
 export default function WebsiteBranding({ user, onUpdate }) {
   const [branding, setBranding] = useState({
@@ -55,6 +56,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
       }
       setBranding(prev => ({ ...prev, website_logo_url: logoUrl, logo_versions: newVersions }));
       await base44.auth.updateMe({ website_logo_url: logoUrl, logo_versions: newVersions });
+      if (user?.role === "admin") await saveBrandLogo(logoUrl);
       await processLogoWithLLM(logoUrl);
       setShowLogoEditor(false);
       if (onUpdate) onUpdate();
@@ -74,6 +76,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
       }
       setBranding(prev => ({ ...prev, website_logo_url: versionUrl, logo_versions: newVersions }));
       await base44.auth.updateMe({ website_logo_url: versionUrl, logo_versions: newVersions });
+      if (user?.role === "admin") await saveBrandLogo(versionUrl);
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error("Error restoring logo:", error);
@@ -89,6 +92,7 @@ export default function WebsiteBranding({ user, onUpdate }) {
         website_title: branding.website_title,
         website_tagline: branding.website_tagline
       });
+      if (user?.role === "admin") await saveBrandLogo(branding.website_logo_url || "");
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error("Error saving branding:", error);
