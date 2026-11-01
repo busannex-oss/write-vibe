@@ -1,6 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { withGuard } from '../../shared/guard.ts';
 
-Deno.serve(async (req) => {
+const DAILY_LIMIT = 5;
+
+const handler = async (req: Request) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -12,7 +15,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Music generation is available on paid plans.' }, { status: 403 });
     }
 
+    if (user.role !== 'admin') {
+      const since = new Date(Date.now() - 86400_000).toISOString();
+      const used = await base44.asServiceRole.entities.SystemTrace.count({
+        source: 'generatePromoMusic', user_id: user.id, kind: 'function_call', status: 'ok', created_date: { $gte: since },
+      });
+      if (used >= DAILY_LIMIT) {
+        return Response.json({ error: `Daily music limit reached (${DAILY_LIMIT} tracks per day). Please try again tomorrow.` }, { status: 429 });
+      }
+    }
+
     const { prompt, provider, bookTitle } = await req.json();
+    if (typeof prompt === 'string' && prompt.length > 2000) {
+      return Response.json({ error: 'Music prompt is too long' }, { status: 400 });
+    }
     if (!prompt) {
       return Response.json({ error: 'Missing music prompt' }, { status: 400 });
     }
@@ -81,4 +97,6 @@ Deno.serve(async (req) => {
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-});
+};
+
+Deno.serve(withGuard('generatePromoMusic', 3, handler));
