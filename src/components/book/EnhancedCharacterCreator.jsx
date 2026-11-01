@@ -108,6 +108,7 @@ export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating })
     const updated = [...characters];
     updated[index] = { ...updated[index], identity_image_url: current === img ? "" : img };
     setCharacters(updated);
+    onUpdate({ characters: updated }, true); // persist the lock immediately
   };
 
   const removeImage = (index, imgIndex) => {

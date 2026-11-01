@@ -14,6 +14,7 @@ export default function CharacterPhotoSet({ char, book, onPatch, generatingAll }
     if (!char.appearance && !char.description) return alert("Please add appearance or description first");
     setBusy(keys.length > 1 ? "all" : keys[0]);
     try {
+      if (!char.identity_image_url && !confirm("No locked identity image yet. Lock a portrait first (padlock icon on a picture), or continue to create a new identity?")) return setBusy(null);
       onPatch(await generatePhotoSet(char, book, keys));
     } catch (e) {
       alert("Failed to generate photos: " + e.message);
