@@ -238,7 +238,9 @@ Create an enhanced version with more depth, better backstory, and compelling tra
       });
 
       const updated = [...characters];
-      updated[index] = { ...updated[index], ...response };
+      // Locked identity: the AI may never change the locked image or the look it defines.
+      const keep = char.identity_image_url ? { appearance: char.appearance, identity_image_url: char.identity_image_url, photo_set: char.photo_set, images: char.images } : {};
+      updated[index] = { ...updated[index], ...response, ...keep };
       setCharacters(updated);
     } catch (error) {
       console.error("Error regenerating character:", error);
