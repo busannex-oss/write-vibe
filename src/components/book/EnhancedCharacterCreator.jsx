@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import CharacterProfileFields from "@/components/book/CharacterProfileFields";
-import { IMAGE_STYLES, buildIdentityContext, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
+import { IMAGE_STYLES, PHOTO_SET, buildIdentityContext, buildCharacterImagePrompt } from "@/components/book/characterImageStyles";
 import CharacterPhotoSet from "@/components/book/CharacterPhotoSet";
 import CharacterPrintButton from "@/components/book/CharacterPrintButton";
 import CharacterIdentityFields from "@/components/book/CharacterIdentityFields";
@@ -131,7 +131,13 @@ Target Audience: ${book.target_audience?.age_range}
 Themes: ${book.subjects?.join(', ')}
 Plot Summary: ${book.plot_summary}
 
-${["name", "age", "gender", "role"].filter((k) => cur[k]).map((k) => `Keep the author's chosen ${k}: ${cur[k]}`).join("\n")}
+Genre: ${book.category}${book.subcategory ? ` / ${book.subcategory}` : ""}
+Book Summary: ${book.book_summary || ""}
+Other characters in this book (the new character must belong to the same world, era, setting and tone, and relate plausibly to them):
+${characters.filter((_, i) => i !== index).map((c) => `- ${c.name} (${c.role || "character"}): ${c.description || ""}`).join("\n") || "- none yet"}
+
+STRICT THEME RULE: Stay fully consistent with the book's genre, setting, time period, tone and themes above. Do not invent elements that contradict or drift from the story.
+${["name", "age", "gender", "role", ...(cur.identity_image_url ? ["appearance"] : [])].filter((k) => cur[k]).map((k) => `Keep the author's chosen ${k} exactly: ${cur[k]}`).join("\n")}
 
 Fill in EVERY field:
 - Name (appropriate for the genre and setting)
@@ -170,11 +176,24 @@ Make the character memorable, complex, and appropriate for the target audience.`
         }
       });
 
-      const filled = { ...cur, ...response, images: cur.images, image_url: cur.image_url };
+      const locked = !!cur.identity_image_url;
+      const filled = {
+        ...cur,
+        ...response,
+        ...(locked && cur.appearance ? { appearance: cur.appearance } : {}),
+        images: cur.images,
+        image_url: cur.image_url,
+        identity_image_url: cur.identity_image_url,
+        photo_set: cur.photo_set,
+      };
       patchCharacter(index, filled);
       setGenerating(false);
-      setGeneratingImage(index);
-      patchCharacter(index, await generatePhotoSet(filled, book));
+      // Never regenerate existing photos — only fill empty photo slots.
+      const missing = PHOTO_SET.map((s) => s.key).filter((k) => !cur.photo_set?.[k]);
+      if (missing.length) {
+        setGeneratingImage(index);
+        patchCharacter(index, await generatePhotoSet(filled, book, missing));
+      }
     } catch (error) {
       console.error("Error generating character:", error);
       alert("Failed to generate character");

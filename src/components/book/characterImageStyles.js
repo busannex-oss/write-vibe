@@ -46,4 +46,6 @@ Gender: ${char.gender || "unspecified"}
 Appearance: ${char.appearance || char.description}
 Traits: ${char.traits?.join(", ")}
 
+Book: "${book.title}"${book.subtitle ? ` — ${book.subtitle}` : ""}. Setting and tone must match this story: ${book.plot_summary || book.book_summary || book.category}. Clothing, props and backgrounds must fit the book's world and time period.
+
 Style: Photorealistic, high quality, consistent character, appropriate for ${book.target_audience?.age_range || "general"} audience.`;
