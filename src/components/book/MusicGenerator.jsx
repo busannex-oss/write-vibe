@@ -3,8 +3,10 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Music, Loader2, Download, Sparkles, Check } from "lucide-react";
+import { composeMusic } from "@/lib/builtinComposer";
 
 const MUSIC_PROVIDERS = [
+  { id: "builtin", label: "Built-in Composer (no key)", dot: "bg-emerald-500", available: true },
   { id: "minimax_music", label: "MiniMax Music 2.6", dot: "bg-red-500", available: true },
   { id: "mureka", label: "Mureka Song", dot: "bg-purple-500", available: false },
   { id: "lyria", label: "Lyria 3 Music", dot: "bg-purple-500", available: false },
@@ -20,7 +22,8 @@ const TTS_PROVIDERS = [
 ];
 
 export default function MusicGenerator({ script, selectedDuration, book, savedMusicUrl, onMusicGenerated }) {
-  const [selectedProvider, setSelectedProvider] = useState("minimax_music");
+  const [selectedProvider, setSelectedProvider] = useState("builtin");
+  const [energy, setEnergy] = useState("medium");
   const [generating, setGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState(savedMusicUrl || null);
   const [error, setError] = useState(null);
@@ -31,6 +34,14 @@ export default function MusicGenerator({ script, selectedDuration, book, savedMu
     setGenerating(true);
     setError(null);
     try {
+      if (selectedProvider === "builtin") {
+        const blob = await composeMusic({ mood: musicMood, seconds: Number(selectedDuration) || 30, energy });
+        const file = new File([blob], `trailer-music-${Date.now()}.wav`, { type: "audio/wav" });
+        const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
+        setMusicUrl(file_url);
+        if (onMusicGenerated) onMusicGenerated(file_url);
+        return;
+      }
       const prompt = `${musicMood || "cinematic and engaging"} background music for a book trailer titled "${book.title}". Genre: ${book.category || "general"}. The music should build emotionally and complement the narration.`;
       const response = await base44.functions.invoke('generatePromoMusic', {
         prompt,
@@ -113,6 +124,14 @@ export default function MusicGenerator({ script, selectedDuration, book, savedMu
           <div className="flex flex-wrap gap-2">
             {TTS_PROVIDERS.map(renderProvider)}
           </div>
+          {selectedProvider === "builtin" && (
+            <div className="flex items-center gap-2 mt-3">
+              <span className="text-xs text-white/50">Energy:</span>
+              {["low", "medium", "high"].map((e) => (
+                <button key={e} onClick={() => setEnergy(e)} className={`px-3 py-1 rounded-full text-xs capitalize ${energy === e ? "bg-emerald-500/20 border border-emerald-400 text-white" : "bg-[#2b2a33] text-white/60"}`}>{e}</button>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && (
@@ -125,7 +144,7 @@ export default function MusicGenerator({ script, selectedDuration, book, savedMu
           <div className="space-y-3">
             <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
               <audio controls className="w-full">
-                <source src={musicUrl} type="audio/mpeg" />
+                <source src={musicUrl} />
               </audio>
             </div>
             <Button
