@@ -31,7 +31,9 @@ export const buildIdentityContext = (char) =>
     .map(([k, v]) => `${k}: ${v}`)
     .join("\n");
 
-export const IDENTITY_LOCK_RULE = `IDENTITY LOCK (mandatory): The attached reference image is this character's permanent physical identity. Reproduce the exact same person: identical face, facial features, skin tone, eye color, hair color and style, body type, height, age, and any distinguishing marks. Do NOT alter the identity in any way. ONLY the clothing, pose and setting may change.`;
+export const IDENTITY_LOCK_RULE = `IDENTITY LOCK (mandatory): The attached reference image is this character's permanent physical identity. Reproduce the exact same person: identical face, facial features, skin tone, eye color, hair color and style, body type, height, age, and any distinguishing marks. Do NOT alter the identity in any way. ONLY the clothing, pose and setting may change.
+
+STYLE LOCK (mandatory): The reference image also defines this book's visual style and theme. Match its exact art style and medium (e.g. photographic, painted, illustrated, animated), rendering, color palette, lighting mood and level of realism. Never switch to a different art style.`;
 
 export const buildCharacterImagePrompt = (char, book, shotPrompt, locked) => `Professional character image for a ${book.category} book:${locked ? `\n\n${IDENTITY_LOCK_RULE}` : ""}
 
@@ -48,4 +50,4 @@ Traits: ${char.traits?.join(", ")}
 
 Book: "${book.title}"${book.subtitle ? ` — ${book.subtitle}` : ""}. Setting and tone must match this story: ${book.plot_summary || book.book_summary || book.category}. Clothing, props and backgrounds must fit the book's world and time period.
 
-Style: Photorealistic, high quality, consistent character, appropriate for ${book.target_audience?.age_range || "general"} audience.`;
+Style: ${locked ? "Exactly the same art style, palette and theme as the attached reference image" : "Photorealistic"}, high quality, consistent character, appropriate for ${book.target_audience?.age_range || "general"} audience.`;
