@@ -24,7 +24,7 @@ export default function CommentList({ comments, user, onDelete }) {
               <span className="text-[11px] text-white/30">
                 {formatDistanceToNow(new Date(c.created_date), { addSuffix: true })}
               </span>
-              {(user?.role === "admin" || user?.email === c.author_email) && (
+              {(user?.role === "admin" || user?.id === c.created_by_id) && (
                 <button onClick={() => onDelete(c)} className="ml-auto text-white/25 hover:text-red-400">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

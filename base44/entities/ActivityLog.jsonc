@@ -4,7 +4,21 @@
   "properties": {
     "actor_email": {
       "type": "string",
-      "description": "Email of the user who performed the action"
+      "description": "Email of the user who performed the action",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "actor_name": {
       "type": "string",
