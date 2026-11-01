@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PromoVideoStudio from "@/components/book/PromoVideoStudio";
 import { base44 } from "@/api/base44Client";
 import { ai } from "@/lib/ai";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export default function VideoCommercial({ book, onUpdate }) {
   const [videoMethod, setVideoMethod] = useState("google"); // google | runway | kling | gemini
   const [publishMethod, setPublishMethod] = useState("auto"); // auto | manual
   const [musicUrl, setMusicUrl] = useState(null);
+  const [promoVideoUrl, setPromoVideoUrl] = useState(null);
 
   // ── Load saved data on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -42,10 +44,18 @@ export default function VideoCommercial({ book, onUpdate }) {
       if (saved.storyboardImages?.length) setStoryboardImages(saved.storyboardImages);
       if (saved.youtubeUrl) setYoutubeUrl(saved.youtubeUrl);
       if (saved.musicUrl) setMusicUrl(saved.musicUrl);
+      if (saved.promoVideoUrl) setPromoVideoUrl(saved.promoVideoUrl);
     } catch {
       // not JSON — ignore
     }
   }, [book.video_commercial_url]);
+
+  const savePromoVideo = async (url) => {
+    setPromoVideoUrl(url);
+    let saved = {};
+    try { saved = JSON.parse(book.video_commercial_url || "{}"); } catch { saved = {}; }
+    await onUpdate({ video_commercial_url: JSON.stringify({ ...saved, script, duration: selectedDuration, storyboardImages, youtubeUrl, musicUrl, promoVideoUrl: url, savedAt: new Date().toISOString() }) }, true);
+  };
 
   // ── Persist helper ────────────────────────────────────────────────────────
   const persist = async (scriptData, duration, images, url, music) => {
@@ -55,6 +65,7 @@ export default function VideoCommercial({ book, onUpdate }) {
       storyboardImages: images,
       youtubeUrl: url || youtubeUrl,
       musicUrl: music || musicUrl,
+      promoVideoUrl,
       savedAt: new Date().toISOString()
     });
     await onUpdate({ video_commercial_url: payload }, true);
@@ -416,6 +427,17 @@ Style: High-quality cinematic, dramatic lighting, 16:9 widescreen, movie poster 
           book={book}
           savedMusicUrl={musicUrl}
           onMusicGenerated={handleMusicGenerated}
+        />
+      )}
+
+      {hasScript && currentVersion?.scenes?.length > 0 && (
+        <PromoVideoStudio
+          book={book}
+          version={currentVersion}
+          musicUrl={musicUrl}
+          ctaText={script?.call_to_action}
+          savedUrl={promoVideoUrl}
+          onSaved={savePromoVideo}
         />
       )}
 
