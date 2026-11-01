@@ -15,7 +15,7 @@ import AIGenerateButton from "@/components/AIGenerateButton";
 import SaveTemplateDialog from "@/components/templates/SaveTemplateDialog";
 import LoadTemplateDialog from "@/components/templates/LoadTemplateDialog";
 
-const GENDER_OPTIONS = ["Male", "Female", "Non-binary", "Other"];
+const GENDER_OPTIONS = ["Male", "Female", "Transgender Man", "Transgender Woman", "Non-binary", "Genderfluid", "Agender", "Intersex", "Unknown / Unrevealed", "Other"];
 
 export default function EnhancedCharacterCreator({ book, onUpdate, isUpdating }) {
   const [characters, setCharacters] = useState(book.characters || []);
