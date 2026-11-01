@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Eye, Users, MessageSquare, Mail, Loader2, BarChart3, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { subDays } from "date-fns";
+import { subDays, format } from "date-fns";
 import InsightStatCard from "@/components/insights/InsightStatCard";
 import ViewsTrendChart from "@/components/insights/ViewsTrendChart";
 import TrafficSourceList from "@/components/insights/TrafficSourceList";
@@ -68,6 +68,10 @@ export default function ReaderInsights() {
   );
   const uniqueVisitors = new Set(recentViews.map((v) => v.session_id).filter(Boolean)).size;
   const sources = buildSourceBreakdown(recentViews);
+  const fmt = (d) => (d ? format(new Date(d), "MMM d, yyyy h:mm a") : "");
+  const bookTitle = (id) => books.find((b) => b.id === id)?.title || "Unknown book";
+  const sessionCounts = recentViews.reduce((m, v) => (v.session_id ? { ...m, [v.session_id]: (m[v.session_id] || 0) + 1 } : m), {});
+  const readers = Object.entries(sessionCounts).map(([id, n], i) => ({ id, primary: `Reader ${i + 1}`, secondary: `${n} visit${n === 1 ? "" : "s"}` }));
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-5">
@@ -104,16 +108,24 @@ export default function ReaderInsights() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <InsightStatCard icon={Eye} label="Visits (30d)" value={recentViews.length} hint={`${views.length} all time`} />
-        <InsightStatCard icon={Users} label="Unique readers" value={uniqueVisitors} hint="Last 30 days" accent="text-blue-400" />
+        <InsightStatCard icon={Eye} label="Visits (30d)" value={recentViews.length} hint={`${views.length} all time`}
+          description="Every visit to your published book pages in the last 30 days."
+          details={recentViews.map((v) => ({ id: v.id, primary: v.book_title || "Book page", secondary: `${fmt(v.viewed_at || v.created_date)} · ${v.source || "direct"}` }))} />
+        <InsightStatCard icon={Users} label="Unique readers" value={uniqueVisitors} hint="Last 30 days" accent="text-blue-400"
+          description="Distinct browser sessions and how many visits each made."
+          details={readers} />
         <InsightStatCard
           icon={MessageSquare}
           label="Draft comments"
           value={comments.length}
           hint={`${comments.filter((c) => c.status === "open").length} open`}
           accent="text-purple-400"
+          description="Feedback left by your team on chapters, characters and drafts."
+          details={comments.map((c) => ({ id: c.id, primary: c.content, secondary: `${c.author_name || c.author_email || "Reviewer"} · ${bookTitle(c.book_id)} · ${c.status || "open"}` }))}
         />
-        <InsightStatCard icon={Mail} label="Subscribers" value={subscribers.length} hint="Across all books" accent="text-emerald-400" />
+        <InsightStatCard icon={Mail} label="Subscribers" value={subscribers.length} hint="Across all books" accent="text-emerald-400"
+          description="Newsletter signups from your book pages."
+          details={subscribers.map((s) => ({ id: s.id, primary: s.name ? `${s.name} (${s.email})` : s.email, secondary: `${bookTitle(s.book_id)} · ${s.status || "pending"} · ${fmt(s.subscribed_at || s.created_date)}` }))} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
