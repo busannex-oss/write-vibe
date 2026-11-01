@@ -29,6 +29,7 @@ import IntegrationSettings from "@/components/admin/IntegrationSettings";
 import ComprehensiveAnalytics from "@/components/admin/ComprehensiveAnalytics";
 import AIVideoProduction from "@/components/admin/AIVideoProduction";
 import PaymentsAccounting from "@/components/admin/PaymentsAccounting";
+import PaymentProviderToggles from "@/components/admin/PaymentProviderToggles";
 import WhiteLabelTenantManager from "@/components/whitelabel/WhiteLabelTenantManager";
 
 export default function UserManagement() {
@@ -403,6 +404,7 @@ export default function UserManagement() {
         </TabsContent>
 
         <TabsContent value="payments">
+          <PaymentProviderToggles />
           <PaymentsAccounting />
         </TabsContent>
 
