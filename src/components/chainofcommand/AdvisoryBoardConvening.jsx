@@ -9,6 +9,7 @@ import {
 import { PRIORITY_STYLES } from "@/components/chainofcommand/advisoryConstants";
 import RecommendationRow from "@/components/chainofcommand/RecommendationRow";
 import MeetingMinutesArchive from "@/components/chainofcommand/MeetingMinutesArchive";
+import MinutesDriveExportToggle from "@/components/chainofcommand/MinutesDriveExportToggle";
 import { cn } from "@/lib/utils";
 
 export default function AdvisoryBoardConvening({ agents, brandColors }) {
@@ -306,6 +307,7 @@ export default function AdvisoryBoardConvening({ agents, brandColors }) {
     </Card>
 
       <div className="mt-6">
+        <MinutesDriveExportToggle />
         <MeetingMinutesArchive brandColors={brandColors} refreshKey={minutesRefreshKey} />
       </div>
     </>

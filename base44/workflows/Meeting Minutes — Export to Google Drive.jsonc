@@ -1,0 +1,39 @@
+{
+  "description": "When new meeting minutes are recorded, saves them as a Google Doc in the Drive folder (only while the in-app toggle is on).",
+  "name": "Meeting Minutes \u2014 Export to Google Drive",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "AdvisoryBoardMinutes"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "minutes_drive_export",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "export_minutes": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "exportMinutesToDrive",
+            "args": {
+              "minutes_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Save minutes to Google Drive"
+          }
+        }
+      }
+    ]
+  }
+}
