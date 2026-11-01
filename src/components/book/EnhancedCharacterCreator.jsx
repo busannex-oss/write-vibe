@@ -187,13 +187,7 @@ Make the character memorable, complex, and appropriate for the target audience.`
         photo_set: cur.photo_set,
       };
       patchCharacter(index, filled);
-      setGenerating(false);
-      // Never regenerate existing photos — only fill empty photo slots.
-      const missing = PHOTO_SET.map((s) => s.key).filter((k) => !cur.photo_set?.[k]);
-      if (missing.length) {
-        setGeneratingImage(index);
-        patchCharacter(index, await generatePhotoSet(filled, book, missing));
-      }
+      // Generate Character fills text fields only — never images.
     } catch (error) {
       console.error("Error generating character:", error);
       alert("Failed to generate character");
