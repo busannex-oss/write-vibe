@@ -92,6 +92,11 @@ export default function BlogManager() {
                     {" · "}<Eye className="w-3 h-3 inline -mt-0.5" /> {p.view_count || 0} views
                   </p>
                 </div>
+                <Button asChild variant="ghost" size="icon" title="View post" className="text-white/50 hover:text-white">
+                  <Link to={`/BlogPost?slug=${encodeURIComponent(p.slug || p.id)}`}>
+                    <Eye className="w-4 h-4" />
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => setEditing(p)} className="text-white/50 hover:text-white">
                   <Pencil className="w-4 h-4" />
                 </Button>
