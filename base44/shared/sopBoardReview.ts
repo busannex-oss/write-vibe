@@ -2,6 +2,23 @@
 // and Rose McLaurin cast final votes. If they agree, the SOP moves forward;
 // if they disagree, the founder decides.
 import { FOUNDER_EMAIL } from './founder.ts';
+import { AREA_ROUTES } from './agentRouting.ts';
+
+// Which department is capable of refining this SOP, based on what it covers.
+const AREA_KEYWORDS: [string, RegExp][] = [
+  ['design', /cover|design|image|visual|character identity|portrait|logo/i],
+  ['marketing', /marketing|campaign|social|launch|promo|brand/i],
+  ['media', /video|trailer|audio|music|media/i],
+  ['distribution', /publish|distribution|bookstore|amazon|retail|isbn/i],
+  ['crm', /onboarding|member|newsletter|crm|reader|subscriber/i],
+  ['editing', /edit|format|proofread/i],
+  ['writing', /manuscript|outline|chapter|writing|book creation/i],
+  ['governance', /governance|advisory|review|compliance|authority|sop/i],
+];
+export function sopRefineArea(sop: any): string {
+  const text = `${sop.title} ${sop.scope || ''} ${sop.purpose || ''}`;
+  return AREA_KEYWORDS.find(([, re]) => re.test(text))?.[0] || 'general';
+}
 
 export const BOARD = [
   ['Oprah Winfrey', 'Storytelling, Audience Building, Authenticity'],
@@ -89,11 +106,19 @@ ${prior ? `\nPrior final vote:\n${prior}` : ''}`,
   };
 
   if (agreed && outcome === 'refine') {
+    const area = sopRefineArea(sop);
+    const route = AREA_ROUTES[area];
     await svc.entities.AgentTask.create({
       title: `Refine SOP: ${sop.title} (v${version})`,
       instructions: `Apply the Advisory Board's requested changes, then resubmit for review.\n\n${finalVotes.map((v) => `${v.member}: ${v.changes || v.rationale}`).join('\n')}\n\nSOP id: ${sop.id}`,
-      area: 'general', action_type: 'draft', risk: 'low',
-      agent_key: 'workflow_architect', agent_name: 'Elena Vasquez', status: 'queued', owner_email: FOUNDER_EMAIL
+      area: area === 'governance' ? 'general' : area, action_type: 'draft', risk: 'low',
+      agent_key: route.owner_key, agent_name: route.owner, reviewer_agent: route.reviewer,
+      status: 'queued', owner_email: FOUNDER_EMAIL
+    });
+    (update.review_history as any[]).push({
+      decision: 'assign', version, at: now(), by: 'Advisory Board',
+      assignee: `${route.owner} (${area[0].toUpperCase() + area.slice(1)})`,
+      note: `Automatically sent to the ${area} department for refinement.`
     });
   }
 
