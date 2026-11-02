@@ -16,6 +16,12 @@ const STAGE_COLORS = {
   dormant: "bg-white/10 text-white/50"
 };
 
+const LEAD_TYPE_COLORS = {
+  new: "bg-emerald-500/15 text-emerald-300",
+  returning: "bg-blue-500/15 text-blue-300",
+  abandoned: "bg-red-500/15 text-red-300"
+};
+
 export default function ContactCard({ contact, onEnrich, enriching }) {
   const [open, setOpen] = useState(false);
 
@@ -29,6 +35,11 @@ export default function ContactCard({ contact, onEnrich, enriching }) {
               <Badge className={cn("border-0 text-[10px]", STAGE_COLORS[contact.lifecycle_stage] || STAGE_COLORS.subscriber)}>
                 {contact.lifecycle_stage}
               </Badge>
+              {contact.lead_type && (
+                <Badge className={cn("border-0 text-[10px]", LEAD_TYPE_COLORS[contact.lead_type])}>
+                  {contact.lead_type} lead
+                </Badge>
+              )}
               {contact.advocacy_potential === "high" && (
                 <Badge className="bg-pink-500/15 text-pink-300 border-0 text-[10px]">
                   <Heart className="w-2.5 h-2.5 mr-1" /> advocate potential
@@ -41,7 +52,7 @@ export default function ContactCard({ contact, onEnrich, enriching }) {
               )}
             </div>
             <p className="text-xs text-white/35 mt-1 truncate">
-              {contact.email} · {contact.segment || "unsegmented"} · via {contact.source}
+              {contact.email} · {contact.phone || "no phone"} · {contact.segment || "unsegmented"} · via {contact.source}
             </p>
           </div>
           <div className="w-24 hidden sm:block">

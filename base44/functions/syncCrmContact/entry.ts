@@ -104,9 +104,16 @@ Return a practical, specific profile. lead_score is 0-100 based on how close the
     });
 
     const e = enrichment || {};
+    const phone = member?.phone || member?.phone_number || current?.phone || '';
+    const touches = (current?.signup_count || 0) + 1;
+    const leadType = (subs.length && !activeSub) || e.lifecycle_stage === 'dormant'
+      ? 'abandoned'
+      : touches > 1 || member ? 'returning' : 'new';
     const payload = {
       email,
       name,
+      phone,
+      lead_type: leadType,
       source: current?.source || source,
       is_member: !!member,
       subscription_tier: member?.subscription_tier || current?.subscription_tier || '',

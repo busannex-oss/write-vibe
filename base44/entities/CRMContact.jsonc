@@ -9,6 +9,20 @@
     "name": {
       "type": "string"
     },
+    "phone": {
+      "type": "string",
+      "description": "Phone number, when known"
+    },
+    "lead_type": {
+      "type": "string",
+      "enum": [
+        "new",
+        "returning",
+        "abandoned"
+      ],
+      "default": "new",
+      "description": "New, returning, or abandoned lead"
+    },
     "source": {
       "type": "string",
       "enum": [
