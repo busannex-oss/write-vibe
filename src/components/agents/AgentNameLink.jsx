@@ -23,7 +23,11 @@ export default function AgentNameLink({ name, className = "" }) {
         title={`${agent.role} · ${agent.agent_id}`}
         className={`inline-flex items-center gap-1 font-medium text-amber-300 hover:text-amber-200 underline decoration-dotted underline-offset-2 ${className}`}
       >
-        <Bot className="w-3 h-3" />
+        {agent.portrait ? (
+          <img src={agent.portrait} alt={agent.name} className="w-5 h-5 rounded-full object-cover border border-amber-400/40" />
+        ) : (
+          <Bot className="w-3 h-3" />
+        )}
         {agent.name}
       </button>
       <AgentProfileDialog agent={agent} open={open} onOpenChange={setOpen} />
