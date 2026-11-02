@@ -78,6 +78,12 @@ export default function TeamActivityFeed({ selectedBook }) {
                     <p className="text-sm text-white/60 mt-0.5 truncate">
                       {log.entity_title || log.summary || "Untitled"}
                     </p>
+                    {log.owner_agent && (
+                      <p className="text-xs text-amber-300/70 mt-1">
+                        Handled by {log.owner_agent} · reviewed by {log.reviewer_agent}
+                        {log.observers?.length ? ` · seen by ${log.observers.join(", ")}` : ""}
+                      </p>
+                    )}
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="text-xs text-white/30">
                         {log.entity_type === 'book' ? <BookOpen className="w-3 h-3 inline mr-1" /> : <FileText className="w-3 h-3 inline mr-1" />}

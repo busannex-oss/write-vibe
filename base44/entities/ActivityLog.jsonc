@@ -52,6 +52,21 @@
     "summary": {
       "type": "string",
       "description": "Human-readable summary line"
+    },
+    "owner_agent": {
+      "type": "string",
+      "description": "Agent responsible for this action"
+    },
+    "reviewer_agent": {
+      "type": "string",
+      "description": "Team lead who reviews it"
+    },
+    "observers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other agents kept informed"
     }
   },
   "required": [

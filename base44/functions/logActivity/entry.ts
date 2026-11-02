@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { routeEntity } from '../../shared/agentRouting.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -37,7 +38,12 @@ Deno.serve(async (req) => {
     const action = `${entityName}_${eventType === 'create' ? 'created' : 'updated'}`;
     const entityLabel = entityName === 'book' ? 'book' : 'SOP';
 
+    const route = routeEntity(entityName, data);
+
     await svc.entities.ActivityLog.create({
+      owner_agent: route.owner,
+      reviewer_agent: route.reviewer,
+      observers: route.observers,
       actor_email: actorEmail,
       actor_name: actorName,
       action,

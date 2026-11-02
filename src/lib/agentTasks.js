@@ -1,11 +1,14 @@
 export const HIGH_RISK_ACTIONS = ["publish", "email", "spend"];
 
 export const AREAS = [
-  { value: "writing", label: "Book writing", agent: "outline_generator" },
-  { value: "marketing", label: "Marketing", agent: "marketing_assistant" },
-  { value: "distribution", label: "Distribution", agent: "bookstore_advisor" },
-  { value: "crm", label: "Readers & CRM", agent: "seasonal_newsletter_strategist" },
-  { value: "general", label: "General", agent: "project_manager" }
+  { value: "writing", label: "Book writing", agent: "outline_generator", reviewer: "Marcus Chen" },
+  { value: "editing", label: "Editing & formatting", agent: "text_formatter", reviewer: "Marcus Chen" },
+  { value: "design", label: "Cover & design", agent: "cover_designer", reviewer: "Marcus Chen" },
+  { value: "marketing", label: "Marketing", agent: "marketing_assistant", reviewer: "Victoria Lopez" },
+  { value: "media", label: "Video & audio", agent: "video_producer", reviewer: "Luis Garcia" },
+  { value: "distribution", label: "Distribution", agent: "bookstore_advisor", reviewer: "Victoria Lopez" },
+  { value: "crm", label: "Readers & CRM", agent: "seasonal_newsletter_strategist", reviewer: "Sophia Martinez" },
+  { value: "general", label: "General", agent: "project_manager", reviewer: "Valerie Simmons" }
 ];
 
 export const ACTIONS = [

@@ -14,7 +14,10 @@
       "type": "string",
       "enum": [
         "writing",
+        "editing",
+        "design",
         "marketing",
+        "media",
         "distribution",
         "crm",
         "general"
@@ -47,6 +50,17 @@
     },
     "agent_name": {
       "type": "string"
+    },
+    "reviewer_agent": {
+      "type": "string",
+      "description": "Team lead who reviews this task's output"
+    },
+    "observers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other agents kept informed"
     },
     "book_id": {
       "type": "string"

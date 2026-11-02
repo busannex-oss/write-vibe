@@ -16,9 +16,11 @@ export default function AgentTaskForm({ books, onCreate }) {
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const agent = findAgent(AREAS.find((a) => a.value === f.area).agent);
+    const area = AREAS.find((a) => a.value === f.area);
+    const agent = findAgent(area.agent);
     await onCreate({
       ...f,
+      reviewer_agent: area.reviewer,
       risk: HIGH_RISK_ACTIONS.includes(f.action_type) ? "high" : "low",
       agent_key: agent?.key,
       agent_name: agent?.name,
