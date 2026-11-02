@@ -10,7 +10,7 @@ import { format } from "date-fns";
 const STAGES = {
   pending_board: "Pending — waiting for the Advisory Board",
   in_review: "Pending — Advisory Board is voting",
-  awaiting_founder: "Alexandar Sterling and Rose McLaurin have voted — your final decision is needed",
+  awaiting_founder: "Alexandar Sterling and Rose McLaurin disagreed — your decision is needed",
   refining: "Sent back for refinement",
   decided: "Review complete",
 };
@@ -45,7 +45,12 @@ export default function SOPReviewPanel({ sop, onRefresh }) {
       </CardHeader>
       <CardContent className="space-y-5">
         <p className={stage === "awaiting_founder" ? "text-amber-400 text-sm" : "text-white/60 text-sm"}>{STAGES[stage] || "Not yet submitted to the Advisory Board"}</p>
-        {stage === "awaiting_founder" && <ReviewDecisionBar onDecide={decide} />}
+        {(stage === "awaiting_founder" || (sop.status === "under_review" && stage !== "decided")) && (
+          <div className="space-y-2">
+            {stage !== "awaiting_founder" && <p className="text-amber-400 text-sm">This SOP is still under review. Move it forward yourself:</p>}
+            <ReviewDecisionBar onDecide={decide} />
+          </div>
+        )}
         <SOPVoteList title="Final votes" votes={sop.final_votes} />
         <SOPVoteList title="Advisory Board votes" votes={sop.board_votes} />
         {history.length > 0 && (
