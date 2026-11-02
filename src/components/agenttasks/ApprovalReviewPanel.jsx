@@ -57,7 +57,7 @@ export default function ApprovalReviewPanel({ task, isAdmin, onDone }) {
           {task.consensus === "split" ? "Reviewers split — your call." : <><FileText className="w-3 h-3 text-emerald-300" />Agreement reached ({task.consensus}). Minutes recorded.</>}
         </p>
       )}
-      {isAdmin && task.status === "awaiting_approval" && <ReviewDecisionBar onDecide={decide} />}
+      {isAdmin && ["awaiting_approval", "paused"].includes(task.status) && <ReviewDecisionBar onDecide={decide} />}
     </div>
   );
 }

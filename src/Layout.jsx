@@ -103,7 +103,6 @@ export default function Layout({ children, currentPageName }) {
         { name: "System Traces", href: "SystemTraces", icon: Activity, category: "Operations" },
         { name: "Team Summary", href: "TeamSummary", icon: Mail, category: "Operations" },
         { name: "Advisory Reviews", href: "AdvisoryReviewDashboard", icon: ClipboardCheck, category: "Operations" },
-        { name: "Review Overrides", href: "ReviewOverrides", icon: ShieldAlert, category: "Operations" },
         { name: "CRM", href: "CRM", icon: Contact, category: "Operations" },
         { name: "Blog", href: "BlogManager", icon: Newspaper, category: "Operations", children: [
           { name: "Blog Calendar", href: "BlogCalendar", icon: CalendarDays },

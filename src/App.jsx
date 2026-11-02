@@ -58,7 +58,6 @@ const SystemTraces = lazy(() => import('./pages/SystemTraces'));
 const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
 const AIDisclosure = lazy(() => import('./pages/AIDisclosure'));
 const AgentControlCenter = lazy(() => import('./pages/AgentControlCenter'));
-const ReviewOverrides = lazy(() => import('./pages/ReviewOverrides'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
@@ -171,7 +170,6 @@ const AuthenticatedApp = () => {
       <Route path="/RefundPolicy" element={<LayoutWrapper currentPageName="RefundPolicy"><RefundPolicy /></LayoutWrapper>} />
       <Route path="/AIDisclosure" element={<LayoutWrapper currentPageName="AIDisclosure"><AIDisclosure /></LayoutWrapper>} />
       <Route path="/AgentControlCenter" element={<LayoutWrapper currentPageName="AgentControlCenter"><AgentControlCenter /></LayoutWrapper>} />
-      <Route path="/ReviewOverrides" element={<LayoutWrapper currentPageName="ReviewOverrides"><ReviewOverrides /></LayoutWrapper>} />
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

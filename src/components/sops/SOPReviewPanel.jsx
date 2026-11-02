@@ -45,7 +45,7 @@ export default function SOPReviewPanel({ sop, onRefresh }) {
       </CardHeader>
       <CardContent className="space-y-5">
         <p className={stage === "awaiting_founder" ? "text-amber-400 text-sm" : "text-white/60 text-sm"}>{STAGES[stage] || "Not yet submitted to the Advisory Board"}</p>
-        {(stage === "awaiting_founder" || (sop.status === "under_review" && stage !== "decided")) && (
+        {stage !== "decided" && sop.status !== "archived" && (
           <div className="space-y-2">
             {stage !== "awaiting_founder" && <p className="text-amber-400 text-sm">This SOP is still under review. Move it forward yourself:</p>}
             <ReviewDecisionBar onDecide={decide} />
