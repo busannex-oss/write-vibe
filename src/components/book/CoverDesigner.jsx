@@ -9,12 +9,16 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Check, Loader2, Image, Upload, RefreshCw, Download, Star, TrendingUp, Users, Trash2, Save } from "lucide-react";
 import { motion } from "framer-motion";
+import BackCoverTextOverlay from "@/components/book/BackCoverTextOverlay";
+import BackCoverTextControls from "@/components/book/BackCoverTextControls";
 
 
 export default function CoverDesigner({ book, onUpdate, isUpdating }) {
   const [generating, setGenerating] = useState(false);
   const [frontCover, setFrontCover] = useState(book.front_cover_url || "");
   const [backCover, setBackCover] = useState(book.back_cover_url || "");
+  const [backText, setBackText] = useState(book.back_cover_text || {});
+  const [savingBackText, setSavingBackText] = useState(false);
   const [authorPhoto, setAuthorPhoto] = useState(book.author_photo_url || "");
   const [includeAuthorPhoto, setIncludeAuthorPhoto] = useState(!!book.author_photo_url);
   const [coverStyle, setCoverStyle] = useState("modern");
@@ -399,7 +403,9 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
                   alt="Back Cover"
                   className="w-full h-full object-cover"
                 />
-              ) : (
+              ) : null}
+              {backCover && <BackCoverTextOverlay settings={backText} fallbackBlurb={book.book_summary || book.plot_summary} />}
+              {!backCover && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <Image className="w-12 h-12 text-white/20 mx-auto mb-2" />
@@ -430,6 +436,16 @@ High quality, professional book back cover, 6x9 aspect ratio, publishing quality
                   <Download className="w-4 h-4" />
                 </Button>
               </div>
+            )}
+
+            {backCover && (
+              <BackCoverTextControls
+                value={backText}
+                onChange={setBackText}
+                saving={savingBackText}
+                fallbackBlurb={book.book_summary || book.plot_summary}
+                onSave={async () => { setSavingBackText(true); await onUpdate({ back_cover_text: backText }, false); setSavingBackText(false); }}
+              />
             )}
 
             {/* Author Photo Upload */}

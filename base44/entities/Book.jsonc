@@ -454,6 +454,45 @@
     "back_cover_url": {
       "type": "string"
     },
+    "back_cover_text": {
+      "type": "object",
+      "description": "Text overlaid on the back cover and how it is styled",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "tagline": {
+          "type": "string"
+        },
+        "blurb": {
+          "type": "string"
+        },
+        "author_bio": {
+          "type": "string"
+        },
+        "font": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "color": {
+          "type": "string"
+        },
+        "align": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "band_opacity": {
+          "type": "number"
+        },
+        "show_barcode": {
+          "type": "boolean"
+        }
+      }
+    },
     "cover_generations": {
       "type": "array",
       "items": {
