@@ -8,12 +8,15 @@ import { Progress } from "@/components/ui/progress";
 import { Sparkles, Loader2 } from "lucide-react";
 import OnboardingAgents from "@/components/onboarding/OnboardingAgents";
 import OnboardingResources from "@/components/onboarding/OnboardingResources";
+import FirstBookStep from "@/components/onboarding/FirstBookStep";
+import SocialProfilesStep from "@/components/onboarding/SocialProfilesStep";
 
 const STEPS = [
   { title: "Welcome to your author team", sub: "You're a member now. Here's a quick tour so you can get started today." },
   { title: "Meet your AI agents", sub: "Each agent specializes in one part of your book's journey." },
   { title: "Your key resources", sub: "These tools keep your project organized from first draft to launch." },
-  { title: "Start your first book", sub: "The fastest way to get value is to create your book project now." },
+  { title: "Set up your first book", sub: "Just the basics. Your agents will help you build out the rest." },
+  { title: "Link your social profiles", sub: "So your marketing team can promote your book where your readers are." },
 ];
 
 export default function MemberOnboarding() {
@@ -23,11 +26,18 @@ export default function MemberOnboarding() {
   const qc = useQueryClient();
   const last = step === STEPS.length - 1;
 
+  const [book, setBook] = useState(null);
+  const [social, setSocial] = useState({});
+
   const finish = async (page) => {
     setSaving(true);
-    await base44.auth.updateMe({ member_onboarding_completed: true, member_onboarding_completed_at: new Date().toISOString() });
+    await base44.auth.updateMe({
+      member_onboarding_completed: true,
+      member_onboarding_completed_at: new Date().toISOString(),
+      social_profiles: social,
+    });
     await qc.invalidateQueries({ queryKey: ["user"] });
-    navigate(createPageUrl(page));
+    navigate(page === "BookEditor" ? `/BookEditor?id=${book.id}` : createPageUrl(page));
   };
 
   return (
@@ -46,11 +56,8 @@ export default function MemberOnboarding() {
       )}
       {step === 1 && <OnboardingAgents />}
       {step === 2 && <OnboardingResources />}
-      {step === 3 && (
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-white/80">
-          Create a book, and Olivia will help you shape the outline while the rest of the team steps in at each stage.
-        </div>
-      )}
+      {step === 3 && <FirstBookStep book={book} onCreated={setBook} />}
+      {step === 4 && <SocialProfilesStep value={social} onChange={setSocial} />}
 
       <div className="flex justify-between mt-10">
         <Button variant="ghost" disabled={step === 0 || saving} onClick={() => setStep(step - 1)}>Back</Button>
@@ -58,12 +65,12 @@ export default function MemberOnboarding() {
           {last ? (
             <>
               <Button variant="ghost" disabled={saving} onClick={() => finish("Dashboard")}>Go to dashboard</Button>
-              <Button disabled={saving} onClick={() => finish("CreateBook")}>
-                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Create my first book
+              <Button disabled={saving} onClick={() => finish(book ? "BookEditor" : "Books")}>
+                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{book ? "Open my book" : "Finish setup"}
               </Button>
             </>
           ) : (
-            <Button onClick={() => setStep(step + 1)}>Next</Button>
+            <Button onClick={() => setStep(step + 1)}>{step === 3 && !book ? "Skip for now" : "Next"}</Button>
           )}
         </div>
       </div>

@@ -14,6 +14,7 @@ import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 import MobileNav from "@/components/MobileNav";
 
 import { PUBLIC_PAGES, isPublicPage, isAdminPage } from "@/lib/pageAccess";
+import { needsOnboarding } from "@/lib/memberOnboarding";
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,6 +49,12 @@ export default function Layout({ children, currentPageName }) {
     }
     if (adminOnly && user?.role !== "admin") {
       navigate(createPageUrl("Dashboard"));
+      return;
+    }
+    // Send new paying members straight into guided setup once per session
+    if (currentPageName === "Dashboard" && needsOnboarding(user) && !sessionStorage.getItem("wv_onboard_shown")) {
+      sessionStorage.setItem("wv_onboard_shown", "1");
+      navigate(createPageUrl("MemberOnboarding"));
     }
   };
 
