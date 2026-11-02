@@ -10,7 +10,7 @@ import { format } from "date-fns";
 const STAGES = {
   pending_board: "Pending — waiting for the Advisory Board",
   in_review: "Pending — Advisory Board is voting",
-  awaiting_founder: "Alexandar Sterling and Rose McLaurin disagreed — your decision is needed",
+  awaiting_founder: "Alexandar Sterling and Rose McLaurin have voted — your final decision is needed",
   refining: "Sent back for refinement",
   decided: "Review complete",
 };

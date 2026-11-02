@@ -80,15 +80,16 @@ ${prior ? `\nPrior final vote:\n${prior}` : ''}`,
   const update: Record<string, unknown> = {
     board_votes: boardVotes,
     final_votes: finalVotes,
-    review_stage: agreed ? (outcome === 'refine' ? 'refining' : 'decided') : 'awaiting_founder',
-    status: agreed ? ({ accept: 'active', reject: 'draft', refine: 'under_review' } as any)[outcome] : 'under_review',
+    // Founder always makes the final call after Alexandar and Rose
+    review_stage: 'awaiting_founder',
+    status: 'under_review',
     review_history: [...(sop.review_history || []), {
       decision: agreed ? outcome : 'split', version, at: now(), by: 'Advisory Board',
-      note: agreed ? `Board (${tally}). Alexandar Sterling and Rose McLaurin agreed to ${outcome.toUpperCase()}.` : `Board (${tally}). Final reviewers disagreed — awaiting founder decision.`
+      note: agreed ? `Board (${tally}). Alexandar Sterling and Rose McLaurin recommend ${outcome.toUpperCase()}. Awaiting founder decision.` : `Board (${tally}). Final reviewers disagreed — awaiting founder decision.`
     }]
   };
 
-  if (agreed && outcome === 'refine') {
+  if (false) {
     await svc.entities.AgentTask.create({
       title: `Refine SOP: ${sop.title} (v${version})`,
       instructions: `Apply the Advisory Board's requested changes, then resubmit for review.\n\n${finalVotes.map((v) => `${v.member}: ${v.changes || v.rationale}`).join('\n')}\n\nSOP id: ${sop.id}`,
