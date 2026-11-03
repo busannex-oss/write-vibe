@@ -13,7 +13,7 @@ const AREA_KEYWORDS: [string, RegExp][] = [
   ['crm', /onboarding|member|newsletter|crm|reader|subscriber/i],
   ['editing', /edit|format|proofread/i],
   ['writing', /manuscript|outline|chapter|writing|book creation/i],
-  ['governance', /governance|advisory|review|compliance|authority|sop/i],
+  ['compliance', /governance|advisory|review|compliance|authority|sop/i],
 ];
 export function sopRefineArea(sop: any): string {
   const text = `${sop.title} ${sop.scope || ''} ${sop.purpose || ''}`;
@@ -111,7 +111,7 @@ ${prior ? `\nPrior final vote:\n${prior}` : ''}`,
     await svc.entities.AgentTask.create({
       title: `Refine SOP: ${sop.title} (v${version})`,
       instructions: `Apply the Advisory Board's requested changes, then resubmit for review.\n\n${finalVotes.map((v) => `${v.member}: ${v.changes || v.rationale}`).join('\n')}\n\nSOP id: ${sop.id}`,
-      area: area === 'governance' ? 'general' : area, action_type: 'draft', risk: 'low',
+      area: area === 'compliance' ? 'general' : area, action_type: 'draft', risk: 'low',
       agent_key: route.owner_key, agent_name: route.owner, reviewer_agent: route.reviewer,
       status: 'queued', owner_email: FOUNDER_EMAIL
     });

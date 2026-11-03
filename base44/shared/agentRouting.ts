@@ -18,7 +18,7 @@ export const AREA_ROUTES: Record<string, Route> = {
     responsibilities: 'Retail channels, pricing, metadata and publishing submissions.' },
   crm: { owner: 'Isabella Santos', owner_key: 'seasonal_newsletter_strategist', role: 'Newsletter Strategist', reviewer: 'Sophia Martinez',
     responsibilities: 'Reader relationships, newsletters and nurture. Respect unsubscribes and never email without approval.' },
-  governance: { owner: 'Thomas Wright', owner_key: 'structure_sentinel', role: 'Structure Sentinel', reviewer: 'David Ashworth',
+  compliance: { owner: 'Thomas Wright', owner_key: 'structure_sentinel', role: 'Structure Sentinel', reviewer: 'David Ashworth',
     responsibilities: 'SOPs, compliance and process integrity. SOPs require Advisory Board review before activation.' },
   general: { owner: 'Sam Thompson', owner_key: 'project_manager', role: 'Project Manager', reviewer: 'Valerie Simmons',
     responsibilities: 'Coordinate work across teams, track deadlines and route anything outside your remit to the right specialist.' },
@@ -42,6 +42,6 @@ export function routeArea(area?: string, highRisk = false) {
 }
 
 export function routeEntity(entity: string, data: Record<string, unknown> = {}) {
-  if (entity === 'sop') return routeArea('governance');
+  if (entity === 'sop') return routeArea('compliance');
   return routeArea(BOOK_STAGE_AREA[String(data.status || 'draft')] || 'writing');
 }
