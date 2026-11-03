@@ -49,28 +49,43 @@ ${prior ? `\nPrior votes:\n${prior}` : ''}`,
       { at: new Date().toISOString(), event: agreed ? `Agreement reached: ${reviews[0].decision}` : 'Reviewers split — admin decides', by: 'Review Board' }]
   };
 
+  // When both agree on a clear outcome, the task moves on autonomously; the founder is informed, not asked.
+  const AUTO: Record<string, { status: string; label: string }> = {
+    accept: { status: 'approved', label: 'Task approved and proceeds to execution.' },
+    reject: { status: 'stopped', label: 'Task stopped.' },
+    refine: { status: 'queued', label: 'Task sent back to the assigned agent with the requested changes.' },
+  };
+  const auto = agreed ? AUTO[reviews[0].decision] : null;
+  if (auto) {
+    update.status = auto.status;
+    if (reviews[0].decision === 'refine') {
+      update.instructions = `${task.instructions || ''}\n\nRequested changes (review board):\n${reviews.map((v) => `- ${v.reviewer}: ${v.recommendation}`).join('\n')}`;
+    }
+    (update.history as any[]).push({ at: new Date().toISOString(), event: `Auto-escalated: ${auto.label}`, by: 'Review Board' });
+  }
+
   if (agreed) {
     const minutes = await svc.entities.AdvisoryBoardMinutes.create({
       meeting_title: `Approval Review — ${task.title}`,
       meeting_date: new Date().toISOString(),
       meeting_type: 'Approval Review Agreement',
       attendees: REVIEWERS.map((r) => r.name),
-      executive_summary: `Alexandar Sterling and Rose McLaurin agreed to ${reviews[0].decision.toUpperCase()} "${task.title}". Pending administrator review.`,
+      executive_summary: `Alexandar Sterling and Rose McLaurin agreed to ${reviews[0].decision.toUpperCase()} "${task.title}". ${auto ? auto.label : 'Pending administrator review.'}`,
       overall_assessment: reviews.map((v) => `${v.reviewer}: ${v.rationale}`).join(' '),
       recommendations_total: reviews.length,
       minutes_html: `<h2>Action under review</h2><p><strong>${esc(task.title)}</strong> (${task.action_type})</p><p>${esc(task.instructions)}</p>
 <h2>Votes</h2>${reviews.map((v) => `<h3>${v.reviewer} — ${v.decision.toUpperCase()}</h3><p>${esc(v.rationale)}</p><p><em>Recommended action:</em> ${esc(v.recommendation)}</p>`).join('')}
-<h2>Resolution</h2><p>Both reviewers agreed: <strong>${reviews[0].decision.toUpperCase()}</strong>. Forwarded to the administrator.</p>
-<h2>Changes that follow</h2><ul><li>Awaiting administrator decision.</li></ul>`,
+<h2>Resolution</h2><p>Both reviewers agreed: <strong>${reviews[0].decision.toUpperCase()}</strong>. ${auto ? 'Applied automatically.' : 'Forwarded to the administrator.'}</p>
+<h2>Changes that follow</h2><ul><li>${auto ? esc(auto.label) : 'Awaiting administrator decision.'}</li></ul>`,
       raw_results: JSON.stringify({ task_id: task.id, reviews }),
-      status: 'draft'
+      status: auto ? 'finalized' : 'draft'
     });
     update.minutes_id = minutes.id;
     await svc.integrations.Core.SendEmail({
       to: FOUNDER_EMAIL,
       from_name: 'Write Vibe Review Board',
-      subject: `Action needed: reviewers agreed to ${reviews[0].decision.toUpperCase()} "${task.title}"`,
-      body: `<p>Alexandar Sterling and Rose McLaurin reached consensus on a high-risk task and it now awaits your final approval.</p>
+      subject: `${auto ? 'FYI' : 'Action needed'}: reviewers agreed to ${reviews[0].decision.toUpperCase()} "${task.title}"`,
+      body: `<p>Alexandar Sterling and Rose McLaurin reached consensus on a high-risk task. ${auto ? esc(auto.label) + ' No action is needed unless you want to override it.' : 'It now awaits your final approval.'}</p>
 <p><strong>Task:</strong> ${esc(task.title)} (${task.action_type})<br/><strong>Consensus:</strong> ${reviews[0].decision.toUpperCase()}</p>
 ${reviews.map((v) => `<p><strong>${v.reviewer}:</strong> ${esc(v.rationale)}<br/><em>Recommends:</em> ${esc(v.recommendation)}</p>`).join('')}
 <p><a href="https://thewritevibe.net/AgentTasks">Review and decide now</a></p>`
