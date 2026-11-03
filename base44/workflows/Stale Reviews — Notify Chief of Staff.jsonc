@@ -1,0 +1,44 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "stale_reviews_notify_chief_of_staff",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "escalate_stale_reviews": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "escalateStaleReviews"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Escalate stale reviews",
+            "description": "Tasks in review 48h+ go to the Chief of Staff"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Every hour, notifies the Chief of Staff about any task that has been in review for more than 48 hours without a resolution",
+  "name": "Stale Reviews \u2014 Notify Chief of Staff"
+}
